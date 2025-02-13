@@ -1,6 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using PizzaShop.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var conn = builder.Configuration.GetConnectionString("PizzashopDbConnection");
+builder.Services.AddDbContext<PizzashopContext>(q => q.UseNpgsql(conn));
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

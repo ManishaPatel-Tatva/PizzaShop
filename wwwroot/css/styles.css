@@ -1,0 +1,318 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap");
+a{
+    color: black;
+    text-decoration: none;
+}
+
+.blue{
+    filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);
+}
+
+.bg-blue{
+    background-color: #D8EFF7 !important;
+}
+
+.bg-grey{
+    background-color: #F2F2F2 !important;
+}
+
+.bg-dark-grey{
+    background-color: #f9f9f9;
+}
+
+.blue-text{
+    color: #0066A8 !important;
+}
+
+.text-grey{
+    color: #686868;
+}
+
+/* Login Page */
+.hero-img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.hero-heading{
+    color: #0066A8;
+    font-size: x-large;
+    font-weight: 500;
+}
+
+.pizzashop-text{
+    color: #0066A8 !important;
+    font-weight:700 !important;
+    font-size: large;
+}
+
+.pizzashop_logo{
+    height: 40px;
+    width: fit-content;
+}
+
+.rem_pass a{
+    color: blue;
+}
+
+.login-btn{
+    color: white !important;
+    background-color: #0066A8 !important;
+}
+
+.input-group-text{
+    background-color: white !important;
+    border-left-style:none !important;
+}
+
+.input-group input{
+    border-right-style:none !important;
+}
+
+/* Media Query for login page */
+@media (max-width : 767px) {
+    
+    /* Background-img*/
+    .bg-img {
+        position: relative;
+        z-index: 1;
+    }
+
+    .bg-img:before{
+        position: absolute;
+        content: "";
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url(../images/dominos_background.jpg);
+        background-size: cover;
+        background-position: center;
+        opacity: 0.5;
+    }
+
+    .right-section{
+        backdrop-filter: blur(10px);
+    }
+
+}
+
+@media (max-width : 375px) {
+    .rem_pass{
+        flex-direction: column;
+    }
+}
+
+/* sidebar */
+.sidebar{
+    width: 230px;
+    background-color: white;
+}
+
+.sidebar a{
+    font-size: large;
+    padding: 10px;
+    color: #686868;
+    font-weight: 600;
+    text-decoration: none;
+    display:flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.side-dash{
+    color: #0066A8 !important;
+    background-color: #e9eaeb;
+}
+
+/* Navbar */
+nav{
+    background-color: #0066a8;
+}
+
+/* Users */
+.btn-blue{
+    color: white;
+    background-color: #0066A8;
+}
+
+.users input{
+    padding: 10px;
+}
+
+.bg-active{
+    background-color: #99D363;
+    color: white;
+    font-weight: 500;
+    border-radius: 12px;
+    padding: 0px 20px;
+}
+
+/* Add new user */
+.btn-white{
+    color: #0066A8;
+    border: 1px solid #0066A8;
+}
+
+.form-floating>label {
+    top: -5px;
+    left: 15px;
+}
+
+.browse>label{
+    border: 1px dotted gray;
+    height: 100px;
+}
+
+/*Permission*/
+.permission-role{
+    width: max-content;
+}
+
+/* Menu */
+.nav-pills .nav-link.active{
+    color: #0066A8;
+    background-color: white;
+    border-bottom: 2px solid #0066A8;
+    border-radius: 0px;
+}
+
+.nav-link{
+    color: black;
+}
+
+.category-list a{
+    color: #686868;
+    font-weight: 600;
+}
+
+.category-list ul {
+    list-style: none;
+    padding:8px
+}
+
+.category-list li{
+    color: #686868;
+   
+    margin-top: 20px;
+}
+
+.category-list img{
+    transform: rotate(90deg);
+    margin-right: 4px;
+}
+
+.category-list{
+    overflow-y: scroll;
+    height: 350px;
+}
+
+.category{
+    width: fit-content;
+}
+
+.menu-table{
+    overflow-x: auto; 
+    white-space: nowrap; 
+}
+
+.menu-table th{
+    color: #686868;
+}
+
+.menu-table td{
+    font-weight: 500;
+}
+
+.menu-table td,th{
+    color: #686868 !important;
+    white-space: nowrap;
+}
+
+@media (max-width: 1160px) {
+    .category{
+        width: 100%;
+        height: fit-content;
+    }
+
+    .category-list{
+        height: fit-content;
+    }
+
+    .category-list ul{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 8px;
+    }
+}
+
+@media (max-width: 620px) {
+    .category-list ul{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 10px;
+    }
+}
+
+
+/* Modal */
+.modal-header{
+    border-bottom-width: 0px;
+}
+
+.modal-body{
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.modal-footer {
+    border-top-width: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+
+}
+
+
+
+/* Medium devices (landscape tablets, 768px and up) */
+
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+}
