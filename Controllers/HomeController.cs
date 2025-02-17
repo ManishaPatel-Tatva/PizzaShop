@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PizzaShop.Models;
 using PizzaShop.ViewModel;
 
@@ -17,24 +19,35 @@ public class HomeController : Controller
         _context = context;
     }
 
+
     public IActionResult Login()
     {
+        if(Request.Cookies["emailCookie"] != null)
+        {
+             return RedirectToAction("Privacy");
+        }
+
         return View();
     }
 
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        
+        CookieOptions options = new CookieOptions();
+        options.Expires = DateTime.Now.AddDays(15);
 
         if(ModelState.IsValid){
-            var users = await _context.Users.Where(u => u.Email == model.Email).Select(x=> new{x.Email, x.Password}).FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
+            var users = await _context.Users.Where(u => u.Email == model.Email).Select(x=> new{x.Email, x.Password}).FirstOrDefaultAsync();
 
             if(users != null && users.Password == model.Password){
-                
+
+                //For cookies               
+                if(model.RememberMe)
+                {
+                    Response.Cookies.Append("emailCookie",model.Email,options);
+                }
+
                 return RedirectToAction("Privacy");
-
-
             }
         
         }
@@ -42,8 +55,11 @@ public class HomeController : Controller
 
     }
 
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
 
-        
 
     public IActionResult Privacy()
     {

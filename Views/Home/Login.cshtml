@@ -24,7 +24,7 @@
                     <p class="fs-2 fw-bold">Welcome,</p>
                 </div>
                 
-                <div class="">
+                <div>
                     <form class="" asp-action="Login">
                         <!-- Email -->
                         <div class="mb-3">
@@ -56,13 +56,18 @@
                             </div>
 
                             <div>
-                                <a href="forgot-password.html">Forgot password?</a>
+                                <a asp-controller="Home" asp-action="ForgotPassword" >Forgot password?</a>
                             </div>
                         </div>
 
                         <div>
                             <button a type="submit" class="btn login-btn w-100">Login</button>
                         </div>
+
+                        <div id="LoginSide">
+                        </div>
+
+
 
                         <div class="text-danger">
                             @Html.ValidationSummary()
@@ -76,5 +81,11 @@
     </div>        
 </div>
 
+<script src="~/js/login.js" asp-append-version="true"></script>
+
+<script>
+    var name = document.getElementById('firstName').value;
+    localStorage.setItem('name', name);
+</script>
 
 

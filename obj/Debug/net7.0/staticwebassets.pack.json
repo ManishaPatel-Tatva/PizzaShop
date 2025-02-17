@@ -197,6 +197,10 @@
       "PackagePath": "staticwebassets\\js\\bootstrap.bundle.min.js"
     },
     {
+      "Id": "D:\\Project\\PizzaShop\\wwwroot\\js\\custom.js",
+      "PackagePath": "staticwebassets\\js\\custom.js"
+    },
+    {
       "Id": "D:\\Project\\PizzaShop\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

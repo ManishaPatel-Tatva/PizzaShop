@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "RjmR0QnL+bclmcoNqdNUGBdWUOSddkeXJobgsa9diD8=",
+  "Hash": "wIMv9L4P2bt59UrTexUt3nNszo3B9MX7+y+tRH/pcfc=",
   "Source": "PizzaShop",
   "BasePath": "_content/PizzaShop",
   "Mode": "Default",
@@ -865,6 +865,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Identity": "D:\\Project\\PizzaShop\\wwwroot\\js\\custom.js",
+      "SourceId": "PizzaShop",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Project\\PizzaShop\\wwwroot\\",
+      "BasePath": "_content/PizzaShop",
+      "RelativePath": "js/custom.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\custom.js"
     },
     {
       "Identity": "D:\\Project\\PizzaShop\\wwwroot\\js\\site.js",
