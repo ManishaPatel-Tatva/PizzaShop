@@ -42,3 +42,11 @@ D:\Project\PizzaShop\obj\Debug\net7.0\refint\PizzaShop.dll
 D:\Project\PizzaShop\obj\Debug\net7.0\PizzaShop.pdb
 D:\Project\PizzaShop\obj\Debug\net7.0\PizzaShop.genruntimeconfig.cache
 D:\Project\PizzaShop\obj\Debug\net7.0\ref\PizzaShop.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\BouncyCastle.Cryptography.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\MailKit.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\MimeKit.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\System.Formats.Asn1.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\System.Security.Cryptography.Pkcs.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\System.Text.Encoding.CodePages.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Security.Cryptography.Pkcs.dll
+D:\Project\PizzaShop\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Text.Encoding.CodePages.dll

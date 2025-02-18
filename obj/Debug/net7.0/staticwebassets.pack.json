@@ -201,6 +201,10 @@
       "PackagePath": "staticwebassets\\js\\custom.js"
     },
     {
+      "Id": "D:\\Project\\PizzaShop\\wwwroot\\js\\login.js",
+      "PackagePath": "staticwebassets\\js\\login.js"
+    },
+    {
       "Id": "D:\\Project\\PizzaShop\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
