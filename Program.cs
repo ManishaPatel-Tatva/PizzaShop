@@ -13,7 +13,6 @@ builder.Services.Configure<EmailSettings>
 (builder.Configuration.GetSection("SmtpSettings"));
 
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
