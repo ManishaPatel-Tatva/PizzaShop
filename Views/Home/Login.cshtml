@@ -29,7 +29,7 @@
                         <!-- Email -->
                         <div class="mb-3">
                             <div class="input-group">
-                                <input asp-for="Email"  class="form-control login-input p-2" id="inputEmail" placeholder=" Email*">
+                                <input asp-for="@Model.Email" class="form-control login-input p-2" id="inputEmail" placeholder=" Email*">
                                 <span class="input-group-text"><img src="images/icons/customer.svg"></span>
                             </div>
                             <span asp-validation-for="Email" class="text-danger"></span>
@@ -38,7 +38,7 @@
                         <!-- Password -->
                         <div class="mb-3">
                             <div class="input-group">
-                                <input asp-for="Password" type="password" class="form-control login-input p-2" id="inputPassword1" placeholder=" Password*">
+                                <input asp-for="@Model.Password" type="password" class="form-control login-input p-2" id="inputPassword1" placeholder=" Password*">
                                 <span class="input-group-text"><img src="images/icons/hidden.png" width="16px"></span>
                             </div>
                             <span asp-validation-for="Password" class="text-danger"></span>
@@ -50,7 +50,7 @@
                              <div class="form-group">
                                 <div class="checkbox">
                                     <label>
-                                        <input asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
+                                        <input asp-for="@Model.RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
                                     </label>
                                 </div>
                             </div>

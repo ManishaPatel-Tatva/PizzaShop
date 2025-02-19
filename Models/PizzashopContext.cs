@@ -6,6 +6,10 @@ namespace PizzaShop.Models;
 
 public partial class PizzashopContext : DbContext
 {
+    public PizzashopContext()
+    {
+    }
+
     public PizzashopContext(DbContextOptions<PizzashopContext> options)
         : base(options)
     {
@@ -67,6 +71,10 @@ public partial class PizzashopContext : DbContext
 
     public virtual DbSet<WaitingToken> WaitingTokens { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseNpgsql("Host=localhost; Database=Pizzashop; Username=postgres; password=tatva123;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>(entity =>
@@ -110,14 +118,14 @@ public partial class PizzashopContext : DbContext
             entity.ToTable("city");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CountryId).HasColumnName("country_id");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
+            entity.Property(e => e.StateId).HasColumnName("state_id");
 
-            entity.HasOne(d => d.Country).WithMany(p => p.InverseCountry)
-                .HasForeignKey(d => d.CountryId)
-                .HasConstraintName("city_country_id_fkey");
+            entity.HasOne(d => d.State).WithMany(p => p.InverseState)
+                .HasForeignKey(d => d.StateId)
+                .HasConstraintName("city_state_id_fkey");
         });
 
         modelBuilder.Entity<Country>(entity =>
@@ -896,6 +904,12 @@ public partial class PizzashopContext : DbContext
             entity.Property(e => e.ProfileImg)
                 .HasColumnType("character varying")
                 .HasColumnName("profile_img");
+            entity.Property(e => e.Resettoken)
+                .HasColumnType("character varying")
+                .HasColumnName("resettoken");
+            entity.Property(e => e.Resettokenexpiry)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("resettokenexpiry");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.StateId).HasColumnName("state_id");
             entity.Property(e => e.UpdatedAt)

@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "_SidebarLayout";
+}
+
+<!-- User heading, search and add button -->
+<div class="d-flex justify-content-between users mb-3">
+    <div>
+        <h1 class="blue-text">My Profile</h1>
+    </div>
+    <div>
+        <a href="users.html" class="btn btn-white">
+            <img src="images/icons/chevron-left-blue.svg" alt="">
+            <span>Back</span>
+        </a>  
+    </div>
+</div>
+
+<!-- For dark blue profile image -->
+<div>
+    <img src="images/profile_div_bg.jpg" alt="background-img" class="object-fit-cover w-100" height="60px">
+</div>
+
+<!-- Form -->
+<div class="row bg-white px-3 pb-4 mx-0">
+
+<!-- Admin heading and image -->
+<div class="d-flex">
+    <img class="profile-img" src="images/Default_pfp.svg.png">
+    <div class="camera-div bg-white">
+        <img class="camera-img" src="images/icons/camera.svg" alt="camera">
+    </div>
+    <div class="w-100">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <span class=" fs-3 fw-bold">Admin admin</span>
+            <span class="">admin@yopmail.com</span>
+        </div>
+        <div class="fs-5">Admin</div>
+    </div>
+</div>
+    
+
+<!-- First row -->                       
+<div class="col-12 col-sm-6 form-floating mb-3">
+    <input type="text" class="form-control" id="firstName" placeholder="">
+    <label for="firstName">First Name</label>
+</div>
+<div class="col-12 col-sm-6 form-floating mb-3">
+    <input type="text" class="form-control" id="lastName" placeholder="">
+    <label for="lastName">Last Name</label>
+</div>
+<div class="col-12 col-sm-6 form-floating mb-3">
+    <input type="text" class="form-control" id="userName" placeholder="">
+    <label for="firstName">User Name</label>
+</div>
+
+<div class="col-12 col-sm-6 form-floating mb-3">
+    <input type="text" class="form-control" id="phone" placeholder="">
+    <label for="phone">Phone</label>
+</div>
+
+<!-- Address blocks-->
+<div class="col-12 col-sm-4 form-floating mb-3">
+    <select class="form-select" aria-label="" id="country">
+        <option selected>India</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+    </select>
+    <label for="country">Country</label>
+</div>
+<div class="col-12 col-sm-4 form-floating mb-3">
+    <select class="form-select" aria-label="" id="state">
+        <option selected>Select State</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+    </select>
+    <label for="country">Country</label>
+</div>
+<div class="col-12 col-sm-4 form-floating mb-3">
+    <select class="form-select" aria-label="" id="city">
+        <option selected>Select City</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+    </select>
+    <label for="country">Country</label>
+</div>
+
+<div class="col-12 col-sm-8 form-floating mb-3">
+    <input type="text" class="form-control" id="address" placeholder="">
+    <label for="floatingPassword">Address</label>
+</div>
+<div class="col-12 col-sm-4 form-floating mb-3">
+    <input type="text" class="form-control" id="zipCode" placeholder="">
+    <label for="floatingPassword">Zip Code</label>
+</div>
+
+<div class="d-flex justify-content-end gap-3">
+    <button class="btn btn-blue">
+        Update
+    </button>
+    <button class="btn btn-white">
+        Cancel
+    </button>
+</div>
+</div>
