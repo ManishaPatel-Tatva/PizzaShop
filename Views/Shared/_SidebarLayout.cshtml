@@ -35,13 +35,42 @@
                 <!-- Navbar starts -->
                 <nav>
                     <div class="d-flex justify-content-end p-3">
-                        <img src="~/images/Default_pfp.svg.png" alt="profile" height="35px">
+                        <div class="btn-group">
+                            <a type="button" class="btn " data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="~/images/Default_pfp.svg.png" alt="profile" height="35px">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-lg-end">
+                                <li class="mb-2 ms-2 d-flex align-items-center">
+                                    <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" width="30px">
+                                    <span>Admin@123</span>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" height="20px">
+                                        <span>My Profile</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" height="20px">
+                                        <span>Change Password</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" height="20px">
+                                        <span>Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </nav>
                 <!-- Navbar ends -->
                 
                 <!-- User content starts -->
-                <div class="px-5 py-2">
+                <div class="px-5 py-2 vh-100">
                     <main role="main" class="">
                         @RenderBody()
                     </main>

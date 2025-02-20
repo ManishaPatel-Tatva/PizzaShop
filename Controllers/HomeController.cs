@@ -29,7 +29,7 @@ public class HomeController : Controller
     {
         if(Request.Cookies["emailCookie"] != null)
         {
-             return RedirectToAction("Privacy");
+             return RedirectToAction("MyProfile","Dashboard");
         }
 
         return View();
@@ -56,7 +56,6 @@ public class HomeController : Controller
         {                   
             Response.Cookies.Append("emailCookie", model.Email, options);
         }
-
         
         bool verified = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);  
         if(user != null && verified){
@@ -64,7 +63,7 @@ public class HomeController : Controller
             var token = _jwtService.GenerateToken(model.Email,role.Name);
 
             Response.Cookies.Append("authToken",token, options);
-            return RedirectToAction("MyProfile", "Dashboard");
+            return RedirectToAction("MyProfile","Dashboard");
         }
         else{
             return View(model);

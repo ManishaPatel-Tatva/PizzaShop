@@ -37,4 +37,22 @@ public class JwtService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    // Extracts claims from a JWT token.
+    public ClaimsPrincipal? GetClaimsFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var claims = new ClaimsIdentity(jwtToken.Claims);
+        return new ClaimsPrincipal(claims);
+    }
+
+    // Retrieves a specific claim value from a JWT token.
+    public string? GetClaimValue(string token, string claimType)
+    {
+        var claimsPrincipal = GetClaimsFromToken(token);
+        var value = claimsPrincipal?.FindFirst(claimType)?.Value;
+        return value;
+    }
+
 }

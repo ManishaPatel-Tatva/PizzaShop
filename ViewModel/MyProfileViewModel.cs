@@ -7,42 +7,46 @@ using System.ComponentModel.DataAnnotations;
 
 public class MyProfileViewModel
 {
-    [Required(ErrorMessage = "First Name is required")]
-    [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]
-    public string FirstName { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "First Name is required")]
+    // [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]
+    public string FirstName { get; set; } = null!;
 
-    [Required(ErrorMessage = "Last Name is required")]
-    [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters")]
-    public string LastName { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "Last Name is required")]
+    // [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters")]
+    public string LastName { get; set; } = null!;
 
-    [Required(ErrorMessage = "User Name is required")]
-    [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
-    public string UserName { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "User Name is required")]
+    // [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
+    public string UserName { get; set; } = null!;
 
-    [Required(ErrorMessage = "Phone number is required")]
-    [Phone(ErrorMessage = "Invalid phone number format")]
-    public string Phone { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "Phone number is required")]
+    // [Phone(ErrorMessage = "Invalid phone number format")]
+    public long Phone { get; set; } 
 
-    [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Invalid email format")]
-    public string Email { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "Email is required")]
+    // [EmailAddress(ErrorMessage = "Invalid email format")]
+    public string Email { get; set; } = null!;
 
-    [Required(ErrorMessage = "Country is required")]
-    public string Country { get; set; } = "India";
+    // [Required(ErrorMessage = "Country is required")]
+    public List<Country> Countries { get; set; } = new List<Country>();
 
-    [Required(ErrorMessage = "State is required")]
-    public string State { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "State is required")]
+    public List<State> States { get; set; }  = new List<State>();
 
-    [Required(ErrorMessage = "City is required")]
-    public string City { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "City is required")]
+    public List<City> Cities { get; set; }  = new List<City>();
 
-    [Required(ErrorMessage = "Address is required")]
-    [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
-    public string Address { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "Address is required")]
+    // [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
+    public string Address { get; set; } = null!;
 
-    [Required(ErrorMessage = "Zip Code is required")]
-    [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
-    public string ZipCode { get; set; } = string.Empty;
+    // [Required(ErrorMessage = "Zip Code is required")]
+    // [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
+    public int ZipCode { get; set; }
 
     public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
+
+    public long CountryID {get; set;}
+    public long StateID {get; set;}
+    public long CityID {get; set;}
 }

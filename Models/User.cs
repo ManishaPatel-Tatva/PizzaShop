@@ -21,7 +21,7 @@ public partial class User
 
     public string ProfileImg { get; set; } = null!;
 
-    public int Phone { get; set; }
+    public long Phone { get; set; }
 
     public bool? IsActive { get; set; }
 

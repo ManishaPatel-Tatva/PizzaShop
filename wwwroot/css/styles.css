@@ -324,6 +324,26 @@ nav{
     }
 }
 
+/* Change Password */
+.ChangePassword-form input{ 
+    min-width: 220px;
+    max-width: 420px;
+}
+
+.ChangePassword-form .form-floating>label{
+    left: 0px;
+}
+
+.change-content{
+    padding: 10px 10%;
+}
+
+@media (max-width: 450px) {
+    .change-content{
+        padding: 10px 0%;
+    }
+}
+
 
 
 

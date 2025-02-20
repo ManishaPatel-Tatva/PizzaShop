@@ -6404,11 +6404,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\PizzaShop\\PizzaShop.csproj",
+      "projectUniqueName": "d:\\Project\\PizzaShop\\PizzaShop.csproj",
       "projectName": "PizzaShop",
-      "projectPath": "D:\\Project\\PizzaShop\\PizzaShop.csproj",
+      "projectPath": "d:\\Project\\PizzaShop\\PizzaShop.csproj",
       "packagesPath": "C:\\Users\\pci47\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\PizzaShop\\obj\\",
+      "outputPath": "d:\\Project\\PizzaShop\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pci47\\AppData\\Roaming\\NuGet\\NuGet.Config"
