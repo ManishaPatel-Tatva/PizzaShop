@@ -41,6 +41,10 @@
       "PackagePath": "staticwebassets\\images\\icons\\browse.svg"
     },
     {
+      "Id": "D:\\Project\\PizzaShop\\wwwroot\\images\\icons\\camera.svg",
+      "PackagePath": "staticwebassets\\images\\icons\\camera.svg"
+    },
+    {
       "Id": "D:\\Project\\PizzaShop\\wwwroot\\images\\icons\\chevron-left-blue.svg",
       "PackagePath": "staticwebassets\\images\\icons\\chevron-left-blue.svg"
     },

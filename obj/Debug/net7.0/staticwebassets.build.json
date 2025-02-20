@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "r82KMi9CeNKsl4rv3xb2u3ILJx9PuIIup1sYi71EuCo=",
+  "Hash": "HrsC5HcFrROXp1cT2ecN1vfJ7kdWApD6k0AFcyF8ECo=",
   "Source": "PizzaShop",
   "BasePath": "_content/PizzaShop",
   "Mode": "Default",
@@ -185,6 +185,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\icons\\browse.svg"
+    },
+    {
+      "Identity": "D:\\Project\\PizzaShop\\wwwroot\\images\\icons\\camera.svg",
+      "SourceId": "PizzaShop",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Project\\PizzaShop\\wwwroot\\",
+      "BasePath": "_content/PizzaShop",
+      "RelativePath": "images/icons/camera.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\icons\\camera.svg"
     },
     {
       "Identity": "D:\\Project\\PizzaShop\\wwwroot\\images\\icons\\chevron-left-blue.svg",

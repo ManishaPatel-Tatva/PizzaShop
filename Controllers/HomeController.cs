@@ -1,12 +1,8 @@
 ﻿﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Runtime.Intrinsics.Arm;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using PizzaShop.Models;
 using PizzaShop.Services;
 using PizzaShop.ViewModel;
@@ -68,7 +64,7 @@ public class HomeController : Controller
             var token = _jwtService.GenerateToken(model.Email,role.Name);
 
             Response.Cookies.Append("authToken",token, options);
-            return RedirectToAction("MyProfile");
+            return RedirectToAction("MyProfile", "Dashboard");
         }
         else{
             return View(model);
