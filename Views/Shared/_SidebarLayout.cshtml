@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PizzaShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 </head>
 <body>
@@ -46,19 +47,19 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <a class="dropdown-item d-flex align-items-center" asp-action="MyProfile" asp-controller="Dashboard">
                                         <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" height="20px">
                                         <span>My Profile</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <a class="dropdown-item d-flex align-items-center" asp-action="ChangePassword" asp-controller="Dashboard">
                                         <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" height="20px">
                                         <span>Change Password</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <a class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#LogoutModal">
                                         <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" height="20px">
                                         <span>Logout</span>
                                     </a>
@@ -78,7 +79,29 @@
 
             </div>
             <!-- User Content ends -->
-                  
+
+            <!-- Logout Modal starts here -->
+            <div class="modal fade" id="LogoutModal" data-bs-backdrop="LogoutModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="LogoutLabel">Logout</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                            <img src="~/images/icons/warning.svg" alt="" width="50px">
+                            <span>Are you sure you want to logout?</span> 
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <a asp-action="Logout" asp-controller="Dashboard" type="button" class="btn btn-blue" >Yes</a>
+                            <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+            <!-- Logout Modal ends here  -->      
+
+
         </div>
         <!-- Main content ends -->
     </div> 

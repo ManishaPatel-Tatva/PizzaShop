@@ -19,22 +19,12 @@ public class MyProfileViewModel
     // [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
     public string UserName { get; set; } = null!;
 
-    // [Required(ErrorMessage = "Phone number is required")]
-    // [Phone(ErrorMessage = "Invalid phone number format")]
+   
     public long Phone { get; set; } 
 
     // [Required(ErrorMessage = "Email is required")]
     // [EmailAddress(ErrorMessage = "Invalid email format")]
-    public string Email { get; set; } = null!;
-
-    // [Required(ErrorMessage = "Country is required")]
-    public List<Country> Countries { get; set; } = new List<Country>();
-
-    // [Required(ErrorMessage = "State is required")]
-    public List<State> States { get; set; }  = new List<State>();
-
-    // [Required(ErrorMessage = "City is required")]
-    public List<City> Cities { get; set; }  = new List<City>();
+    public string? Email { get; set; } = null!;
 
     // [Required(ErrorMessage = "Address is required")]
     // [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
@@ -46,7 +36,18 @@ public class MyProfileViewModel
 
     public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
 
-    public long CountryID {get; set;}
-    public long StateID {get; set;}
-    public long CityID {get; set;}
+    public long CountryId {get; set;}
+    public long StateId {get; set;}
+    public long CityId {get; set;}
+    
+    // [Required(ErrorMessage = "Country is required")]
+    public List<Country> Countries { get; set; } = new List<Country>();
+
+    // [Required(ErrorMessage = "State is required")]
+    public List<State> States { get; set; }  = new List<State>();
+
+    // [Required(ErrorMessage = "City is required")]
+    public List<City> Cities { get; set; }  = new List<City>();
+    
+    public string? Role { get; set; } =null!;
 }

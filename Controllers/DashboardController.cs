@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MailKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PizzaShop.Controllers;
 
@@ -23,11 +24,13 @@ public class DashboardController : Controller
         _jwtService = jwtService;
     }
 
+    // Get Method for My Profile
     public IActionResult MyProfile()
     {
         // email is fetched from the token
         var token = Request.Cookies["authToken"];
         var email = _jwtService.GetClaimValue(token,"email");
+        // var role = _jwtService.GetClaimValue(token,"role");
 
         // fetch user from database
         var user =  _context.Users.Where(u => u.Email == email).FirstOrDefault(); 
@@ -45,16 +48,19 @@ public class DashboardController : Controller
         model.UserName = user.Username;
         model.Email = user.Email;
         model.Phone = user.Phone;
-        model.CountryID = user.CountryId;
-        model.StateID = user.StateId;
-        model.CityID = user.CityId;
+        model.CountryId = user.CountryId;
+        model.StateId = user.StateId;
+        model.CityId = user.CityId;
         model.Address = user.Address;
         model.ZipCode = user.ZipCode;
         model.ProfileImageUrl = user.ProfileImg;
+        model.Role = _context.Roles.Where(q=> q.Id == user.RoleId).FirstOrDefault().Name;
 
-        model.Countries = _context.Countries.ToList();
-        model.States = _context.States.Where(s => s.CountryId == user.CountryId).ToList();
-        model.Cities = _context.Cities.Where(c => c.StateId == user.StateId).ToList();
+        //Country, State and City
+        ViewBag.countries = _context.Countries.ToList();
+        ViewBag.states = _context.States.Where(s => s.CountryId == user.CountryId).ToList();
+        ViewBag.cities = _context.Cities.Where(c => c.StateId == user.StateId).ToList();
+
          
         return View(model);
     }
@@ -62,28 +68,33 @@ public class DashboardController : Controller
     [HttpPost]
     public async Task<IActionResult> MyProfile(MyProfileViewModel model)
     {
-         if(!ModelState.IsValid){
+
+        if(!ModelState.IsValid){
+            // foreach (var key in ModelState.Keys)
+            // {
+            //     var errors = ModelState[key].Errors;
+            //     foreach (var error in errors)
+            //     {
+            //         Console.WriteLine($"Key: {key}, Error: {error.ErrorMessage}");
+            //     }
+            // }
             return View(model);
         }
 
         // email is fetched from the token
         var token = Request.Cookies["authToken"];
         var email = _jwtService.GetClaimValue(token,"email");
+        // model.Email = email;
 
-        var user = await _context.Users.FindAsync(model.Email);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
 
         user.FirstName = model.FirstName;
         user.LastName = model.LastName;
         user.Username = model.UserName;
         user.Phone = model.Phone;
-        // user.Country = model.Country;
-        // user.State = model.State;
-        // user.City = model.City;
+        user.CountryId = model.CountryId;
+        user.StateId = model.StateId;
+        user.CityId = model.CityId;
         user.Address = model.Address;
         user.ZipCode = model.ZipCode;
 
@@ -91,7 +102,7 @@ public class DashboardController : Controller
         await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Profile updated successfully!";
-        return RedirectToAction("ChangePassword");
+        return RedirectToAction("ChangePassword", "Dashboard");
     }
 
     public IActionResult ChangePassword(){
@@ -134,4 +145,38 @@ public class DashboardController : Controller
         } 
         return View();
     }
+
+    public async Task<IActionResult> Logout()
+    {
+        
+        // Delete the "Remember Me" cookie
+        if (Request.Cookies["emailCookie"] != null)
+        {
+            Response.Cookies.Delete("emailCookie");
+        }
+
+        // await this._authService.LogoutAsync();
+        return RedirectToAction("Login","Home");
+    }
+
+
+    [HttpGet]
+    public IActionResult GetCountries()
+    {
+        var countries = _context.Countries.ToList();
+        return Json(new SelectList(countries, "Id", "Name"));
+    }
+    [HttpGet]
+    public IActionResult GetStates(int countryId)
+    {
+        var states = _context.States.Where(x => x.CountryId == countryId).ToList();
+        return Json(new SelectList(states, "Id", "Name"));
+    }
+    [HttpGet]
+    public IActionResult GetCities(int stateId)
+    {
+        var cities = _context.Cities.Where(x => x.StateId == stateId).ToList();
+        return Json(new SelectList(cities, "Id", "Name"));
+    }
+
 }
