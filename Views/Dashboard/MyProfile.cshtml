@@ -27,10 +27,10 @@
 
         <!-- Admin heading and image -->
         <div class="d-flex">
-            <img class="profile-img" src="~/images/Default_pfp.svg.png">
+            <img class="profile-img" src="@(Model.ProfileImageUrl != null ? Model.ProfileImageUrl : "~/images/Default_pfp.svg.png")">
             <div class="camera-div bg-white">
                 <label for="profileImage">
-                    <img class="camera-img" src="~/images/icons/camera.svg" alt="Upload Profile Image">
+                    <img  class="camera-img" src="~/images/icons/camera.svg" alt="Upload Profile Image">
                 </label>
             </div>
             <div class="w-100">
@@ -42,10 +42,10 @@
             </div>
         </div>
             
-        <form asp-action="MyProfile" asp-controller="Dashboard" class="row" method="post">
+        <form asp-action="MyProfile" asp-controller="Dashboard" class="row" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
-            <input type="file" id="profileImage" name="ProfileImage" class="d-none">
+            <input asp-for="@Model.image" type="file" id="profileImage" class="d-none">
 
              <!-- Email -->
             <input asp-for="@Model.Email" hidden>

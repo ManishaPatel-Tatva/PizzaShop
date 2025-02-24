@@ -139,7 +139,7 @@ nav{
 }
 
 .users input{
-    padding: 10px;
+    padding: 7px;
 }
 
 .bg-active{
@@ -213,7 +213,7 @@ nav{
     width: fit-content;
 }
 
-.menu-table{
+.menu-table, .user-table{
     overflow-x: auto; 
     white-space: nowrap; 
 }
