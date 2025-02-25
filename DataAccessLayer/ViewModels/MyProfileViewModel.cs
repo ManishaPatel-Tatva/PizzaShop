@@ -34,21 +34,12 @@ namespace DataAccessLayer.ViewModel{
         public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
 
         public IFormFile? image {get; set;} = null!;
+
         public long CountryId {get; set;}
         public long StateId {get; set;}
         public long CityId {get; set;}
         
-        // [Required(ErrorMessage = "Country is required")]
-        public List<Country> Countries { get; set; } = new List<Country>();
-
-        // [Required(ErrorMessage = "State is required")]
-        public List<State> States { get; set; }  = new List<State>();
-
-        // [Required(ErrorMessage = "City is required")]
-        public List<City> Cities { get; set; }  = new List<City>();
-        
         public string? Role { get; set; } =null!;
-        public List<Role> Roles { get; set; } = new List<Role>();
     }
 }
 

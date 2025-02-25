@@ -6594,11 +6594,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\PizzashopMVC\\PizzaShop\\PizzaShop.csproj",
+      "projectUniqueName": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop\\PizzaShop.csproj",
       "projectName": "PizzaShop",
-      "projectPath": "D:\\Project\\PizzashopMVC\\PizzaShop\\PizzaShop.csproj",
+      "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop\\PizzaShop.csproj",
       "packagesPath": "C:\\Users\\pci47\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\PizzashopMVC\\PizzaShop\\obj\\",
+      "outputPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pci47\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -6613,11 +6613,11 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\Project\\PizzashopMVC\\BusinessLogicLayer\\BusinessLogicLayer.csproj": {
-              "projectPath": "D:\\Project\\PizzashopMVC\\BusinessLogicLayer\\BusinessLogicLayer.csproj"
+            "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\BusinessLogicLayer\\BusinessLogicLayer.csproj": {
+              "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\BusinessLogicLayer\\BusinessLogicLayer.csproj"
             },
-            "D:\\Project\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {
-              "projectPath": "D:\\Project\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj"
+            "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {
+              "projectPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj"
             }
           }
         }

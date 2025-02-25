@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {}
+    "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {}
   },
   "projects": {
-    "D:\\Project\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {
+    "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj",
+        "projectUniqueName": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj",
         "projectName": "DataAccessLayer",
-        "projectPath": "D:\\Project\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj",
+        "projectPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj",
         "packagesPath": "C:\\Users\\pci47\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\PizzashopMVC\\DataAccessLayer\\obj\\",
+        "outputPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\pci47\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -41,7 +41,7 @@
             @foreach(var user in Model.User){
                 <tr>
                 <td scope="row">
-                    <img src="@user.ProfileImageUrl" alt="" width="30px">
+                    <img src="@user.ProfileImageUrl" alt="" width="35px" height="35px" class="rounded-circle">
                     <span>@user.FirstName @user.LastName</span>
                 </td>
                 <td>@user.Email</td>
@@ -61,30 +61,6 @@
                 </td>
             </tr>
             }       
-
-            <!-- Other rows -->      
-            
-            <tr>
-                <td scope="row">
-                    <img src="~/images/Default_pfp.svg.png" alt="" width="30px">
-                    <span> Steve steve</span>
-                </td>
-                <td>steve@yopmail.com</td>
-                <td>9801234567</td>
-                <td>Chef</td>
-                <td>
-                    <span class="bg-active">Active</span> 
-                </td>
-                <td>
-                    <a href="edit-user.html" class="btn">
-                        <img src="~/images/icons/edit.svg" alt=""/>
-                    </a>
-                    
-                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        <img src="~/images/icons/delete.svg" alt="">
-                    </button>
-                </td>
-            </tr>
         </tbody>
     </table>
 

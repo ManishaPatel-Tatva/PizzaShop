@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using DataAccessLayer.Models;
 
 namespace DataAccessLayer.ViewModel
@@ -17,16 +18,16 @@ namespace DataAccessLayer.ViewModel
         // [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
         public string UserName { get; set; } = null!;
 
-        public string? Role { get; set; }
-
         // [Required(ErrorMessage = "Email is required")]
         // [EmailAddress(ErrorMessage = "Invalid email format")]
-        public string? Email { get; set; } = null!;
+        public string Email { get; set; } = null!;
 
         // [Required(AllowEmptyStrings = false, ErrorMessage = "Password is required")]    
         // [DataType(DataType.Password)]    
         // [MinLength(8, ErrorMessage = "Minimum 8 character required")]    
-        public string? Password { get; set; }
+        public string Password { get; set; } = null!;
+
+        public long RoleId { get; set; }
 
         // [Required(ErrorMessage = "Address is required")]
         // [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
@@ -39,18 +40,11 @@ namespace DataAccessLayer.ViewModel
         public long Phone { get; set; } 
 
         public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
+        public IFormFile? Image {get; set;} = null!;
 
         public long CountryId {get; set;}
         public long StateId {get; set;}
         public long CityId {get; set;}
-        
-        // [Required(ErrorMessage = "Country is required")]
-        public List<Country> Countries { get; set; } = new List<Country>();
-
-        // [Required(ErrorMessage = "State is required")]
-        public List<State> States { get; set; }  = new List<State>();
-
-        // [Required(ErrorMessage = "City is required")]
-        public List<City> Cities { get; set; }  = new List<City>();
+    
     }
 }

@@ -150,6 +150,10 @@ nav{
     padding: 0px 20px;
 }
 
+td{
+    vertical-align: middle;
+}
+
 /* Add new user */
 .btn-white{
     color: #0066A8;
@@ -280,6 +284,7 @@ nav{
     top: -25px;
     left: 10px;
     height: 100px;
+    width: 120px;
 }
 
 .camera-img{

@@ -38,16 +38,18 @@
         <label asp-for="UserName">User Name</label>
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
+
     <div class="col-12 col-sm-6 form-floating mb-3">
-        <select asp-for="@Model.Role" class="form-select" aria-label="" id="roles">
+        <select asp-for="@Model.RoleId" class="form-select" aria-label="" id="roles">
             <option selected value="">Select Role</option>
-            @foreach (var role in ViewBag.Role){
+            @foreach (var role in ViewBag.Roles){
                 <option value="@role.Id"> @role.Name</option>
             }
         </select>
         <label for="roles">Roles</label>
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
+    
     <div class="col-12 col-sm-6 form-floating mb-3">
         <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="">
         <label asp-for="Email">Email address</label>
@@ -61,21 +63,21 @@
 
     <!-- Browse files row-->
     <div class="col-12 mb-3 browse">
-        <input type="file" id="upload" hidden>
+        <input asp-for="Image" type="file" id="upload" hidden>
         <label for="upload" class="w-100">
             <div class="d-flex justify-content-center flex-column mt-3">
                 <img src="~/images/icons/browse.svg" alt="" height="35px">
                 <div class="d-flex justify-content-center">Browse Files</div> 
             </div> 
         </label>
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+        <span asp-validation-for="Image" class="text-danger"></span>
     </div>
 
     <!-- Address blocks-->
     <div class="col-12 col-sm-4 form-floating mb-3">
         <select asp-for="@Model.CountryId" class="form-select" aria-label="" id="Countries">
             <option selected value="">Select Country</option>
-            @foreach (var country in Model.Countries)
+            @foreach (var country in ViewBag.Countries)
             {
                 <option value="@country.Id"> @country.Name</option>
             }
@@ -85,18 +87,14 @@
     <div class="col-12 col-sm-4 form-floating mb-3">
         <select asp-for="@Model.StateId" class="form-select" aria-label="" id="States">
             <option selected value="">Select State</option>
-            @foreach (var state in ViewBag.States){
-                <option value="@state.Id"> @state.Name</option>
-            }
+           
         </select>
         <label for="country">State</label>
     </div>
     <div class="col-12 col-sm-4 form-floating mb-3">
         <select asp-for="@Model.CityId" class="form-select" aria-label="" id="Cities">
             <option selected value="">Select City</option>
-            @foreach (var city in ViewBag.Cities){
-                <option value="@city.Id"> @city.Name</option>
-            }
+            
         </select>
         <label for="country">City</label>
     </div>

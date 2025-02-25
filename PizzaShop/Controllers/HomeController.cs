@@ -11,14 +11,14 @@ namespace PizzaShop.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly PizzaShopContext _context;
+    // private readonly PizzaShopContext _context;
     private readonly IEmailService _emailService;
     private readonly JwtService _jwtService;
 
     public HomeController(ILogger<HomeController> logger, PizzaShopContext context, IEmailService emailService, JwtService jwtService)
     {
         _logger = logger;
-        _context = context;
+        // _context = context;
         _emailService = emailService;
         _jwtService =jwtService;
     }
@@ -48,17 +48,17 @@ public class HomeController : Controller
             IsEssential = true
         };
 
-        var user = await _context.Users.Where(u => u.Email == model.Email).Select(x=> new{x.Email, x.Password, x.RoleId}).FirstOrDefaultAsync();      
+        // var user = await _context.Users.Where(u => u.Email == model.Email).Select(x=> new{x.Email, x.Password, x.RoleId}).FirstOrDefaultAsync();   //dal   
         // If "Remember Me" is checked, store in a cookie
         if (model.RememberMe)
         {                   
             Response.Cookies.Append("emailCookie", model.Email, options);
         }
         
-        bool verified = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);  
+        bool verified = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);  // bll 
         if(user != null && verified){
-            var role = _context.Roles.Where(u => u.Id == user.RoleId).FirstOrDefault();
-            var token = _jwtService.GenerateToken(model.Email,role.Name);
+            var role = _context.Roles.Where(u => u.Id == user.RoleId).FirstOrDefault(); //dal
+            var token = _jwtService.GenerateToken(model.Email,role.Name);   //bll
 
             Response.Cookies.Append("authToken",token, options);
             return RedirectToAction("MyProfile","Dashboard");
