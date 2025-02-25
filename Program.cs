@@ -2,14 +2,15 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PizzaShop.Models;
-using PizzaShop.Services;
+using DataAccessLayer.Models;
+using BusinessLogicLayer.Helper;
+using BusinessLogicLayer.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var conn = builder.Configuration.GetConnectionString("PizzashopDbConnection");
-builder.Services.AddDbContext<PizzashopContext>(q => q.UseNpgsql(conn));
+builder.Services.AddDbContext<PizzaShopContext>(q => q.UseNpgsql(conn));
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<JwtService>();

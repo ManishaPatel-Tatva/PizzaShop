@@ -1,29 +1,27 @@
-﻿﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
+﻿﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PizzaShop.Models;
-using PizzaShop.Services;
-using PizzaShop.ViewModel;
-
+using DataAccessLayer.Models;
+using BusinessLogicLayer.Helper;
+using BusinessLogicLayer.Interfaces;
+using DataAccessLayer.ViewModel;
 namespace PizzaShop.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly PizzashopContext _context;
+    private readonly PizzaShopContext _context;
     private readonly IEmailService _emailService;
     private readonly JwtService _jwtService;
 
-    public HomeController(ILogger<HomeController> logger, PizzashopContext context, IEmailService emailService, JwtService jwtService)
+    public HomeController(ILogger<HomeController> logger, PizzaShopContext context, IEmailService emailService, JwtService jwtService)
     {
         _logger = logger;
         _context = context;
         _emailService = emailService;
         _jwtService =jwtService;
     }
-
 
     public IActionResult Login()
     {

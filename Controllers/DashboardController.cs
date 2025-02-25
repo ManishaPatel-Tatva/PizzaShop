@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-using PizzaShop.Models;
-using PizzaShop.Services;
-using PizzaShop.ViewModel;
+using DataAccessLayer.Models;
+using BusinessLogicLayer.Helper;
+using DataAccessLayer.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MailKit;
@@ -15,10 +15,10 @@ namespace PizzaShop.Controllers;
 public class DashboardController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly PizzashopContext _context;
+    private readonly PizzaShopContext _context;
     private readonly JwtService _jwtService;
 
-    public DashboardController(ILogger<HomeController> logger, PizzashopContext context, JwtService jwtService)
+    public DashboardController(ILogger<HomeController> logger, PizzaShopContext context, JwtService jwtService)
     {
         _logger = logger;
         _context = context;

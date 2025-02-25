@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using PizzaShop.Services;
+using BusinessLogicLayer.Helper;
+using BusinessLogicLayer.Interfaces;
 using System.Threading.Tasks;
 
-[ApiController]
-[Route("[controller]")]
 public class MailController : ControllerBase
 {
     private readonly IEmailService _emailService;
@@ -23,7 +22,6 @@ public class MailController : ControllerBase
 
 public class EmailRequest
 {
-
     public string ToEmail { get; set; }
     public string Subject { get; set; }
     public string Body { get; set; }
