@@ -2083,6 +2083,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
+          "BCrypt.Net": "0.1.0",
           "DataAccessLayer": "1.0.0",
           "MailKit": "4.10.0",
           "Microsoft.IdentityModel.Tokens": "7.7.1",
@@ -6616,8 +6617,8 @@
             "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\BusinessLogicLayer\\BusinessLogicLayer.csproj": {
               "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\BusinessLogicLayer\\BusinessLogicLayer.csproj"
             },
-            "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {
-              "projectPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj"
+            "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj": {
+              "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\DataAccessLayer\\DataAccessLayer.csproj"
             }
           }
         }

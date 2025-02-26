@@ -4,6 +4,9 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
+using DataAccessLayer.Models;
+using BusinessLogicLayer.Interfaces;
+
 namespace BusinessLogicLayer.Helper;
 
 public class JwtService

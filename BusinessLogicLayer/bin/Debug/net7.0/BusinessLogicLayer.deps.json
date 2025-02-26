@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v7.0": {
       "BusinessLogicLayer/1.0.0": {
         "dependencies": {
+          "BCrypt.Net": "0.1.0",
           "DataAccessLayer": "1.0.0",
           "MailKit": "4.10.0",
           "Microsoft.EntityFrameworkCore.Design": "7.0.20",
@@ -20,6 +21,14 @@
         },
         "runtime": {
           "BusinessLogicLayer.dll": {}
+        }
+      },
+      "BCrypt.Net/0.1.0": {
+        "runtime": {
+          "lib/net35/BCrypt.Net.dll": {
+            "assemblyVersion": "0.1.4141.31969",
+            "fileVersion": "0.1.0.0"
+          }
         }
       },
       "BouncyCastle.Cryptography/2.5.0": {
@@ -1173,6 +1182,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "BCrypt.Net/0.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-sST2w361Dxt9GGMfpOTiK50wXGV64Ybb1hiX3xjEWnhVYZNF43NuySGwADJa7X1R+bA53NsFR+tuDxcYiJeIOA==",
+      "path": "bcrypt.net/0.1.0",
+      "hashPath": "bcrypt.net.0.1.0.nupkg.sha512"
     },
     "BouncyCastle.Cryptography/2.5.0": {
       "type": "package",

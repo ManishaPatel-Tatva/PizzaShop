@@ -1134,6 +1134,7 @@
       },
       "BusinessLogicLayer/1.0.0": {
         "dependencies": {
+          "BCrypt.Net": "0.1.0",
           "DataAccessLayer": "1.0.0",
           "MailKit": "4.10.0",
           "Microsoft.IdentityModel.Tokens": "7.7.1",

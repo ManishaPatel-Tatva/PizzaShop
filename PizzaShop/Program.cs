@@ -5,17 +5,29 @@ using Microsoft.IdentityModel.Tokens;
 using DataAccessLayer.Models;
 using BusinessLogicLayer.Helper;
 using BusinessLogicLayer.Interfaces;
+using DataAccessLayer.Interfaces;
+using DataAccessLayer.Repositories;
+using BusinessLogicLayer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//For adding reposirory
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+
+
+//For adding services of business logic layer
+builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IEmailService,EmailService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
+
 
 // Add services to the container.
 var conn = builder.Configuration.GetConnectionString("PizzashopDbConnection");
 builder.Services.AddDbContext<PizzaShopContext>(q => q.UseNpgsql(conn));
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IEmailService, EmailService>();
-builder.Services.AddTransient<JwtService>();
 builder.Services.Configure<EmailSettings>
 (builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Login");
 
@@ -70,6 +82,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Login}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.Run();

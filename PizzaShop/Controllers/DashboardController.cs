@@ -9,11 +9,11 @@ namespace PizzaShop.Controllers;
 
 public class DashboardController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<DashboardController> _logger;
     private readonly PizzaShopContext _context;
     private readonly JwtService _jwtService;
 
-    public DashboardController(ILogger<HomeController> logger, PizzaShopContext context, JwtService jwtService)
+    public DashboardController(ILogger<DashboardController> logger, PizzaShopContext context, JwtService jwtService)
     {
         _logger = logger;
         _context = context;
