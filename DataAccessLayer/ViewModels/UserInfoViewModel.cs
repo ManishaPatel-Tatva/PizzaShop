@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using DataAccessLayer.Models;
+namespace DataAccessLayer.ViewModels;
 public class UserInfoViewModel
 {
     public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
@@ -15,4 +14,5 @@ public class UserInfoViewModel
     public string Role { get; set; } =null!;
 
     public bool? Status { get; set; }
+    
 }

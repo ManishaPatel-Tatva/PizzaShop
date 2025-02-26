@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using DataAccessLayer.Models;
 
-namespace DataAccessLayer.ViewModel{
+namespace DataAccessLayer.ViewModels{
     public class MyProfileViewModel
     {
         // [Required(ErrorMessage = "First Name is required")]
@@ -40,6 +40,10 @@ namespace DataAccessLayer.ViewModel{
         public long CityId {get; set;}
         
         public string? Role { get; set; } =null!;
+
+        public List<Country> Countries {get; set;} = new List<Country>();
+        public List<State> States {get; set;} = new List<State>();
+        public List<City> Cities {get; set;} = new List<City>();
     }
 }
 

@@ -7,7 +7,7 @@ using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Http;
 using BCrypt.Net;
 using DataAccessLayer.Interfaces;
-using BusinessLogicLayer.Helper;
+using BusinessLogicLayer.Helpers;
 
 namespace BusinessLogicLayer.Services
 {

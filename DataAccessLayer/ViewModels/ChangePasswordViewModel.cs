@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using DataAccessLayer.Models;
 
-namespace DataAccessLayer.ViewModel
+namespace DataAccessLayer.ViewModels
 {
     public class ChangePasswordViewModel
     {

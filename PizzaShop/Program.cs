@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DataAccessLayer.Models;
-using BusinessLogicLayer.Helper;
+using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
@@ -13,12 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 //For adding reposirory
 builder.Services.AddScoped<IUserRepository,UserRepository>();
-
+builder.Services.AddScoped<ICountryRepository,CountryRepository>();
 
 //For adding services of business logic layer
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IEmailService,EmailService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IProfileService, ProfileService>();
+builder.Services.AddScoped<ICountryService,CountryService>();
+builder.Services.AddScoped<IUserService,UserService>();
 
 
 // Add services to the container.

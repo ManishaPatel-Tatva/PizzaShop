@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using DataAccessLayer.Models;
 using BusinessLogicLayer.Interfaces;
 
-namespace BusinessLogicLayer.Helper;
+namespace BusinessLogicLayer.Helpers;
 
 public class JwtService
 {

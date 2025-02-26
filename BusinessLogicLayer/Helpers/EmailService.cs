@@ -6,7 +6,7 @@ using MimeKit;
 using DataAccessLayer.Models;
 using BusinessLogicLayer.Interfaces;
 
-namespace BusinessLogicLayer.Helper;
+namespace BusinessLogicLayer.Helpers;
 
 public class EmailService : IEmailService
 {

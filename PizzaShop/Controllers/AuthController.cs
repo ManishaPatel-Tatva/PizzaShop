@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using BusinessLogicLayer.Interfaces;
 using BusinessLogicLayer.Services;
-using DataAccessLayer.ViewModel;
+using DataAccessLayer.ViewModels;
 
 namespace PizzaShop.Controllers
 {
@@ -23,7 +23,7 @@ namespace PizzaShop.Controllers
         public IActionResult Login()
         {
             if (Request.Cookies["emailCookie"] != null)
-                return RedirectToAction("MyProfile", "Dashboard");
+                return RedirectToAction("MyProfile", "Profile");
 
             return View();
         }
@@ -37,7 +37,7 @@ namespace PizzaShop.Controllers
             var success = await _authService.LoginAsync(model.Email, model.Password, model.RememberMe);
 
             if (success)
-                return RedirectToAction("MyProfile", "Dashboard");
+                return RedirectToAction("MyProfile", "Profile");
 
             return View(model);
         }
@@ -61,7 +61,7 @@ namespace PizzaShop.Controllers
                 return View(model);
 
             await _authService.ForgotPasswordAsync(model.Email);
-            return RedirectToAction("Privacy");
+            return RedirectToAction("Login","Auth");
         }
 
 #endregion
@@ -86,7 +86,7 @@ namespace PizzaShop.Controllers
             var success = await _authService.ResetPasswordAsync(model.Email, model.NewPassword, model.ConfirmPassword);
             if (success)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Login","Auth");
             } 
 
             return View(model);

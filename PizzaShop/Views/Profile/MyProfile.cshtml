@@ -1,4 +1,4 @@
-@model DataAccessLayer.ViewModel.MyProfileViewModel;
+@model DataAccessLayer.ViewModels.MyProfileViewModel;
 @{
     ViewData["Title"] = "My Profile";
     Layout = "_SidebarLayout";
@@ -42,7 +42,7 @@
             </div>
         </div>
             
-        <form asp-action="MyProfile" asp-controller="Dashboard" class="row" method="post" enctype="multipart/form-data">
+        <form asp-action="MyProfile" asp-controller="Profile" class="row" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
             <input asp-for="@Model.image" type="file" id="profileImage" class="d-none">
@@ -77,7 +77,7 @@
             <div class="col-12 col-sm-4 form-floating mb-3">
                 <select asp-for="@Model.CountryId" class="form-select" aria-label="" id="Countries">
                     <option selected value="">Select Country</option>
-                    @foreach (var country in ViewBag.Countries)
+                    @foreach (var country in Model.Countries)
                     {
                         <option value="@country.Id"> @country.Name</option>
                     }
@@ -87,7 +87,7 @@
             <div class="col-12 col-sm-4 form-floating mb-3">
                 <select asp-for="@Model.StateId" class="form-select" aria-label="" id="States">
                     <option selected value="">Select State</option>
-                    @foreach (var state in ViewBag.States){
+                    @foreach (var state in Model.States){
                         <option value="@state.Id"> @state.Name</option>
                     }
                 </select>
@@ -96,7 +96,7 @@
             <div class="col-12 col-sm-4 form-floating mb-3">
                 <select asp-for="@Model.CityId" class="form-select" aria-label="" id="Cities">
                     <option selected value="">Select City</option>
-                    @foreach (var city in ViewBag.Cities){
+                    @foreach (var city in Model.Cities){
                         <option value="@city.Id"> @city.Name</option>
                     }
                 </select>

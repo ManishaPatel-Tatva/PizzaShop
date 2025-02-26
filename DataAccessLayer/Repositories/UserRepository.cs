@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using DataAccessLayer.Models;
 using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using DataAccessLayer.ViewModels;
 
 namespace DataAccessLayer.Repositories;
 
@@ -15,18 +16,6 @@ public class UserRepository : IUserRepository
     }
 
     public IEnumerable<User> GetAll() => _context.Users;
-
-    public (IEnumerable<User> users, int totalRecords) GetPagedRecordsAsync(
-        int pageSize,
-        int pageNumber
-    )
-    {
-        IQueryable<User> query = _context.Users;
-        return (
-            query.OrderBy(p => p.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
-            query.Count()
-        );
-    }
 
      public async Task<User?> GetUserByEmailAsync(string email)
     {
@@ -50,6 +39,15 @@ public class UserRepository : IUserRepository
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
     }
+
+    // public (IEnumerable<User> users, int totalRecords) GetPagedRecordsAsync(int pageSize, int pageNumber)
+    // {
+    //     IQueryable<User> query = _context.Users;
+    //     return (
+    //         query.OrderBy(p => p.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList(),
+    //         query.Count()
+    //     );
+    // }
 
 }
 

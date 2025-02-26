@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using DataAccessLayer.ViewModel;
+using DataAccessLayer.ViewModels;
 using DataAccessLayer.Models;
 using DataAccessLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;

@@ -1,18 +1,23 @@
 using DataAccessLayer.Models;
+using DataAccessLayer.ViewModels;
 
 namespace DataAccessLayer.Interfaces;
 public interface IUserRepository
 {
-    IEnumerable<User> GetAll();
-    (IEnumerable<User> users, int totalRecords) GetPagedRecordsAsync(
-        int pageSize,
-        int pageNumber
-    );
-    Task AddAsync(User user);
-    Task<User?> GetUserByEmailAsync(string email);
-    Task<Role?> GetUserRoleAsync(long roleId);
+    public IEnumerable<User> GetAll();
+
+    // (IEnumerable<User> users, int totalRecords) GetPagedRecordsAsync(
+    //     int pageSize,
+    //     int pageNumber
+    // );
+
+    public Task AddAsync(User user);
+
+    public Task<User?> GetUserByEmailAsync(string email);
+
+    public Task<Role?> GetUserRoleAsync(long roleId);
     
-    Task UpdateAsync(User user);
+    public Task UpdateAsync(User user);
 }
 
 
