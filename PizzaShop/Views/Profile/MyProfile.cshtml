@@ -82,7 +82,7 @@
                         <option value="@country.Id"> @country.Name</option>
                     }
                 </select>
-                <label for="country">Country</label>
+                <label for="countries">Country</label>
             </div>
             <div class="col-12 col-sm-4 form-floating mb-3">
                 <select asp-for="@Model.StateId" class="form-select" aria-label="" id="States">
@@ -91,7 +91,7 @@
                         <option value="@state.Id"> @state.Name</option>
                     }
                 </select>
-                <label for="country">State</label>
+                <label for="states">State</label>
             </div>
             <div class="col-12 col-sm-4 form-floating mb-3">
                 <select asp-for="@Model.CityId" class="form-select" aria-label="" id="Cities">
@@ -100,7 +100,7 @@
                         <option value="@city.Id"> @city.Name</option>
                     }
                 </select>
-                <label for="country">City</label>
+                <label for="cities">City</label>
             </div>
 
             <div class="col-12 col-sm-8 form-floating mb-3">

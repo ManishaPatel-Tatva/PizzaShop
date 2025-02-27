@@ -49,3 +49,20 @@ C:\Users\pci47\Desktop\PizzashopMVC\BusinessLogicLayer\obj\Debug\net7.0\refint\B
 C:\Users\pci47\Desktop\PizzashopMVC\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.pdb
 C:\Users\pci47\Desktop\PizzashopMVC\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.genruntimeconfig.cache
 C:\Users\pci47\Desktop\PizzashopMVC\BusinessLogicLayer\obj\Debug\net7.0\ref\BusinessLogicLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\bin\Debug\net7.0\BusinessLogicLayer.deps.json
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\bin\Debug\net7.0\BusinessLogicLayer.runtimeconfig.json
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\bin\Debug\net7.0\BusinessLogicLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\bin\Debug\net7.0\BusinessLogicLayer.pdb
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\bin\Debug\net7.0\DataAccessLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\bin\Debug\net7.0\DataAccessLayer.pdb
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.csproj.AssemblyReference.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.AssemblyInfoInputs.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.AssemblyInfo.cs
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.csproj.CoreCompileInputs.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.csproj.CopyComplete
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\refint\BusinessLogicLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.pdb
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\BusinessLogicLayer.genruntimeconfig.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\BusinessLogicLayer\obj\Debug\net7.0\ref\BusinessLogicLayer.dll

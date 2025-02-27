@@ -1,6 +1,6 @@
 // using DataAccessLayer.Models;
 // using BusinessLogicLayer.Helper;
-// using DataAccessLayer.ViewModel;
+// using DataAccessLayer.ViewModels;
 // using Microsoft.AspNetCore.Mvc;
 // using Microsoft.EntityFrameworkCore;
 // using Microsoft.AspNetCore.Mvc.Rendering;

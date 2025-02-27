@@ -19,7 +19,7 @@ namespace PizzaShop.Controllers
             _countryService = countryService;
         }
 
-/*------------------------------------------------------ View My Profile and Update Proile---------------------------------------------------------------------------------
+/*------------------------------------------------------ View My Profile and Update Profile---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 #region My Profile
 
@@ -30,7 +30,8 @@ namespace PizzaShop.Controllers
             var email = _jwtService.GetClaimValue(token, "email");
 
             var model = await _profileService.GetMyProfileAsync(email);
-            if (model == null) return NotFound();
+            if (model == null) 
+                return NotFound();
 
             return View(model);
         }
@@ -47,7 +48,7 @@ namespace PizzaShop.Controllers
                 return View(model);
 
 
-            return RedirectToAction("ChangePassword");
+            return RedirectToAction("UsersList","ManageUsers");
         }
 
 #endregion
@@ -115,8 +116,15 @@ namespace PizzaShop.Controllers
 
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("authToken");
-            return RedirectToAction("Login", "Home");
+            
+            // Delete the "Remember Me" cookie
+            if (Request.Cookies["emailCookie"] != null)
+            {
+                Response.Cookies.Delete("emailCookie");
+            }
+
+            // await this._authService.LogoutAsync();
+            return RedirectToAction("Login","Auth");
         }
 
 #endregion

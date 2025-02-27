@@ -40,3 +40,17 @@ C:\Users\pci47\Desktop\PizzashopMVC\DataAccessLayer\obj\Debug\net7.0\refint\Data
 C:\Users\pci47\Desktop\PizzashopMVC\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.pdb
 C:\Users\pci47\Desktop\PizzashopMVC\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.genruntimeconfig.cache
 C:\Users\pci47\Desktop\PizzashopMVC\DataAccessLayer\obj\Debug\net7.0\ref\DataAccessLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\bin\Debug\net7.0\DataAccessLayer.deps.json
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\bin\Debug\net7.0\DataAccessLayer.runtimeconfig.json
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\bin\Debug\net7.0\DataAccessLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\bin\Debug\net7.0\DataAccessLayer.pdb
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.csproj.AssemblyReference.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.AssemblyInfoInputs.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.AssemblyInfo.cs
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.csproj.CoreCompileInputs.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\refint\DataAccessLayer.dll
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.pdb
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\DataAccessLayer.genruntimeconfig.cache
+C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Pizzashop\DataAccessLayer\obj\Debug\net7.0\ref\DataAccessLayer.dll

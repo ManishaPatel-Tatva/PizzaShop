@@ -1,6 +1,8 @@
 namespace DataAccessLayer.ViewModels;
 public class UserInfoViewModel
 {
+    public long UserId {get; set;}
+    
     public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
 
     public string FirstName { get; set; } = null!;

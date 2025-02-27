@@ -36,7 +36,7 @@ public class JwtService
             audience: "localhost",
             claims: claims,
             // expires: DateTime.Now.AddHours(_tokenDuration), tokenduration from configuration file
-            expires: DateTime.Now.AddHours(24),
+            expires: DateTime.Now.AddDays(1),
             signingCredentials: credentials
         );
 

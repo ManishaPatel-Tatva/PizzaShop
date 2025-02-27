@@ -15,11 +15,39 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public IEnumerable<User> GetAll() => _context.Users;
+   public async Task<List<User>> GetAllUsersAsync()
+   {
+        return await _context.Users.ToListAsync();
+   }
+
+    public async Task<List<UserInfoViewModel>> GetUsersInfoAsync()
+    {
+        var user = await _context.Users
+        .Include(u => u.Role)             // Ensure Role data is fetched
+        .Select(u => new UserInfoViewModel
+        {
+            UserId = u.Id,
+            ProfileImageUrl = u.ProfileImg,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            Phone = u.Phone,
+            Role = u.Role.Name,          //  RoleName is in Role model
+            Status = u.IsActive
+        })
+        .ToListAsync();
+
+        return user;  
+    }
 
      public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await _context.Users.SingleOrDefaultAsync(m => m.Email == email);
+    }
+
+    public async Task<User?> GetUserByIdAsync(long id)
+    {
+        return await _context.Users.SingleOrDefaultAsync(m => m.Id == id);
     }
 
     public async Task<Role?> GetUserRoleAsync(long roleId)
@@ -48,6 +76,7 @@ public class UserRepository : IUserRepository
     //         query.Count()
     //     );
     // }
+
 
 }
 

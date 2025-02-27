@@ -1,0 +1,119 @@
+@model DataAccessLayer.ViewModels.AddUserViewModel;
+
+@{
+    ViewData["Title"] = "Add User";
+    Layout = "_SidebarLayout";
+}
+
+<div class="d-flex justify-content-between users mb-3">
+    <div>
+        <h1 class="blue-text">Edit User</h1>
+    </div>
+    <div>
+        <a href="users.html" class="btn btn-white">
+            <img src="images/icons/chevron-left-blue.svg" alt="">
+            <span>Back</span>
+        </a>  
+    </div>
+</div>
+
+<!-- Form -->
+<div class="row bg-white px-3 py-4 shadow mx-0">
+
+    <!-- First row -->                       
+    <div class="col-12 col-sm-6 form-floating mb-3">
+        <input type="text" class="form-control" id="firstName" placeholder="" value="Steve">
+        <label for="firstName">First Name</label>
+    </div>
+    <div class="col-12 col-sm-6 form-floating mb-3">
+        <input type="text" class="form-control" id="lastName" placeholder="" value="Steve">
+        <label for="lastName">Last Name</label>
+    </div>
+    <div class="col-12 col-sm-6 form-floating mb-3">
+        <input type="text" class="form-control" id="userName" placeholder="" value="Steve123">
+        <label for="firstName">User Name</label>
+    </div>
+    <div class="col-12 col-sm-6 form-floating mb-3">
+        <select class="form-select" aria-label="Default select example" id="role" value="chef">
+            <option selected>Chef</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select>
+        <label for="role">Role</label>
+    </div>
+    <div class="col-12 col-sm-6 form-floating mb-3">
+        <input type="email" class="form-control" id="floatingInput" placeholder="" value="steve@yopmail.com" disabled>
+        <label for="floatingInput">Email address</label>
+    </div>
+    <div class="col-12 col-sm-6 form-floating mb-3">
+        <select class="form-select" aria-label="Default select example" id="status" value="active">
+            <option selected>Active</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select>
+        <label for="role">Status</label>
+    </div>
+
+    <!-- Browse files row-->
+    <div class="col-12 mb-3 browse">
+        <input type="file" id="upload" hidden>
+        <label for="upload" class="w-100">
+            <div class="d-flex justify-content-center flex-column mt-3">
+                <img src="images/icons/browse.svg" alt="" height="35px">
+                <div class="d-flex justify-content-center">Browse Files</div> 
+            </div> 
+        </label>
+    </div>
+
+    <!-- Address blocks-->
+    <div class="col-12 col-sm-4 form-floating mb-3">
+        <select class="form-select" aria-label="" id="country">
+            <option selected>United States</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select>
+        <label for="country">Country</label>
+    </div>
+    <div class="col-12 col-sm-4 form-floating mb-3">
+        <select class="form-select" aria-label="" id="state">
+            <option selected>California</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select>
+        <label for="country">Country</label>
+    </div>
+    <div class="col-12 col-sm-4 form-floating mb-3">
+        <select class="form-select" aria-label="" id="city">
+            <option selected>Los Angeles</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select>
+        <label for="country">Country</label>
+    </div>
+    <div class="col-12 col-sm-4 form-floating mb-3">
+        <input type="text" class="form-control" id="zipCode" placeholder="" value="534678">
+        <label for="floatingPassword">Zip Code</label>
+    </div>
+    <div class="col-12 col-sm-4 form-floating mb-3">
+        <input type="text" class="form-control" id="address" placeholder="" value="la">
+        <label for="floatingPassword">Address</label>
+    </div>
+    <div class="col-12 col-sm-4 form-floating mb-3">
+        <input type="text" class="form-control" id="phone" placeholder="" value="9801234567">
+        <label for="floatingPassword">Phone</label>
+    </div>
+
+    <div>
+        <button class="btn btn-blue">
+            Update User
+        </button>
+        <button class="btn btn-white">
+            Cancel
+        </button>
+    </div>
+</div>

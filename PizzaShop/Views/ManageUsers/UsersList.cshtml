@@ -17,7 +17,7 @@
             </div>
         </div>
         <div>
-            <a asp-action="AddUser" asp-controller="Dashboard" class="btn btn-blue text-nowrap">
+            <a asp-action="AddUser" asp-controller="ManageUsers" class="btn btn-blue text-nowrap">
                 + Add users
             </a>
         </div>
@@ -51,7 +51,7 @@
                     <span class="@(user.Status==true?"bg-active":"bg-inactive")">@(user.Status==true?"Active":"Inactive")</span> 
                 </td>
                 <td>
-                    <a href="edit-user.html" class="btn">
+                    <a asp-action="EditUser" asp-controller="ManageUsers" class="btn">
                         <img src="~/images/icons/edit.svg" alt=""/>
                     </a>
                     

@@ -11,7 +11,7 @@
         <h1 class="blue-text"> Add New User</h1>
     </div>
     <div>
-        <a asp-action="UsersList" asp-controller="Dashboard" class="btn btn-white">
+        <a asp-action="UsersList" asp-controller="ManageUsers" class="btn btn-white">
             <img src="images/icons/chevron-left-blue.svg" alt="">
             <span>Back</span>
         </a>  
@@ -39,16 +39,16 @@
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
 
-    <div class="col-12 col-sm-6 form-floating mb-3">
+    @* <div class="col-12 col-sm-6 form-floating mb-3">
         <select asp-for="@Model.RoleId" class="form-select" aria-label="" id="roles">
             <option selected value="">Select Role</option>
-            @foreach (var role in ViewBag.Roles){
+            @foreach (var role in Model.Roles){
                 <option value="@role.Id"> @role.Name</option>
             }
         </select>
         <label for="roles">Roles</label>
         <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
+    </div> *@
     
     <div class="col-12 col-sm-6 form-floating mb-3">
         <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="">
@@ -77,7 +77,7 @@
     <div class="col-12 col-sm-4 form-floating mb-3">
         <select asp-for="@Model.CountryId" class="form-select" aria-label="" id="Countries">
             <option selected value="">Select Country</option>
-            @foreach (var country in ViewBag.Countries)
+            @foreach (var country in Model.Countries)
             {
                 <option value="@country.Id"> @country.Name</option>
             }
@@ -87,16 +87,20 @@
     <div class="col-12 col-sm-4 form-floating mb-3">
         <select asp-for="@Model.StateId" class="form-select" aria-label="" id="States">
             <option selected value="">Select State</option>
-           
+            @foreach (var state in Model.States){
+                <option value="@state.Id"> @state.Name</option>
+            }
         </select>
-        <label for="country">State</label>
+        <label for="state">State</label>
     </div>
     <div class="col-12 col-sm-4 form-floating mb-3">
         <select asp-for="@Model.CityId" class="form-select" aria-label="" id="Cities">
             <option selected value="">Select City</option>
-            
+            @foreach (var city in Model.Cities){
+                <option value="@city.Id"> @city.Name</option>
+            }
         </select>
-        <label for="country">City</label>
+        <label for="cities">City</label>
     </div>
 
     <div class="col-12 col-sm-4 form-floating mb-3">
