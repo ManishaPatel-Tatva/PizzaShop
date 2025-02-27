@@ -1,6 +1,6 @@
 ﻿@model DataAccessLayer.ViewModels.LoginViewModel;
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
     Layout = "_LoginLayout";
 }
 
@@ -56,7 +56,7 @@
                             </div>
 
                             <div>
-                                <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                                <a asp-action="ForgotPassword" asp-controller="Auth" id="forgotPasswordLink">Forgot password?</a>
                             </div>
                         </div>
 

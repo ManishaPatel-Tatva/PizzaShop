@@ -3,7 +3,7 @@ public class UserInfoViewModel
 {
     public long UserId {get; set;}
     
-    public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
+    public string ProfileImageUrl { get; set; }
 
     public string FirstName { get; set; } = null!;
 
@@ -16,5 +16,7 @@ public class UserInfoViewModel
     public string Role { get; set; } =null!;
 
     public bool? Status { get; set; }
+
+    public bool IsDeleted { get; set; }
     
 }

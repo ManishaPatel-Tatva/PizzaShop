@@ -3,15 +3,21 @@ using DataAccessLayer.ViewModels;
 
 public interface IUserService
 {
+    public List<Role> GetRoles();
+
     public Task<UsersListViewModel> GetUsersListAsync();
+
     public Task<List<UserInfoViewModel>> GetUserInfoAsync();
 
     public  Task<User?> GetUserByEmailAsync(string email);
 
-    // public Task<User?> GetUserByIdAsync(long id);
+    public EditUserViewModel GetUserByIdAsync(long id);
 
     public Task<AddUserViewModel> GetAddUser();
+
     public  Task AddUserAsync(AddUserViewModel model, string token);
-    
-    public Task UpdateUserAsync(User user);
+
+    public Task<bool> UpdateUser(EditUserViewModel model);
+
+    public Task<bool> SoftDeleteUser(long id);
 }

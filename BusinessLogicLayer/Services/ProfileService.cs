@@ -26,10 +26,13 @@ namespace BusinessLogicLayer.Services
             if (user == null)
                 return null;
 
+            var role = await _userRepository.GetUserRoleAsync(user.RoleId);
+
             MyProfileViewModel userProfile =  new MyProfileViewModel
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Role = role.Name,
                 UserName = user.Username,
                 Email = user.Email,
                 Phone = user.Phone,

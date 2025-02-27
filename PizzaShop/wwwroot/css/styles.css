@@ -147,8 +147,17 @@ nav{
     color: white;
     font-weight: 500;
     border-radius: 12px;
-    padding: 0px 20px;
+    padding: 1px 20px;
 }
+
+.bg-inactive{
+    background-color: lightcoral;
+    color: white;
+    font-weight: 500;
+    border-radius: 12px;
+    padding: 1px 20px;
+}
+
 
 td{
     vertical-align: middle;

@@ -61,8 +61,8 @@ namespace BusinessLogicLayer.Services
             var user = await _userRepository.GetUserByEmailAsync(email);
             if (user == null) return false;
 
-            var resetLink = $"https://localhost:5001/Home/ResetPassword?email={email}";
-            // var resetLink = Url.Action("ResetPassword","Home", new{email = model.Email},Request.Scheme);
+            var resetLink = $"https://localhost:5001/Auth/ResetPassword?email={email}";
+            // var resetLink = Url.Action("ResetPassword","Auth", new{email = model.Email},Request.Scheme);
 
             string body = $@"
                 <div style='background-color: #F2F2F2;'>

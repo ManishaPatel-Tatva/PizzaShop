@@ -17,7 +17,9 @@ public class UserService : IUserService
         _countryRepository = countryRepository;
     }
 
-#region Display User List
+    /*----------------------------------------------------------------Display User List--------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Display User List
 
     public async Task<UsersListViewModel> GetUsersListAsync()
     {
@@ -25,15 +27,19 @@ public class UserService : IUserService
         return new UsersListViewModel { User = users };
     }
 
-#endregion
+    #endregion
 
-#region  Add User
+    /*----------------------------------------------------------------Add User--------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region  Add User
 
+    //This method is used for getting the countries in 
     public async Task<AddUserViewModel> GetAddUser()
     {
         AddUserViewModel newUser = new AddUserViewModel
         {
-            Countries = _countryRepository.GetCountries()
+            Countries = _countryRepository.GetCountries(),
+            Roles = _userRepository.GetRoles()
         };
 
         return newUser;
@@ -41,7 +47,7 @@ public class UserService : IUserService
 
     public async Task AddUserAsync(AddUserViewModel model, string token)
     {
-        if (string.IsNullOrEmpty(token)) 
+        if (string.IsNullOrEmpty(token))
             throw new UnauthorizedAccessException("Invalid token.");
 
         var email = _jwtService.GetClaimValue(token, "email");
@@ -83,23 +89,89 @@ public class UserService : IUserService
             user.ProfileImg = $"/uploads/{fileName}";
         }
 
-        await _userRepository.AddAsync(user);
+        try{
+            await _userRepository.AddAsync(user);
+
+            
+            string body = $@"
+                <div style='background-color: #F2F2F2;'>
+                    <div style='background-color: #0066A8; color: white; height: 90px; font-size: 40px; font-weight: 600; text-align: center; padding-top: 40px; margin-bottom: 0px;'>PIZZASHOP</div>
+                    <div style='font-family:Verdana, Geneva, Tahoma, sans-serif; margin-top: 0px; font-size: 20px; padding: 10px;'>
+                        <p>Pizza shop,</p>
+                        <p>Please click <a href='{resetLink}'>here</a> for reset your account Password.</p>
+                        <p>If you encounter any issues or have any question, please do not hesitate to contact our support team.</p>
+                        <p><span style='color: orange;'>Important Note:</span> For security reasons, the link will expire in 24 hours. If you did not request a password reset, please ignore this email or contact our support team immediately.</p>
+                    </div>
+                </div>";
+
+            await _emailService.SendEmailAsync(email, "Reset Password", body);
+            
+            user.Email
+        }
+        catch(Exception){
+
+        }
+        
+
+
     }
+    #endregion
+
+/*----------------------------------------------------------------Edit User--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#region Edit User
+
+    public EditUserViewModel GetUserByIdAsync(long id)
+    {
+        var user = _userRepository.GetUserByIdAsync(id);
+        if (user == null)
+            return null;
+
+        user.Roles =  _userRepository.GetRoles();
+        user.Countries = _countryRepository.GetCountries();
+        user.States = _countryRepository.GetStates(user.CountryId);
+        user.Cities = _countryRepository.GetCities(user.StateId);
+        return user;
+    }
+
+    public EditUserViewModel GetUserAsync(long userId)
+    {
+        var user =  _userRepository.GetUserByIdAsync(userId);
+        if (user == null)
+            return null;
+
+        user.Roles =  _userRepository.GetRoles();
+        user.Countries = _countryRepository.GetCountries();
+        user.States = _countryRepository.GetStates(user.CountryId);
+        user.Cities = _countryRepository.GetCities(user.StateId);
+        return user;
+    }
+
+    public async Task<bool> UpdateUser(EditUserViewModel model)
+    {
+        return await _userRepository.UpdateUser(model);
+    }
+
 #endregion
 
+/*----------------------------------------------------------------Soft Delete User--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#region Soft Delete
 
+    public async Task<bool> SoftDeleteUser(long id){
+        return await _userRepository.SoftDeleteUser(id);
+    }
 
+#endregion
+
+/*----------------------------------------------------------------Common--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#region common
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
         return user;
     }
-
-    // public async Task<User?> GetUserByIdAsync(long id)
-    // {
-    //     var user = await _userRepository.GetUserByIdAsync(id);
-    //     return user;
-    // }
 
     public async Task<List<UserInfoViewModel>> GetUserInfoAsync()
     {
@@ -108,17 +180,10 @@ public class UserService : IUserService
     }
 
 
-    public async Task UpdateUserAsync(User user)
+    public List<Role> GetRoles()
     {
-        try{
-            await _userRepository.UpdateAsync(user);
-            
-        }
-        catch(Exception)
-        {
-            
-        }
-        
-
+        return _userRepository.GetRoles();
     }
+#endregion
+
 }

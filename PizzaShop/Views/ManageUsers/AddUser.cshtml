@@ -19,7 +19,7 @@
 </div>
 
 <!-- Form -->
-<form asp-action="AddUser" asp-controller="Dashboard" method="post" class="row bg-white px-3 py-4 mx-0" enctype="multipart/form-data">
+<form asp-action="AddUser" asp-controller="ManageUsers" method="post" class="row bg-white px-3 py-4 mx-0" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <!-- First row -->                       
@@ -39,7 +39,7 @@
         <span asp-validation-for="UserName" class="text-danger"></span>
     </div>
 
-    @* <div class="col-12 col-sm-6 form-floating mb-3">
+    <div class="col-12 col-sm-6 form-floating mb-3">
         <select asp-for="@Model.RoleId" class="form-select" aria-label="" id="roles">
             <option selected value="">Select Role</option>
             @foreach (var role in Model.Roles){
@@ -48,7 +48,7 @@
         </select>
         <label for="roles">Roles</label>
         <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div> *@
+    </div>
     
     <div class="col-12 col-sm-6 form-floating mb-3">
         <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="">
