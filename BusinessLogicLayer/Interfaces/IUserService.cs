@@ -5,9 +5,9 @@ public interface IUserService
 {
     public List<Role> GetRoles();
 
-    public Task<UsersListViewModel> GetUsersListAsync();
+    public Task<UsersListViewModel> GetUsersListAsync(int pageNumber, int pageSize, string search);
 
-    public Task<List<UserInfoViewModel>> GetUserInfoAsync();
+    // public Task<List<UserInfoViewModel>> GetUserInfoAsync();
 
     public  Task<User?> GetUserByEmailAsync(string email);
 

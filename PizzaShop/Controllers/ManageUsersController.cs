@@ -25,10 +25,17 @@ namespace PizzaShop.Controllers
 #region Display User
         public async Task<IActionResult> UsersList()
         {
-            var model = await _userService.GetUsersListAsync();
             ViewData["sidebar-active"] = "Users";
-            return View(model);
+            return View();
         }
+
+        [HttpGet]
+        public IActionResult UsersListPage(int pageNumber, int pageSize, string search)
+        {
+            return Json(_userService.GetUsersListAsync(pageNumber, pageSize, search));
+        }
+
+
 #endregion
 
 /*---------------------------Add User---------------------------------------------

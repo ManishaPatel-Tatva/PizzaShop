@@ -25,12 +25,10 @@ public class UserService : IUserService
 ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 #region Display User List
 
-    public async Task<UsersListViewModel> GetUsersListAsync()
+    public async Task<UsersListViewModel> GetUsersListAsync(int pageNumber, int pageSize, string search)
     {
-        var users = await _userRepository.GetUsersInfoAsync();
-        return new UsersListViewModel{ 
-            User = users 
-        };
+        var userList = await _userRepository.GetUsersInfoAsync(pageNumber, pageSize, search);
+        return userList;
     }
 #endregion
 
@@ -132,11 +130,11 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<List<UserInfoViewModel>> GetUserInfoAsync()
-    {
-        var userList = await _userRepository.GetUsersInfoAsync();
-        return userList;
-    }
+    // public async Task<List<UserInfoViewModel>> GetUserInfoAsync()
+    // {
+    //     var userList = await _userRepository.GetUsersInfoAsync();
+    //     return userList;
+    // }
 
 
     public List<Role> GetRoles()

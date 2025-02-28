@@ -13,7 +13,7 @@ public interface IUserRepository
 
     public List<Role> GetRoles();
 
-    public Task<List<UserInfoViewModel>> GetUsersInfoAsync();
+    public Task<UsersListViewModel> GetUsersInfoAsync(int pageNumber, int pageSize, string search);
     
     public Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
 

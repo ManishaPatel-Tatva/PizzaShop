@@ -25,9 +25,9 @@ public class UserRepository : IUserRepository
 
     /*-------------------------------------------------User List------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<List<UserInfoViewModel>> GetUsersInfoAsync()
+    public async Task<UsersListViewModel> GetUsersInfoAsync(int pageNumber, int pageSize, string search)
     {
-        var user = await _context.Users
+        var user = _context.Users
         .Where(u => u.IsDeleted == false)
         .Include(u => u.Role)             // Ensure Role data is fetched
         .Select(u => new UserInfoViewModel
@@ -40,10 +40,25 @@ public class UserRepository : IUserRepository
             Phone = u.Phone,
             Role = u.Role.Name,          //  RoleName is in Role model
             Status = u.IsActive
-        })
+        });
+
+        var usersQuery =  user.AsQueryable();
+
+        var totalRecords = usersQuery.Count();
+
+        var usersList = await usersQuery
+        .OrderBy(u => u.UserId)
+        .Skip((pageSize-1)*pageSize)
+        .Take(pageSize)
         .ToListAsync();
 
-        return user;
+        var viewModel = new UsersListViewModel
+        {
+            User = usersList,
+            TotalRecords = totalRecords
+        };
+
+        return viewModel;
     }
 
     public List<Role> GetRoles()
