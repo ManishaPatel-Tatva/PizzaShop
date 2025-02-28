@@ -53,11 +53,8 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return await _context.Users.SingleOrDefaultAsync(m => m.Email == email);
+        return await _context.Users.FirstOrDefaultAsync(m => m.Email == email);
     }
-
-
-
 
     public async Task<Role?> GetUserRoleAsync(long roleId)
     {
@@ -65,10 +62,57 @@ public class UserRepository : IUserRepository
     }
 
 
-    public async Task AddAsync(User user)
+    public async Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail)
     {
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        var creater = await _context.Users.SingleOrDefaultAsync(m => m.Email == createrEmail);
+
+        var user = new User
+        {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Username = model.UserName,
+            RoleId = model.RoleId,
+            Email = model.Email,
+            Password = model.Password,
+            Phone = model.Phone,
+            CountryId = model.CountryId,
+            StateId = model.StateId,
+            CityId = model.CityId,
+            Address = model.Address,
+            ZipCode = model.ZipCode,
+            CreatedBy = creater.Id
+        };
+
+        // Handle Image Upload
+        if (model.Image != null)
+        {
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
+            string filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.Image.CopyToAsync(stream);
+            }
+
+            user.ProfileImg = $"/uploads/{fileName}";
+        }
+
+        try
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch(Exception)
+        {
+            return false;
+        }
+        
     }
 
     public async Task UpdateAsync(User user)

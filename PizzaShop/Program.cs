@@ -17,6 +17,7 @@ builder.Services.AddScoped<ICountryRepository,CountryRepository>();
 
 //For adding services of business logic layer
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<PasswordHelper>();
 builder.Services.AddScoped<IEmailService,EmailService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IProfileService, ProfileService>();

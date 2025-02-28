@@ -15,7 +15,7 @@ public interface IUserService
 
     public Task<AddUserViewModel> GetAddUser();
 
-    public  Task AddUserAsync(AddUserViewModel model, string token);
+    public Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
 
     public Task<bool> UpdateUser(EditUserViewModel model);
 

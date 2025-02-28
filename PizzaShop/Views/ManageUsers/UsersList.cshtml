@@ -55,7 +55,7 @@
                         <img src="~/images/icons/edit.svg" alt=""/>
                     </a>
                     
-                    <button type="button" class="btn deleteIcon" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId">@user.UserId
+                    <button type="button" class="btn deleteIcon" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId">
                         <img src="~/images/icons/delete.svg" alt="">
                     </button>
                 </td>
@@ -102,7 +102,7 @@
             </div>
             <div class="modal-footer d-flex justify-content-center">
                 <button asp-action="SoftDeleteUser" asp-controller="ManageUsers" id="SoftDelete" type="button" class="btn btn-blue" data-bs-dismiss="modal">Yes</button>
-                <button type="button" class="btn btn-white">No</button>
+                <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
             </div>
         </div>  
     </div>
@@ -133,26 +133,7 @@
             })
         })
 
-        @* let userId = -1;
-        $('#deleteIcon').on("click", function(){
-             userId = $(this).data("id");  
-             console.log("user id is",userId);
-        });
-
-        $('#SoftDelete').on("click", function(){
-            $.ajax({
-                url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
-                type: "POST",
-                data: {id:userId},
-                success:function(response){
-                    console.log("User width id ",userId,"deleted.");
-                    location.reload();
-                },
-                error:function(){
-                    console.log("error input deleting user");
-                }
-            })
-        }); *@
+        
         
 
     </script>

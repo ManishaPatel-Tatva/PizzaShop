@@ -37,7 +37,7 @@ namespace PizzaShop.Controllers
             var success = await _authService.LoginAsync(model.Email, model.Password, model.RememberMe);
 
             if (success)
-                return RedirectToAction("MyProfile", "Profile");
+                return RedirectToAction("Dashboard", "Profile");
 
             return View(model);
         }
@@ -60,8 +60,13 @@ namespace PizzaShop.Controllers
             if (!ModelState.IsValid) 
                 return View(model);
 
-            await _authService.ForgotPasswordAsync(model.Email);
-            return RedirectToAction("Login","Auth");
+             var resetLink = Url.Action("ResetPassword","Auth", new{email = model.Email},Request.Scheme);
+
+            var success = await _authService.ForgotPasswordAsync(model.Email, resetLink);
+            if(success)
+                return RedirectToAction("Login","Auth");
+                
+            return View(model);
         }
 
 #endregion

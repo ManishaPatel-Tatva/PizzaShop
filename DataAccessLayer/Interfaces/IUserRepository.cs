@@ -14,7 +14,8 @@ public interface IUserRepository
     public List<Role> GetRoles();
 
     public Task<List<UserInfoViewModel>> GetUsersInfoAsync();
-    public Task AddAsync(User user);
+    
+    public Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
 
     public Task<User?> GetUserByEmailAsync(string email);
 

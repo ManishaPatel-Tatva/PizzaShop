@@ -1,21 +1,18 @@
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Interfaces;
-using BusinessLogicLayer.Services;
-using DataAccessLayer.Models;
 using DataAccessLayer.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
 
 namespace PizzaShop.Controllers
 {
     public class ManageUsersController : Controller
     {
         private readonly IUserService _userService;
-         private readonly JwtService _jwtService;
-        private readonly ICountryService _countryService;
+        private readonly ICountryService _countryService; 
+        private readonly JwtService _jwtService;
 
-        public ManageUsersController(IUserService userService,JwtService jwtService, ICountryService countryService)
+        public ManageUsersController(IUserService userService, JwtService jwtService, ICountryService countryService)
         {
             _userService = userService;
             _jwtService = jwtService;
@@ -29,9 +26,84 @@ namespace PizzaShop.Controllers
         public async Task<IActionResult> UsersList()
         {
             var model = await _userService.GetUsersListAsync();
+            ViewData["sidebar-active"] = "Users";
             return View(model);
         }
 #endregion
+
+/*---------------------------Add User---------------------------------------------
+---------------------------------------------------------------------------------------*/
+#region Add user
+        [HttpGet]
+        public async Task<IActionResult> AddUser()
+        {
+            var model = await _userService.GetAddUser();
+            ViewData["sidebar-active"] = "Users";
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUser(AddUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["sidebar-active"] = "Users";
+                return View(model);
+            }
+                
+            var token = Request.Cookies["authToken"];
+            var createrEmail = _jwtService.GetClaimValue(token, "email");
+
+            await _userService.AddUserAsync(model, createrEmail);
+            bool success = true;
+            if (success) 
+                TempData["SuccessMessage"] = "User added successfully!";
+
+            return RedirectToAction("UsersList");
+        }
+#endregion
+
+/*---------------------------Edit User---------------------------------------------
+---------------------------------------------------------------------------------------*/
+#region Edit User
+
+        [HttpGet]
+        public IActionResult EditUser(long userId)
+        {
+            var model =  _userService.GetUserByIdAsync(userId);
+            if (model == null) 
+                return NotFound();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        {
+            if (!ModelState.IsValid) 
+                return View(model);
+
+            var isUpdated = await _userService.UpdateUser(model);
+
+            if (!isUpdated) 
+                return View(model);
+
+            return RedirectToAction("UsersList","ManageUsers");
+        }
+#endregion
+
+
+/*-------------------------------------Soft Delete User-------------------------------------------------------
+-------------------------------------------------------------------------------------------------------*/
+#region Soft Delete User
+
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteUser(long id)
+        {
+            bool success = await _userService.SoftDeleteUser(id);
+            return RedirectToAction("UsersList");
+        }
+
+#endregion 
 
 /*---------------------------Country State City Role Dropdown---------------------------------------------
 ---------------------------------------------------------------------------------------*/
@@ -64,78 +136,6 @@ namespace PizzaShop.Controllers
             return Json(new SelectList(roles, "Id", "Name"));
         }
 #endregion
-
-/*---------------------------Add User---------------------------------------------
----------------------------------------------------------------------------------------*/
-#region Add user
-        [HttpGet]
-        public async Task<IActionResult> AddUser()
-        {
-            var model = await _userService.GetAddUser();
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddUser(AddUserViewModel model)
-        {
-            if (!ModelState.IsValid) 
-                return View(model);
-
-            var token = Request.Cookies["authToken"];
-
-            await _userService.AddUserAsync(model, token);
-            bool success = true;
-            if (success) TempData["SuccessMessage"] = "User added successfully!";
-
-            return RedirectToAction("UsersList");
-        }
-#endregion
-
-/*---------------------------Add User---------------------------------------------
----------------------------------------------------------------------------------------*/
-#region Edit User
-
-        [HttpGet]
-        public IActionResult EditUser(long userId)
-        {
-            var model =  _userService.GetUserByIdAsync(userId);
-            if (model == null) 
-                return NotFound();
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditUser(EditUserViewModel model)
-        {
-            if (!ModelState.IsValid) 
-                return View(model);
-
-            var isUpdated = await _userService.UpdateUser(model);
-
-            if (!isUpdated) 
-                return View(model);
-
-            return RedirectToAction("UsersList","ManageUsers");
-        }
-#endregion
-
-
-/*-------------------------------------Soft Delete User-------------------------------------------------------
--------------------------------------------------------------------------------------------------------*/
-#region Soft Delete
-
-        [HttpPost]
-        public async Task<IActionResult> SoftDeleteUser(long id)
-        {
-            bool success = await _userService.SoftDeleteUser(id);
-
-            // if (success) 
-            //     TempData["SuccessMessage"] = "User deleted successfully!";
-
-            return RedirectToAction("UsersList");
-        }
-
-#endregion 
 
     }
 }
