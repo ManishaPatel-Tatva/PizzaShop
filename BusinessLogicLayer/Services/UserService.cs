@@ -93,20 +93,20 @@ public class UserService : IUserService
             await _userRepository.AddAsync(user);
 
             
-            string body = $@"
-                <div style='background-color: #F2F2F2;'>
-                    <div style='background-color: #0066A8; color: white; height: 90px; font-size: 40px; font-weight: 600; text-align: center; padding-top: 40px; margin-bottom: 0px;'>PIZZASHOP</div>
-                    <div style='font-family:Verdana, Geneva, Tahoma, sans-serif; margin-top: 0px; font-size: 20px; padding: 10px;'>
-                        <p>Pizza shop,</p>
-                        <p>Please click <a href='{resetLink}'>here</a> for reset your account Password.</p>
-                        <p>If you encounter any issues or have any question, please do not hesitate to contact our support team.</p>
-                        <p><span style='color: orange;'>Important Note:</span> For security reasons, the link will expire in 24 hours. If you did not request a password reset, please ignore this email or contact our support team immediately.</p>
-                    </div>
-                </div>";
+            // string body = $@"
+            //     <div style='background-color: #F2F2F2;'>
+            //         <div style='background-color: #0066A8; color: white; height: 90px; font-size: 40px; font-weight: 600; text-align: center; padding-top: 40px; margin-bottom: 0px;'>PIZZASHOP</div>
+            //         <div style='font-family:Verdana, Geneva, Tahoma, sans-serif; margin-top: 0px; font-size: 20px; padding: 10px;'>
+            //             <p>Pizza shop,</p>
+            //             <p>Please click <a href='{resetLink}'>here</a> for reset your account Password.</p>
+            //             <p>If you encounter any issues or have any question, please do not hesitate to contact our support team.</p>
+            //             <p><span style='color: orange;'>Important Note:</span> For security reasons, the link will expire in 24 hours. If you did not request a password reset, please ignore this email or contact our support team immediately.</p>
+            //         </div>
+            //     </div>";
 
-            await _emailService.SendEmailAsync(email, "Reset Password", body);
+            // await _emailService.SendEmailAsync(email, "Reset Password", body);
             
-            user.Email
+            // user.Email
         }
         catch(Exception){
 

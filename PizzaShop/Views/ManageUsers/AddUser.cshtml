@@ -28,11 +28,13 @@
         <label asp-for="FirstName">First Name</label>
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
+
     <div class="col-12 col-sm-6 form-floating mb-3">
         <input asp-for="LastName" type="text" class="form-control" id="lastName" placeholder="">
         <label asp-for="LastName">Last Name</label>
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
+
     <div class="col-12 col-sm-6 form-floating mb-3">
         <input asp-for="UserName" type="text" class="form-control" id="userName" placeholder="">
         <label asp-for="UserName">User Name</label>
@@ -55,6 +57,7 @@
         <label asp-for="Email">Email address</label>
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
+
     <div class="col-12 col-sm-6 form-floating mb-3">
         <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="">
         <label asp-for="Password">Password</label>
@@ -108,11 +111,13 @@
         <label asp-for="ZipCode">Zip Code</label>
         <span asp-validation-for="ZipCode" class="text-danger"></span>
     </div>
+
     <div class="col-12 col-sm-4 form-floating mb-3">
         <input asp-for="Address" type="text" class="form-control" id="address" placeholder="">
         <label asp-for="Address">Address</label>
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
+
     <div class="col-12 col-sm-4 form-floating mb-3">
         <input asp-for="Phone" type="text" class="form-control" id="phone" placeholder="">
         <label asp-for="Phone">Phone</label>
@@ -123,7 +128,7 @@
         <button class="btn btn-blue" type="submit">
             Create User
         </button>
-        <button class="btn btn-white">
+        <button class="btn btn-white" type="reset">
             Cancel
         </button>
     </div>

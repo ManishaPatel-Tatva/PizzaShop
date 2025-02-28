@@ -55,7 +55,7 @@
                         <img src="~/images/icons/edit.svg" alt=""/>
                     </a>
                     
-                    <button type="button" class="btn" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId">@user.UserId
+                    <button type="button" class="btn deleteIcon" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId">@user.UserId
                         <img src="~/images/icons/delete.svg" alt="">
                     </button>
                 </td>
@@ -111,10 +111,14 @@
 @section Scripts{
 
     <script>
+
+        let userId;
+        $(".deleteIcon").click(function(){
+            userId = $(this).data("id");
+            console.log("User id is ",userId);
+        })
+
         $("#SoftDelete").on("click",function(){
-            var userId = $("#deleteIcon").data("id");
-                console.log("User id is ",userId);
-                
             $.ajax({
                 url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
                 type: "POST",

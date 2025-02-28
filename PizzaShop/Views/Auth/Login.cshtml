@@ -1,6 +1,6 @@
 ﻿@model DataAccessLayer.ViewModels.LoginViewModel;
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Login";
     Layout = "_LoginLayout";
 }
 
@@ -88,7 +88,7 @@
         localStorage.setItem('userEmail', email);
 
         // Redirect to ForgotPassword page
-        window.location.href = '@Url.Action("ForgotPassword", "Home")';
+        window.location.href = '@Url.Action("ForgotPassword", "Auth")';
     });
 </script>
 

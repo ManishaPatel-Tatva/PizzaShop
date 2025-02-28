@@ -32,7 +32,7 @@ builder.Services.Configure<EmailSettings>
 (builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Login");
+builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/Auth/Login");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
