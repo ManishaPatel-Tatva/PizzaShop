@@ -1,0 +1,60 @@
+@model PizzaShop.Service.ViewModels.UsersListViewModel;
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_Layout";
+}
+
+<!-- User heading, search and add button -->
+<div class="d-flex flex-column flex-sm-row justify-content-between users mb-3 ">
+    <div>
+        <h1 class="blue-text">Users</h1>
+    </div>
+    <div class="justify-content-end d-flex align-items-center">
+        <div class="me-2">
+            <div class="input-group">
+                <input type="search" class="form-control" placeholder="Search" name="search">
+                <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt=""> </button>
+            </div>
+        </div>
+        <div>
+            <a asp-action="AddUser" asp-controller="ManageUsers" class="btn btn-blue text-nowrap">
+                + Add users
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-responsive bg-white px-3">
+
+    
+</div>
+
+@section Scripts{
+    <script>
+
+        function PaginationAjax(pageNumber) {
+            if (pageNumber === 0) {
+                pageNumber = @((Model?.Page?.CurrentPage ?? 1));
+            }
+            $.ajax({
+                url: "/ManageUsers/UsersListPage",
+                data: { 'pageSize': 5, 'pageNumber': pageNumber },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#tableContent").html(data);
+                },
+                error: function () {
+                    alert("No Projects Found");
+                    $("#tableContent").html('An error has occurred');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            PaginationAjax();
+        });
+
+    </script>
+}
