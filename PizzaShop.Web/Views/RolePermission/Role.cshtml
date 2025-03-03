@@ -1,0 +1,33 @@
+@using PizzaShop.Entity.Models;
+
+@model IEnumerable<Role>
+
+@{
+    ViewData["Title"] = "Role";
+    Layout = "_Layout";
+}
+
+
+<div class="table-responsive bg-white m-5 p-4 role-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <td class="col-11 fs-5">Role</td>
+                <td class="col fs-5">Action</td>
+            </tr>
+        </thead>
+        <tbody class="">
+            @foreach(var role in Model)
+            {
+                <tr>
+                    <td>@role.Name</td>
+                    <td>
+                        <a href='@Url.Action("Permission","RolePermission")?id=@role.Id' class="btn">
+                            <img src="~/images/icons/edit.svg" alt=""/>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

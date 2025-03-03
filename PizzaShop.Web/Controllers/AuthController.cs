@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Service.Interfaces;
-using PizzaShop.Service.ViewModels;
+using PizzaShop.Entity.ViewModels;
 
 namespace PizzaShop.Web.Controllers;
 

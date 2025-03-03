@@ -1,6 +1,6 @@
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Entity.Models;
-using PizzaShop.Service.ViewModels;
+using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 

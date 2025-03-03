@@ -1,4 +1,4 @@
-namespace PizzaShop.Service.ViewModels{
+namespace PizzaShop.Entity.ViewModels{
     public class UsersListViewModel
     {
         public IEnumerable<UserInfoViewModel> User { get; set; } = new List<UserInfoViewModel>();

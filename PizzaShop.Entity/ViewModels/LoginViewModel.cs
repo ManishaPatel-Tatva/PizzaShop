@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PizzaShop.Service.ViewModels
+namespace PizzaShop.Entity.ViewModels
 {
     public class LoginViewModel
     {

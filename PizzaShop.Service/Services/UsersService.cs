@@ -3,7 +3,7 @@
 // using PizzaShop.Repository.Interfaces;
 // using PizzaShop.Service.Helpers;
 // using PizzaShop.Service.Interfaces;
-// using PizzaShop.Service.ViewModels;
+// using PizzaShop.Entity.ViewModels;
 // using System.Linq.Expressions;
 // using System.Threading.Tasks;
 

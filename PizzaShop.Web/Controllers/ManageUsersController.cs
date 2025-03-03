@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Service.Interfaces;
-using PizzaShop.Service.ViewModels;
+using PizzaShop.Entity.ViewModels;
 
 namespace PizzaShop.Controllers
 {

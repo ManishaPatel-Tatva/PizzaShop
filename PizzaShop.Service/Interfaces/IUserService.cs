@@ -1,5 +1,5 @@
 using PizzaShop.Entity.Models;
-using PizzaShop.Service.ViewModels;
+using PizzaShop.Entity.ViewModels;
 
 namespace PizzaShop.Service.Interfaces;
 

@@ -362,6 +362,22 @@ td{
     /* left: 385px; */
 }
 
+/*-------------Role---------*/
+.role-table{
+    max-width: 1300px;
+}
+
+.role-table td{
+    color: #686868;
+}
+
+.role-table thead{
+    font-weight: 700;
+}
+
+.role-table tbody{
+    font-weight: 600;
+}
 
 
 

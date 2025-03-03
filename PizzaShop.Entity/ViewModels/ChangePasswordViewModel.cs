@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using PizzaShop.Entity.Models;
 
-namespace PizzaShop.Service.ViewModels
+namespace PizzaShop.Entity.ViewModels
 {
     public class ChangePasswordViewModel
     {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BusinessLogicLayer.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PizzaShop.Service.ViewModels;
+using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Services;
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using PizzaShop.Entity.Models;
 
-namespace PizzaShop.Service.ViewModels;
+namespace PizzaShop.Entity.ViewModels;
 
 public class EditUserViewModel
 {

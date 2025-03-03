@@ -44,6 +44,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 //User Service
 builder.Services.AddScoped<IUserService, UserService>();
 
+//Role and Permission Service and Repository
+builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
+builder.Services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
 
 //Authentication
 var jwtConfig = builder.Configuration.GetSection("JwtConfig").Get<JwtConfig>();
