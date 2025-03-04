@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using BusinessLogicLayer.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
-using PizzaShop.Service.Services;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -55,15 +53,15 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> MyProfile(MyProfileViewModel model)
     {
-    if (!ModelState.IsValid) 
-        return View(model);
+        if (!ModelState.IsValid) 
+            return View(model);
 
-    var isUpdated = await _profileService.UpdateProfileAsync(model);
+        var isUpdated = await _profileService.UpdateProfileAsync(model);
 
-    if (!isUpdated) 
-        return View(model);
+        if (!isUpdated) 
+            return View(model);
 
-    return RedirectToAction("UsersList","ManageUsers");
+        return RedirectToAction("UsersList","ManageUsers");
     }
 
 #endregion

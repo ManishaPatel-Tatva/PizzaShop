@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using PizzaShop.Entity.Models;
+using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
@@ -35,6 +37,16 @@ public class RolePermissionController : Controller
         var model = _rolePermissionService.GetRolePermission(id);
         ViewData["sidebar-active"] = "RolePermission";
         return View(model);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> UpdatePermission(long roleId, List<PermissionViewModel> model)
+    {
+        
+        var isUpdated = await _rolePermissionService.UpdateRolePermission(roleId, model);
+
+        return Json("Successful");
     }
 
 #endregion

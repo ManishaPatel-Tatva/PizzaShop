@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 
-namespace PizzaShop.Controllers
+namespace PizzaShop.Web.Controllers
 {
     public class ManageUsersController : Controller
     {
@@ -25,54 +25,56 @@ namespace PizzaShop.Controllers
 #region Display User
         public async Task<IActionResult> UsersList()
         {
-            ViewData["sidebar-active"] = "Users";
+            
             UsersListViewModel model = new()
             {
                 Page = new()
             };
+            
+            ViewData["sidebar-active"] = "Users";
             return View(model);
         }
 
         [HttpGet]
-        public IActionResult UsersListPage(int pageSize, int pageNumber = 1)
-        {
-            return PartialView("_UsersPartialView",_userService.GetPagedRecords(pageSize, pageNumber));
-        }
+        // public IActionResult UsersListPage(int pageSize, int pageNumber = 1)
+        // {
+        //     return PartialView("_UsersPartialView",_userService.GetPagedRecords(pageSize, pageNumber));
+        // }
 
 
 #endregion
 
 /*---------------------------Add User---------------------------------------------
 ---------------------------------------------------------------------------------------*/
-// #region Add user
-//         [HttpGet]
-//         public async Task<IActionResult> AddUser()
-//         {
-//             var model = await _userService.GetAddUser();
-//             ViewData["sidebar-active"] = "Users";
-//             return View(model);
-//         }
+#region Add user
+        [HttpGet]
+        public async Task<IActionResult> AddUser()
+        {
+            var model = await _userService.GetAddUser();
+            ViewData["sidebar-active"] = "Users";
+            return View(model);
+        }
 
-//         [HttpPost]
-//         public async Task<IActionResult> AddUser(AddUserViewModel model)
-//         {
-//             if (!ModelState.IsValid)
-//             {
-//                 ViewData["sidebar-active"] = "Users";
-//                 return View(model);
-//             }
+        [HttpPost]
+        public async Task<IActionResult> AddUser(AddUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["sidebar-active"] = "Users";
+                return View(model);
+            }
                 
-//             var token = Request.Cookies["authToken"];
-//             var createrEmail = _jwtService.GetClaimValue(token, "email");
+            var token = Request.Cookies["authToken"];
+            var createrEmail = _jwtService.GetClaimValue(token, "email");
 
-//             await _userService.AddUserAsync(model, createrEmail);
-//             bool success = true;
-//             if (success) 
-//                 TempData["SuccessMessage"] = "User added successfully!";
+            await _userService.AddUserAsync(model, createrEmail);
+            bool success = true;
+            if (success) 
+                TempData["SuccessMessage"] = "User added successfully!";
 
-//             return RedirectToAction("UsersList");
-//         }
-// #endregion
+            return RedirectToAction("UsersList");
+        }
+#endregion
 
 // /*---------------------------Edit User---------------------------------------------
 // ---------------------------------------------------------------------------------------*/

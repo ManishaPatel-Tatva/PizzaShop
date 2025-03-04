@@ -37,4 +37,26 @@ public class RolePermissionRepository : IRolePermissionRepository
             RoleName = selectedRole.Name
         };
     }
+
+    public async Task<bool> UpdateRolePermission(long roleId, List<PermissionViewModel> model) 
+    {
+        try
+        {
+            foreach(var permission in model)
+            {
+                var specificPermission = await _context.RolePermissions.FirstOrDefaultAsync(p => p.PermissionId == permission.PermissionId);
+                specificPermission.View = permission.CanView;
+                specificPermission.AddOrEdit = permission.CanEdit;
+                specificPermission.Delete = permission.CanDelete;
+                _context.RolePermissions.Update(specificPermission);
+                await _context.SaveChangesAsync();
+            }
+
+            return true;
+        }
+        catch(Exception)
+        {
+            return false;
+        }
+    }
 }

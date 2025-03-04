@@ -195,24 +195,26 @@ td{
 .nav-link{
     color: black;
 }
+.tab-text{
+    font-weight: 600;
+}
 
-.category-list a{
+.category-list a, .modifier-list a{
     color: #686868;
     font-weight: 600;
 }
 
-.category-list ul {
+.category-list ul, .modifier-list ul {
     list-style: none;
     padding:8px
 }
 
-.category-list li{
+.category-list li, .modifier-list li{
     color: #686868;
-   
     margin-top: 20px;
 }
 
-.category-list img{
+.grid-img, .modifier-list>img{
     transform: rotate(90deg);
     margin-right: 4px;
 }
@@ -224,6 +226,10 @@ td{
 
 .category{
     width: fit-content;
+}
+
+.EditDeleteCategory{
+    visibility: hidden;
 }
 
 .menu-table, .user-table{
@@ -271,6 +277,7 @@ td{
 
 
 /* Modal */
+
 .modal-header{
     border-bottom-width: 0px;
 }
@@ -282,6 +289,10 @@ td{
 
 .modal-footer {
     border-top-width: 0px;
+}
+
+.btn-modal{
+    width: 70px;
 }
 
 

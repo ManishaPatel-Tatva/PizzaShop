@@ -9,7 +9,7 @@ public interface IUserService
 
     // public Task<UsersListViewModel> GetUsersListAsync(int pageNumber, int pageSize, string search);
 
-    UsersListViewModel GetPagedRecords(int pageSize, int pageNumber);
+    // UsersListViewModel GetPagedRecords(int pageSize, int pageNumber);
     
     // Task<List<UserInfoViewModel>> GetUserInfoAsync();
 
@@ -17,9 +17,9 @@ public interface IUserService
 
     // EditUserViewModel GetUserByIdAsync(long id);
 
-    // Task<AddUserViewModel> GetAddUser();
+    Task<AddUserViewModel> GetAddUser();
 
-    // Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
+    Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
 
     // Task<bool> UpdateUser(EditUserViewModel model);
 
