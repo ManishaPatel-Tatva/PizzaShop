@@ -37,7 +37,6 @@
             PaginationAjax(1, $("#itemsPerPage").val()); // Load users on page load
         });
 
-        // Use event delegation to handle dynamic elements inside `#tableContent`
         $(document).on("change", "#itemsPerPage", function () {
             var selectedPageSize = $(this).val(); // Get selected value
             PaginationAjax(1, selectedPageSize); // Reload data with new page size

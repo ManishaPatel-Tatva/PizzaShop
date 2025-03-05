@@ -44,7 +44,7 @@ namespace PizzaShop.Web.Controllers
                 return NotFound(); // This triggers AJAX error
             }
 
-            return PartialView("_UsersPartialView", model); // Ensure this matches your partial view name
+            return PartialView("_UsersPartialView", model);
            
         }
 

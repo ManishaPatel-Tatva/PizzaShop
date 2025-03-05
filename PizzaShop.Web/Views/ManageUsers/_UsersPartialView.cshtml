@@ -13,28 +13,29 @@
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        @foreach(var user in Model.Users){
+        @foreach(var user in Model.Users)
+        {
             <tr>
-            <td scope="row">
-                <img src="@user.ProfileImageUrl" alt="" width="35px" height="35px" class="rounded-circle">
-                <span>@user.FirstName @user.LastName</span>
-            </td>
-            <td>@user.Email</td>
-            <td>@user.Phone</td>
-            <td>@user.Role</td>
-            <td>
-                <span class="@(user.Status==true?"bg-active":"bg-inactive")">@(user.Status==true?"Active":"Inactive")</span> 
-            </td>
-            <td>
-                <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="btn">
-                    <img src="~/images/icons/edit.svg" alt=""/>
-                </a>
-                
-                <button type="button" class="btn deleteIcon" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId">
-                    <img src="~/images/icons/delete.svg" alt="">
-                </button>
-            </td>
-        </tr>
+                <td scope="row">
+                    <img src="@user.ProfileImageUrl" alt="" width="35px" height="35px" class="rounded-circle">
+                    <span>@user.FirstName @user.LastName</span>
+                </td>
+                <td>@user.Email</td>
+                <td>@user.Phone</td>
+                <td>@user.Role</td>
+                <td>
+                    <span class="@(user.Status==true?"bg-active":"bg-inactive")">@(user.Status==true?"Active":"Inactive")</span> 
+                </td>
+                <td>
+                    <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="btn">
+                        <img src="~/images/icons/edit.svg" alt=""/>
+                    </a>
+                    
+                    <button type="button" class="btn deleteIcon" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId">
+                        <img src="~/images/icons/delete.svg" alt="">
+                    </button>
+                </td>
+            </tr>
         }       
     </tbody>
 </table>
@@ -50,19 +51,6 @@
             <option value="20">20</option>
         </select>
     </div>
-    @* <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
-        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
-
-        <!-- Previous page -->
-        <button class="btn border">
-            <img src="~/images/icons/chevron-left.svg" alt="" >
-        </button>
-
-        <!-- Next Page >-->
-        <button class="btn border">
-            <img src="~/images/icons/chevron-right.svg" alt="">
-        </button> 
-    </div> *@
 
     <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
         <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
@@ -73,21 +61,13 @@
             <img src="~/images/icons/chevron-left.svg" alt="">
         </button>
 
-        @* <!-- Page Numbers -->
-        @for (int i = 1; i <= Model.Page.TotalPages; i++)
-        {
-            <button class="btn border @(Model.Page.CurrentPage == i ? "active" : "")"
-                onclick="PaginationAjax(@i)">
-                @i
-            </button>
-        } *@
-
         <!-- Next Page Button -->
         <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
             onclick="PaginationAjax(@Model.Page.CurrentPage + 1)">
             <img src="~/images/icons/chevron-right.svg" alt="">
         </button>
     </div>
+    
     <!-- Pagination Ends -->
 </div>
 
@@ -114,10 +94,6 @@
 
 @section Scripts{
     <script>
-
-        
-
-
 
         //for #SoftDelete Delete
         let userId;

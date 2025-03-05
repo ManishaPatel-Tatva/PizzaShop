@@ -52,20 +52,20 @@
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input view-checkbox" type="checkbox" role="switch"  value="true"
-                                data-id="@permission.PermissionId" id="" @(permission.CanView ? "checked" :"")>
+                                data-id="@permission.PermissionId"  @(permission.CanView ? "checked" :"")>
                             </div>
                         </td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input add-checkbox" type="checkbox" role="switch"  value="true"
-                                data-id="@permission.PermissionId" id="" @(permission.CanEdit ? "checked" :"")
+                                data-id="@permission.PermissionId"  @(permission.CanEdit ? "checked" :"")
                                 @(!permission.CanView? "disabled" : "" ) >
                             </div>
                         </td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input delete-checkbox" type="checkbox" role="switch"  value="true"
-                                data-id="@permission.PermissionId" id="" @(permission.CanDelete ? "checked" :"")
+                                data-id="@permission.PermissionId"  @(permission.CanDelete ? "checked" :"")
                                 @(!permission.CanEdit? "disabled" : "" )>
                             </div>
                         </td>

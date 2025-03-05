@@ -76,7 +76,7 @@ public class UserService : IUserService
 
     public async Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail)
     {
-        var creater = _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
 
         var password = model.Password;
         model.Password = PasswordHelper.HashPassword(password);
@@ -91,7 +91,7 @@ public class UserService : IUserService
             StateId = model.StateId,
             CityId = model.CityId,
             RoleId = model.RoleId,
-            CreatedBy = creater.Result.Id
+            CreatedBy = creater.Id
         });
     
         var success = true;

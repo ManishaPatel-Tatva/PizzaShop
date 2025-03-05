@@ -20,7 +20,7 @@
                     <a href="#" class="pizzashop-text"><img src="~/images/logos/pizzashop_logo.png" alt="pizza shop logo" width="60x"> PIZZASHOP</a>
                     <a asp-action="Dashboard" asp-controller="Profile" class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "side-dash" : "")"><img src="~/images/navigation/dashboard.svg" alt=""> Dashboard </a>
                     <a asp-action="Index" asp-controller="ManageUsers" class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")"><img src="~/images/navigation/user.svg" alt=""> Users </a>
-                    <a asp-action="Role" asp-controller="RolePermission" class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash blue" : "")"><img src="~/images/navigation/role.svg" alt=""> Role and Permission </a>
+                    <a asp-action="Role" asp-controller="RolePermission" class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash" : "")"><img src="~/images/navigation/role.svg" alt=""> Role and Permission </a>
                     <a asp-action="Index" asp-controller="Menu" class="@((ViewData["sidebar-active"] as string) == "Menu" ? "side-dash" : "")"><img src="~/images/navigation/menu.png" alt="" height="20px"> Menu </a>
                     <a href="#"><img src="~/images/navigation/table.svg" alt=""> Table and Section </a>
                     <a href="#"><img src="~/images/navigation/taxes.svg" alt=""> Taxes and Fees </a>
