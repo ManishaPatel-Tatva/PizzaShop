@@ -25,36 +25,46 @@
 </div>
 
 <!-- Table -->
-<div class="table-responsive bg-white px-3">
+<div class="table-responsive bg-white px-3" id="tableContent">
+    <!-- Partial View -->
 
     
 </div>
 
 @section Scripts{
     <script>
+        $(document).ready(function () {
+            PaginationAjax(1, $("#itemsPerPage").val()); // Load users on page load
+        });
 
-        function PaginationAjax(pageNumber) {
-            if (pageNumber === 0) {
+        // Use event delegation to handle dynamic elements inside `#tableContent`
+        $(document).on("change", "#itemsPerPage", function () {
+            var selectedPageSize = $(this).val(); // Get selected value
+            PaginationAjax(1, selectedPageSize); // Reload data with new page size
+        });
+
+        function PaginationAjax(pageNumber, pageSize) {
+            if (!pageNumber) {
                 pageNumber = @((Model?.Page?.CurrentPage ?? 1));
             }
+            if (!pageSize) {
+                pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
+            }
+
             $.ajax({
-                url: "/ManageUsers/UsersListPage",
-                data: { 'pageSize': 5, 'pageNumber': pageNumber },
+                url: "/ManageUsers/GetUsersList",
+                data: { 'pageSize': pageSize, 'pageNumber': pageNumber },
                 type: "GET",
                 dataType: "html",
                 success: function (data) {
                     $("#tableContent").html(data);
+                    $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
-                    alert("No Projects Found");
+                    alert("No Users Found");
                     $("#tableContent").html('An error has occurred');
                 }
             });
         }
-
-        $(document).ready(function () {
-            PaginationAjax();
-        });
-
     </script>
 }

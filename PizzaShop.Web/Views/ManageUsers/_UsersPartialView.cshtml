@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        @foreach(var user in Model.User){
+        @foreach(var user in Model.Users){
             <tr>
             <td scope="row">
                 <img src="@user.ProfileImageUrl" alt="" width="35px" height="35px" class="rounded-circle">
@@ -39,19 +39,18 @@
     </tbody>
 </table>
 
-    <!-- Pagination Starts -->
+<!-- Pagination Starts -->
 <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
     <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
         <span>Items per page:</span>
-        <select class="form-select w-auto" aria-label="Default select example">
-            <option selected>5</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
+        <select class="form-select w-auto" id="itemsPerPage" aria-label="Select items per page">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
         </select>
     </div>
-    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
-        @* <span>Showing 1-5 of 13</span> *@
+    @* <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
         <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
 
         <!-- Previous page -->
@@ -61,6 +60,31 @@
 
         <!-- Next Page >-->
         <button class="btn border">
+            <img src="~/images/icons/chevron-right.svg" alt="">
+        </button> 
+    </div> *@
+
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+        <!-- Previous Page Button -->
+        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+            onclick="PaginationAjax(@Model.Page.CurrentPage - 1)">
+            <img src="~/images/icons/chevron-left.svg" alt="">
+        </button>
+
+        @* <!-- Page Numbers -->
+        @for (int i = 1; i <= Model.Page.TotalPages; i++)
+        {
+            <button class="btn border @(Model.Page.CurrentPage == i ? "active" : "")"
+                onclick="PaginationAjax(@i)">
+                @i
+            </button>
+        } *@
+
+        <!-- Next Page Button -->
+        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+            onclick="PaginationAjax(@Model.Page.CurrentPage + 1)">
             <img src="~/images/icons/chevron-right.svg" alt="">
         </button>
     </div>
@@ -90,6 +114,10 @@
 
 @section Scripts{
     <script>
+
+        
+
+
 
         //for #SoftDelete Delete
         let userId;

@@ -20,22 +20,15 @@ public class CategoryItemService : ICategoryItemService
 
     public List<CategoryViewModel> GetCategory()
     {
-        var categories =  _categoryRepository.GetAll();
-
-        var categoriesList = new List<CategoryViewModel>();
-        
-        foreach(var category in categories)
+        var categories = _categoryRepository.GetAll()
+        .Select(category => new CategoryViewModel
         {
-            var categoryVM = new CategoryViewModel(){
-                CategoryId = category.Id,
-                CategoryName = category.Name,
-                CategoryDesc = category.Description
-            };
+            CategoryId = category.Id,
+            CategoryName = category.Name,
+            CategoryDesc = category.Description
+        }).ToList();
 
-            categoriesList.Append(categoryVM);
-        }
-        
-        return categoriesList; 
+        return categories;
     }
 
     #endregion  

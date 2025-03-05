@@ -27,32 +27,32 @@ public class UserService : IUserService
 ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 #region Display User List
 
-    // public async Task<UsersListViewModel> GetUsersListAsync(int pageNumber, int pageSize, string search)
+    // public UsersListViewModel GetUsersList(int pageNumber, int pageSize, string search)
     // {
-    //     var userList = await _userRepository.GetUsersInfoAsync(pageNumber, pageSize, search);
+    //     var userList =  _userRepository.GetPagedRecords(pageSize, pageNumber, search))
     //     return userList;
     // }
 
-    // public UsersListViewModel GetPagedRecords(int pageSize, int pageNumber)
-    // {
-    //     UsersListViewModel model = new(){ Page = new() };
-    //     var users = _userRepository.GetPagedRecords(pageSize,pageNumber,orderBy: q => q.OrderBy(u => u.Id));
-    //     model.User = users.records.Select(u => new UserInfoViewModel()
-    //     {
-    //         FirstName = u.FirstName,
-    //         LastName = u.LastName,
-    //         Email = u.Email,
-    //         Phone = u.Phone,
-    //         Role = u.Role.Name,
-    //         Status = u.IsActive,
-    //         IsDeleted = u.IsDeleted,
-    //         UserId = u.Id,
-    //         ProfileImageUrl = u.ProfileImg
-    //     }).ToList();
+    public UsersListViewModel GetPagedRecords(int pageSize, int pageNumber)
+    {
+        UsersListViewModel model = new(){ Page = new() };
+        var usersDb = _userRepository.GetPagedRecords(pageSize,pageNumber,orderBy: q => q.OrderBy(u => u.Id));
+        model.Users = usersDb.records.Select(u => new UserInfoViewModel()
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            Phone = u.Phone,
+            Role = "Chef",
+            Status = u.IsActive,
+            IsDeleted = u.IsDeleted,
+            UserId = u.Id,
+            ProfileImageUrl = u.ProfileImg
+        }).ToList();
 
-    //     model.Page.SetPagination(users.totalRecord, pageSize, pageNumber);
-    //     return model;
-    // }
+        model.Page.SetPagination(usersDb.totalRecord, pageSize, pageNumber);
+        return model;
+    }
 
     
 

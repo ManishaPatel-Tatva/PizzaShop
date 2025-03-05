@@ -96,6 +96,8 @@ public class GenericRepository<T> : IGenericRepository<T>
 
         return (items, totalCount);
     }
+
+    
 /*----------------------retrieves a single record from the database by its primary key (id)----------------------------------------
 -------------------------------------------------------------------------------------------------------*/
 

@@ -1,8 +1,8 @@
 namespace PizzaShop.Entity.ViewModels{
     public class UsersListViewModel
     {
-        public IEnumerable<UserInfoViewModel> User { get; set; } = new List<UserInfoViewModel>();
+        public IEnumerable<UserInfoViewModel>? Users { get; set; }
         
-        public Pagination Page { get; set; }
+        public Pagination? Page { get; set; }
     }
 }

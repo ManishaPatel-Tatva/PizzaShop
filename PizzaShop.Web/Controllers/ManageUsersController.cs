@@ -23,16 +23,29 @@ namespace PizzaShop.Web.Controllers
 /*---------------------------Display Users---------------------------------------------
 ---------------------------------------------------------------------------------------*/
 #region Display User
-        public async Task<IActionResult> UsersList()
+
+        public IActionResult Index()
         {
-            
-            UsersListViewModel model = new()
-            {
-                Page = new()
+            UsersListViewModel model = new UsersListViewModel{ 
+                Users = Enumerable.Empty<UserInfoViewModel>(),
+                Page = new Pagination() 
             };
             
             ViewData["sidebar-active"] = "Users";
             return View(model);
+                
+        }
+        public IActionResult GetUsersList(int pageSize, int pageNumber = 1)
+        {
+            var model = _userService.GetPagedRecords(pageSize, pageNumber);
+
+            if (model == null || !model.Users.Any())
+            {
+                return NotFound(); // This triggers AJAX error
+            }
+
+            return PartialView("_UsersPartialView", model); // Ensure this matches your partial view name
+           
         }
 
         [HttpGet]
