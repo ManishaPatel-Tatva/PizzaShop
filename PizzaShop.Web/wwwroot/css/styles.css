@@ -20,6 +20,10 @@ a{
     background-color: #f9f9f9;
 }
 
+.bg-cream{
+    background-color: #fdf5e6;
+}
+
 .blue-text{
     color: #0066A8 !important;
 }
@@ -171,7 +175,7 @@ td{
 
 .form-floating>label {
     top: -5px;
-    left: 15px;
+    left: 12px;
 }
 
 .browse>label{

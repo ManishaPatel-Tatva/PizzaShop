@@ -124,7 +124,6 @@ public class GenericRepository<T> : IGenericRepository<T>
 
 #endregion U : Update
 
-
 #region D : Delete
 /*------------------Deletes an entity from the database based on its id------------------------------------
 -------------------------------------------------------------------------------------------------------*/
@@ -167,8 +166,6 @@ public class GenericRepository<T> : IGenericRepository<T>
         throw new NotImplementedException();
     }
 
-    #endregion Common
-
-
+#endregion Common
 }
 

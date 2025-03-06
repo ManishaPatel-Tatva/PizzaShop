@@ -17,5 +17,11 @@ public interface ICategoryItemService
 
     ItemsPaginationViewModel GetItems(int pageSize, int pageNumber);
 
+    Task<AddItemViewModel> GetEditItem(long itemId);
+
+    Task<bool> EditItem(AddItemViewModel model);
+
+    Task<bool> AddItem(AddItemViewModel model,string createrEmail);
+
 
 }

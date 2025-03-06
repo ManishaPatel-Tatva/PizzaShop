@@ -32,9 +32,9 @@ namespace PizzaShop.Web.Controllers
             };
             
             ViewData["sidebar-active"] = "Users";
-            return View(model);
-                
+            return View(model);       
         }
+        
         public IActionResult GetUsersList(int pageSize, int pageNumber = 1)
         {
             var model = _userService.GetPagedRecords(pageSize, pageNumber);
@@ -48,11 +48,6 @@ namespace PizzaShop.Web.Controllers
            
         }
 
-        [HttpGet]
-        // public IActionResult UsersListPage(int pageSize, int pageNumber = 1)
-        // {
-        //     return PartialView("_UsersPartialView",_userService.GetPagedRecords(pageSize, pageNumber));
-        // }
 
 
 #endregion

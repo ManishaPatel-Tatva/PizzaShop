@@ -15,7 +15,6 @@ public class MenuController : Controller
         _jwtService = jwtService;
     }
 
-#region Menu Index
 /*--------------------------------------------------------Menu Index---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
@@ -25,7 +24,11 @@ public class MenuController : Controller
     
         MenuViewModel model = new MenuViewModel
         {
-            Categories = categoriesList
+            Categories = categoriesList,
+            ItemsPageVM = new ItemsPaginationViewModel{
+                Items = Enumerable.Empty<ItemInfoViewModel>(),
+                Page = new Pagination() 
+            }
         };
         ViewData["sidebar-active"] = "Menu";
         return View(model);
@@ -83,28 +86,46 @@ public class MenuController : Controller
 #endregion Category
 
 #region Items
+
 /*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#region  Display Item
     [HttpGet]
-     public IActionResult GetItems(int pageSize, int pageNumber = 1)
+    public async Task<IActionResult> GetItems(int pageSize, int pageNumber = 1)
+    {
+        var model = _categoryItemService.GetItems(pageSize, pageNumber);
+        if (model == null)
         {
-            var model = _categoryItemService.GetItems(pageSize, pageNumber);
-
-            if (model == null || !model.Items.Any())
-            {
-                return NotFound(); // This triggers AJAX error
-            }
-
-            return PartialView("_ItemsPartialView", model); 
-           
+            return NotFound(); // This triggers AJAX error
         }
+        return PartialView("_ItemsPartialView", model);
+    }
+#endregion Display Item
 
+/*--------------------------------------------------------Add/Update Items--------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#region Add/Update
 
+    [HttpGet]
+    public async Task<IActionResult> GetItemModal(long itemId)
+    {
+        if(itemId == 0)
+        {
+            AddItemViewModel model = new AddItemViewModel{Name = ""};
+            return PartialView("_UpdateItemPartialView", model);
+        }
+        else
+        {
+            AddItemViewModel model = await _categoryItemService.GetEditItem(itemId);
+            return PartialView("_UpdateItemPartialView", model);
+        }
+        
+    }
+
+#endregion Add/Update
 
 #endregion Items
 
 
-
-#endregion Menu Index
 
 }

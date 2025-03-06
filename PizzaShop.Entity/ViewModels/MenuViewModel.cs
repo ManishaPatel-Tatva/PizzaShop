@@ -4,5 +4,6 @@ public class MenuViewModel
 {
     public List<CategoryViewModel> Categories { get; set; }
     public CategoryViewModel CategoryVM { get; set; }
+    public ItemsPaginationViewModel ItemsPageVM {get; set;}
 
 }

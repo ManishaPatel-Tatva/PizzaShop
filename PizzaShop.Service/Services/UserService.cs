@@ -43,7 +43,7 @@ public class UserService : IUserService
             LastName = u.LastName,
             Email = u.Email,
             Phone = u.Phone,
-            Role = "Chef",
+            Role = "chef",
             Status = u.IsActive,
             IsDeleted = u.IsDeleted,
             UserId = u.Id,

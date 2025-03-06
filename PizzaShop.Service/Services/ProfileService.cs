@@ -80,7 +80,7 @@ public class ProfileService : IProfileService
             user.Address = model.Address;
             user.ZipCode = model.ZipCode;
 
-                // Handle Image Upload
+            // Handle Image Upload
             if (model.image != null)
             {
                 string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
@@ -98,6 +98,7 @@ public class ProfileService : IProfileService
 
                 user.ProfileImg = $"/uploads/{fileName}";
             }
+            
             await _userRepository.UpdateAsync(user);
             return true;
         }

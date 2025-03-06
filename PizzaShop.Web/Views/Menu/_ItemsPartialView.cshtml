@@ -12,7 +12,7 @@
     <button class="btn border me-2">
         <img src="~/images/icons/delete.svg" alt="">
     </button>
-    <button class="btn btn-blue me-2">
+    <button class="btn btn-blue me-2 newItemBtn" id="newItemBtn" data-bs-toggle="modal" data-bs-target="#addEditItem">
         + New Item
     </button>
 </div>
@@ -32,7 +32,7 @@
             <th scope="col" style="width: 100px;">Action</th>
         </tr>
         </thead>
-        <tbody class="">
+        <tbody class="" id="">
 
             @foreach(var item in Model.Items)
             {
@@ -54,50 +54,17 @@
                     </td>
                     <td>
                         <div class="d-flex flex-row">
-                            <button href="edit-user.html" class="btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#editItem">
+                            <button href="edit-user.html" class="addEditBtn btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#editItem">
                                 <img src="~/images/icons/edit.svg" alt=""/>
                             </button>
                             
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteItem">
+                            <button type="button" class="addEditBtn btn" data-bs-toggle="modal" data-bs-target="#deleteItem">
                                 <img src="~/images/icons/delete.svg" alt="">
                             </button>
                         </div>
                     </td>
                 </tr>
             }
-
-
-
-            <!-- First row -->
-            <tr>
-                <td>
-                    <input type="checkbox" value="" id="" class="me-2">
-                    <img src="~/images/dining-menu.png" alt="" class="me-2" width="30px">
-                    Punjabi Tadka Sandwich
-                </td>
-                <td>
-                    <img src="~/images/icons/non-veg-icon.svg" alt="" width="23px">
-                </td>
-                <td>200</td>
-                <td>1</td>
-                <td>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-                        </div>
-                </td>
-                <td>
-                    <div class="d-flex flex-row">
-                        <button href="edit-user.html" class="btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#editItem">
-                            <img src="~/images/icons/edit.svg" alt=""/>
-                        </button>
-                        
-                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteItem">
-                            <img src="~/images/icons/delete.svg" alt="">
-                        </button>
-                    </div>
-                    
-                </td>
-            </tr>
 
 
         </tbody>
@@ -134,3 +101,14 @@
     </div>
 </div>
 <!-- Pagination Ends -->
+
+<!-- Modal Add Category starts -->
+<div class="modal fade" id="addEditItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" id="addEditItemModal">
+        
+        </div>
+    </div>
+</div>
+<!-- Modal Add Category ends -->
