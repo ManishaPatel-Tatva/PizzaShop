@@ -21,10 +21,19 @@ public class GenericRepository<T> : IGenericRepository<T>
 #region C : Create
 /*------------------------------adds a new entity (record) to the database----------------------------------------
 -------------------------------------------------------------------------------------------------------*/
-    public async Task AddAsync(T entity)
+    public async Task<bool> AddAsync(T entity)
     {
-        await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch(Exception ex)
+        {
+            return false;
+        }
+        
     }
 
 #endregion C : Create

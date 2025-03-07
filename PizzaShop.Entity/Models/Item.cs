@@ -47,6 +47,8 @@ public partial class Item
 
     public virtual FoodType FoodType { get; set; } = null!;
 
+    public virtual ICollection<ItemModifierGroup> ItemModifierGroups { get; set; } = new List<ItemModifierGroup>();
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual Unit Unit { get; set; } = null!;

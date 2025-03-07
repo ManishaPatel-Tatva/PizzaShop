@@ -32,7 +32,10 @@ public class AuthController : Controller
         if (!ModelState.IsValid) 
             return View(model);
 
-        var token = await _authService.LoginAsync(model.Email, model.Password);
+        var (token, userName, profileImg, message) = await _authService.LoginAsync(model.Email, model.Password);
+
+        if(token == null)
+            TempData["errorToastr"] = message;
 
         if (token != null)
         {
@@ -43,14 +46,17 @@ public class AuthController : Controller
                 IsEssential = true
             };
             Response.Cookies.Append("authToken", token, options);
+            Response.Cookies.Append("userName", userName, options);
+            Response.Cookies.Append("profileImg", profileImg, options);
+
+            HttpContext.Session.SetString("userName",userName);
+            HttpContext.Session.SetString("profileImg",profileImg);
 
             if (model.RememberMe)
                 Response.Cookies.Append("emailCookie", model.Email, options);
 
             return RedirectToAction("Dashboard", "Profile");
         }
-
-        ViewData["errorToastr"]="Login Failed";
 
         ModelState.AddModelError("", "Invalid email or password.");
         return View(model);
@@ -78,14 +84,14 @@ public class AuthController : Controller
         var resetToken = Guid.NewGuid().ToString();
         var resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme);
 
-        var success = await _authService.ForgotPasswordAsync(model.Email, resetLink);
+        var (success, message) = await _authService.ForgotPasswordAsync(model.Email, resetToken, resetLink);
         if(success)
         {
-            @ViewData["successToastr"] = "Email sent successfully";
+            TempData["successToastr"] = message;
             return RedirectToAction("Login","Auth");
         }
 
-        @ViewData["errorToastr"] = "Email not sent.";
+        TempData["errorToastr"] = message;
         ModelState.AddModelError("", "Email not found.");
         return View(model);
     }
@@ -112,12 +118,14 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var success = await _authService.ResetPasswordAsync(model.Token, model.NewPassword, model.ConfirmPassword);
+        var (success, message) = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
         if (success)
         {
+            TempData["successToastr"] = message;
             return RedirectToAction("Login","Auth");
         } 
 
+        TempData["errorToastr"] = message;
         ModelState.AddModelError("", "Failed to reset password.");
         return View(model);
     }

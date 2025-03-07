@@ -69,6 +69,10 @@ public partial class User
 
     public virtual ICollection<Item> ItemCreatedByNavigations { get; set; } = new List<Item>();
 
+    public virtual ICollection<ItemModifierGroup> ItemModifierGroupCreatedByNavigations { get; set; } = new List<ItemModifierGroup>();
+
+    public virtual ICollection<ItemModifierGroup> ItemModifierGroupUpdatedByNavigations { get; set; } = new List<ItemModifierGroup>();
+
     public virtual ICollection<Item> ItemUpdatedByNavigations { get; set; } = new List<Item>();
 
     public virtual ICollection<Modifier> ModifierCreatedByNavigations { get; set; } = new List<Modifier>();

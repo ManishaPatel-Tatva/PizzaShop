@@ -10,30 +10,37 @@ public class AuthService : IAuthService
 {
     private readonly IGenericRepository<User> _userRepository;
     private readonly IGenericRepository<Role> _roleRepository;
+    private readonly IGenericRepository<ResetPasswordToken> _resetPasswordRepository;
+
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
 
-    public AuthService(IGenericRepository<User> userRepository, IGenericRepository<Role> roleRepository, IEmailService emailService, IJwtService jwtService)
+    public AuthService(IGenericRepository<User> userRepository, IGenericRepository<Role> roleRepository, IEmailService emailService, IJwtService jwtService, IGenericRepository<ResetPasswordToken> resetPasswordRepository)
     {
         _userRepository = userRepository;
         _roleRepository = roleRepository;
         _emailService = emailService;
         _jwtService = jwtService;
+        _resetPasswordRepository = resetPasswordRepository;
     }
 
-#region Login
-/*--------------------------------Login-------------------------------------------------------------
------------------------------------------------------------------------------------------------*/
-    public async Task<string?> LoginAsync(string email, string password)
+    #region Login
+    /*--------------------------------Login-------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------*/
+
+    public async Task<(string? token, string userName, string imageUrl, string? message)> LoginAsync(string email, string password)
     {
         var user = await _userRepository.GetByStringAsync(u => u.Email == email);       //Get User from email
 
-        if (user == null || !PasswordHelper.VerifyPassword(password, user.Password))
-            return null;
+        if (user == null)
+            return (null,null,null, "User Doesn't Exist");
+
+        if (!PasswordHelper.VerifyPassword(password, user.Password))
+            return (null,null,null, "Invalid Credentials!");
 
         var role = await _roleRepository.GetByStringAsync(u => u.Id == user.Id);
-
-        return _jwtService.GenerateToken(email, role.Name);
+        var token = _jwtService.GenerateToken(email, role.Name);
+        return (token,user.Username, user.ProfileImg, null);
     }
 
 #endregion
@@ -41,24 +48,30 @@ public class AuthService : IAuthService
 #region ForgotPassword
 /*--------------------------------Forgot Password-------------------------------------------------------------
 -----------------------------------------------------------------------------------------------*/
-    public async Task<bool> ForgotPasswordAsync(string email, string resetLink)
+    public async Task<(bool success, string? message)> ForgotPasswordAsync(string email, string resetToken, string resetLink)
     {
         var user = await _userRepository.GetByStringAsync(u => u.Email == email);
 
-        if (user == null) return false;
+        if (user == null) 
+            return (false,"User Doesn't Exist");
 
-        var resetToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray()); // Secure token
-        user.Resettoken = resetToken;
-        // user.Resettokenexpiry = DateTime.UtcNow.AddHours(1); // Token expires in 1 hour
-        var success = await _userRepository.UpdateAsync(user);
+        //Stores the reset password token in table  
+        ResetPasswordToken token = new ResetPasswordToken
+        {
+            Email = email,
+            Token = resetToken
+        };
+
+        var success =  await _resetPasswordRepository.AddAsync(token);
 
         if(success)
         {
-            var body = EmailTemplateHelper.GetResetPasswordEmail(resetToken);
+            var body = EmailTemplateHelper.GetResetPasswordEmail(resetLink);
             await _emailService.SendEmailAsync(email, "Reset Password", body);
+            return(success, "Email Sent Successfully!");
         }
         
-        return success;
+        return (success, "Invalid!");
     }
 
 #endregion
@@ -66,23 +79,31 @@ public class AuthService : IAuthService
 #region ResetPassword
 /*--------------------------------Reset Password-------------------------------------------------------------
 -----------------------------------------------------------------------------------------------*/
-    public async Task<bool> ResetPasswordAsync(string token, string newPassword, string confirmPassword)
+    public async Task<(bool success, string? message)> ResetPasswordAsync(string token, string newPassword)
     {
-        if (newPassword != confirmPassword) 
-            return false;
+        var resetToken = await _resetPasswordRepository.GetByStringAsync(u => u.Token == token);
+        if (resetToken == null) 
+            return (false, "Invalid URL");
 
-        var user = await _userRepository.GetByStringAsync(u => u.Resettoken == token && u.Resettokenexpiry > DateTime.UtcNow);
-        if (user == null) 
-            return false;
+        var difference = resetToken.Expirytime.Subtract(DateTime.Now).Ticks;
+        if(difference <= 0)
+            return (false, "Link Expired");    
+
+        if (resetToken.IsUsed)
+            return (false, " You already used this link to reset password");
+
+        var user = await _userRepository.GetByStringAsync(u => u.Email == resetToken.Email); 
 
         user.Password = PasswordHelper.HashPassword(newPassword);
-        await _userRepository.UpdateAsync(user);
+        var success = await _userRepository.UpdateAsync(user);
 
-         // Update the user password and remove/reset the token
-        user.Resettoken = null; 
-        user.Resettokenexpiry = null; 
+        if(success)
+        {
+            resetToken.IsUsed = true;
+            return(true, "Password Changed Successfully!");
+        }
         
-        return true;
+        return (success, "Reset Password Failed!");
     }
 
 #endregion

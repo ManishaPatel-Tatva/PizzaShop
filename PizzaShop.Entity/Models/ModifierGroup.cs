@@ -21,5 +21,7 @@ public partial class ModifierGroup
 
     public bool IsDeleted { get; set; }
 
+    public virtual ICollection<ItemModifierGroup> ItemModifierGroups { get; set; } = new List<ItemModifierGroup>();
+
     public virtual ICollection<Modifier> Modifiers { get; set; } = new List<Modifier>();
 }

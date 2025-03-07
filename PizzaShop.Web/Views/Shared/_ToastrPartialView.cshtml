@@ -18,8 +18,8 @@
             'hideMethod': 'fadeOut',
         }
 
-        var successToastr = '@ViewData["successToastr"]';
-        var errorToastr = '@ViewData["errorToastr"]';
+        var successToastr = '@TempData["successToastr"]';
+        var errorToastr = '@TempData["errorToastr"]';
         console.log("error toast", errorToastr);
 
         if(successToastr && successToastr.trim()!= "")
@@ -49,6 +49,4 @@
     });
 
 
-
-
-    </script>
+</script>

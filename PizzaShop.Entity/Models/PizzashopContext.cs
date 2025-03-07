@@ -33,6 +33,8 @@ public partial class PizzaShopContext : DbContext
 
     public virtual DbSet<Item> Items { get; set; }
 
+    public virtual DbSet<ItemModifierGroup> ItemModifierGroups { get; set; }
+
     public virtual DbSet<Kot> Kots { get; set; }
 
     public virtual DbSet<Modifier> Modifiers { get; set; }
@@ -50,6 +52,8 @@ public partial class PizzaShopContext : DbContext
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
+
+    public virtual DbSet<ResetPasswordToken> ResetPasswordTokens { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
@@ -72,8 +76,7 @@ public partial class PizzaShopContext : DbContext
     public virtual DbSet<WaitingToken> WaitingTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost; Database=Pizzashop; Username=postgres; password=tatva123;");
+        => optionsBuilder.UseNpgsql("Name=ConnectionStrings:PizzaShopDbConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -370,6 +373,48 @@ public partial class PizzaShopContext : DbContext
                 .HasConstraintName("items_updated_by_fkey");
         });
 
+        modelBuilder.Entity<ItemModifierGroup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("item_modifier_groups_pkey");
+
+            entity.ToTable("item_modifier_groups");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.ItemId).HasColumnName("item_id");
+            entity.Property(e => e.MaxAllowed).HasColumnName("max_allowed");
+            entity.Property(e => e.MinAllowed).HasColumnName("min_allowed");
+            entity.Property(e => e.ModifierGroupId).HasColumnName("modifier_group_id");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.ItemModifierGroupCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("item_modifier_groups_created_by_fkey");
+
+            entity.HasOne(d => d.Item).WithMany(p => p.ItemModifierGroups)
+                .HasForeignKey(d => d.ItemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("item_modifier_groups_item_id_fkey");
+
+            entity.HasOne(d => d.ModifierGroup).WithMany(p => p.ItemModifierGroups)
+                .HasForeignKey(d => d.ModifierGroupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("item_modifier_groups_modifier_group_id_fkey");
+
+            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.ItemModifierGroupUpdatedByNavigations)
+                .HasForeignKey(d => d.UpdatedBy)
+                .HasConstraintName("item_modifier_groups_updated_by_fkey");
+        });
+
         modelBuilder.Entity<Kot>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("kot_pkey");
@@ -652,6 +697,26 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<ResetPasswordToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("reset_password_token_pkey");
+
+            entity.ToTable("reset_password_token");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Email)
+                .HasColumnType("character varying")
+                .HasColumnName("email");
+            entity.Property(e => e.Expirytime)
+                .HasDefaultValueSql("(CURRENT_TIMESTAMP + '24:00:00'::interval)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("expirytime");
+            entity.Property(e => e.IsUsed).HasColumnName("is_used");
+            entity.Property(e => e.Token)
+                .HasColumnType("character varying")
+                .HasColumnName("token");
         });
 
         modelBuilder.Entity<Role>(entity =>

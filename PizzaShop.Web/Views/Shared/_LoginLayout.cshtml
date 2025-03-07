@@ -22,7 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="~/js/custom.js" asp-append-version="true"></script>
     @await Html.PartialAsync("_ToastrPartialView")
-    @await Html.PartialAsync("_ValidationScriptsPartial");
+    @await Html.PartialAsync("_ValidationScriptsPartial")
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

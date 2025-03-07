@@ -6,7 +6,7 @@ namespace PizzaShop.Repository.Interfaces;
 public interface IGenericRepository<T>
     where T : class
 {
-    Task AddAsync(T entity);
+    Task<bool> AddAsync(T entity);
 
     IEnumerable<T> GetAll();
 

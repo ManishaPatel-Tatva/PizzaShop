@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var userName = Context.Session.GetString("userName");
+    var profileImg = Context.Session.GetString("profileImg");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -41,12 +46,12 @@
                     <div class="d-flex justify-content-end p-3">
                         <div class="btn-group">
                             <a type="button" class="btn " data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="~/images/Default_pfp.svg.png" alt="profile" height="35px">
+                                <img src= @(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") alt="profile" height="35px">
                             </a>
                             <ul class="dropdown-menu dropdown-menu-lg-end">
                                 <li class="mb-2 ms-2 d-flex align-items-center">
                                     <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" width="30px">
-                                    <span>Admin@123</span>
+                                    <span>@userName</span>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
