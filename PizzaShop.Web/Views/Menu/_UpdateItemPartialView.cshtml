@@ -8,9 +8,8 @@
 <form asp-action="" asp-controller="" method="Post">
     <div class="modal-body row">
 
-
-        <div class="modal-item col-8 row">
-            <div class="col-6 col-sm-6 form-floating mb-3">
+        <div class="modal-item col-12 col-md-8 row">
+            <div class="col-12 col-sm-6 form-floating mb-3">
                 <select asp-for="@Model.CategoryId" class="form-select" aria-label="" id="Countries">
                     <option selected value="">Select Category</option>
                     @foreach (var category in Model.Categories)
@@ -20,12 +19,12 @@
                 </select>
                 <label for="countries">Categories*</label>
             </div>
-            <div class="col-6 col-sm-6 form-floating mb-3">
+            <div class="col-12 col-sm-6 form-floating mb-3">
                 <input asp-for="@Model.Name" type="text" class="form-control" id="itemName" >
                 <label for="itemName">Name*</label>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="col-3 col-sm-3 form-floating mb-3">
+            <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <select asp-for="@Model.ItemTypeId" class="form-select" aria-label="" id="itemType">
                     <option selected value="">Select a type</option>
                     @foreach (var type in Model.ItemTypes)
@@ -35,32 +34,74 @@
                 </select>
                 <label for="itemType">Item Type*</label>
             </div>
-            <div class="col-3 col-sm-3 form-floating mb-3">
+            <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <input asp-for="@Model.Rate" type="text" class="form-control" id="itemRate" >
                 <label for="itemRate">Rate*</label>
                 <span asp-validation-for="Rate" class="text-danger"></span>
             </div>
-            <div class="col-3 col-sm-3 form-floating mb-3">
+            <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <input asp-for="@Model.Quantity" type="text" class="form-control" id="itemQuantity" >
                 <label for="itemQuantity">Quantity*</label>
                 <span asp-validation-for="Rate" class="text-danger"></span>
             </div>
-            <div class="col-3 col-sm-3 form-floating mb-3">
-                <input asp-for="@Model.ShortCode" type="text" class="form-control" id="itemShortCode" >
-                <label for="itemShortCode">Short Code</label>
-                <span asp-validation-for="ShortCode" class="text-danger"></span>
+            <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
+                <select asp-for="@Model.UnitId" class="form-select" aria-label="" id="itemUnit">
+                    <option selected value="">Select a type</option>
+                    @foreach (var unit in Model.Units)
+                    {
+                        <option value="@unit.Id"> @unit.Name</option>
+                    }
+                </select>
+                <label for="itemUnit">Unit*</label>
             </div>
-
-            <div class="col-3 col-sm-3 form-check form-switch">
+            <div class="col-6 col-lg-3 form-check form-switch mb-3 switchAddModal">
                 <input asp-for="Available" class="form-check-input" type="checkbox" role="switch" id="Available">
                 <label class="form-check-label" for="Available">Available</label>
             </div>
 
+            <div class="col-6 col-lg-3 form-check form-switch mb-3 ms-3">
+                <input asp-for="DefaultTax" class="form-check-input" type="checkbox" role="switch" id="DefaultTax">
+                <label class="form-check-label" for="DefaultTax">Default Tax</label>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
+                <input asp-for="@Model.TaxPercentage" type="text" class="form-control" id="taxPercentage" >
+                <label for="taxPercentage">Tax Percentage</label>
+                <span asp-validation-for="TaxPercentage" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
+                <input asp-for="@Model.ShortCode" type="text" class="form-control" id="itemShortCode" >
+                <label for="itemShortCode">Short Code</label>
+                <span asp-validation-for="ShortCode" class="text-danger"></span>
+            </div>
+            <div class="col-12 form-floating mb-3">
+                <textarea asp-for="@Model.Description" class="form-control" id="itemDescription" rows="3"></textarea>
+                <label for="itemDescription form-label">Description</label>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <!-- Browse files row-->
+            <div class="col-12 mb-3 browse">
+                <input asp-for="Image" type="file" id="upload" hidden>
+                <label for="upload" class="w-100">
+                    <div class="d-flex justify-content-center align-items-center mt-4">
+                        <img src="~/images/icons/browse.svg" class="me-2" height="20px">
+                        <span class="d-flex">Drag and Drop or Browse Files</span> 
+                    </div> 
+                </label>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
             
         </div>
 
-        <div class="modal-modifier col-4 bg-cream">
-
+        <div class="modal-modifier col-12 col-md-4 bg-cream mb-3">
+            <select asp-for="@Model.CategoryId" class="form-select" aria-label="" id="Categories">
+                <option selected value="">Select Category</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id"> @category.Name</option>
+                }
+            </select>
+            <label for="Categories">Categories*</label>
         </div>
 
 

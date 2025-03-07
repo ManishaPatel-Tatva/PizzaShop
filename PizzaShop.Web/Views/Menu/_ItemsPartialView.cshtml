@@ -54,11 +54,11 @@
                     </td>
                     <td>
                         <div class="d-flex flex-row">
-                            <button href="edit-user.html" class="addEditBtn btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#editItem">
+                            <button href="edit-user.html" class="editItemBtn btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#editItem" data-id="@item.ItemId">
                                 <img src="~/images/icons/edit.svg" alt=""/>
                             </button>
                             
-                            <button type="button" class="addEditBtn btn" data-bs-toggle="modal" data-bs-target="#deleteItem">
+                            <button type="button" class="deleteItemBtn btn" data-bs-toggle="modal" data-bs-target="#deleteItem">
                                 <img src="~/images/icons/delete.svg" alt="">
                             </button>
                         </div>
@@ -105,7 +105,7 @@
 <!-- Modal Add Category starts -->
 <div class="modal fade" id="addEditItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-xl modal-dialog-centered">
         <div class="modal-content" id="addEditItemModal">
         
         </div>

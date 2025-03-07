@@ -67,45 +67,36 @@ public class ProfileService : IProfileService
         if (user == null) 
             return false;
 
-        //for updating the user, if there is any exception then return false
-        try
-        {
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Username = model.UserName;
-            user.Phone = model.Phone;
-            user.CountryId = model.CountryId;
-            user.StateId = model.StateId;
-            user.CityId = model.CityId;
-            user.Address = model.Address;
-            user.ZipCode = model.ZipCode;
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.Username = model.UserName;
+        user.Phone = model.Phone;
+        user.CountryId = model.CountryId;
+        user.StateId = model.StateId;
+        user.CityId = model.CityId;
+        user.Address = model.Address;
+        user.ZipCode = model.ZipCode;
 
-            // Handle Image Upload
-            if (model.image != null)
+        // Handle Image Upload
+        if (model.image != null)
+        {
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            string fileName = $"{Guid.NewGuid()}_{model.image.FileName}";
+            string filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                string fileName = $"{Guid.NewGuid()}_{model.image.FileName}";
-                string filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.image.CopyToAsync(stream);
-                }
-
-                user.ProfileImg = $"/uploads/{fileName}";
+                await model.image.CopyToAsync(stream);
             }
-            
-            await _userRepository.UpdateAsync(user);
-            return true;
+
+            user.ProfileImg = $"/uploads/{fileName}";
         }
-        catch (Exception)
-        {
-            return false;
-        }
+        
+        return await _userRepository.UpdateAsync(user);
     }
 
 #endregion

@@ -116,10 +116,18 @@ public class GenericRepository<T> : IGenericRepository<T>
 #region U : Update
 /*------------------------------updates an existing entity in the database----------------------------------------
 -------------------------------------------------------------------------------------------------------*/
-    public async Task UpdateAsync(T entity)
+    public async Task<bool> UpdateAsync(T entity)
     {
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
+        try{
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch(Exception ex)
+        {
+            return false;
+        }
+        
     }
 
 #endregion U : Update

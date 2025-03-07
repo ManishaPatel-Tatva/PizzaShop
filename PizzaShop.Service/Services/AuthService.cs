@@ -47,21 +47,18 @@ public class AuthService : IAuthService
 
         if (user == null) return false;
 
-        try
-        {
-            var resetToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray()); // Secure token
-            user.Resettoken = resetToken;
-            user.Resettokenexpiry = DateTime.UtcNow.AddHours(1); // Token expires in 1 hour
-            await _userRepository.UpdateAsync(user);
+        var resetToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray()); // Secure token
+        user.Resettoken = resetToken;
+        // user.Resettokenexpiry = DateTime.UtcNow.AddHours(1); // Token expires in 1 hour
+        var success = await _userRepository.UpdateAsync(user);
 
+        if(success)
+        {
             var body = EmailTemplateHelper.GetResetPasswordEmail(resetToken);
             await _emailService.SendEmailAsync(email, "Reset Password", body);
-            return true;
         }
-        catch (Exception)
-        {
-            return false;
-        } 
+        
+        return success;
     }
 
 #endregion

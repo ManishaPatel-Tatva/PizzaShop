@@ -50,6 +50,8 @@ public class AuthController : Controller
             return RedirectToAction("Dashboard", "Profile");
         }
 
+        ViewData["errorToastr"]="Login Failed";
+
         ModelState.AddModelError("", "Invalid email or password.");
         return View(model);
     }
@@ -76,12 +78,14 @@ public class AuthController : Controller
         var resetToken = Guid.NewGuid().ToString();
         var resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme);
 
-        var success = await _authService.ForgotPasswordAsync(model.Email, resetToken);
+        var success = await _authService.ForgotPasswordAsync(model.Email, resetLink);
         if(success)
         {
+            @ViewData["successToastr"] = "Email sent successfully";
             return RedirectToAction("Login","Auth");
         }
 
+        @ViewData["errorToastr"] = "Email not sent.";
         ModelState.AddModelError("", "Email not found.");
         return View(model);
     }

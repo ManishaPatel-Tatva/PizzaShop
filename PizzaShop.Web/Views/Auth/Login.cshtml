@@ -29,7 +29,9 @@
                         <div class="mb-3">
                             <div class="input-group">
                                 <input asp-for="Email" class="form-control login-input p-2" id="inputEmail" placeholder=" Email*" required>
-                                <span class="input-group-text"><img src="images/icons/customer.svg"></span>
+                                <span class="input-group-text">
+                                    <img src="images/icons/customer.svg">
+                                </span>
                             </div>
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>                      
@@ -37,8 +39,10 @@
                         <!-- Password -->
                         <div class="mb-3">
                             <div class="input-group">
-                                <input asp-for="Password" type="password" class="form-control login-input p-2" id="inputPassword1" placeholder=" Password*" required>
-                                <span class="input-group-text"><img src="images/icons/hidden.png" width="16px"></span>
+                                <input asp-for="Password" type="password" class="form-control login-input p-2" id="inputPassword" placeholder=" Password*">
+                                <span class="input-group-text">
+                                    <i class="eye-icon fa fa-eye-slash cursor-pointer" onclick="togglePassword('inputPassword', this)"></i>
+                                </span>
                             </div>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>                       
@@ -49,7 +53,8 @@
                              <div class="form-group">
                                 <div class="checkbox">
                                     <label>
-                                        <input asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
+                                        <input asp-for="RememberMe" /> 
+                                        @Html.DisplayNameFor(model => model.RememberMe)
                                     </label>
                                 </div>
                             </div>
@@ -71,9 +76,16 @@
     </div>        
 </div>
 
+@section Scripts{
+
 <script src="~/js/login.js" asp-append-version="true"></script>
 
+@* @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+} *@
+
 <script>
+
     document.getElementById("forgotPasswordLink").addEventListener("click", function (e) {
         // Prevent default link action
         e.preventDefault();
@@ -85,6 +97,25 @@
         // Redirect to ForgotPassword page
         window.location.href = '@Url.Action("ForgotPassword", "Auth")';
     });
+
+    function togglePassword(inputId, icon) {
+        var inputField = document.getElementById(inputId);
+        if (inputField.type === "password") {
+            inputField.type = "text";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        } else {
+            inputField.type = "password";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        }
+    }
 </script>
+
+
+}
+
+
+
 
 

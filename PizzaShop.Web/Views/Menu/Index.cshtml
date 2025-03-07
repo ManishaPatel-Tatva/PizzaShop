@@ -350,6 +350,7 @@
 
             $(document).on("click",".editItemBtn", function(){
                 loadAddEditModal($(this).data("id"));
+                console.log("itemId id on clicking icons ",$(this).data("id"));
             });
 
             function loadAddEditModal(id){

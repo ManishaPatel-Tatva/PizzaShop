@@ -1,0 +1,54 @@
+<script type="text/javascript">
+    
+    $(document).ready(function() {
+        toastr.options = {
+            'closeButton': true,
+            'debug': false,
+            'newestOnTop': false,
+            'progressBar': false,
+            'positionClass': 'toast-top-right',
+            'preventDuplicates': false,
+            'showDuration': '1000',
+            'hideDuration': '1000',
+            'timeOut': '5000',
+            'extendedTimeOut': '1000',
+            'showEasing': 'swing',
+            'hideEasing': 'linear',
+            'showMethod': 'fadeIn',
+            'hideMethod': 'fadeOut',
+        }
+
+        var successToastr = '@ViewData["successToastr"]';
+        var errorToastr = '@ViewData["errorToastr"]';
+        console.log("error toast", errorToastr);
+
+        if(successToastr && successToastr.trim()!= "")
+        {
+            toastr.success(successToastr);
+        }
+
+        if(errorToastr && errorToastr.trim()!= "")
+        {
+            toastr.error(errorToastr);
+        }
+
+    });
+
+    // Toast Type
+    $('#success').click(function(event) {
+        toastr.success('You clicked Success toast');
+    });
+    $('#info').click(function(event) {
+        toastr.info('You clicked Info toast')
+    });
+    $('#error').click(function(event) {
+        toastr.error('You clicked Error Toast')
+    });
+    $('#warning').click(function(event) {
+        toastr.warning('You clicked Warning Toast')
+    });
+
+
+
+
+    </script>
