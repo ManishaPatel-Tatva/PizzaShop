@@ -13,15 +13,19 @@ public interface IUserService
 
     // Task<User?> GetUserByEmailAsync(string email);
 
-    // EditUserViewModel GetUserByIdAsync(long id);
 
-    UsersListViewModel GetPagedRecords(int pageSize, int pageNumber);
+    // UsersListViewModel GetPagedRecords(int pageSize, int pageNumber);
+
+    Task<UsersListViewModel> GetPagedRecords(int pageSize, int pageNumber, string search);
 
     Task<AddUserViewModel> GetAddUser();
 
     Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
 
-    // Task<bool> UpdateUser(EditUserViewModel model);
+    Task<EditUserViewModel> GetUserAsync(long userId);
 
-    // Task<bool> SoftDeleteUser(long id);
+    Task<bool> UpdateUser(EditUserViewModel model);
+
+    Task<bool> SoftDeleteUser(long id);
+
 }

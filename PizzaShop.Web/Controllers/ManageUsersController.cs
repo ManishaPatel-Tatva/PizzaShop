@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PizzaShop.Web.Controllers
 {
+    [Authorize]
     public class ManageUsersController : Controller
     {
         private readonly IUserService _userService;
@@ -20,9 +23,9 @@ namespace PizzaShop.Web.Controllers
         }
 
 
+#region Display User
 /*---------------------------Display Users---------------------------------------------
 ---------------------------------------------------------------------------------------*/
-#region Display User
 
         public IActionResult Index()
         {
@@ -35,11 +38,11 @@ namespace PizzaShop.Web.Controllers
             return View(model);       
         }
         
-        public IActionResult GetUsersList(int pageSize, int pageNumber = 1)
+        public async Task<IActionResult> GetUsersList(int pageSize, int pageNumber = 1, string search="")
         {
-            var model = _userService.GetPagedRecords(pageSize, pageNumber);
+            var model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
 
-            if (model == null || !model.Users.Any())
+            if (model == null)
             {
                 return NotFound(); // This triggers AJAX error
             }
@@ -47,18 +50,17 @@ namespace PizzaShop.Web.Controllers
             return PartialView("_UsersPartialView", model);
            
         }
-
-
-
 #endregion
 
+
+#region Add user
 /*---------------------------Add User---------------------------------------------
 ---------------------------------------------------------------------------------------*/
-#region Add user
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> AddUser()
         {
-            var model = await _userService.GetAddUser();
+            AddUserViewModel model = await _userService.GetAddUser();
             ViewData["sidebar-active"] = "Users";
             return View(model);
         }
@@ -68,95 +70,106 @@ namespace PizzaShop.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                AddUserViewModel addUserModel = await _userService.GetAddUser();
+                TempData["errorToastr"] = "User Not Added! Please enter valid details";
                 ViewData["sidebar-active"] = "Users";
-                return View(model);
+                return View(addUserModel);
             }
                 
             var token = Request.Cookies["authToken"];
             var createrEmail = _jwtService.GetClaimValue(token, "email");
 
-            await _userService.AddUserAsync(model, createrEmail);
-            bool success = true;
-            if (success) 
-                TempData["SuccessMessage"] = "User added successfully!";
+            bool isAdded = await _userService.AddUserAsync(model, createrEmail);
+            if (!isAdded)
+            {
+                AddUserViewModel addUserModel = await _userService.GetAddUser();
+                TempData["errorToastr"] = "User Not Added! Please enter valid details";
+                ViewData["sidebar-active"] = "Users";
+                return View(addUserModel);
+            }
 
-            return RedirectToAction("UsersList");
+            TempData["SuccessMessage"] = "User added successfully!";
+            return RedirectToAction("Index");
         }
 #endregion
 
-// /*---------------------------Edit User---------------------------------------------
-// ---------------------------------------------------------------------------------------*/
-// #region Edit User
 
-//         [HttpGet]
-//         public IActionResult EditUser(long userId)
-//         {
-//             var model =  _userService.GetUserByIdAsync(userId);
-//             if (model == null) 
-//                 return NotFound();
-//             return View(model);
-//         }
+#region Address
+/*------------------------------------------------------ Country, state and City---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [HttpGet]
+    public IActionResult GetCountries()
+    {
+        var countries = _addressService.GetCountries();
+        return Json(new SelectList(countries, "Id", "Name"));
+    }
 
-//         [HttpPost]
-//         public async Task<IActionResult> EditUser(EditUserViewModel model)
-//         {
-//             if (!ModelState.IsValid) 
-//                 return View(model);
+    [HttpGet]
+    public IActionResult GetStates(long countryId)
+    {
+        var states = _addressService.GetStates(countryId);
+        return Json(new SelectList(states, "Id", "Name"));
+    }
 
-//             var isUpdated = await _userService.UpdateUser(model);
+    [HttpGet]
+    public IActionResult GetCities(long stateId)
+    {
+        var cities = _addressService.GetCities(stateId);
+        return Json(new SelectList(cities, "Id", "Name"));
+    }
 
-//             if (!isUpdated) 
-//                 return View(model);
+#endregion Address
 
-//             return RedirectToAction("UsersList","ManageUsers");
-//         }
-// #endregion
+#region Edit User
+/*---------------------------Edit User---------------------------------------------
+---------------------------------------------------------------------------------------*/
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> EditUser(long userId)
+        {
+            EditUserViewModel model =  await _userService.GetUserAsync(userId);
+            if (model == null) 
+                return NotFound();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
+                ViewData["sidebar-active"] = "Users";
+                return View(editUserModel);
+            }
+
+            bool isUpdated = await _userService.UpdateUser(model);
+
+            if (!isUpdated)
+            {
+                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
+                ViewData["sidebar-active"] = "Users";
+                return View(editUserModel);
+            }
+
+            TempData["SuccessMessage"] = "User updated successfully!";
+            return RedirectToAction("Index","ManageUsers");
+        }
+#endregion
 
 
-// /*-------------------------------------Soft Delete User-------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------*/
-// #region Soft Delete User
+#region Soft Delete User
+/*-------------------------------------Soft Delete User-------------------------------------------------------
+-------------------------------------------------------------------------------------------------------*/
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> SoftDeleteUser(long id)
+        {
+            bool success = await _userService.SoftDeleteUser(id);
+            return RedirectToAction("Index","ManageUsers");
+        }
 
-//         [HttpPost]
-//         public async Task<IActionResult> SoftDeleteUser(long id)
-//         {
-//             bool success = await _userService.SoftDeleteUser(id);
-//             return RedirectToAction("UsersList");
-//         }
-
-// #endregion 
-
-// /*---------------------------Country State City Role Dropdown---------------------------------------------
-// ---------------------------------------------------------------------------------------*/
-// #region Country, state and City
-//         [HttpGet]
-//         public IActionResult GetCountries()
-//         {
-//             var countries = _countryService.GetCountries();
-//             return Json(new SelectList(countries, "Id", "Name"));
-//         }
-
-//         [HttpGet]
-//         public IActionResult GetStates(long countryId)
-//         {
-//             var states = _countryService.GetStates(countryId);
-//             return Json(new SelectList(states, "Id", "Name"));
-//         }
-
-//         [HttpGet]
-//         public IActionResult GetCities(long stateId)
-//         {
-//             var cities = _countryService.GetCities(stateId);
-//             return Json(new SelectList(cities, "Id", "Name"));
-//         }
-
-//         [HttpGet]
-//         public IActionResult GetRoles()
-//         {
-//             var roles = _userService.GetRoles();
-//             return Json(new SelectList(roles, "Id", "Name"));
-//         }
-// #endregion
+#endregion 
 
     }
 }

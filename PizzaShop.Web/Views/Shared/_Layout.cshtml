@@ -1,6 +1,6 @@
 ﻿@{
-    var userName = Context.Session.GetString("userName");
-    var profileImg = Context.Session.GetString("profileImg");
+    var userName = Context.Request.Cookies["userName"];
+    var profileImg = Context.Request.Cookies["profileImg"];
 }
 
 <!DOCTYPE html>
@@ -119,6 +119,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="~/js/custom.js" asp-append-version="true"></script>
     @await Html.PartialAsync("_ToastrPartialView")
+    @await Html.PartialAsync("_ValidationScriptsPartial")
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

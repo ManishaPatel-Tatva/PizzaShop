@@ -11,7 +11,7 @@
         <h1 class="blue-text"> Add New User</h1>
     </div>
     <div>
-        <a asp-action="UsersList" asp-controller="ManageUsers" class="btn btn-white">
+        <a asp-action="Index" asp-controller="ManageUsers" class="btn btn-white">
             <img src="images/icons/chevron-left-blue.svg" alt="">
             <span>Back</span>
         </a>  
@@ -66,11 +66,11 @@
 
     <!-- Browse files row-->
     <div class="col-12 mb-3 browse">
-        <input asp-for="Image" type="file" id="upload" hidden>
+        <input asp-for="Image" type="file" id="uploadImage" hidden>
         <label for="upload" class="w-100">
             <div class="d-flex justify-content-center flex-column mt-3">
-                <img src="~/images/icons/browse.svg" alt="" height="35px">
-                <div class="d-flex justify-content-center">Browse Files</div> 
+                <img src="~/images/icons/browse.svg" id="" alt="" height="35px">
+                <div class="d-flex justify-content-center" id="showUploadImage">Browse Files</div> 
             </div> 
         </label>
         <span asp-validation-for="Image" class="text-danger"></span>
@@ -138,10 +138,16 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
+     @* $('#uploadImage').change(function(){
+        let file = this.files[0];
+        $('#showUploadImage').text(file.name);
+    }); *@
     
     $(document).ready(function () {
         $('#Countries').change(function () {
             var countryId = $(this).val();
+            console.log(countryId);
             $.getJSON('@Url.Action("GetStates")', { countryId: countryId }, function (states) {
                 var statesSelect = $('#States');
                 statesSelect.empty();

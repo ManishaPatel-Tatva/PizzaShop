@@ -63,7 +63,9 @@ public class GenericRepository<T> : IGenericRepository<T>
             throw new ArgumentNullException(nameof(orderBy), "Ordering function cannot be null.");
         }
         IQueryable<T> query = _dbSet;
-        return (orderBy(query).Skip((pageNumber - 1) * pageSize).Take(pageSize), query.Count());
+        return (orderBy(query).
+                Skip((pageNumber - 1) * pageSize).
+                Take(pageSize), query.Count());
     }
 
 
@@ -76,6 +78,7 @@ public class GenericRepository<T> : IGenericRepository<T>
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         List<Expression<Func<T, object>>>? includes = null)
     {
+
         IQueryable<T> query = _dbSet;
 
         if (filter != null)
@@ -87,7 +90,7 @@ public class GenericRepository<T> : IGenericRepository<T>
         {
             foreach (var include in includes)
             {
-                query = query.Include(include);
+                query =  query.Include(include);
             }
         }
 
@@ -98,12 +101,13 @@ public class GenericRepository<T> : IGenericRepository<T>
             query = orderBy(query);
         }
 
-        var items = await query
+        var items = query
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToList();
 
         return (items, totalCount);
+        
     }
 
     
@@ -183,6 +187,7 @@ public class GenericRepository<T> : IGenericRepository<T>
         throw new NotImplementedException();
     }
 
-#endregion Common
+
+    #endregion Common
 }
 

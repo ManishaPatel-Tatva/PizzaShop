@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
 
+[Authorize]
 public class MenuController : Controller
 {
     private readonly ICategoryItemService _categoryItemService;

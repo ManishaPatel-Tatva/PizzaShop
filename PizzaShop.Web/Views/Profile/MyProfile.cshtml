@@ -27,7 +27,7 @@
 
         <!-- Admin heading and image -->
         <div class="d-flex">
-            <img class="profile-img rounded-circle" src="@(Model.ProfileImageUrl != null ? Model.ProfileImageUrl : "~/images/Default_pfp.svg.png")">
+            <img id="img-preview" class="profile-img rounded-circle" src="@(Model.ProfileImageUrl != null ? Model.ProfileImageUrl : "~/images/Default_pfp.svg.png")">
             <div class="camera-div bg-white">
                 <label for="profileImage">
                     <img  class="camera-img" src="~/images/icons/camera.svg" alt="Upload Profile Image">
@@ -132,7 +132,9 @@
 @section Scripts{
  
 <script>
-    $(document).ready(function () {
+    $(document).ready(function () 
+    {
+
         $('#Countries').change(function () {
             var countryId = $(this).val();
             $.getJSON('@Url.Action("GetStates")', { countryId: countryId }, function (states) {
@@ -149,6 +151,7 @@
                 });
             });
         });
+
         $('#States').change(function () {
             var stateId = $(this).val();
             $.getJSON('@Url.Action("GetCities")', { stateId: stateId }, function (cities) {
@@ -163,7 +166,22 @@
                 });
             });
         });
+
+        $("#profileImage").change(function () {
+            const file = this.files[0];
+            if (file) {
+                const fileReader = new FileReader();
+                fileReader.onload = function (event) {
+                    $("#img-preview").attr("src", event.target.result);
+                };
+                fileReader.readAsDataURL(file);
+            }
+        });
+
     });
+
+
+
 </script>
 
 }

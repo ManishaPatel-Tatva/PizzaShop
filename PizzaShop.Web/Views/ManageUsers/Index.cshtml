@@ -12,7 +12,7 @@
     <div class="justify-content-end d-flex align-items-center">
         <div class="me-2">
             <div class="input-group">
-                <input type="search" class="form-control" placeholder="Search" name="search">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="search">
                 <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt=""> </button>
             </div>
         </div>
@@ -42,6 +42,34 @@
             PaginationAjax(1, selectedPageSize); // Reload data with new page size
         });
 
+
+         //for #SoftDelete Delete
+        let userId;
+        $(document).on("click",".deleteIcon", function(){
+            userId = $(this).data("id");
+            console.log("User id is ",userId);
+        })
+
+        $(document).on("click","#SoftDelete",function(){
+            $.ajax({
+                url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
+                type: "POST",
+                data: {id:userId},
+                success:function(response){
+                    console.log("User width id ",userId,"deleted.");
+                    location.reload();
+                },
+                error:function(){
+                    console.log("error input deleting user");
+                }
+            })
+        })
+
+        $(document).on("input","#search", function(){
+            var selectedPageSize = $("#itemsPerPage").val();
+            PaginationAjax(1, selectedPageSize); // Reload data with new page size
+        })
+
         function PaginationAjax(pageNumber, pageSize) {
             if (!pageNumber) {
                 pageNumber = @((Model?.Page?.CurrentPage ?? 1));
@@ -50,9 +78,19 @@
                 pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
             }
 
+            let searchQuery = $("#search").val();
+            if (searchQuery == null){
+                searchQuery = ""
+            }
+
+            console.log(searchQuery)
             $.ajax({
                 url: "/ManageUsers/GetUsersList",
-                data: { 'pageSize': pageSize, 'pageNumber': pageNumber },
+                data: {
+                    'search' : searchQuery,
+                    'pageSize': pageSize, 
+                    'pageNumber': pageNumber
+                },
                 type: "GET",
                 dataType: "html",
                 success: function (data) {
@@ -65,5 +103,9 @@
                 }
             });
         }
+
+        
+
+
     </script>
 }

@@ -107,18 +107,20 @@ public class ProfileService : IProfileService
 
     public async Task<bool> ChangePasswordAsync(ChangePasswordViewModel model)
     {
-        var user = await _userRepository.GetByStringAsync(u => u.Email == model.Email);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == model.Email);
 
         if (user == null) 
             return false;
 
         bool verified = PasswordHelper.VerifyPassword(model.OldPassword, user.Password);
-        if (!verified)
-            return false;
-
-        user.Password = PasswordHelper.HashPassword(model.NewPassword);
-        await _userRepository.UpdateAsync(user);
-        return true;
+            
+        if(verified)
+        {
+            user.Password = PasswordHelper.HashPassword(model.NewPassword);
+            return await _userRepository.UpdateAsync(user);
+        }
+        
+        return verified;
     }
     
 #endregion

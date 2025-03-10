@@ -17,7 +17,9 @@ namespace PizzaShop.Entity.ViewModels{
         [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
         public string UserName { get; set; } = null!;
 
-        [RegularExpression(@"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$", ErrorMessage = "Invalid Phone Number Format")]
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits.")]
         public long Phone { get; set; } 
 
         [Required(ErrorMessage = "Email is required")]
@@ -33,7 +35,7 @@ namespace PizzaShop.Entity.ViewModels{
         [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
         public int ZipCode { get; set; }
 
-        public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
+        public string? ProfileImageUrl { get; set; } = "/images/Default_pfp.svg.png";
 
         public IFormFile? Image {get; set;} = null!;
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Entity.ViewModels;
@@ -5,6 +6,7 @@ using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
 
+[Authorize]
 public class ProfileController : Controller
 {
     private readonly IProfileService _profileService;
@@ -36,10 +38,10 @@ public class ProfileController : Controller
     [HttpGet]
     public async Task<IActionResult> MyProfile()
     {
-        var token = Request.Cookies["authToken"];
-        var email = _jwtService.GetClaimValue(token, "email");
+        string token = Request.Cookies["authToken"];
+        string email = _jwtService.GetClaimValue(token, "email");
 
-        var model = await _profileService.GetMyProfileAsync(email);
+        MyProfileViewModel model = await _profileService.GetMyProfileAsync(email);
         if (model == null) 
             return NotFound();
 
@@ -49,15 +51,27 @@ public class ProfileController : Controller
     [HttpPost]
     public async Task<IActionResult> MyProfile(MyProfileViewModel model)
     {
-        if (!ModelState.IsValid) 
-            return View();
+        if (!ModelState.IsValid)
+        {
+            string profileToken = Request.Cookies["authToken"];
+            string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
+            MyProfileViewModel profileModel = await _profileService.GetMyProfileAsync(profileEmail);
+            TempData["errorToastr"] = "Profile Not Updated! Please enter valid details";
+            return View(profileModel);
+        }
 
-        var isUpdated = await _profileService.UpdateProfileAsync(model);
+        bool isUpdated = await _profileService.UpdateProfileAsync(model);
 
         if (!isUpdated) 
-            return View(model);
-
-        TempData["SuccessMessage"] = "Password changed successfully!";
+        {
+            string profileToken = Request.Cookies["authToken"];
+            string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
+            MyProfileViewModel profileModel = await _profileService.GetMyProfileAsync(profileEmail);
+            TempData["errorToastr"] = "Profile Not Updated! Please enter valid details";
+            return View(profileModel);
+        }
+       
+        TempData["SuccessMessage"] = "Profile Updated Successfully!";
         return RedirectToAction("Dashboard");
     }
 
@@ -96,8 +110,8 @@ public class ProfileController : Controller
     [HttpGet]
     public IActionResult ChangePassword()
     {
-        var token = Request.Cookies["authToken"];
-        var email = _jwtService.GetClaimValue(token, "email");      
+        string token = Request.Cookies["authToken"];
+        string email = _jwtService.GetClaimValue(token, "email");      
         ViewBag.email = email;                                      //For sending email value from token to View for accessing in ViewModel
         return View();
     }
@@ -108,12 +122,16 @@ public class ProfileController : Controller
         if (!ModelState.IsValid) 
             return View(model);
 
-        var isPasswordChanged = await _profileService.ChangePasswordAsync(model);
-        if (!isPasswordChanged) 
-            return View(model);
+        bool isPasswordChanged = await _profileService.ChangePasswordAsync(model);
 
+        if (!isPasswordChanged)
+        {
+            TempData["errorToastr"] = "You entered old password incorrect!";
+            return View(model);
+        }
+            
         TempData["SuccessMessage"] = "Password Changed Successfully!";
-        return RedirectToAction("MyProfile");
+        return RedirectToAction("Logout");
     }
 #endregion
 

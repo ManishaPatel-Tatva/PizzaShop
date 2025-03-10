@@ -38,7 +38,7 @@ public class AuthService : IAuthService
         if (!PasswordHelper.VerifyPassword(password, user.Password))
             return (null,null,null, "Invalid Credentials!");
 
-        var role = await _roleRepository.GetByStringAsync(u => u.Id == user.Id);
+        var role = await _roleRepository.GetByStringAsync(u => u.Id == user.RoleId);
         var token = _jwtService.GenerateToken(email, role.Name);
         return (token,user.Username, user.ProfileImg, null);
     }

@@ -15,5 +15,18 @@ namespace BusinessLogicLayer.Helpers
                     </div>
                 </div>";
         }
+
+        public static string GetNewPasswordEmail(string password)
+        {
+            return $@"
+                <div style='background-color: #F2F2F2;'>
+                    <div style='background-color: #0066A8; color: white; height: 90px; font-size: 40px; font-weight: 600; text-align: center; padding-top: 40px; margin-bottom: 0px;'>PIZZASHOP</div>
+                    <div style='font-family:Verdana, Geneva, Tahoma, sans-serif; margin-top: 0px; font-size: 20px; padding: 10px;'>
+                        <p>Pizza shop,</p>
+                        <h3>Your Password is : {password}</h3>
+                        <p>If you encounter any issues or have any question, please do not hesitate to contact our support team.</p>
+                    </div>
+                </div>";
+        }
     }
 }

@@ -1,8 +1,8 @@
-@* @model DataAccessLayer.ViewModels.EditUserViewModel;
+@model PizzaShop.Entity.ViewModels.EditUserViewModel;
 
 @{
     ViewData["Title"] = "Add User";
-    Layout = "_SidebarLayout";
+    Layout = "_Layout";
 }
 
 <div class="d-flex justify-content-between users mb-3">
@@ -10,7 +10,7 @@
         <h1 class="blue-text">Edit User</h1>
     </div>
     <div>
-        <a asp-action="UsersList" asp-controller="ManageUsers" class="btn btn-white">
+        <a asp-action="Index" asp-controller="ManageUsers" class="btn btn-white">
             <img src="images/icons/chevron-left-blue.svg" alt="">
             <span>Back</span>
         </a>  
@@ -169,4 +169,4 @@
             });
         });
     });
-</script> *@
+</script>
