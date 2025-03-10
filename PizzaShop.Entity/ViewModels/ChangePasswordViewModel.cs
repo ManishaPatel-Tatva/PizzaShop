@@ -13,8 +13,9 @@ namespace PizzaShop.Entity.ViewModels
         [DataType(DataType.Password)]
         public string? OldPassword { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Password is required")]    
+        [DataType(DataType.Password)]    
+        [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",ErrorMessage = "Password must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters")]   
         public string? NewPassword { get; set; }
 
         [DataType(DataType.Password)]

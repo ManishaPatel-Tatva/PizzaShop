@@ -87,7 +87,7 @@ public class AuthController : Controller
         var (success, message) = await _authService.ForgotPasswordAsync(model.Email, resetToken, resetLink);
         if(success)
         {
-            TempData["successToastr"] = message;
+            TempData["SuccessMessage"] = message;
             return RedirectToAction("Login","Auth");
         }
 
@@ -121,7 +121,7 @@ public class AuthController : Controller
         var (success, message) = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
         if (success)
         {
-            TempData["successToastr"] = message;
+            TempData["SuccessMessage"] = message;
             return RedirectToAction("Login","Auth");
         } 
 

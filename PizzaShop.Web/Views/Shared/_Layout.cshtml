@@ -43,14 +43,14 @@
 
                 <!-- Navbar starts -->
                 <nav>
-                    <div class="d-flex justify-content-end p-3">
+                    <div class="d-flex justify-content-end px-3 py-2">
                         <div class="btn-group">
                             <a type="button" class="btn " data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src= @(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") alt="profile" height="35px">
+                                <img src= @(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") class="rounded-circle" alt="profile" height="35px">
                             </a>
                             <ul class="dropdown-menu dropdown-menu-lg-end">
-                                <li class="mb-2 ms-2 d-flex align-items-center">
-                                    <img class="me-2" src="~/images/Default_pfp.svg.png" alt="" width="30px">
+                                <li class="mb-2 ms-3 d-flex align-items-center">
+                                    <img class="me-2 rounded-circle" src= @(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") alt="" width="30px">
                                     <span>@userName</span>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>

@@ -18,13 +18,13 @@
             'hideMethod': 'fadeOut',
         }
 
-        var successToastr = '@TempData["successToastr"]';
+        var SuccessMessage = '@TempData["SuccessMessage"]';
         var errorToastr = '@TempData["errorToastr"]';
         console.log("error toast", errorToastr);
 
-        if(successToastr && successToastr.trim()!= "")
+        if(SuccessMessage && SuccessMessage.trim()!= "")
         {
-            toastr.success(successToastr);
+            toastr.success(SuccessMessage);
         }
 
         if(errorToastr && errorToastr.trim()!= "")

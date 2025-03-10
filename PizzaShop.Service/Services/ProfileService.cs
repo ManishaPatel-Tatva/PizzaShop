@@ -78,19 +78,19 @@ public class ProfileService : IProfileService
         user.ZipCode = model.ZipCode;
 
         // Handle Image Upload
-        if (model.image != null)
+        if (model.Image != null)
         {
             string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            string fileName = $"{Guid.NewGuid()}_{model.image.FileName}";
+            string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
             string filePath = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await model.image.CopyToAsync(stream);
+                await model.Image.CopyToAsync(stream);
             }
 
             user.ProfileImg = $"/uploads/{fileName}";

@@ -4,7 +4,6 @@ namespace PizzaShop.Entity.ViewModels
 {
     public class LoginViewModel
     {
-
         [Required(AllowEmptyStrings = false, ErrorMessage = "Email ID is required")]    
         [EmailAddress]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format")]

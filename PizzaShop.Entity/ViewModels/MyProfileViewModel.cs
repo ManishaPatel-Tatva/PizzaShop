@@ -5,35 +5,37 @@ using PizzaShop.Entity.Models;
 namespace PizzaShop.Entity.ViewModels{
     public class MyProfileViewModel
     {
-        // [Required(ErrorMessage = "First Name is required")]
-        // [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]
+        [Required(ErrorMessage = "First Name is required")]
+        [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]
         public string FirstName { get; set; } = null!;
 
-        // [Required(ErrorMessage = "Last Name is required")]
-        // [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters")]
+        [Required(ErrorMessage = "Last Name is required")]
+        [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters")]
         public string LastName { get; set; } = null!;
 
-        // [Required(ErrorMessage = "User Name is required")]
-        // [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
+        [Required(ErrorMessage = "User Name is required")]
+        [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
         public string UserName { get; set; } = null!;
 
+        [RegularExpression(@"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$", ErrorMessage = "Invalid Phone Number Format")]
         public long Phone { get; set; } 
 
-        // [Required(ErrorMessage = "Email is required")]
-        // [EmailAddress(ErrorMessage = "Invalid email format")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format")]
         public string? Email { get; set; } = null!;
 
-        // [Required(ErrorMessage = "Address is required")]
-        // [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
+        [Required(ErrorMessage = "Address is required")]
+        [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
         public string Address { get; set; } = null!;
 
-        // [Required(ErrorMessage = "Zip Code is required")]
-        // [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
+        [Required(ErrorMessage = "Zip Code is required")]
+        [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
         public int ZipCode { get; set; }
 
         public string ProfileImageUrl { get; set; } = "~/images/Default_pfp.svg.png";
 
-        public IFormFile? image {get; set;} = null!;
+        public IFormFile? Image {get; set;} = null!;
 
         public long CountryId {get; set;}
         public long StateId {get; set;}
