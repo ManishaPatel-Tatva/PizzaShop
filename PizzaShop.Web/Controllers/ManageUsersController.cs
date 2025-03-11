@@ -71,7 +71,7 @@ namespace PizzaShop.Web.Controllers
             if (!ModelState.IsValid)
             {
                 AddUserViewModel addUserModel = await _userService.GetAddUser();
-                TempData["errorToastr"] = "User Not Added! Please enter valid details";
+                TempData["errorMessage"] = "User Not Added! Please enter valid details";
                 ViewData["sidebar-active"] = "Users";
                 return View(addUserModel);
             }
@@ -79,16 +79,16 @@ namespace PizzaShop.Web.Controllers
             var token = Request.Cookies["authToken"];
             var createrEmail = _jwtService.GetClaimValue(token, "email");
 
-            bool isAdded = await _userService.AddUserAsync(model, createrEmail);
+            var (isAdded, message) = await _userService.AddUserAsync(model, createrEmail);
             if (!isAdded)
             {
                 AddUserViewModel addUserModel = await _userService.GetAddUser();
-                TempData["errorToastr"] = "User Not Added! Please enter valid details";
+                TempData["errorMessage"] = message;
                 ViewData["sidebar-active"] = "Users";
                 return View(addUserModel);
             }
-
-            TempData["SuccessMessage"] = "User added successfully!";
+            
+            TempData["successMessage"] = "User added successfully!";
             return RedirectToAction("Index");
         }
 #endregion
@@ -128,11 +128,17 @@ namespace PizzaShop.Web.Controllers
         public async Task<IActionResult> EditUser(long userId)
         {
             EditUserViewModel model =  await _userService.GetUserAsync(userId);
-            if (model == null) 
+            if (model == null)
+            {
+                ViewData["sidebar-active"] = "Users";
                 return NotFound();
+            } 
+
+            ViewData["sidebar-active"] = "Users";
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
@@ -143,16 +149,17 @@ namespace PizzaShop.Web.Controllers
                 return View(editUserModel);
             }
 
-            bool isUpdated = await _userService.UpdateUser(model);
+            var (isUpdated, message) = await _userService.UpdateUser(model);
 
             if (!isUpdated)
             {
                 EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
+                TempData["errorMessage"] = message;
                 ViewData["sidebar-active"] = "Users";
                 return View(editUserModel);
             }
 
-            TempData["SuccessMessage"] = "User updated successfully!";
+            TempData["successMessage"] = "User updated successfully!";
             return RedirectToAction("Index","ManageUsers");
         }
 #endregion
@@ -166,7 +173,12 @@ namespace PizzaShop.Web.Controllers
         public async Task<IActionResult> SoftDeleteUser(long id)
         {
             bool success = await _userService.SoftDeleteUser(id);
-            return RedirectToAction("Index","ManageUsers");
+
+            if(!success)
+            {
+                return Json(new {success = false, message="User Not deleted"});
+            }
+            return Json(new {success = true, message="User deleted Successfully!"});
         }
 
 #endregion 

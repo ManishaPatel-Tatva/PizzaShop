@@ -18,24 +18,24 @@
             'hideMethod': 'fadeOut',
         }
 
-        var SuccessMessage = '@TempData["SuccessMessage"]';
-        var errorToastr = '@TempData["errorToastr"]';
-        console.log("error toast", errorToastr);
+        var successMessage = '@TempData["successMessage"]';
+        var errorMessage = '@TempData["errorMessage"]';
+        console.log("error toast", errorMessage);
 
-        if(SuccessMessage && SuccessMessage.trim()!= "")
+        if(successMessage && successMessage.trim()!= "")
         {
-            toastr.success(SuccessMessage);
+            toastr.success(successMessage);
         }
 
-        if(errorToastr && errorToastr.trim()!= "")
+        if(errorMessage && errorMessage.trim()!= "")
         {
-            toastr.error(errorToastr);
+            toastr.error(errorMessage);
         }
 
     });
 
     // Toast Type
-    $('#success').click(function(event) {
+    @* $('#success').click(function(event) {
         toastr.success('You clicked Success toast');
     });
     $('#info').click(function(event) {
@@ -46,7 +46,7 @@
     });
     $('#warning').click(function(event) {
         toastr.warning('You clicked Warning Toast')
-    });
+    }); *@
 
 
 </script>

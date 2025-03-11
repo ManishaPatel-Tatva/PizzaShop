@@ -28,10 +28,10 @@
 <div class="table-responsive bg-white px-3" id="tableContent">
     <!-- Partial View -->
 
-    
+
 </div>
 
-@section Scripts{
+@section Scripts {
     <script>
         $(document).ready(function () {
             PaginationAjax(1, $("#itemsPerPage").val()); // Load users on page load
@@ -43,29 +43,36 @@
         });
 
 
-         //for #SoftDelete Delete
+        //for #SoftDelete Delete
         let userId;
-        $(document).on("click",".deleteIcon", function(){
+        $(document).on("click", ".deleteIcon", function () {
             userId = $(this).data("id");
-            console.log("User id is ",userId);
+            console.log("User id is ", userId);
         })
 
-        $(document).on("click","#SoftDelete",function(){
+        $(document).on("click", "#SoftDelete", function () {
             $.ajax({
                 url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
                 type: "POST",
-                data: {id:userId},
-                success:function(response){
-                    console.log("User width id ",userId,"deleted.");
-                    location.reload();
+                data: { id: userId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function(){
+                            location.reload();
+                        },000);
+                    }
+                    else{
+                        toastr.error(response.message)
+                    }
                 },
-                error:function(){
-                    console.log("error input deleting user");
+                error: function () {
+                    console.log("User not deleted!");
                 }
             })
         })
 
-        $(document).on("input","#search", function(){
+        $(document).on("input", "#search", function () {
             var selectedPageSize = $("#itemsPerPage").val();
             PaginationAjax(1, selectedPageSize); // Reload data with new page size
         })
@@ -79,7 +86,7 @@
             }
 
             let searchQuery = $("#search").val();
-            if (searchQuery == null){
+            if (searchQuery == null) {
                 searchQuery = ""
             }
 
@@ -87,8 +94,8 @@
             $.ajax({
                 url: "/ManageUsers/GetUsersList",
                 data: {
-                    'search' : searchQuery,
-                    'pageSize': pageSize, 
+                    'search': searchQuery,
+                    'pageSize': pageSize,
                     'pageNumber': pageNumber
                 },
                 type: "GET",
@@ -104,7 +111,7 @@
             });
         }
 
-        
+
 
 
     </script>

@@ -20,11 +20,11 @@ public interface IUserService
 
     Task<AddUserViewModel> GetAddUser();
 
-    Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail);
+    Task<(bool success, string? message)> AddUserAsync(AddUserViewModel model, string createrEmail);
 
     Task<EditUserViewModel> GetUserAsync(long userId);
 
-    Task<bool> UpdateUser(EditUserViewModel model);
+    Task<(bool success, string? message)> UpdateUser(EditUserViewModel model);
 
     Task<bool> SoftDeleteUser(long id);
 

@@ -17,6 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+//HttpContext
+builder.Services.AddHttpContextAccessor();
+
 //Database Connection
 var conn = builder.Configuration.GetConnectionString("PizzaShopDbConnection");
 builder.Services.AddDbContext<PizzaShopContext>(q => q.UseNpgsql(conn));

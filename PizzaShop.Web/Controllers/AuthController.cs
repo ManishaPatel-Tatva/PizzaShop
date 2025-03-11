@@ -35,7 +35,7 @@ public class AuthController : Controller
         var (token, userName, profileImg, message) = await _authService.LoginAsync(model.Email, model.Password);
 
         if(token == null)
-            TempData["errorToastr"] = message;
+            TempData["errorMessage"] = message;
 
         if (token != null)
         {
@@ -48,9 +48,6 @@ public class AuthController : Controller
             Response.Cookies.Append("authToken", token, options);
             Response.Cookies.Append("userName", userName, options);
             Response.Cookies.Append("profileImg", profileImg, options);
-
-            HttpContext.Session.SetString("userName",userName);
-            HttpContext.Session.SetString("profileImg",profileImg);
 
             if (model.RememberMe)
                 Response.Cookies.Append("emailCookie", model.Email, options);
@@ -87,11 +84,11 @@ public class AuthController : Controller
         var (success, message) = await _authService.ForgotPasswordAsync(model.Email, resetToken, resetLink);
         if(success)
         {
-            TempData["SuccessMessage"] = message;
+            TempData["successMessage"] = message;
             return RedirectToAction("Login","Auth");
         }
 
-        TempData["errorToastr"] = message;
+        TempData["errorMessage"] = message;
         ModelState.AddModelError("", "Email not found.");
         return View(model);
     }
@@ -121,11 +118,11 @@ public class AuthController : Controller
         var (success, message) = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
         if (success)
         {
-            TempData["SuccessMessage"] = message;
+            TempData["successMessage"] = message;
             return RedirectToAction("Login","Auth");
         } 
 
-        TempData["errorToastr"] = message;
+        TempData["errorMessage"] = message;
         ModelState.AddModelError("", "Failed to reset password.");
         return View(model);
     }

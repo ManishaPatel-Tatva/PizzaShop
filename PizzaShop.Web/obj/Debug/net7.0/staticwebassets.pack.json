@@ -93,6 +93,10 @@
       "PackagePath": "staticwebassets\\images\\icons\\logout.svg"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\images\\icons\\menu-bar.svg",
+      "PackagePath": "staticwebassets\\images\\icons\\menu-bar.svg"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\images\\icons\\modifiers.svg",
       "PackagePath": "staticwebassets\\images\\icons\\modifiers.svg"
     },
@@ -461,8 +465,16 @@
       "PackagePath": "staticwebassets\\uploads\\0e61d4f0-bfb3-4679-9a95-9b861c23d11b_icons8-github-48.png"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\0fa95779-7745-4576-8997-53849d68d740_profile_div_bg.jpg",
+      "PackagePath": "staticwebassets\\uploads\\0fa95779-7745-4576-8997-53849d68d740_profile_div_bg.jpg"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\1bea17d7-83cc-4393-a3b2-010a97d60f47_profile_div_bg.jpg",
       "PackagePath": "staticwebassets\\uploads\\1bea17d7-83cc-4393-a3b2-010a97d60f47_profile_div_bg.jpg"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\257fde70-3793-46ce-aedc-47fb6f100461_QR.png",
+      "PackagePath": "staticwebassets\\uploads\\257fde70-3793-46ce-aedc-47fb6f100461_QR.png"
     },
     {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\2819fb02-7dee-474e-9084-52e072c6b61b_hidden.png",
@@ -473,8 +485,24 @@
       "PackagePath": "staticwebassets\\uploads\\2c279157-4b69-48f9-9a21-3d46b11a47e2_dominos_background.jpg"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\2cff855d-3ecc-4a58-8b48-78eda69560ee_toppng.com-warning-icon-2400x2400.png",
+      "PackagePath": "staticwebassets\\uploads\\2cff855d-3ecc-4a58-8b48-78eda69560ee_toppng.com-warning-icon-2400x2400.png"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\2de18590-6924-42ea-ab8a-3dca0eb25c83_transperent-pizza.png",
       "PackagePath": "staticwebassets\\uploads\\2de18590-6924-42ea-ab8a-3dca0eb25c83_transperent-pizza.png"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\38cc97ec-91ab-4867-ba70-0962d47363a3_QR.png",
+      "PackagePath": "staticwebassets\\uploads\\38cc97ec-91ab-4867-ba70-0962d47363a3_QR.png"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\39213550-6966-400a-a83a-800545bda82f_profile_div_bg.jpg",
+      "PackagePath": "staticwebassets\\uploads\\39213550-6966-400a-a83a-800545bda82f_profile_div_bg.jpg"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\3e7d9476-4852-4070-b0f6-2adde872dc37_profile_div_bg.jpg",
+      "PackagePath": "staticwebassets\\uploads\\3e7d9476-4852-4070-b0f6-2adde872dc37_profile_div_bg.jpg"
     },
     {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\3ee6fff7-02de-4ed9-921a-a4c57301c16c_transperent-pizza.png",
@@ -569,8 +597,16 @@
       "PackagePath": "staticwebassets\\uploads\\b05622d8-1030-4231-97d3-0c0c1f7ecb8b_QR.png"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\bfaf3e6a-bc91-4423-8173-62a79daafab5_toppng.com-warning-icon-2400x2400.png",
+      "PackagePath": "staticwebassets\\uploads\\bfaf3e6a-bc91-4423-8173-62a79daafab5_toppng.com-warning-icon-2400x2400.png"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\ce55492b-ac87-4279-9f56-aee6f8a50bd2_profile_div_bg.jpg",
       "PackagePath": "staticwebassets\\uploads\\ce55492b-ac87-4279-9f56-aee6f8a50bd2_profile_div_bg.jpg"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\d03b9523-427e-43e4-bfe3-8437c92dcf73_transperent-pizza.png",
+      "PackagePath": "staticwebassets\\uploads\\d03b9523-427e-43e4-bfe3-8437c92dcf73_transperent-pizza.png"
     },
     {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\d108ab49-e4d1-4c8f-8e44-1138aebfc928_transperent-pizza.png",

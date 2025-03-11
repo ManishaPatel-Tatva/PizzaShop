@@ -4,6 +4,7 @@ a{
     text-decoration: none;
 }
 
+
 .blue{
     filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);
 }
@@ -48,7 +49,13 @@ a{
 .pizzashop-text{
     color: #0066A8 !important;
     font-weight:700 !important;
-    font-size: large;
+    font-size: x-large;
+}
+
+.PizzaShop-Navbar-Text{
+    color: white !important;
+    font-weight:700 !important;
+    font-size: x-large;
 }
 
 .pizzashop_logo{
@@ -110,14 +117,23 @@ a{
 }
 
 /* sidebar */
+
+.below-navbar{
+    padding-top: 63px;
+}
+
 .sidebar{
-    width: 230px;
+    width: 258px;
     background-color: white;
+}
+
+.main-content{
+    width: calc(100% - 258px);
 }
 
 .sidebar a{
     font-size: large;
-    padding: 10px;
+    padding: 12px;
     color: #686868;
     font-weight: 600;
     text-decoration: none;
@@ -162,6 +178,10 @@ nav{
     padding: 1px 20px;
 }
 
+.a-disabled{
+    pointer-events: none;
+    opacity: 0.5;
+}
 
 td{
     vertical-align: middle;
@@ -174,6 +194,7 @@ td{
 }
 
 .form-floating>label {
+    z-index: 5;
     top: -5px;
     left: 12px;
 }
@@ -278,6 +299,14 @@ td{
         column-gap: 10px;
     }
 }
+@media (max-width: 1000px) {
+    #sidebar{
+        z-index: 100;
+        display: none;
+        position: fixed;
+        height: 100%;
+    }
+}
 
 
 /* Modal */
@@ -301,9 +330,11 @@ td{
 
 
 /* My Profile page */
+.myprofile-icons{
+    opacity: 0.7;
+}
+
 .profile-img{
-    /* border: 1px solid gray;
-    border-radius: 50%; */
     position: relative;
     top: -25px;
     left: 10px;
@@ -360,7 +391,10 @@ td{
 }
 
 .ChangePassword-form .form-floating>label{
-    z-index: 5;
+    left: 0px;
+}
+
+.add-user-password .form-floating>label{
     left: 0px;
 }
 

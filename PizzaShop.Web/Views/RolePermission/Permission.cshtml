@@ -138,23 +138,22 @@
                 data: {roleId:roleId, model: data},
                 success:function(response){
                     console.log("Permission with updated.");
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }
+                    else{
+                        toastr.error(response.message)
+                    }
                 },
                 error:function(){
                     console.log("error while updating");
                 }
             });
 
-            @* $.ajax({
-                url : '@Url.Action("Role", "RolePermission")',
-                type : "GET",
-                @* data: {roleId:roleId, model: data}, 
-                success:function(response){
-                    console.log("Permission with",id,"updated.");
-                },
-                error:function(){
-                    console.log("error while updating");
-                }
-            }); *@
+
         });
 
     </script>

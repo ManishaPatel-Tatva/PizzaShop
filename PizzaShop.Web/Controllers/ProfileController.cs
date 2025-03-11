@@ -56,7 +56,7 @@ public class ProfileController : Controller
             string profileToken = Request.Cookies["authToken"];
             string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
             MyProfileViewModel profileModel = await _profileService.GetMyProfileAsync(profileEmail);
-            TempData["errorToastr"] = "Profile Not Updated! Please enter valid details";
+            TempData["errorMessage"] = "Profile Not Updated! Please enter valid details";
             return View(profileModel);
         }
 
@@ -67,11 +67,14 @@ public class ProfileController : Controller
             string profileToken = Request.Cookies["authToken"];
             string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
             MyProfileViewModel profileModel = await _profileService.GetMyProfileAsync(profileEmail);
-            TempData["errorToastr"] = "Profile Not Updated! Please enter valid details";
+            TempData["errorMessage"] = "Profile Not Updated! Please enter valid details";
             return View(profileModel);
         }
        
-        TempData["SuccessMessage"] = "Profile Updated Successfully!";
+        
+
+
+        TempData["successMessage"] = "Profile Updated Successfully!";
         return RedirectToAction("Dashboard");
     }
 
@@ -130,7 +133,7 @@ public class ProfileController : Controller
             return View(model);
         }
             
-        TempData["SuccessMessage"] = "Password Changed Successfully!";
+        TempData["successMessage"] = "Password Changed Successfully!";
         return RedirectToAction("Logout");
     }
 #endregion

@@ -24,42 +24,9 @@ public class UserService : IUserService
         _emailService = emailService;
     }
 
-    /*----------------------------------------------------------------Display User List--------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    #region Display User List
-
-    // public UsersListViewModel GetUsersList(int pageNumber, int pageSize, string search)
-    // {
-    //     var userList =  _userRepository.GetPagedRecords(pageSize, pageNumber, search))
-    //     return userList;
-    // }
-
-    // public UsersListViewModel GetPagedRecords(int pageSize, int pageNumber)
-    // {
-    //     var usersDb = _userRepository.GetPagedRecords(
-    //         pageSize,
-    //         pageNumber,
-    //         orderBy: q => q.OrderBy(u => u.Id), 
-    //         u => u.IsDeleted == false
-    //     );
-
-    //     UsersListViewModel model = new(){ Page = new() };
-    //     model.Users = usersDb.records.Select(u => new UserInfoViewModel()
-    //     {
-    //         FirstName = u.FirstName,
-    //         LastName = u.LastName,
-    //         Email = u.Email,
-    //         Phone = u.Phone,
-    //         Role = "chef",
-    //         Status = u.IsActive,
-    //         UserId = u.Id,
-    //         ProfileImageUrl = u.ProfileImg
-    //     }).ToList();
-
-    //     model.Page.SetPagination(usersDb.totalRecord, pageSize, pageNumber);
-    //     return model;
-    // }
-
+#region Display User List
+/*----------------------------------------------------------------Display User List--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     public async Task<UsersListViewModel> GetPagedRecords(int pageSize, int pageNumber, string search)
     {
@@ -74,18 +41,6 @@ public class UserService : IUserService
             orderBy: q => q.OrderBy(u => u.Id), 
             includes: new List<Expression<Func<User, object>>> { u => u.Role }
         );
-
-        // var (users, totalRecord) = await _userRepository.GetPagedRecordsAsync(
-        //     pageSize,
-        //     pageNumber,
-        //     filter: (string.IsNullOrEmpty(search) ? null : (u => !u.IsDeleted &&
-        //                  (string.IsNullOrEmpty(search) ||
-        //                   u.FirstName.ToLower().Contains(search) ||
-        //                   u.LastName.ToLower().Contains(search) ||
-        //                   u.Email.ToLower().Contains(search)))),
-        //     orderBy: q => q.OrderBy(u => u.Id),
-        //     includes: new List<Expression<Func<User, object>>> { u => u.Role }
-        // );
 
         UsersListViewModel model = new() { Page = new() };
 
@@ -104,13 +59,11 @@ public class UserService : IUserService
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;
     }
+#endregion Display User List
 
-
-    #endregion
-
-    /*----------------------------------------------------------------Add User--------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    #region  Add User
+#region Add User
+/*----------------------------------------------------------------Add User--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     //This method is used for getting the countries in 
     public async Task<AddUserViewModel> GetAddUser()
@@ -124,8 +77,22 @@ public class UserService : IUserService
         return newUser;
     }
 
-    public async Task<bool> AddUserAsync(AddUserViewModel model, string createrEmail)
+    public async Task<(bool success, string? message)> AddUserAsync(AddUserViewModel model, string createrEmail)
     {
+        model.Email = model.Email.ToLower();
+
+        User existingEmail = await _userRepository.GetByStringAsync(u => u.Email == model.Email && u.IsDeleted == false);
+        if (existingEmail != null)
+        {
+            return(false, "User with same email already existed!");
+        }
+
+        User existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.IsDeleted == false);
+         if (existingUserName != null)
+        {
+            return(false, "User name already existed!");
+        }
+    
         var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
 
         string simplePassword = model.Password;
@@ -176,14 +143,13 @@ public class UserService : IUserService
             await _emailService.SendEmailAsync(model.Email, "New User", body);
         }
 
-        return success;
+        return (success,"");
     }
     #endregion
 
-    /*----------------------------------------------------------------Edit User--------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    #region Edit User
-
+#region Edit User
+/*----------------------------------------------------------------Edit User--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<EditUserViewModel> GetUserAsync(long userId)
     {
         User user = await _userRepository.GetByIdAsync(userId);
@@ -215,12 +181,18 @@ public class UserService : IUserService
         return model;
     }
 
-    public async Task<bool> UpdateUser(EditUserViewModel model)
+    public async Task<(bool success, string? message)> UpdateUser(EditUserViewModel model)
     {
+        User existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.Email != model.Email && u.IsDeleted == false);
+         if (existingUserName != null)
+        {
+            return(false, "User name already existed!");
+        }
+
         User user = await _userRepository.GetByIdAsync(model.UserId);
 
         if (user == null)
-            return false;
+            return (false,"User Not found");
 
         user.FirstName = model.FirstName;
         user.LastName = model.LastName;
@@ -255,15 +227,15 @@ public class UserService : IUserService
 
         bool success = await _userRepository.UpdateAsync(user);
 
-        return success;
+        return (success,"");
 
     }
 
     #endregion
 
-    /*----------------------------------------------------------------Soft Delete User--------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    #region Soft Delete
+#region Soft Delete
+/*----------------------------------------------------------------Soft Delete User--------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     public async Task<bool> SoftDeleteUser(long id)
     {
@@ -283,25 +255,4 @@ public class UserService : IUserService
 
     #endregion
 
-    /*----------------------------------------------------------------Common--------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    #region Common
-    // public async Task<User?> GetUserByEmailAsync(string email)
-    // {
-    //     var user = await _userRepository.GetUserByEmailAsync(email);
-    //     return user;
-    // }
-
-    // public async Task<List<UserInfoViewModel>> GetUserInfoAsync()
-    // {
-    //     var userList = await _userRepository.GetUsersInfoAsync();
-    //     return userList;
-    // }
-
-
-    // public List<Role> GetRoles()
-    // {
-    //     return _userRepository.GetRoles();
-    // }
-    #endregion
 }

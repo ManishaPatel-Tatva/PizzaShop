@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
@@ -5,6 +6,7 @@ using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
 
+[Authorize]
 public class RolePermissionController : Controller
 {
     private readonly IRolePermissionService _rolePermissionService;
@@ -14,10 +16,9 @@ public class RolePermissionController : Controller
         _rolePermissionService = rolePermissionService;
     }
 
-    #region Roles
-    /*---------------------------------------------------------Roles-----------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------*/
-
+#region Roles
+/*---------------------------------------------------------Roles-----------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public IActionResult Role()
     {
@@ -25,10 +26,9 @@ public class RolePermissionController : Controller
         ViewData["sidebar-active"] = "RolePermission";
         return View(roles);
     }
+#endregion Roles
 
-#endregion
-
-#region Roles
+#region Permissions
 /*---------------------------------------------------------Permission-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
@@ -39,16 +39,18 @@ public class RolePermissionController : Controller
         return View(model);
     }
 
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> UpdatePermission(long roleId, List<PermissionViewModel> model)
     {
         
         var isUpdated = await _rolePermissionService.UpdateRolePermission(roleId, model);
 
-        return Json("Successful");
-    }
+        if (!isUpdated)
+             return Json(new {success = false, message="Permission Not updated"});
 
-#endregion
+        return Json(new {success = true, message="Permission updated Successfully!"});
+    }
+#endregion Permissions
 
 }

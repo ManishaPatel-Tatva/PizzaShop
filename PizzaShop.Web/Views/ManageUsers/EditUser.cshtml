@@ -51,10 +51,10 @@
             </select>
             <label for="roles">Role</label>
         </div>
+        <input asp-for="@Model.Email" type="text" class="form-control" id="email" hidden>
         <div class="col-12 col-sm-6 form-floating mb-3">
-            <input asp-for="@Model.Email" type="text" class="form-control" id="email" >
+            <input value="@Model.Email" type="text" class="form-control" id="email" disabled>
             <label for="firstName">Email</label>
-            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
         <div class="col-12 col-sm-6 form-floating mb-3">
             <select asp-for="@Model.Status" class="form-select" id="status">
@@ -66,11 +66,11 @@
 
         <!-- Browse files row-->
         <div class="col-12 mb-3 browse">
-            <input asp-for="@Model.Image" type="file" id="upload" hidden>
-            <label for="upload" class="w-100">
+            <input asp-for="@Model.Image" type="file" id="uploadImage" hidden>
+            <label for="uploadImage" class="w-100">
                 <div class="d-flex justify-content-center flex-column mt-3">
                     <img src="~/images/icons/browse.svg" alt="" height="35px">
-                    <div class="d-flex justify-content-center">Browse Files</div> 
+                    <div class="d-flex justify-content-center " id="showUploadImageName" >@(!string.IsNullOrEmpty(Model.ProfileImageUrl) ? Model.ProfileImageUrl.Split('_')[1] : "Browse File")</div> 
                 </div> 
             </label>
         </div>
@@ -136,6 +136,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
+     $('#uploadImage').change(function(){
+        let file = this.files[0];
+        $('#showUploadImageName').text(file.name);
+    });
     
     $(document).ready(function () {
         $('#Countries').change(function () {
@@ -154,6 +159,7 @@
                 });
             });
         });
+
         $('#States').change(function () {
             var stateId = $(this).val();
             $.getJSON('@Url.Action("GetCities")', { stateId: stateId }, function (cities) {
