@@ -35,9 +35,9 @@ public class UserService : IUserService
             pageNumber,
             filter: u => !u.IsDeleted && 
                          (string.IsNullOrEmpty(search.ToLower()) ||  
-                          u.FirstName.ToLower().Contains(search.ToLower()) || 
-                          u.LastName.ToLower().Contains(search.ToLower()) || 
-                          u.Email.ToLower().Contains(search.ToLower())),
+                            u.Role.Name.ToLower() == search.ToLower() ||
+                            u.FirstName.ToLower().Contains(search.ToLower()) || 
+                            u.LastName.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id), 
             includes: new List<Expression<Func<User, object>>> { u => u.Role }
         );

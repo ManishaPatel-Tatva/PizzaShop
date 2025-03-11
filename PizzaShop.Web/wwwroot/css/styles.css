@@ -123,12 +123,12 @@ a{
 }
 
 .sidebar{
-    width: 258px;
+    width: 260px;
     background-color: white;
 }
 
 .main-content{
-    width: calc(100% - 258px);
+    width: calc(100% - 260px);
 }
 
 .sidebar a{
@@ -194,7 +194,7 @@ td{
 }
 
 .form-floating>label {
-    z-index: 5;
+    /* z-index: 5; */
     top: -5px;
     left: 12px;
 }

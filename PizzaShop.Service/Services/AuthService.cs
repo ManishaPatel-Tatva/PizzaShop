@@ -100,6 +100,7 @@ public class AuthService : IAuthService
         if(success)
         {
             resetToken.IsUsed = true;
+            _resetPasswordRepository.UpdateAsync(resetToken);
             return(true, "Password Changed Successfully!");
         }
         
