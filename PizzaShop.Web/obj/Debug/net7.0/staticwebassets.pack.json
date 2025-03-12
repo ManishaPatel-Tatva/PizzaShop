@@ -213,6 +213,14 @@
       "PackagePath": "staticwebassets\\images\\transperent-pizza.png"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\5f9d593f-efff-48a8-a68c-fc05302c75b7_download.jfif",
+      "PackagePath": "staticwebassets\\itemImages\\5f9d593f-efff-48a8-a68c-fc05302c75b7_download.jfif"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\e8932dc4-ed19-430e-a2a0-52967b4b47b4_transperent-pizza.png",
+      "PackagePath": "staticwebassets\\itemImages\\e8932dc4-ed19-430e-a2a0-52967b4b47b4_transperent-pizza.png"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\js\\bootstrap.bundle.min.js",
       "PackagePath": "staticwebassets\\js\\bootstrap.bundle.min.js"
     },

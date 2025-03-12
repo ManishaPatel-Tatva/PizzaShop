@@ -41,6 +41,6 @@ public class AddItemViewModel
 
     public string? ItemImageUrl { get; set; }
 
-    public IFormFile? Image {get; set;} = null!;
+    public IFormFile? Image {get; set;}
 
 }

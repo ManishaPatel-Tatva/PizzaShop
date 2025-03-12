@@ -24,3 +24,18 @@ $(document).on("click","#toggleSidebarBtn",function(){
     }
 })
 
+
+// $(document).ready(function () {
+//     var categoryId = $('#category_listUl li:first>div>a').data("id");
+//     $('#category_listUl li:first>div>a').addClass("category_active");
+//     paginationAjax(1);
+//   });
+
+//   $('.list-items>div>a').on("click", function () {
+//     $('.list-items').each(function () {
+//       $('.list-items>div>a').removeClass("category_active");
+//     });
+//     categoryId = $(this).data("id");
+//     $(this).addClass("category_active");
+//     paginationAjax(1);
+//   })

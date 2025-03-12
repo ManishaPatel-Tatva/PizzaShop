@@ -58,10 +58,10 @@
 
                             @foreach (var category in Model.Categories)
                             {
-                                <li class="d-flex justify-content-between li-category">
+                                <li class="d-flex justify-content-between li-category" data-id="@category.CategoryId">
                                     <a class="d-flex align-items-center">
-                                        <img src="~/images/icons/grid-3x2.svg" class="grid-img">
-                                        <span>@category.CategoryName</span>
+                                        <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
+                                        <span class="categoryName">@category.CategoryName</span>
                                     </a>
                                     <div class="EditDeleteCategory">
                                         <button class="btn p-0 pe-1 iconEditCategory" data-bs-toggle="modal"
@@ -256,9 +256,9 @@
 
 
 @section Scripts {
-
-    @* Javascript for Category *@
     <script>
+        @* Javascript for Category *@
+
         //For showing edit and delete icons on hovering 
         $(".li-category").mouseover(function () {
             $(this).children("div.EditDeleteCategory").css("visibility", "visible");
@@ -302,23 +302,34 @@
                 }
             });
         });
-    </script>
 
-    @* this is Pagination of items *@
-    <script>
+        $('#uploadImage').change(function () {
+            let file = this.files[0];
+            $('#showUploadImageName').text(file.name);
+        });
+
+
+        @* this is Pagination of items *@
+
+        $(".li-category").on("click",function () {
+            categoryId = $(this).data("id");
+
+            ItemsPaginationAjax(categoryId, 1, $("#itemsPerPage").val());
+        });
+  
         $(document).ready(function() 
         {
-            ItemsPaginationAjax(1, $("#itemsPerPage").val()); // Load users on page load
+
+            ItemsPaginationAjax(1, 1, $("#itemsPerPage").val()); // Load users on page load
         });
 
         $(document).on("change", "#itemsPerPage", function () {
             var selectedPageSize = $(this).val(); // Get selected value
             ItemsPaginationAjax(1, selectedPageSize); // Reload data with new page size
-        });
+        });  
+   
 
-        
-
-        function ItemsPaginationAjax(pageNumber, pageSize) 
+        function ItemsPaginationAjax(categoryId, pageNumber, pageSize) 
         {
             if (!pageNumber) {
                 pageNumber = @((Model?.ItemsPageVM?.Page?.CurrentPage ?? 1));
@@ -329,7 +340,11 @@
 
             $.ajax({
                 url: "/Menu/GetItems",
-                data: { 'pageSize': pageSize, 'pageNumber': pageNumber },
+                data: { 
+                    'categoryId' : categoryId,
+                    'pageSize': pageSize, 
+                    'pageNumber': pageNumber 
+                },
                 type: "GET",
                 dataType: "html",
                 success: function (data) {
@@ -360,7 +375,6 @@
                     data: { itemId: id },
                     dataType: "html",
                     success: function (data) {
-                        console.log("It is successful!",data);
                         $("#addEditItemModal").html(data);
                     },
                     error: function () {

@@ -15,11 +15,11 @@ public interface ICategoryItemService
 
     Task<bool> SoftDelete(long categoryId);
 
-    ItemsPaginationViewModel GetItems(int pageSize, int pageNumber);
+    Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search);
 
     Task<AddItemViewModel> GetEditItem(long itemId);
 
-    Task<bool> EditItem(AddItemViewModel model);
+    Task<bool> UpdateItem(AddItemViewModel model);
 
     Task<bool> AddItem(AddItemViewModel model,string createrEmail);
 

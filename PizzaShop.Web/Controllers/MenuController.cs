@@ -92,10 +92,11 @@ public class MenuController : Controller
 /*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 #region  Display Item
+
     [HttpGet]
-    public async Task<IActionResult> GetItems(int pageSize, int pageNumber = 1)
+    public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search="")
     {
-        var model = _categoryItemService.GetItems(pageSize, pageNumber);
+        var model = await _categoryItemService.GetPagedItems(categoryId, pageSize, pageNumber,search);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error
@@ -104,27 +105,83 @@ public class MenuController : Controller
     }
 #endregion Display Item
 
-/*--------------------------------------------------------Add/Update Items--------------------------------------------------------------------------------------------------------
+/*--------------------------------------------------------Get Add/Update Items--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-#region Add/Update
+#region Get Add/Update
 
     [HttpGet]
     public async Task<IActionResult> GetItemModal(long itemId)
     {
-        if(itemId == 0)
+        AddItemViewModel model = await _categoryItemService.GetEditItem(itemId);
+        return PartialView("_UpdateItemPartialView", model); 
+    }
+#endregion Get Add/Update
+
+#region Update Item
+    [HttpPost]
+    public async Task<IActionResult> AddUpdateItem(AddItemViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            AddItemViewModel model = new AddItemViewModel{Name = ""};
-            return PartialView("_UpdateItemPartialView", model);
+            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+            return PartialView("_UpdateItemPartialView", updatedModel); 
         }
-        else
+
+        if(model.ItemId == 0)
         {
-            AddItemViewModel model = await _categoryItemService.GetEditItem(itemId);
-            return PartialView("_UpdateItemPartialView", model);
+            var token = Request.Cookies["authToken"];
+            var createrEmail = _jwtService.GetClaimValue(token, "email");
+            bool isAdded = await _categoryItemService.AddItem(model, createrEmail);
+            if (!isAdded)
+            {
+                AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+                TempData["errorMessage"] = "Item Not Updated";
+                return RedirectToAction("Index");
+            }
+            TempData["successMessage"] = "Item Added Successfully!";
+            return RedirectToAction("Index");
         }
-        
+
+        bool isUpdated = await _categoryItemService.UpdateItem(model);
+        if (!isUpdated)
+        {
+            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+            TempData["errorMessage"] = "Item Not Updated";
+            return RedirectToAction("Index");
+        }
+
+        TempData["successMessage"] = "Item Updated";
+        return RedirectToAction("Index");
     }
 
-#endregion Add/Update
+
+#endregion Update Item
+
+#region Add Item
+    [HttpPost]
+    public async Task<IActionResult> AddItem(AddItemViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+            return PartialView("_UpdateItemPartialView", updatedModel); 
+        }
+
+        var token = Request.Cookies["authToken"];
+        var createrEmail = _jwtService.GetClaimValue(token, "email");
+
+        bool success = await _categoryItemService.AddItem(model, createrEmail);
+
+        if (!success)
+        {
+            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+            TempData["errorMessage"] = "Item Not Updated";
+            return PartialView("_UpdateItemPartialView", updatedModel); 
+        }
+        return Json(new {success = true, message="Item added successfully!"});
+    }
+#endregion Add Item
+
 
 #endregion Items
 

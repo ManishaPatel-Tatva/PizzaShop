@@ -39,11 +39,11 @@
                 <tr>
                     <td>
                         <input type="checkbox" value="" id="" class="me-2">
-                        <img src="~/images/dining-menu.png" alt="" class="me-2" width="30px">
+                        <img src="@item.ItemImageUrl" alt="" class="me-2 rounded-circle" width="30px" height="30px">
                         @item.ItemName
                     </td>
                     <td>
-                        <img src="~/images/icons/non-veg-icon.svg" alt="" width="23px">
+                        <img src="@item.ItemType" alt="" width="23px">
                     </td>
                     <td>@item.Rate</td>
                     <td>@item.Quantity</td>
@@ -54,7 +54,7 @@
                     </td>
                     <td>
                         <div class="d-flex flex-row">
-                            <button href="edit-user.html" class="editItemBtn btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#editItem" data-id="@item.ItemId">
+                            <button href="edit-user.html" class="editItemBtn btn ps-0 me-2" data-bs-toggle="modal" data-bs-target="#addEditItem" data-id="@item.ItemId">
                                 <img src="~/images/icons/edit.svg" alt=""/>
                             </button>
                             

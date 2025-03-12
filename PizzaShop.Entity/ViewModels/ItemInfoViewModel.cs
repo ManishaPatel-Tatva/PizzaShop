@@ -3,6 +3,7 @@ namespace PizzaShop.Entity.ViewModels;
 public class ItemInfoViewModel
 {
     public long ItemId { get; set; }
+    public string ItemImageUrl { get; set; }
 
     public required string ItemName { get; set; }
 

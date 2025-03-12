@@ -289,7 +289,7 @@ td{
     white-space: nowrap;
 }
 
-@media (max-width: 1160px) {
+@media (max-width: 1290px) {
     .category{
         width: 100%;
         height: fit-content;
@@ -313,6 +313,17 @@ td{
         column-gap: 10px;
     }
 }
+
+@media (max-width: 460px) {
+    .category-list ul{
+        display: grid;
+        grid-template-columns: 1fr;
+        column-gap: 10px;
+    }
+}
+
+
+
 @media (max-width: 1000px) {
     #sidebar{
         z-index: 100;
@@ -422,9 +433,6 @@ td{
     }
 }
 
-.eye-icon{
-    /* left: 385px; */
-}
 
 /*-------------Role---------*/
 .role-table{
@@ -443,11 +451,10 @@ td{
     font-weight: 600;
 }
 
-.switchAddModal{
-    padding-right: 0px;
+.form-check-input:checked {
+    background-color: #0066A8;
+    border-color: #0066A8;
 }
-
-
 
 
 
@@ -484,3 +491,5 @@ td{
 @media only screen and (min-width: 1200px) {
 
 }
+
+
