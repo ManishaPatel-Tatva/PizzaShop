@@ -53,11 +53,10 @@
         });
 
 
-        //for #SoftDelete Delete
+        //for Soft Delete of Users
         let userId;
         $(document).on("click", ".deleteIcon", function () {
             userId = $(this).data("id");
-            console.log("User id is ", userId);
         })
 
         $(document).on("click", "#SoftDelete", function () {
@@ -119,9 +118,6 @@
                 }
             });
         }
-
-
-
 
     </script>
 }

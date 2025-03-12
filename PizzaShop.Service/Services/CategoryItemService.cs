@@ -296,7 +296,34 @@ public class CategoryItemService : ICategoryItemService
 
 #region Soft Delete
 
-    
+    public async Task<bool> SoftDeleteItem(long id)
+    {
+        Item item = await _itemRepository.GetByIdAsync(id);
+
+        if (item == null)
+            return false;
+
+        item.IsDeleted = true;
+        return await _itemRepository.UpdateAsync(item);
+    }
+
+    public async Task<bool> MassDeleteItems(List<long> itemsList)
+    {
+        bool isDeleted;
+        foreach (long id in itemsList)
+        {
+            Item item = await _itemRepository.GetByIdAsync(id);
+
+            if (item == null)
+                return false;
+
+            item.IsDeleted = true;
+            isDeleted = await _itemRepository.UpdateAsync(item);
+            if (!isDeleted)
+                return false;
+        }
+        return true;        
+    }
 
 #endregion Soft Delete
 

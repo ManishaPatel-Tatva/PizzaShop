@@ -308,6 +308,35 @@
             $('#showUploadImageName').text(file.name);
         });
 
+        //for Soft Delete of Items
+        let itemId;
+        $(document).on("click", ".deleteItemIcon", function () {
+            itemId = $(this).data("id");
+            console.log("Item id is ", itemId);
+        })
+
+        $(document).on("click", "#SoftDeleteItem", function () {
+            $.ajax({
+                url: '@Url.Action("SoftDeleteItem", "Menu")',
+                type: "POST",
+                data: { id: itemId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function(){
+                            location.reload();
+                        },000);
+                    }
+                    else{
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Item not deleted!");
+                }
+            })
+        })
+
 
         @* this is Pagination of items *@
 
@@ -319,7 +348,6 @@
   
         $(document).ready(function() 
         {
-
             ItemsPaginationAjax(1, 1, $("#itemsPerPage").val()); // Load users on page load
         });
 
@@ -386,5 +414,77 @@
             }
 
         }
+    </script>
+
+    @* Intermediate Checkbox For Items Script*@
+    <script>        
+
+        $(document).ready(function () {
+            $("#itemMassDeleteIcon").prop("disabled", true);
+        });
+
+        function toggleMasterDeleteBtn() {
+            console.log($(".itemChildCheckbox:checked").length)
+            if ($(".itemChildCheckbox:checked").length > 0) {
+                $("#itemMassDeleteIcon").prop("disabled", false);
+            }
+            else {
+                $("#itemMassDeleteIcon").prop("disabled", true);
+            }
+        }
+
+        $(document).on("change", "#itemParentCheckbox", function () {
+            $(".itemChildCheckbox").each(function () {
+                $(this).prop("checked", $("#itemParentCheckbox").prop("checked"));
+            });
+            toggleMasterDeleteBtn();
+        });
+
+        $(document).on("change", ".itemChildCheckbox", function () {
+            let totalchildCheckBox = $(".itemChildCheckbox").length;
+            let checkedchildCheckBox = $(".itemChildCheckbox:checked").length;
+            if (checkedchildCheckBox === totalchildCheckBox) {
+                $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", true);
+            }
+            else if (checkedchildCheckBox === 0) {
+                $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", false);
+            }
+            else {
+                $("#itemParentCheckbox").prop("indeterminate", true);
+            }
+            toggleMasterDeleteBtn();
+        });
+
+
+        //for Mass Soft Delete of Items
+        @* let itemId;
+        $(document).on("click", ".deleteItemIcon", function () {
+            itemId = $(this).data("id");
+            console.log("Item id is ", itemId);
+        })
+
+        $(document).on("click", "#SoftDeleteItem", function () {
+            $.ajax({
+                url: '@Url.Action("SoftDeleteItem", "Menu")',
+                type: "POST",
+                data: { id: itemId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function(){
+                            location.reload();
+                        },000);
+                    }
+                    else{
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Item not deleted!");
+                }
+            })
+        }) *@
+
+
     </script>
 }

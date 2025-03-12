@@ -43,29 +43,9 @@ public class GenericRepository<T> : IGenericRepository<T>
 -------------------------------------------------------------------------------------------------------*/
     public IEnumerable<T> GetAll() => _dbSet;
 
-
     public IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate)
     {
         return  _dbSet.Where(predicate);
-    }
-
-
-/*----------------------------To Get sorted and paginated records from table---------------------------
--------------------------------------------------------------------------------------------------------*/    
-    public (IEnumerable<T> records, int totalRecord) GetPagedRecords(
-        int pageSize,
-        int pageNumber,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy
-    )
-    {
-        if (orderBy == null)
-        {
-            throw new ArgumentNullException(nameof(orderBy), "Ordering function cannot be null.");
-        }
-        IQueryable<T> query = _dbSet;
-        return (orderBy(query).
-                Skip((pageNumber - 1) * pageSize).
-                Take(pageSize), query.Count());
     }
 
 
@@ -181,12 +161,6 @@ public class GenericRepository<T> : IGenericRepository<T>
         }
         return await _dbSet.CountAsync();
     }
-
-    public (IEnumerable<T> records, int totalRecord) GetPagedRecords(int pageSize, int pageNumber, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy, Expression<Func<T, bool>>? filter = null, List<Expression<Func<T, object>>>? includes = null)
-    {
-        throw new NotImplementedException();
-    }
-
 
     #endregion Common
 }

@@ -12,22 +12,6 @@ public interface IGenericRepository<T>
 
     IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate);
 
-    (IEnumerable<T> records, int totalRecord) GetPagedRecords
-    (
-        int pageSize,
-        int pageNumber,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy
-    );
-
-    (IEnumerable<T> records, int totalRecord) GetPagedRecords
-    (
-        int pageSize,
-        int pageNumber,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy,
-        Expression<Func<T, bool>>? filter = null,
-        List<Expression<Func<T, object>>>? includes = null
-    );
-
     public Task<(IEnumerable<T> items, int totalCount)> GetPagedRecordsAsync
     (
         int pageSize,

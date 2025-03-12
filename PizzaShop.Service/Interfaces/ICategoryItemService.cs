@@ -23,5 +23,9 @@ public interface ICategoryItemService
 
     Task<bool> AddItem(AddItemViewModel model,string createrEmail);
 
+    Task<bool> SoftDeleteItem(long id);
+
+    Task<bool> MassDeleteItems(List<long> itemsList);
+
 
 }

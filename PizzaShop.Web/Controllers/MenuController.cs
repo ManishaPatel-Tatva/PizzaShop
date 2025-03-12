@@ -105,10 +105,9 @@ public class MenuController : Controller
     }
 #endregion Display Item
 
+#region Get Add/Update
 /*--------------------------------------------------------Get Add/Update Items--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-#region Get Add/Update
-
     [HttpGet]
     public async Task<IActionResult> GetItemModal(long itemId)
     {
@@ -118,6 +117,8 @@ public class MenuController : Controller
 #endregion Get Add/Update
 
 #region Update Item
+/*--------------------------------------------------------Update Item--------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
     public async Task<IActionResult> AddUpdateItem(AddItemViewModel model)
     {
@@ -158,6 +159,8 @@ public class MenuController : Controller
 #endregion Update Item
 
 #region Add Item
+/*--------------------------------------------------------Add Items--------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
     public async Task<IActionResult> AddItem(AddItemViewModel model)
     {
@@ -181,6 +184,35 @@ public class MenuController : Controller
         return Json(new {success = true, message="Item added successfully!"});
     }
 #endregion Add Item
+
+#region Delete Item
+/*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<IActionResult> SoftDeleteItem(long id)
+    {
+        bool success = await _categoryItemService.SoftDeleteItem(id);
+
+        if(!success)
+        {
+            return Json(new {success = false, message="Item Not deleted"});
+        }
+        return Json(new {success = true, message="Item deleted Successfully!"});
+    }
+
+/*--------------------------------------------------------Delete Multiple Items--------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<IActionResult> MassDeleteItems(List<long> itemsList)
+    {
+        bool success = await _categoryItemService.MassDeleteItems(itemsList);
+
+        if(!success)
+        {
+            return Json(new {success = false, message="Items Not deleted"});
+        }
+        return Json(new {success = true, message="All selected Items deleted Successfully!"});
+    }
+
+#endregion Delete Item
 
 
 #endregion Items
