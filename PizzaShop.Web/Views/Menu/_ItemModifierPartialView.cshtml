@@ -1,0 +1,42 @@
+@using PizzaShop.Entity.ViewModels;
+@model ItemModifierViewModel
+
+<div class="px-4 ">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <span class="fs-5 fw-bold light-grey-text">Size Options</span>
+        <img src="~/images/icons/deleteFill.svg" alt="delete" height="20px">
+    </div>
+    <div class="row modifier-option">
+        <div class="col-6">
+            <select asp-for="@Model.MinAllowed" class="form-select" aria-label="" id="minAllowed">
+                <option selected value="">0</option>
+                @for (int num = 1; num <= Model.MaxAllowed; num++)
+                {
+                    <option value="@num">@num</option>
+                }
+            </select>
+        </div>
+        <div class="col-6">
+            <select asp-for="@Model.MaxAllowed" class="form-select" aria-label="" id="maxAllowed">
+                <option selected value="">0</option>
+                @for (int num = 1; num <= Model.MaxAllowed; num++)
+                {
+                    <option value="@num">@num</option>
+                }
+            </select>
+        </div> 
+        <div class="col-12">
+            <ul>
+                @foreach(var modifier in Model.ModifierList)
+                {
+                    <li>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>@modifier.ModifierName</span>
+                            <span>@modifier.Rate</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>     
+    </div>
+</div>

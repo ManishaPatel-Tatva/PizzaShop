@@ -313,7 +313,7 @@
         $(document).on("click", ".deleteItemIcon", function () {
             itemId = $(this).data("id");
             console.log("Item id is ", itemId);
-        })
+        });
 
         $(document).on("click", "#SoftDeleteItem", function () {
             $.ajax({
@@ -334,8 +334,8 @@
                 error: function () {
                     console.log("Item not deleted!");
                 }
-            })
-        })
+            });
+        });
 
 
         @* this is Pagination of items *@
@@ -413,6 +413,8 @@
                 });
             }
 
+            
+
         }
     </script>
 
@@ -455,25 +457,28 @@
             toggleMasterDeleteBtn();
         });
 
+        //For mass delete of Items
+        let itemList = [];
+        $(document).on("click", "#itemMassDeleteIcon",function(){
+            console.log("1 itemList is",itemList);
+            $(".itemChildCheckbox:checked").each(function () {
+                itemList.push($(this).data("id"));
+            });
+            console.log("2 itemList is",itemList);
+        });
 
-        //for Mass Soft Delete of Items
-        @* let itemId;
-        $(document).on("click", ".deleteItemIcon", function () {
-            itemId = $(this).data("id");
-            console.log("Item id is ", itemId);
-        })
-
-        $(document).on("click", "#SoftDeleteItem", function () {
+        $(document).on("click", "#confirmMassDeleteItem", function(){
+            console.log("3 itemList is",itemList);
             $.ajax({
-                url: '@Url.Action("SoftDeleteItem", "Menu")',
+                url: '@Url.Action("MassDeleteItems", "Menu")',
                 type: "POST",
-                data: { id: itemId },
+                data: { itemsList: itemList },
                 success: function (response) {
                     if (response.success) {
                         toastr.success(response.message)
                         setTimeout(function(){
                             location.reload();
-                        },000);
+                        },3000);
                     }
                     else{
                         toastr.error(response.message)
@@ -482,9 +487,33 @@
                 error: function () {
                     console.log("Item not deleted!");
                 }
-            })
-        }) *@
+            });
+        });
 
+    </script>
+
+    <script>
+        $(document).on("change","#selectModifierGroup",function(){
+            let modifierGroupId = $(this).val();
+            console.log(modifierGroupId);
+            getSelectedModifierGroup(modifierGroupId);
+        });
+
+        function getSelectedModifierGroup(id){
+            $.ajax({
+                url: '@Url.Action("SelectModifierGroup", "Menu")',
+                type: "GET",
+                data : {modifierGroupId : id},
+                dataType : "html",
+                success: function(data){
+                    console.log(data);
+                    $("#showModifierGroup").append(data);
+                },
+                error: function(){
+                    console.log("There is error in fetching modifier group.Not successful");
+                }
+            });
+        }
 
     </script>
 }

@@ -36,7 +36,7 @@ public class MenuController : Controller
         return View(model);
     }
 
-#region  Category    
+#region Category    
  
 #region Edit Category
  /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
@@ -89,9 +89,9 @@ public class MenuController : Controller
 
 #region Items
 
+#region  Display Item
 /*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-#region  Display Item
 
     [HttpGet]
     public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search="")
@@ -113,6 +113,12 @@ public class MenuController : Controller
     {
         AddItemViewModel model = await _categoryItemService.GetEditItem(itemId);
         return PartialView("_UpdateItemPartialView", model); 
+    }
+
+    public async Task<IActionResult> SelectModifierGroup(long modifierGroupId)
+    {
+        ItemModifierViewModel model = await _categoryItemService.GetModifierOnSelection(modifierGroupId);
+        return PartialView("_ItemModifierPartialView", model); 
     }
 #endregion Get Add/Update
 

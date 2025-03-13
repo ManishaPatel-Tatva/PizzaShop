@@ -33,6 +33,10 @@ a{
     color: #686868;
 }
 
+.light-grey-text{
+    color: #929292
+}
+
 /* Login Page */
 .hero-img{
     height: 100%;
@@ -287,6 +291,18 @@ td{
 .menu-table td,th{
     color: #686868 !important;
     white-space: nowrap;
+}
+
+.modal-modifier{
+    border: 1px solid #ced4da;
+}
+
+.modifier-option .form-select{
+    border-radius: 20px;
+}
+
+.modifier-option ul{
+    padding-left: 20px;
 }
 
 @media (max-width: 1290px) {

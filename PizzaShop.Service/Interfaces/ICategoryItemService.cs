@@ -18,6 +18,7 @@ public interface ICategoryItemService
     Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search);
 
     Task<AddItemViewModel> GetEditItem(long itemId);
+    Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId);
 
     Task<bool> UpdateItem(AddItemViewModel model);
 

@@ -27,7 +27,7 @@ public class AddItemViewModel
 
     public long UnitId {get; set;}
 
-    public List<Unit>Units  {get; set;} = new List<Unit>();
+    public List<Unit> Units  {get; set;} = new List<Unit>();
 
     public bool Available{get; set;}
 
@@ -42,5 +42,9 @@ public class AddItemViewModel
     public string? ItemImageUrl { get; set; }
 
     public IFormFile? Image {get; set;}
+
+    public long ModifierGroupId { get; set; }
+    public List<ModifierGroup> ModifierGroups = new List<ModifierGroup>();
+
 
 }

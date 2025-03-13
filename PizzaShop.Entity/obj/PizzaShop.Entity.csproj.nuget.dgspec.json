@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj": {}
+    "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj": {}
   },
   "projects": {
-    "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj": {
+    "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj",
+        "projectUniqueName": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj",
         "projectName": "PizzaShop.Entity",
-        "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj",
+        "projectPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj",
         "packagesPath": "C:\\Users\\pci47\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\obj\\",
+        "outputPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\pci47\\AppData\\Roaming\\NuGet\\NuGet.Config"

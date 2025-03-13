@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Linq.Expressions;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
@@ -14,15 +15,20 @@ public class CategoryItemService : ICategoryItemService
     private readonly IGenericRepository<Item> _itemRepository;
     private readonly IGenericRepository<FoodType> _foodTypeRepository;
     private readonly IGenericRepository<Unit> _unitRepository;
+    private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
+    private readonly IGenericRepository<ItemModifierGroup> _itemModifierGroupRepository;
+    private readonly IGenericRepository<Modifier> _modifierRepository;
 
-    public CategoryItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository)
+    public CategoryItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository, IGenericRepository<Modifier> modifierRepository)
     {
         _categoryRepository = categoryRepository;
         _userRepository = userRepository;
         _itemRepository = itemRepository;
         _foodTypeRepository = foodTypeRepository;
         _unitRepository = unitRepository;
-
+        _modifierGroupRepository = modifierGroupRepository;
+        _itemModifierGroupRepository = itemModifierGroupRepository;
+        _modifierRepository = modifierRepository;
     }
 
     #region Category
@@ -45,37 +51,28 @@ public class CategoryItemService : ICategoryItemService
 
         return categories;
     }
-#endregion  
+    #endregion
 
-#region  Add Category
-/*-------------------------------------------------------------Add Category---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> AddCategory(CategoryViewModel model,string createrEmail)
+    #region  Add Category
+    /*-------------------------------------------------------------Add Category---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<bool> AddCategory(CategoryViewModel model, string createrEmail)
     {
         var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        
-            Category category = new Category
-            {
-                Name = model.CategoryName,
-                Description = model.CategoryDesc,
-                CreatedBy = creater.Id 
-            };
-        try
-        {
-            await _categoryRepository.AddAsync(category);
-            return true;
-        }
-        catch(Exception)
-        {
-            return false;
-        }
-        
-    }
-#endregion
 
-#region Edit Category
-/*--------------------------------------------------------------Get Category for Editing---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        Category category = new Category
+        {
+            Name = model.CategoryName,
+            Description = model.CategoryDesc,
+            CreatedBy = creater.Id
+        };
+        return await _categoryRepository.AddAsync(category);
+    }
+    #endregion
+
+    #region Edit Category
+    /*--------------------------------------------------------------Get Category for Editing---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public CategoryViewModel GetCategoryById(long categoryId)
     {
         var category = _categoryRepository.GetByIdAsync(categoryId);
@@ -90,66 +87,51 @@ public class CategoryItemService : ICategoryItemService
         return categoryVM;
     }
 
-/*--------------------------------------------------------Update the edited Category---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------------------------Update the edited Category---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<bool> EditCategory(CategoryViewModel model)
     {
-        try
-        {
-            Category category = await _categoryRepository.GetByIdAsync(model.CategoryId);
+        Category category = await _categoryRepository.GetByIdAsync(model.CategoryId);
 
-            category.Name = model.CategoryName;
-            category.Description = model.CategoryDesc;
+        category.Name = model.CategoryName;
+        category.Description = model.CategoryDesc;
 
-            await _categoryRepository.UpdateAsync(category);
-            return true;
-        }
-        catch(Exception ex)
-        {
-            return false;
-        }
+        return await _categoryRepository.UpdateAsync(category);
     }
-#endregion
+    #endregion
 
-#region Delete Category
-/*----------------------------------------------------------------Soft Delete Category---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Delete Category
+    /*----------------------------------------------------------------Soft Delete Category---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<bool> SoftDelete(long categoryId)
     {
         Category category = await _categoryRepository.GetByIdAsync(categoryId);
 
         category.IsDeleted = true;
 
-        try{
-            await _categoryRepository.UpdateAsync(category);
-            return true;
-        }
-        catch(Exception)
-        {
-            return false;
-        }
+        return await _categoryRepository.UpdateAsync(category);
     }
 
-#endregion
+    #endregion
 
-#endregion Category
+    #endregion Category
 
-#region Items
+    #region Items
 
-#region Display Items
-/*-----------------------------------------------------------------Display Items---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Display Items
+    /*-----------------------------------------------------------------Display Items---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     public async Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search)
     {
         var (items, totalRecord) = await _itemRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: i => !i.IsDeleted && 
+            filter: i => !i.IsDeleted &&
                     i.CategoryId == categoryId &&
-                    (string.IsNullOrEmpty(search.ToLower()) ||  
+                    (string.IsNullOrEmpty(search.ToLower()) ||
                     i.Name.ToLower() == search.ToLower()),
-            orderBy: q => q.OrderBy(u => u.Id), 
+            orderBy: q => q.OrderBy(u => u.Id),
             includes: new List<Expression<Func<Item, object>>> { u => u.FoodType }
         );
 
@@ -170,20 +152,21 @@ public class CategoryItemService : ICategoryItemService
         return model;
     }
 
-#endregion Display Items
+    #endregion Display Items
 
-#region Get Add/Edit Item
+    #region Get Add/Edit Item
     public async Task<AddItemViewModel> GetEditItem(long itemId)
     {
         AddItemViewModel model = new()
         {
             Name = "",
-            Categories =  _categoryRepository.GetAll().ToList(),
+            Categories = _categoryRepository.GetAll().ToList(),
             ItemTypes = _foodTypeRepository.GetAll().ToList(),
-            Units = _unitRepository.GetAll().ToList()
+            Units = _unitRepository.GetAll().ToList(),
+            ModifierGroups = _modifierGroupRepository.GetAll().ToList()
         };
 
-        if(itemId == 0)
+        if (itemId == 0)
         {
             return model;
         }
@@ -191,7 +174,7 @@ public class CategoryItemService : ICategoryItemService
         Item item = await _itemRepository.GetByIdAsync(itemId);
         if (item == null)
             return model;
-            
+
         model.CategoryId = item.CategoryId;
         model.Name = item.Name;
         model.ItemTypeId = item.FoodTypeId;
@@ -207,13 +190,45 @@ public class CategoryItemService : ICategoryItemService
 
         return model;
     }
-#endregion Get Add/Edit Item 
 
-#region  Add Item
-     public async Task<bool> AddItem(AddItemViewModel model,string createrEmail)
+    public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
+    {
+        ItemModifierGroup itemModifierGroup = await _itemModifierGroupRepository.GetByStringAsync(i => i.ModifierGroupId == modifierGroupId);     //needs to include ModifierGroup table
+        ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
+
+        if (modifierGroup == null)
+        {
+
+        }
+        
+        List<ModifierViewModel> modifierList = _modifierRepository.GetByCondition(m => m.ModifierGroupId == modifierGroupId)
+        .Select(m => new ModifierViewModel()
+        {
+            ModifierId = m.Id,
+            ModifierName = m.Name,
+            Rate = m.Rate,
+        }).ToList();
+
+        ItemModifierViewModel model = new ItemModifierViewModel
+        {
+            ModifierGroupId = modifierGroupId,
+            ModifierGroupName = modifierGroup.Name,
+            MinAllowed = modifierList.Count(),
+            MaxAllowed = itemModifierGroup.MaxAllowed,  
+            ModifierList = modifierList                                       
+        };
+
+        return model;
+    }
+
+
+    #endregion Get Add/Edit Item 
+
+    #region  Add Item
+    public async Task<bool> AddItem(AddItemViewModel model, string createrEmail)
     {
         var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        
+
         Item item = new Item
         {
             CategoryId = model.CategoryId,
@@ -230,7 +245,7 @@ public class CategoryItemService : ICategoryItemService
             CreatedBy = creater.Id
         };
 
-            // Handle Image Upload
+        // Handle Image Upload
         if (model.Image != null)
         {
             string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/itemImages");
@@ -249,13 +264,13 @@ public class CategoryItemService : ICategoryItemService
             item.ImageUrl = $"/itemImages/{fileName}";
         }
         return await _itemRepository.AddAsync(item);
-    }   
-#endregion Add Item
+    }
+    #endregion Add Item
 
-#region Update Item
+    #region Update Item
     public async Task<bool> UpdateItem(AddItemViewModel model)
     {
-        
+
         Item item = await _itemRepository.GetByIdAsync(model.ItemId);
 
         item.CategoryId = model.CategoryId;
@@ -289,12 +304,12 @@ public class CategoryItemService : ICategoryItemService
             item.ImageUrl = $"/itemImages/{fileName}";
         }
 
-        return await _itemRepository.UpdateAsync(item);;
+        return await _itemRepository.UpdateAsync(item); ;
     }
 
-#endregion Update Item
+    #endregion Update Item
 
-#region Soft Delete
+    #region Soft Delete
 
     public async Task<bool> SoftDeleteItem(long id)
     {
@@ -322,11 +337,11 @@ public class CategoryItemService : ICategoryItemService
             if (!isDeleted)
                 return false;
         }
-        return true;        
+        return true;
     }
 
-#endregion Soft Delete
+    #endregion Soft Delete
 
-#endregion Items
+    #endregion Items
 }
 
