@@ -6,7 +6,7 @@ namespace PizzaShop.Entity.ViewModels;
 
 public class AddItemViewModel
 {
-    public long ItemId { get; set; }
+    public long ItemId { get; set; } = 0;
 
     public long CategoryId { get; set; }
 
@@ -39,12 +39,13 @@ public class AddItemViewModel
 
     public string? Description { get; set; }
 
-    public string? ItemImageUrl { get; set; }
+    public string? ItemImageUrl { get; set; } = "/images/dining-menu.png";
 
     public IFormFile? Image {get; set;}
 
     public long ModifierGroupId { get; set; }
-    public List<ModifierGroup> ModifierGroups = new List<ModifierGroup>();
+    public List<ModifierGroup>? ModifierGroups { get; set; } = new List<ModifierGroup>();
 
+    public List<ItemModifierViewModel>? ItemModifierGroups { get; set; } = new List<ItemModifierViewModel>();
 
 }

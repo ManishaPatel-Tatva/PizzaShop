@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Ranyugt3PwXDirC/VwqXfrvJ4+npc2YN8a9Ku9RQMwU=",
+  "Hash": "S24W7Qb3acTspvy9lCDQYm8AhkUkScSyb8FMmDQv9+w=",
   "Source": "PizzaShop.Web",
   "BasePath": "_content/PizzaShop.Web",
   "Mode": "Default",
@@ -950,6 +950,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\transperent-pizza.png"
+    },
+    {
+      "Identity": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\33d1856e-833f-489b-aa52-510c31fa1fc4_AlooTikkiBurger.jpg",
+      "SourceId": "PizzaShop.Web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\",
+      "BasePath": "_content/PizzaShop.Web",
+      "RelativePath": "itemImages/33d1856e-833f-489b-aa52-510c31fa1fc4_AlooTikkiBurger.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\itemImages\\33d1856e-833f-489b-aa52-510c31fa1fc4_AlooTikkiBurger.jpg"
     },
     {
       "Identity": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\5f9d593f-efff-48a8-a68c-fc05302c75b7_download.jfif",
@@ -2327,6 +2344,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\58ac1faa-3829-469f-bf56-5df9ec3a4ebb_profile_div_bg.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\58be9e79-f287-4eda-9e3f-f7c894e03ae6_TomotaSalad.jpg",
+      "SourceId": "PizzaShop.Web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\",
+      "BasePath": "_content/PizzaShop.Web",
+      "RelativePath": "uploads/58be9e79-f287-4eda-9e3f-f7c894e03ae6_TomotaSalad.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\58be9e79-f287-4eda-9e3f-f7c894e03ae6_TomotaSalad.jpg"
     },
     {
       "Identity": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\uploads\\5ae1fb8f-acae-4a5f-a685-c2a42b0fd492_profile_div_bg.jpg",

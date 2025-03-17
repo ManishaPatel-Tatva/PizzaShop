@@ -20,7 +20,9 @@ public interface ICategoryItemService
     Task<AddItemViewModel> GetEditItem(long itemId);
     Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId);
 
+
     Task<bool> UpdateItem(AddItemViewModel model);
+    Task<bool> AddItemModifierGroup(long itemId, ItemModifierViewModel model, long createrId);
 
     Task<bool> AddItem(AddItemViewModel model,string createrEmail);
 

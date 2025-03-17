@@ -7,6 +7,7 @@ public interface IGenericRepository<T>
     where T : class
 {
     Task<bool> AddAsync(T entity);
+    Task<long> AddAsyncReturnId(T entity);
 
     IEnumerable<T> GetAll();
 

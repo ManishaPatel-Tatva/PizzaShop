@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
@@ -59,7 +60,7 @@ public class MenuController : Controller
 #endregion Edit Category
 
 #region Add Category
-/*--------------------------------------------------------Menu Index--------------------------------------------------------------------------------------------------------
+/*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
     public async Task<IActionResult> AddCategory(MenuViewModel model)
@@ -120,13 +121,14 @@ public class MenuController : Controller
         ItemModifierViewModel model = await _categoryItemService.GetModifierOnSelection(modifierGroupId);
         return PartialView("_ItemModifierPartialView", model); 
     }
+    
 #endregion Get Add/Update
 
 #region Update Item
-/*--------------------------------------------------------Update Item--------------------------------------------------------------------------------------------------------
+/*--------------------------------------------------------Add/Update Item--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
-    public async Task<IActionResult> AddUpdateItem(AddItemViewModel model)
+    public async Task<IActionResult> AddUpdateItem(AddItemViewModel model, string modifierGroupList)
     {
         if (!ModelState.IsValid)
         {
@@ -134,11 +136,18 @@ public class MenuController : Controller
             return PartialView("_UpdateItemPartialView", updatedModel); 
         }
 
+        if(!string.IsNullOrEmpty(modifierGroupList))
+        {
+            model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList);
+        }
+
         if(model.ItemId == 0)
         {
             var token = Request.Cookies["authToken"];
             var createrEmail = _jwtService.GetClaimValue(token, "email");
+
             bool isAdded = await _categoryItemService.AddItem(model, createrEmail);
+            
             if (!isAdded)
             {
                 AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);

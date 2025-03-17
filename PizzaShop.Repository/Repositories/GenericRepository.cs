@@ -32,9 +32,32 @@ public class GenericRepository<T> : IGenericRepository<T>
         catch(Exception ex)
         {
             return false;
-        }
-        
+        } 
     }
+
+    public async Task<long> AddAsyncReturnId(T entity)
+    {
+        try
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            var idProperty = typeof(T).GetProperty("Id");
+            if (idProperty != null)
+            {
+                return (long)idProperty.GetValue(entity);
+            }
+
+            return 0;
+        }
+        catch(Exception ex)
+        {
+            return -1;
+        } 
+
+    }
+
+     
 
 #endregion C : Create
 

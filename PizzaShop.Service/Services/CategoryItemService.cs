@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -119,7 +120,6 @@ public class CategoryItemService : ICategoryItemService
     #region Display Items
     /*-----------------------------------------------------------------Display Items---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
     public async Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search)
     {
         var (items, totalRecord) = await _itemRepository.GetPagedRecordsAsync(
@@ -153,6 +153,8 @@ public class CategoryItemService : ICategoryItemService
     #endregion Display Items
 
     #region Get Add/Edit Item
+    /*-----------------------------------------------------------Get Add/Update Item---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<AddItemViewModel> GetEditItem(long itemId)
     {
         AddItemViewModel model = new()
@@ -185,10 +187,28 @@ public class CategoryItemService : ICategoryItemService
         model.ShortCode = item.ShortCode;
         model.Description = item.Description;
         model.ItemImageUrl = item.ImageUrl;
+        
+
+        model.ItemModifierGroups = _itemModifierGroupRepository.GetByCondition(i => i.ItemId == itemId).
+        Select(i => new ItemModifierViewModel{
+            ModifierGroupId = i.ModifierGroupId,
+            ModifierGroupName = i.ModifierGroup.Name,
+            MinAllowed = i.MinAllowed,
+            MaxAllowed = i.MaxAllowed,
+            ModifierList = _modifierRepository.GetByCondition(ml => ml.ModifierGroupId == i.ModifierGroupId).Select( m => new ModifierViewModel{
+                ModifierId = m.Id,
+                ModifierName = m.Name,
+                Unit = m.Unit.Name,
+                Rate = m.Rate,
+                Quantity = m.Quantity,
+            }).ToList()
+        }).ToList();
 
         return model;
     }
 
+    /*-----------------------------------------------------------Get Modifier on Selection---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
     {
         ModifierGroup modifierGroup= await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
@@ -224,9 +244,10 @@ public class CategoryItemService : ICategoryItemService
     #region  Add Item
     public async Task<bool> AddItem(AddItemViewModel model, string createrEmail)
     {
-        var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        long createrId = creater.Id;
 
-        Item item = new Item
+        Item item = new()
         {
             CategoryId = model.CategoryId,
             Name = model.Name,
@@ -239,7 +260,8 @@ public class CategoryItemService : ICategoryItemService
             Tax = model.TaxPercentage,
             ShortCode = model.ShortCode,
             Description = model.Description,
-            CreatedBy = creater.Id
+            CreatedBy = createrId,
+            ImageUrl = model.ItemImageUrl,
         };
 
         // Handle Image Upload
@@ -260,8 +282,41 @@ public class CategoryItemService : ICategoryItemService
 
             item.ImageUrl = $"/itemImages/{fileName}";
         }
-        return await _itemRepository.AddAsync(item);
+
+        long itemId =  await _itemRepository.AddAsyncReturnId(item);
+
+        if (itemId < 1)
+        {
+            return false;
+        }
+
+        if (itemId > 0)
+        {
+            foreach(ItemModifierViewModel modifierGroup in model.ItemModifierGroups)
+            {
+                bool success = await AddItemModifierGroup(itemId, modifierGroup, createrId);
+                if (!success)
+                    return false;
+            }
+        }
+        return true;
+
     }
+
+    public async Task<bool> AddItemModifierGroup(long itemId, ItemModifierViewModel model, long createrId)
+    {
+        ItemModifierGroup itemModifierGroup = new()
+        {
+            ItemId = itemId,
+            ModifierGroupId = model.ModifierGroupId,
+            MinAllowed = model.MinAllowed,
+            MaxAllowed = model.MaxAllowed,
+            CreatedBy = createrId
+        };
+        return await _itemModifierGroupRepository.AddAsync(itemModifierGroup);
+    }
+
+
     #endregion Add Item
 
     #region Update Item
@@ -338,6 +393,7 @@ public class CategoryItemService : ICategoryItemService
     }
 
     #endregion Soft Delete
+
 
     #endregion Items
 }

@@ -339,7 +339,6 @@
 
 
         @* this is Pagination of items *@
-
         $(".li-category").on("click",function () {
             categoryId = $(this).data("id");
 
@@ -493,7 +492,6 @@
     <script>
 
         let modifierGroupList = [];
-
         $(document).on("change","#selectModifierGroup",function(){
             let modifierGroupId = $(this).val();
             if(modifierGroupList.indexOf(Number(modifierGroupId)) === -1)
@@ -513,8 +511,6 @@
             $("div").remove(".modifierGroupDetail[data-id ='"+modifierGroupId+"']")
         });
 
-
-
         function getSelectedModifierGroup(id){
             $.ajax({
                 url: '@Url.Action("SelectModifierGroup", "Menu")',
@@ -530,5 +526,50 @@
             });
         }
 
+    </script>
+
+    @* Add/Update Item Form Submit *@
+    <script>
+        $(document).on("submit","#AddUpdateItemForm",function(e){
+            e.preventDefault();
+
+            let modifiergroupArr = [];
+
+            $(".modifierGroupDetail").each(function(){
+                let id = $(this).data("id");
+                modifiergroupArr.push({
+                    ModifierGroupId : id,
+                    MinAllowed : Number($(".minAllowed[data-id ='"+id+"']").val()),
+                    MaxAllowed : Number($(".maxAllowed[data-id ='"+id+"']").val()),
+                });
+
+            });
+
+            $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
+
+            let formData = new FormData(this);
+            
+            
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data : formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $("#addEditItem").hide;
+                    toastr.success("Item Added successfully!");
+                    setTimeout(function(){
+                            location.reload();
+                        },3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Items Found");
+                    $("#itemsListContent").html('An error has occurred');
+                }
+            });
+
+        });
     </script>
 }

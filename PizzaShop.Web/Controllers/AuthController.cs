@@ -21,7 +21,7 @@ public class AuthController : Controller
     public IActionResult Login()
     {
         if (Request.Cookies["emailCookie"] != null)
-            return RedirectToAction("MyProfile", "Profile");
+            return RedirectToAction("Dashboard", "Profile");
 
         return View();
     }
