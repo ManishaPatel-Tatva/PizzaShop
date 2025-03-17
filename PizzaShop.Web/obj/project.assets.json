@@ -6608,11 +6608,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\PizzaShop.Web.csproj",
+      "projectUniqueName": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\PizzaShop.Web.csproj",
       "projectName": "PizzaShop.Web",
-      "projectPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\PizzaShop.Web.csproj",
+      "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\PizzaShop.Web.csproj",
       "packagesPath": "C:\\Users\\pci47\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\obj\\",
+      "outputPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pci47\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -6627,8 +6627,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Service\\PizzaShop.Service.csproj": {
-              "projectPath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Service\\PizzaShop.Service.csproj"
+            "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Service\\PizzaShop.Service.csproj": {
+              "projectPath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Service\\PizzaShop.Service.csproj"
             }
           }
         }

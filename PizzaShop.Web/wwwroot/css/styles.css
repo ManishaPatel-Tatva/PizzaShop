@@ -212,7 +212,7 @@ td{
 }
 
 .form-floating>label {
-    /* z-index: 5; */
+    z-index: 5;
     top: -5px;
     left: 12px;
 }
@@ -293,8 +293,10 @@ td{
     white-space: nowrap;
 }
 
-.modal-modifier{
+.modifier-modal{
     border: 1px solid #ced4da;
+    height: 410px;
+    overflow-y: scroll;
 }
 
 .modifier-option .form-select{

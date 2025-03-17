@@ -460,15 +460,12 @@
         //For mass delete of Items
         let itemList = [];
         $(document).on("click", "#itemMassDeleteIcon",function(){
-            console.log("1 itemList is",itemList);
             $(".itemChildCheckbox:checked").each(function () {
                 itemList.push($(this).data("id"));
             });
-            console.log("2 itemList is",itemList);
         });
 
         $(document).on("click", "#confirmMassDeleteItem", function(){
-            console.log("3 itemList is",itemList);
             $.ajax({
                 url: '@Url.Action("MassDeleteItems", "Menu")',
                 type: "POST",
@@ -492,11 +489,23 @@
 
     </script>
 
+    @* Select Modifier in items *@
     <script>
+
+        let modifierGroupList = [];
+
         $(document).on("change","#selectModifierGroup",function(){
             let modifierGroupId = $(this).val();
-            console.log(modifierGroupId);
-            getSelectedModifierGroup(modifierGroupId);
+
+            if(modifierGroupList.indexOf(Number(modifierGroupId)) === -1)
+            {
+                modifierGroupList.push(Number(modifierGroupId));
+                getSelectedModifierGroup(modifierGroupId);
+            }
+
+            $("#selectModifierGroup").val("-1");
+
+
         });
 
         function getSelectedModifierGroup(id){
@@ -506,7 +515,6 @@
                 data : {modifierGroupId : id},
                 dataType : "html",
                 success: function(data){
-                    console.log(data);
                     $("#showModifierGroup").append(data);
                 },
                 error: function(){

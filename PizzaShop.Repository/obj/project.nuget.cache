@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ssoGfIsYsx31g72Ema86PkEEOj8LJ2tgNxIcup1CIJckJWeXB6PWBMi1CGnYFaHc9FCLMK0+sdm9u3DORq8W2g==",
+  "dgSpecHash": "I6KTvDNM93ukMjtNR+wVvVK0Nq4JPBbd+LSRqxN0XglqkY+m41Vjp1XSMrgqANwDRMS2CI0f35POuVjrAZzFKQ==",
   "success": true,
-  "projectFilePath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Repository\\PizzaShop.Repository.csproj",
+  "projectFilePath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Repository\\PizzaShop.Repository.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\pci47\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http\\2.3.0\\microsoft.aspnetcore.http.2.3.0.nupkg.sha512",

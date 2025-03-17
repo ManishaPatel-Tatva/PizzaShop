@@ -193,12 +193,11 @@ public class CategoryItemService : ICategoryItemService
 
     public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
     {
-        ItemModifierGroup itemModifierGroup = await _itemModifierGroupRepository.GetByStringAsync(i => i.ModifierGroupId == modifierGroupId);     //needs to include ModifierGroup table
-        ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
+        ModifierGroup modifierGroup= await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
 
         if (modifierGroup == null)
         {
-
+            return null;
         }
         
         List<ModifierViewModel> modifierList = _modifierRepository.GetByCondition(m => m.ModifierGroupId == modifierGroupId)
@@ -213,8 +212,8 @@ public class CategoryItemService : ICategoryItemService
         {
             ModifierGroupId = modifierGroupId,
             ModifierGroupName = modifierGroup.Name,
-            MinAllowed = modifierList.Count(),
-            MaxAllowed = itemModifierGroup.MaxAllowed,  
+            MinAllowed = modifierList.Count,
+            MaxAllowed = modifierList.Count,  
             ModifierList = modifierList                                       
         };
 
