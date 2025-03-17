@@ -164,33 +164,6 @@ public class MenuController : Controller
 
 #endregion Update Item
 
-#region Add Item
-/*--------------------------------------------------------Add Items--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [HttpPost]
-    public async Task<IActionResult> AddItem(AddItemViewModel model)
-    {
-        if (!ModelState.IsValid)
-        {
-            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
-            return PartialView("_UpdateItemPartialView", updatedModel); 
-        }
-
-        var token = Request.Cookies["authToken"];
-        var createrEmail = _jwtService.GetClaimValue(token, "email");
-
-        bool success = await _categoryItemService.AddItem(model, createrEmail);
-
-        if (!success)
-        {
-            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
-            TempData["errorMessage"] = "Item Not Updated";
-            return PartialView("_UpdateItemPartialView", updatedModel); 
-        }
-        return Json(new {success = true, message="Item added successfully!"});
-    }
-#endregion Add Item
-
 #region Delete Item
 /*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/

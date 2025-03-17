@@ -1,12 +1,12 @@
 @using PizzaShop.Entity.ViewModels;
 @model ItemModifierViewModel
 
-<div class="px-4 ">
+<div class="px-4 modifierGroupDetail" data-id="@Model.ModifierGroupId">
     <div class="d-flex justify-content-between align-items-center mb-1">
         <span class="fs-5 fw-bold light-grey-text">@Model.ModifierGroupName</span>
-        <button class="btn">
+        <a class="btn deselectModifierGroup" data-id="@Model.ModifierGroupId">
             <img src="~/images/icons/deleteFill.svg" alt="delete" height="20px">
-        </button>
+        </a>
     </div>
     <div class="row modifier-option">
         <div class="col-6">

@@ -496,17 +496,24 @@
 
         $(document).on("change","#selectModifierGroup",function(){
             let modifierGroupId = $(this).val();
-
             if(modifierGroupList.indexOf(Number(modifierGroupId)) === -1)
             {
                 modifierGroupList.push(Number(modifierGroupId));
                 getSelectedModifierGroup(modifierGroupId);
             }
-
             $("#selectModifierGroup").val("-1");
-
-
         });
+
+        $(document).on("click",".deselectModifierGroup",function(){
+            let modifierGroupId = $(this).data("id");
+            console.log("delete modifier group id is",modifierGroupId);
+            modifierGroupList = $.grep(modifierGroupList,function(element){
+                return element != modifierGroupId;
+            });
+            $("div").remove(".modifierGroupDetail[data-id ='"+modifierGroupId+"']")
+        });
+
+
 
         function getSelectedModifierGroup(id){
             $.ajax({

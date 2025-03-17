@@ -36,8 +36,6 @@ public class CategoryItemService : ICategoryItemService
     #region Display Category
     /*-----------------------------------------------------------Display Category---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
     public List<CategoryViewModel> GetCategory()
     {
         var categories = _categoryRepository.GetByCondition(c => c.IsDeleted == false)
