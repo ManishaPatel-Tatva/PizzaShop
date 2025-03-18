@@ -71,14 +71,15 @@ public class GenericRepository<T> : IGenericRepository<T>
         return _dbSet.Where(predicate);
     }
 
-    public async Task<IEnumerable<T>> GetByConditionInclude(
-    Expression<Func<T, bool>> predicate,
-    List<Expression<Func<T, object>>>? includes = null,
-    List<Expression<Func<T, object>>>? thenIncludes = null)
-    {
-        IQueryable<T> query = _dbSet.Where(predicate);  // Base query
 
-        // Apply Includes (first-level navigation properties)
+    public async Task<IEnumerable<T>> GetByConditionInclude(
+        Expression<Func<T, bool>> predicate,
+        List<Expression<Func<T, object>>>? includes = null,
+        List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null)
+    {
+        IQueryable<T> query = _dbSet.Where(predicate);
+
+        // Apply Includes (First-level navigation properties)
         if (includes != null)
         {
             foreach (var include in includes)
@@ -87,17 +88,18 @@ public class GenericRepository<T> : IGenericRepository<T>
             }
         }
 
-        // Apply ThenIncludes (second-level navigation properties)
+        // Apply ThenIncludes (Deeper navigation properties)
         if (thenIncludes != null)
         {
             foreach (var thenInclude in thenIncludes)
             {
-                query = query.Include(thenInclude);
+                query = thenInclude(query);
             }
         }
 
         return await query.ToListAsync();
     }
+
 
 
 

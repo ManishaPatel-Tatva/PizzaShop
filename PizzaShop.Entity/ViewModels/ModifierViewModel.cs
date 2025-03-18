@@ -6,7 +6,7 @@ public class ModifierViewModel
 
     public string ModifierName { get; set;}
 
-    public string Unit { get; set; }
+    public string Unit { get; set; } = null!;
 
     public decimal Rate { get; set; }
 

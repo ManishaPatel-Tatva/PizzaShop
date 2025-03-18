@@ -77,6 +77,10 @@ public partial class User
 
     public virtual ICollection<Modifier> ModifierCreatedByNavigations { get; set; } = new List<Modifier>();
 
+    public virtual ICollection<ModifierMapping> ModifierMappingCreatedByNavigations { get; set; } = new List<ModifierMapping>();
+
+    public virtual ICollection<ModifierMapping> ModifierMappingUpdatedByNavigations { get; set; } = new List<ModifierMapping>();
+
     public virtual ICollection<Modifier> ModifierUpdatedByNavigations { get; set; } = new List<Modifier>();
 
     public virtual ICollection<Order> OrderCreatedByNavigations { get; set; } = new List<Order>();

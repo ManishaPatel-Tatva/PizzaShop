@@ -7,8 +7,6 @@ public partial class Modifier
 {
     public long Id { get; set; }
 
-    public long ModifierGroupId { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -35,7 +33,7 @@ public partial class Modifier
 
     public virtual FoodType FoodType { get; set; } = null!;
 
-    public virtual ModifierGroup ModifierGroup { get; set; } = null!;
+    public virtual ICollection<ModifierMapping> ModifierMappings { get; set; } = new List<ModifierMapping>();
 
     public virtual Unit Unit { get; set; } = null!;
 

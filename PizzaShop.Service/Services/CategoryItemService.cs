@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
@@ -19,8 +20,9 @@ public class CategoryItemService : ICategoryItemService
     private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
     private readonly IGenericRepository<ItemModifierGroup> _itemModifierGroupRepository;
     private readonly IGenericRepository<Modifier> _modifierRepository;
+    private readonly IGenericRepository<ModifierMapping> _modifierMapping;
 
-    public CategoryItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository, IGenericRepository<Modifier> modifierRepository)
+    public CategoryItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository, IGenericRepository<Modifier> modifierRepository, IGenericRepository<ModifierMapping> modifierMapping = null)
     {
         _categoryRepository = categoryRepository;
         _userRepository = userRepository;
@@ -30,6 +32,8 @@ public class CategoryItemService : ICategoryItemService
         _modifierGroupRepository = modifierGroupRepository;
         _itemModifierGroupRepository = itemModifierGroupRepository;
         _modifierRepository = modifierRepository;
+        _modifierMapping = modifierMapping;
+
     }
 
     #region Category
@@ -190,8 +194,16 @@ public class CategoryItemService : ICategoryItemService
         
         model.ItemModifierGroups = _itemModifierGroupRepository.GetByConditionInclude(
             i => i.ItemId == itemId && !i.IsDeleted,
-            includes: new List<Expression<Func<ItemModifierGroup, object>>> { i => i.ModifierGroup },
-            thenIncludes: new List<Expression<Func<ItemModifierGroup, object>>> { m => m.ModifierGroup.Modifiers }
+            includes: new List<Expression<Func<ItemModifierGroup, object>>> 
+            { 
+                img => img.ModifierGroup 
+            },
+            thenIncludes: new List<Func<IQueryable<ItemModifierGroup>, IQueryable<ItemModifierGroup>>>
+            {
+                q => q.Include(img => img.ModifierGroup)
+                    .ThenInclude(mg => mg.ModifierMappings)
+                    .ThenInclude(m => m.Modifier) // Deepest level include
+            }
             )
             .Result
             .Select(i => new ItemModifierViewModel{
@@ -199,49 +211,50 @@ public class CategoryItemService : ICategoryItemService
             ModifierGroupName = i.ModifierGroup.Name,
             MinAllowed = i.MinAllowed,
             MaxAllowed = i.MaxAllowed,
-            ModifierList = i.ModifierGroup.Modifiers
+            ModifierList = i.ModifierGroup.ModifierMappings
                 .Where(i => !i.IsDeleted)
                 .Select( m => new ModifierViewModel{
-                    ModifierId = m.Id,
-                    ModifierName = m.Name,
-                    Unit = m.Unit.Name,
-                    Rate = m.Rate,
-                    Quantity = m.Quantity,
+                    ModifierId = m.Modifier.Id,
+                    ModifierName = m.Modifier.Name,
+                    Rate = m.Modifier.Rate
                 }).ToList()
         }).ToList();
 
         return model;
     }
 
+
+
     /*-----------------------------------------------------------Get Modifier on Selection---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
     {
-        ModifierGroup modifierGroup= await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
+        ItemModifierViewModel itemModifierGroups = _modifierGroupRepository.GetByConditionInclude(
+            m => m.Id == modifierGroupId && !m.IsDeleted,
+            includes: new List<Expression<Func<ModifierGroup, object>>> 
+            { 
+                mg => mg.ModifierMappings 
+            },
+            thenIncludes: new List<Func<IQueryable<ModifierGroup>, IQueryable<ModifierGroup>>>
+            {
+                q => q.Include(mg => mg.ModifierMappings)
+                    .ThenInclude(m => m.Modifier) // Deepest level include
+            }
+            )
+            .Result
+            .Select(mg => new ItemModifierViewModel{
+            ModifierGroupId = mg.Id,
+            ModifierGroupName = mg.Name,
+            ModifierList = mg.ModifierMappings
+                .Where(i => !i.IsDeleted)
+                .Select( mm => new ModifierViewModel{
+                    ModifierId = mm.Modifier.Id,
+                    ModifierName = mm.Modifier.Name,
+                    Rate = mm.Modifier.Rate
+                }).ToList()
+        }).First();
 
-        if (modifierGroup == null)
-        {
-            return null;
-        }
-        
-        List<ModifierViewModel> modifierList = _modifierRepository.GetByCondition(m => m.ModifierGroupId == modifierGroupId)
-        .Select(m => new ModifierViewModel()
-        {
-            ModifierId = m.Id,
-            ModifierName = m.Name,
-            Rate = m.Rate,
-        }).ToList();
-
-        ItemModifierViewModel model = new ItemModifierViewModel
-        {
-            ModifierGroupId = modifierGroupId,
-            ModifierGroupName = modifierGroup.Name,
-            MinAllowed = modifierList.Count,
-            MaxAllowed = modifierList.Count,  
-            ModifierList = modifierList                                       
-        };
-
-        return model;
+        return itemModifierGroups;
     }
 
 

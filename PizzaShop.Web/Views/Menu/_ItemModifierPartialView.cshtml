@@ -12,7 +12,7 @@
         <div class="col-6">
             <select asp-for="@Model.MinAllowed" class="form-select minAllowed" aria-label="" data-id="@Model.ModifierGroupId">
                 <option selected value="">0</option>
-                @for (int num = 1; num <= Model.MaxAllowed; num++)
+                @for (int num = 1; num <= Model.ModifierList.Count(); num++)
                 {
                     <option value="@num">@num</option>
                 }
@@ -21,7 +21,7 @@
         <div class="col-6">
             <select asp-for="@Model.MaxAllowed" class="form-select maxAllowed" aria-label="" data-id="@Model.ModifierGroupId">
                 <option selected value="">0</option>
-                @for (int num = 1; num <= Model.MaxAllowed; num++)
+                @for (int num = 1; num <= Model.ModifierList.Count(); num++)
                 {
                     <option value="@num">@num</option>
                 }
