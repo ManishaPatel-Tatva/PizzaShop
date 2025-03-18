@@ -128,7 +128,7 @@ public class CategoryItemService : ICategoryItemService
             filter: i => !i.IsDeleted &&
                     i.CategoryId == categoryId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
-                    i.Name.ToLower() == search.ToLower()),
+                    i.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
             includes: new List<Expression<Func<Item, object>>> { u => u.FoodType }
         );

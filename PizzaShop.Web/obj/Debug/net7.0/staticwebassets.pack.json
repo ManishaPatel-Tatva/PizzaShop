@@ -217,6 +217,14 @@
       "PackagePath": "staticwebassets\\images\\transperent-pizza.png"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\29c835b7-6a3f-46d8-b712-c672a3a6586f_Green-Salad.jpg",
+      "PackagePath": "staticwebassets\\itemImages\\29c835b7-6a3f-46d8-b712-c672a3a6586f_Green-Salad.jpg"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\2b850103-ae4f-4817-908d-8a4ceca3969b_TomotaSalad.jpg",
+      "PackagePath": "staticwebassets\\itemImages\\2b850103-ae4f-4817-908d-8a4ceca3969b_TomotaSalad.jpg"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\33d1856e-833f-489b-aa52-510c31fa1fc4_AlooTikkiBurger.jpg",
       "PackagePath": "staticwebassets\\itemImages\\33d1856e-833f-489b-aa52-510c31fa1fc4_AlooTikkiBurger.jpg"
     },
@@ -225,8 +233,20 @@
       "PackagePath": "staticwebassets\\itemImages\\5f9d593f-efff-48a8-a68c-fc05302c75b7_download.jfif"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\9afc2524-5920-4c27-9d9e-65ac88f4a5b1_MixSalad.jpg",
+      "PackagePath": "staticwebassets\\itemImages\\9afc2524-5920-4c27-9d9e-65ac88f4a5b1_MixSalad.jpg"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\a665f6b3-e1a5-4887-9b4f-5cb5a7ac9ad9_MixSalad.jpg",
+      "PackagePath": "staticwebassets\\itemImages\\a665f6b3-e1a5-4887-9b4f-5cb5a7ac9ad9_MixSalad.jpg"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\b2274629-8a28-4952-b3c0-0cb2979b55f4_SpicyBurger.jpg",
       "PackagePath": "staticwebassets\\itemImages\\b2274629-8a28-4952-b3c0-0cb2979b55f4_SpicyBurger.jpg"
+    },
+    {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\c1bb6e86-2305-40d9-8ead-09be3899ec15_cucumber-salad.jpg",
+      "PackagePath": "staticwebassets\\itemImages\\c1bb6e86-2305-40d9-8ead-09be3899ec15_cucumber-salad.jpg"
     },
     {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\e8932dc4-ed19-430e-a2a0-52967b4b47b4_transperent-pizza.png",

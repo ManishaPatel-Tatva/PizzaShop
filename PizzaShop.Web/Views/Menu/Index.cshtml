@@ -39,7 +39,8 @@
 
         <!-----------------------------------------------------Category  Items -----------------------------------------------------------------------------------
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
-        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+            tabindex="0">
             <div class="row">
 
                 <!----------------------------------------------------- Category starts ------------------------------------------------------->
@@ -54,7 +55,7 @@
                     </div>
 
                     <div class="category-list pe-1">
-                        <ul class="pe-1">
+                        <ul class="pe-1" id="ul-category">
 
                             @foreach (var category in Model.Categories)
                             {
@@ -83,330 +84,332 @@
 
                 <!----------------------------------------------------- Items starts ------------------------------------------------------>
                 <div class="col pt-2" id="Items-Content">
-                    <!-- Items Partial View -->
-                </div>
-                <!----------------------------------------------------- Items ends ------------------------------------------------------->
+                    <div class="fs-5 fw-bold blue-text">
+                        Items
+                    </div>
 
-            </div>
-        </div>
-
-        <!----------------------------------------------------- Modifiers -----------------------------------------------------------------------------------
-        ----------------------------------------------------------------------------------------------------------------------------------------------------->
-        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
-            <div class="row">
-
-                <!-- Modifier Group starts -->
-                <div class="category col-12 col-md-3 pt-2 bg-dark-grey">
-
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fs-5 fw-bold blue-text">Category</span>
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addCategory">
-                            <img src="~/images/icons/plus-square.svg" alt="" width="25px">
+                    <div class="d-flex justify-content-end">
+                        <div class="input-group w-25 me-2">
+                            <input type="search" class="form-control" placeholder="Search" name="search"
+                                id="searchItem">
+                            <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
+                            </button>
+                        </div>
+                        <button class="btn border me-2" id="itemMassDeleteIcon" data-bs-toggle="modal"
+                            data-bs-target="#massDeleteItem">
+                            <img src="~/images/icons/delete.svg" alt="">
+                        </button>
+                        <button class="btn btn-blue me-2 newItemBtn" id="newItemBtn" data-bs-toggle="modal"
+                            data-bs-target="#addEditItem">
+                            + New Item
                         </button>
                     </div>
 
-                    <div class="modifier-list pe-1">
-                        <ul class="pe-1">
-                            <li class=""><a href="" class="d-flex align-items-center blue-text blue"><img class=""
-                                        src="~/images/icons/grid-3x2.svg">Veggies</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Crust Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Cheese Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Sauces Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Tooping Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img src="~/images/icons/grid-3x2.svg">Size
-                                    Options</a></li>
-                        </ul>
+                    <div id="itemTableOuter">
+                        <!-- Items Partial View -->
                     </div>
-                </div>
-                <!-- Modifier Group ends  -->
 
-                <!-- Modifier starts -->
-                <div class="col pt-2" id="">
+                    </div>
+                    <!----------------------------------------------------- Items ends ------------------------------------------------------->
 
                 </div>
-                <!-- Modifier ends -->
-
             </div>
+
+            <!----------------------------------------------------- Modifiers -----------------------------------------------------------------------------------
+        ----------------------------------------------------------------------------------------------------------------------------------------------------->
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
+                tabindex="0">
+                <div class="row">
+
+                    <!-- Modifier Group starts -->
+                    <div class="category col-12 col-md-3 pt-2 bg-dark-grey">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fs-5 fw-bold blue-text">Category</span>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addCategory">
+                                <img src="~/images/icons/plus-square.svg" alt="" width="25px">
+                            </button>
+                        </div>
+
+                        <div class="modifier-list pe-1">
+                            <ul class="pe-1">
+                                <li class=""><a href="" class="d-flex align-items-center blue-text blue"><img class=""
+                                            src="~/images/icons/grid-3x2.svg">Veggies</a></li>
+                                <li><a href="" class="d-flex align-items-center"><img
+                                            src="~/images/icons/grid-3x2.svg">Crust Options</a></li>
+                                <li><a href="" class="d-flex align-items-center"><img
+                                            src="~/images/icons/grid-3x2.svg">Cheese Options</a></li>
+                                <li><a href="" class="d-flex align-items-center"><img
+                                            src="~/images/icons/grid-3x2.svg">Sauces Options</a></li>
+                                <li><a href="" class="d-flex align-items-center"><img
+                                            src="~/images/icons/grid-3x2.svg">Tooping Options</a></li>
+                                <li><a href="" class="d-flex align-items-center"><img
+                                            src="~/images/icons/grid-3x2.svg">Size
+                                        Options</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Modifier Group ends  -->
+
+                    <!-- Modifier starts -->
+                    <div class="col pt-2" id="">
+
+                    </div>
+                    <!-- Modifier ends -->
+
+                </div>
+            </div>
+
+
         </div>
 
 
     </div>
+    <!-- Items tab ends -->
 
 
-</div>
-<!-- Items tab ends -->
-
-
-<!--------------------------------------Modals------------------------------------------------------------------------------------------
+    <!--------------------------------------Modals------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------->
-<!-- Modal Add Category starts -->
-<div class="modal fade" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Add Category</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="AddCategory" asp-controller="Menu" method="Post">
-                <div class="modal-body">
-                    <div class="form">
-                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                            placeholder="Name">
-                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
-                            placeholder="Description"></textarea>
+    <!-- Modal Add Category starts -->
+    <div class="modal fade" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Add Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="AddCategory" asp-controller="Menu" method="Post">
+                    <div class="modal-body">
+                        <div class="form">
+                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
+                                placeholder="Name">
+                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
+                                placeholder="Description"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-blue btn-modal" id="saveAddCategory">Save</button>
-                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- Modal Add Category ends -->
-
-<!-- Modal Edit Category starts -->
-<div class="modal fade" id="editCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="EditCategory" asp-controller="Menu" method="Post">
-                <div class="modal-body">
-                    <div class="form">
-                        <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
-                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                            id="modalCategoryName" placeholder="Name">
-                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3" id="modalCategoryDesc"
-                            placeholder="Description"></textarea>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-blue btn-modal" id="saveAddCategory">Save</button>
+                        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
-                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<!-- Modal Edit Category ends -->
-
-<!-- Modal Delete Category starts-->
-<div class="modal fade" id="deleteCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Confirmation</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
-                <img src="~/images/icons/warning.svg" alt="" width="50px">
-                <span>Are you sure you want to delete this category?</span>
-            </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button type="button" id="confirmDelete" class="btn btn-blue btn-modal"
-                    data-bs-dismiss="modal">YES</button>
-                <button type="button" class="btn btn-white btn-modal">NO</button>
+                </form>
             </div>
         </div>
     </div>
-</div>
-<!-- Modal Delete Category ends-->
+    <!-- Modal Add Category ends -->
 
-<!-- Modal Add/Update Item satrts here-->
-<div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="EditCategory" asp-controller="Menu" method="Post">
-                <div class="modal-body">
-                    <div class="form">
-                        <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
-                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                            id="modalCategoryName" placeholder="Name">
-                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3" id="modalCategoryDesc"
-                            placeholder="Description"></textarea>
+    <!-- Modal Edit Category starts -->
+    <div class="modal fade" id="editCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="EditCategory" asp-controller="Menu" method="Post">
+                    <div class="modal-body">
+                        <div class="form">
+                            <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
+                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
+                                id="modalCategoryName" placeholder="Name">
+                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
+                                id="modalCategoryDesc" placeholder="Description"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
-                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
+                        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-<!-- Modal Add/Update Item ends here-->
+    <!-- Modal Edit Category ends -->
+
+    <!-- Modal Delete Category starts-->
+    <div class="modal fade" id="deleteCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Confirmation</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                    <img src="~/images/icons/warning.svg" alt="" width="50px">
+                    <span>Are you sure you want to delete this category?</span>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" id="confirmDelete" class="btn btn-blue btn-modal"
+                        data-bs-dismiss="modal">YES</button>
+                    <button type="button" class="btn btn-white btn-modal">NO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Delete Category ends-->
+
+    <!-- Modal Add/Update Item satrts here-->
+    <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="EditCategory" asp-controller="Menu" method="Post">
+                    <div class="modal-body">
+                        <div class="form">
+                            <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
+                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
+                                id="modalCategoryName" placeholder="Name">
+                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
+                                id="modalCategoryDesc" placeholder="Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
+                        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Add/Update Item ends here-->
 
 
 
 @section Scripts {
-    <script>
-        @* Javascript for Category *@
+        <script>
+            @* Javascript for Category *@
 
-        //For showing edit and delete icons on hovering 
-        $(".li-category").mouseover(function () {
-            $(this).children("div.EditDeleteCategory").css("visibility", "visible");
-        });
-        $(".li-category").mouseout(function () {
-            $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
-        });
-
-        //For edit Category 
-        let categoryId;
-        $(".iconEditCategory").click(function () {
-            categoryId = $(this).data("id");
-            $("#modalCategoryId").val(categoryId);
-
-            $.ajax({
-                url: '@Url.Action("EditCategory", "Menu")',
-                type: "GET",
-                data: { categoryId: categoryId },
-                success: function (response) {
-                    console.log(response);
-                    $("#modalCategoryName").val(response.categoryName);
-                    $("#modalCategoryDesc").val(response.categoryDesc)
-                }
-            });
-        });
-
-        $(".iconDeleteCategory").click(function () {
-            categoryId = $(this).data("id");
-        });
-
-        $("#confirmDelete").click(function () {
-            $.ajax({
-                url: '@Url.Action("SoftDelete", "Menu")',
-                type: "GET",
-                data: { categoryId: categoryId },
-                success: function (response) {
-                    console.log("Category with id ", categoryId, " is deleted.");
-                },
-                error: function () {
-                    console.log("error input deleting user");
-                }
-            });
-        });
-
-        $('#uploadImage').change(function () {
-            let file = this.files[0];
-            $('#showUploadImageName').text(file.name);
-        });
-
-        //for Soft Delete of Items
-        let itemId;
-        $(document).on("click", ".deleteItemIcon", function () {
-            itemId = $(this).data("id");
-            console.log("Item id is ", itemId);
-        });
-
-        $(document).on("click", "#SoftDeleteItem", function () {
-            $.ajax({
-                url: '@Url.Action("SoftDeleteItem", "Menu")',
-                type: "POST",
-                data: { id: itemId },
-                success: function (response) {
-                    if (response.success) {
-                        toastr.success(response.message)
-                        setTimeout(function(){
-                            location.reload();
-                        },000);
-                    }
-                    else{
-                        toastr.error(response.message)
-                    }
-                },
-                error: function () {
-                    console.log("Item not deleted!");
-                }
-            });
-        });
-
-
-        @* this is Pagination of items *@
-        $(".li-category").on("click",function () {
-            categoryId = $(this).data("id");
-
-            ItemsPaginationAjax(categoryId, 1, $("#itemsPerPage").val());
-        });
-  
-        $(document).ready(function() 
-        {
-            ItemsPaginationAjax(1, 1, $("#itemsPerPage").val()); // Load users on page load
-        });
-
-        $(document).on("change", "#itemsPerPage", function () {
-            var selectedPageSize = $(this).val(); // Get selected value
-            ItemsPaginationAjax(1, selectedPageSize); // Reload data with new page size
-        });  
-   
-
-        function ItemsPaginationAjax(categoryId, pageNumber, pageSize) 
-        {
-            if (!pageNumber) {
-                pageNumber = @((Model?.ItemsPageVM?.Page?.CurrentPage ?? 1));
-            }
-            if (!pageSize) {
-                pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
-            }
-
-            $.ajax({
-                url: "/Menu/GetItems",
-                data: { 
-                    'categoryId' : categoryId,
-                    'pageSize': pageSize, 
-                    'pageNumber': pageNumber 
-                },
-                type: "GET",
-                dataType: "html",
-                success: function (data) {
-                    $("#Items-Content").html(data);
-                    $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
-                },
-                error: function () {
-                    console.log("There is error.Not successful");
-                    alert("No Items Found");
-                    $("#itemsListContent").html('An error has occurred');
-                }
+                //For showing edit and delete icons on hovering 
+                $(".li-category").mouseover(function () {
+                    $(this).children("div.EditDeleteCategory").css("visibility", "visible");
+                });
+            $(".li-category").mouseout(function () {
+                $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
             });
 
-            
-            $(document).on("click","#newItemBtn", function(){
-                loadAddEditModal(0);
-            });
+            //For edit Category 
+            let categoryId;
+            $(".iconEditCategory").click(function () {
+                categoryId = $(this).data("id");
+                $("#modalCategoryId").val(categoryId);
 
-            $(document).on("click",".editItemBtn", function(){
-                loadAddEditModal($(this).data("id"));
-                console.log("itemId id on clicking icons ",$(this).data("id"));
-            });
-
-            function loadAddEditModal(id){
                 $.ajax({
-                    url: '@Url.Action("GetItemModal", "Menu")',
+                    url: '@Url.Action("EditCategory", "Menu")',
                     type: "GET",
-                    data: { itemId: id },
+                    data: { categoryId: categoryId },
+                    success: function (response) {
+                        console.log(response);
+                        $("#modalCategoryName").val(response.categoryName);
+                        $("#modalCategoryDesc").val(response.categoryDesc)
+                    }
+                });
+            });
+
+            $(".iconDeleteCategory").click(function () {
+                categoryId = $(this).data("id");
+            });
+
+            $("#confirmDelete").click(function () {
+                $.ajax({
+                    url: '@Url.Action("SoftDelete", "Menu")',
+                    type: "GET",
+                    data: { categoryId: categoryId },
+                    success: function (response) {
+                        console.log("Category with id ", categoryId, " is deleted.");
+                    },
+                    error: function () {
+                        console.log("error input deleting user");
+                    }
+                });
+            });
+
+            $('#uploadImage').change(function () {
+                let file = this.files[0];
+                $('#showUploadImageName').text(file.name);
+            });
+
+            //for Soft Delete of Items
+            let itemId;
+            $(document).on("click", ".deleteItemIcon", function () {
+                itemId = $(this).data("id");
+                console.log("Item id is ", itemId);
+            });
+
+            $(document).on("click", "#SoftDeleteItem", function () {
+                $.ajax({
+                    url: '@Url.Action("SoftDeleteItem", "Menu")',
+                    type: "POST",
+                    data: { id: itemId },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message)
+                            setTimeout(function () {
+                                location.reload();
+                            },000);
+                        }
+                        else {
+                            toastr.error(response.message)
+                        }
+                    },
+                    error: function () {
+                        console.log("Item not deleted!");
+                    }
+                });
+            });
+
+
+            @* this is Pagination of items *@
+                $(".li-category>a").on("click", function () {
+                    categoryId = $(this).parent().data("id");
+                    $(".li-category").each(function () {
+                        $(this).children().removeClass("blue");
+                    });
+                    $(this).addClass("blue");
+
+                    ItemsPaginationAjax(1);
+                });
+
+            $(document).ready(function () {
+                categoryId = $("#ul-category>li:first").data("id");
+                $("#ul-category>li:first>a").addClass("blue");
+                ItemsPaginationAjax(1); // Load users on page load
+            });
+
+            $(document).on("change", "#itemsPerPage", function () {
+                ItemsPaginationAjax(1); // Reload data with new page size
+            });
+
+            $(document).on("input", "#searchItem", function () {
+                ItemsPaginationAjax(1); // Reload data with new page size
+            });
+
+
+            function ItemsPaginationAjax(pageNumber) {
+                if (!pageNumber) {
+                    pageNumber = @((Model?.ItemsPageVM?.Page?.CurrentPage ?? 1));
+                }
+                let pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
+                let searchItem = $("#searchItem").val();
+                $.ajax({
+                    url: "/Menu/GetItems",
+                    data: {
+                        'categoryId': categoryId,
+                        'pageSize': pageSize,
+                        'pageNumber': pageNumber,
+                        'search': searchItem
+                    },
+                    type: "GET",
                     dataType: "html",
                     success: function (data) {
-                        $("#addEditItemModal").html(data);
-                        modifierGroupList = [];
-                        $(".modifierGroupDetail").each(function(){
-                            modifierGroupList.push(Number($(this).data("id")));
-                        });
+                        $("#itemTableOuter").html(data);
+                        $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
                     },
                     error: function () {
                         console.log("There is error.Not successful");
@@ -414,168 +417,197 @@
                         $("#itemsListContent").html('An error has occurred');
                     }
                 });
-            }
 
-            
 
-        }
-    </script>
-
-    @* Intermediate Checkbox For Items Script*@
-    <script>        
-
-        $(document).ready(function () {
-            $("#itemMassDeleteIcon").prop("disabled", true);
-        });
-
-        function toggleMasterDeleteBtn() {
-            console.log($(".itemChildCheckbox:checked").length)
-            if ($(".itemChildCheckbox:checked").length > 0) {
-                $("#itemMassDeleteIcon").prop("disabled", false);
-            }
-            else {
-                $("#itemMassDeleteIcon").prop("disabled", true);
-            }
-        }
-
-        $(document).on("change", "#itemParentCheckbox", function () {
-            $(".itemChildCheckbox").each(function () {
-                $(this).prop("checked", $("#itemParentCheckbox").prop("checked"));
-            });
-            toggleMasterDeleteBtn();
-        });
-
-        $(document).on("change", ".itemChildCheckbox", function () {
-            let totalchildCheckBox = $(".itemChildCheckbox").length;
-            let checkedchildCheckBox = $(".itemChildCheckbox:checked").length;
-            if (checkedchildCheckBox === totalchildCheckBox) {
-                $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", true);
-            }
-            else if (checkedchildCheckBox === 0) {
-                $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", false);
-            }
-            else {
-                $("#itemParentCheckbox").prop("indeterminate", true);
-            }
-            toggleMasterDeleteBtn();
-        });
-
-        //For mass delete of Items
-        let itemList = [];
-        $(document).on("click", "#itemMassDeleteIcon",function(){
-            $(".itemChildCheckbox:checked").each(function () {
-                itemList.push($(this).data("id"));
-            });
-        });
-
-        $(document).on("click", "#confirmMassDeleteItem", function(){
-            $.ajax({
-                url: '@Url.Action("MassDeleteItems", "Menu")',
-                type: "POST",
-                data: { itemsList: itemList },
-                success: function (response) {
-                    if (response.success) {
-                        toastr.success(response.message)
-                        setTimeout(function(){
-                            location.reload();
-                        },3000);
-                    }
-                    else{
-                        toastr.error(response.message)
-                    }
-                },
-                error: function () {
-                    console.log("Item not deleted!");
-                }
-            });
-        });
-
-    </script>
-
-    @* Select Modifier in items *@
-    <script>
-
-        let modifierGroupList = [];
-        $(document).on("change","#selectModifierGroup",function(){
-            let modifierGroupId = $(this).val();
-            if(modifierGroupList.indexOf(Number(modifierGroupId)) === -1)
-            {
-                modifierGroupList.push(Number(modifierGroupId));
-                getSelectedModifierGroup(modifierGroupId);
-            }
-            $("#selectModifierGroup").val("-1");
-        });
-
-        $(document).on("click",".deselectModifierGroup",function(){
-            let modifierGroupId = $(this).data("id");
-            console.log("delete modifier group id is",modifierGroupId);
-            modifierGroupList = $.grep(modifierGroupList,function(element){
-                return element != modifierGroupId;
-            });
-            $("div").remove(".modifierGroupDetail[data-id ='"+modifierGroupId+"']")
-        });
-
-        function getSelectedModifierGroup(id){
-            $.ajax({
-                url: '@Url.Action("SelectModifierGroup", "Menu")',
-                type: "GET",
-                data : {modifierGroupId : id},
-                dataType : "html",
-                success: function(data){
-                    $("#showModifierGroup").append(data);
-                },
-                error: function(){
-                    console.log("There is error in fetching modifier group.Not successful");
-                }
-            });
-        }
-
-    </script>
-
-    @* Add/Update Item Form Submit *@
-    <script>
-        $(document).on("submit","#AddUpdateItemForm",function(e){
-            e.preventDefault();
-
-            let modifiergroupArr = [];
-
-            $(".modifierGroupDetail").each(function(){
-                let id = $(this).data("id");
-                modifiergroupArr.push({
-                    ModifierGroupId : id,
-                    MinAllowed : Number($(".minAllowed[data-id ='"+id+"']").val()),
-                    MaxAllowed : Number($(".maxAllowed[data-id ='"+id+"']").val())
+                $(document).on("click", "#newItemBtn", function () {
+                    loadAddEditModal(0);
                 });
 
+                $(document).on("click", ".editItemBtn", function () {
+                    loadAddEditModal($(this).data("id"));
+                    console.log("itemId id on clicking icons ", $(this).data("id"));
+                });
 
-            });
-            console.log(modifiergroupArr);
-
-            $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
-
-            let formData = new FormData(this);
-            
-            
-            $.ajax({
-                url: $(this).attr("action"),
-                type: $(this).attr("method"),
-                data : formData,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    $("#addEditItem").hide;
-                    toastr.success("Item Added successfully!");
-                    setTimeout(function(){
-                            location.reload();
-                        },3000);
-                },
-                error: function () {
-                    console.log("There is error.Not successful");
-                    alert("No Items Found");
-                    $("#itemsListContent").html('An error has occurred');
+                function loadAddEditModal(id) {
+                    $.ajax({
+                        url: '@Url.Action("GetItemModal", "Menu")',
+                        type: "GET",
+                        data: { itemId: id },
+                        dataType: "html",
+                        success: function (data) {
+                            $("#addEditItemModal").html(data);
+                            modifierGroupList = [];
+                            $(".modifierGroupDetail").each(function () {
+                                modifierGroupList.push(Number($(this).data("id")));
+                            });
+                        },
+                        error: function () {
+                            console.log("There is error.Not successful");
+                            alert("No Items Found");
+                            $("#itemsListContent").html('An error has occurred');
+                        }
+                    });
                 }
+
+
+
+            }
+        </script>
+
+    @* Intermediate Checkbox For Items Script*@
+        <script>
+
+            $(document).ready(function () {
+                $("#itemMassDeleteIcon").prop("disabled", true);
             });
 
-        });
-    </script>
+            function toggleMasterDeleteBtn() {
+                console.log($(".itemChildCheckbox:checked").length)
+                if ($(".itemChildCheckbox:checked").length > 0) {
+                    $("#itemMassDeleteIcon").prop("disabled", false);
+                }
+                else {
+                    $("#itemMassDeleteIcon").prop("disabled", true);
+                }
+            }
+
+            $(document).on("change", "#itemParentCheckbox", function () {
+                $(".itemChildCheckbox").each(function () {
+                    $(this).prop("checked", $("#itemParentCheckbox").prop("checked"));
+                });
+                toggleMasterDeleteBtn();
+            });
+
+            $(document).on("change", ".itemChildCheckbox", function () {
+                let totalchildCheckBox = $(".itemChildCheckbox").length;
+                let checkedchildCheckBox = $(".itemChildCheckbox:checked").length;
+                if (checkedchildCheckBox === totalchildCheckBox) {
+                    $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", true);
+                }
+                else if (checkedchildCheckBox === 0) {
+                    $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", false);
+                }
+                else {
+                    $("#itemParentCheckbox").prop("indeterminate", true);
+                }
+                toggleMasterDeleteBtn();
+            });
+
+            //For mass delete of Items
+            let itemList = [];
+            $(document).on("click", "#itemMassDeleteIcon", function () {
+                $(".itemChildCheckbox:checked").each(function () {
+                    itemList.push($(this).data("id"));
+                });
+            });
+
+            $(document).on("click", "#confirmMassDeleteItem", function () {
+                $.ajax({
+                    url: '@Url.Action("MassDeleteItems", "Menu")',
+                    type: "POST",
+                    data: { itemsList: itemList },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message)
+                            setTimeout(function () {
+                                location.reload();
+                            }, 3000);
+                        }
+                        else {
+                            toastr.error(response.message)
+                        }
+                    },
+                    error: function () {
+                        console.log("Item not deleted!");
+                    }
+                });
+            });
+
+        </script>
+
+    @* Select Modifier in items *@
+        <script>
+
+            let modifierGroupList = [];
+            $(document).on("change", "#selectModifierGroup", function () {
+                let modifierGroupId = $(this).val();
+                if (modifierGroupList.indexOf(Number(modifierGroupId)) === -1) {
+                    modifierGroupList.push(Number(modifierGroupId));
+                    getSelectedModifierGroup(modifierGroupId);
+                }
+                $("#selectModifierGroup").val("-1");
+            });
+
+            $(document).on("click", ".deselectModifierGroup", function () {
+                let modifierGroupId = $(this).data("id");
+                console.log("delete modifier group id is", modifierGroupId);
+                modifierGroupList = $.grep(modifierGroupList, function (element) {
+                    return element != modifierGroupId;
+                });
+                $("div").remove(".modifierGroupDetail[data-id ='" + modifierGroupId + "']")
+            });
+
+            function getSelectedModifierGroup(id) {
+                $.ajax({
+                    url: '@Url.Action("SelectModifierGroup", "Menu")',
+                    type: "GET",
+                    data: { modifierGroupId: id },
+                    dataType: "html",
+                    success: function (data) {
+                        $("#showModifierGroup").append(data);
+                    },
+                    error: function () {
+                        console.log("There is error in fetching modifier group.Not successful");
+                    }
+                });
+            }
+
+        </script>
+
+    @* Add/Update Item Form Submit *@
+        <script>
+            $(document).on("submit", "#AddUpdateItemForm", function (e) {
+                e.preventDefault();
+
+                let modifiergroupArr = [];
+
+                $(".modifierGroupDetail").each(function () {
+                    let id = $(this).data("id");
+                    modifiergroupArr.push({
+                        ModifierGroupId: id,
+                        MinAllowed: Number($(".minAllowed[data-id ='" + id + "']").val()),
+                        MaxAllowed: Number($(".maxAllowed[data-id ='" + id + "']").val())
+                    });
+
+
+                });
+                console.log(modifiergroupArr);
+
+                $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
+
+                let formData = new FormData(this);
+
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $("#addEditItem").hide;
+                        toastr.success("Item Added successfully!");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
+                    },
+                    error: function () {
+                        console.log("There is error.Not successful");
+                        alert("No Items Found");
+                        $("#itemsListContent").html('An error has occurred');
+                    }
+                });
+
+            });
+        </script>
 }
