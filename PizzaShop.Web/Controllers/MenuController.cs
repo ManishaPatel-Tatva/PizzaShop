@@ -9,17 +9,20 @@ namespace PizzaShop.Web.Controllers;
 [Authorize]
 public class MenuController : Controller
 {
-    private readonly ICategoryItemService _categoryItemService;
     private readonly IJwtService _jwtService;
+    private readonly ICategoryItemService _categoryItemService;
+    private readonly IModifierService _modifierService;
 
-    public MenuController(ICategoryItemService categoryItemService, IJwtService jwtService)
+    public MenuController(ICategoryItemService categoryItemService, IJwtService jwtService, IModifierService modifierService)
     {
         _categoryItemService = categoryItemService;
         _jwtService = jwtService;
+        _modifierService = modifierService;
     }
 
-/*--------------------------------------------------------Menu Index---------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------------------------Menu Index---------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
     [HttpGet]
     public IActionResult Index()
     {
@@ -191,6 +194,19 @@ public class MenuController : Controller
 
 #endregion Items
 
+#region Modifiers    
+ 
+#region Read Modifier Group
+ /*-------------------------------------------------------- Read Modifier Group---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [HttpGet]
+    public IActionResult GetModifierTab()
+    {
+        List<ModifierGroupViewModel>? modifierGroupList = _modifierService.GetModifierGroups();
+        return PartialView("_ModifierTabPartialView", modifierGroupList); 
+    }
+#endregion Read Modifier Group
 
+#endregion Modifiers
 
 }

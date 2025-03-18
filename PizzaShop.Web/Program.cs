@@ -53,6 +53,8 @@ builder.Services.AddScoped<IRolePermissionRepository, RolePermissionRepository>(
 
 //CategoryItem service
 builder.Services.AddScoped<ICategoryItemService, CategoryItemService>();
+builder.Services.AddScoped<IModifierService, ModifierService>();
+
 
 //Session 
 builder.Services.AddSession(options =>

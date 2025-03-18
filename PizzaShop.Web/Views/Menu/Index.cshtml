@@ -37,7 +37,7 @@
 
     <div class="tab-content" id="pills-tabContent">
 
-        <!-----------------------------------------------------Category  Items -----------------------------------------------------------------------------------
+        <!-----------------------------------------------------Category and Items -----------------------------------------------------------------------------------
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
             tabindex="0">
@@ -115,48 +115,13 @@
             </div>
         </div>
 
-        <!----------------------------------------------------- Modifiers -----------------------------------------------------------------------------------
+        <!----------------------------------------------------- Modifiers and Modifier Group-----------------------------------------------------------------------------------
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
             tabindex="0">
-            <div class="row">
+            <div class="row" id="modifierTab">
 
-                <!-- Modifier Group starts -->
-                <div class="category col-12 col-md-3 pt-2 bg-dark-grey">
-
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fs-5 fw-bold blue-text">Category</span>
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addCategory">
-                            <img src="~/images/icons/plus-square.svg" alt="" width="25px">
-                        </button>
-                    </div>
-
-                    <div class="modifier-list pe-1">
-                        <ul class="pe-1">
-                            <li class=""><a href="" class="d-flex align-items-center blue-text blue"><img class=""
-                                        src="~/images/icons/grid-3x2.svg">Veggies</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Crust Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Cheese Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Sauces Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Tooping Options</a></li>
-                            <li><a href="" class="d-flex align-items-center"><img
-                                        src="~/images/icons/grid-3x2.svg">Size
-                                    Options</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Modifier Group ends  -->
-
-                <!-- Modifier starts -->
-                <div class="col pt-2" id="">
-
-                </div>
-                <!-- Modifier ends -->
+                <!-- Modifier Group Partial View -->
 
             </div>
         </div>
@@ -283,133 +248,163 @@
 
 
 @section Scripts {
-        <script>
-            @* Javascript for Category *@
+    <script>
+        @* Javascript for Category *@
 
-                //For showing edit and delete icons on hovering 
-                $(".li-category").mouseover(function () {
-                    $(this).children("div.EditDeleteCategory").css("visibility", "visible");
-                });
-            $(".li-category").mouseout(function () {
-                $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
+            //For showing edit and delete icons on hovering 
+            $(".li-category").mouseover(function () {
+                $(this).children("div.EditDeleteCategory").css("visibility", "visible");
             });
+        $(".li-category").mouseout(function () {
+            $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
+        });
 
-            //For edit Category 
-            let categoryId;
-            $(".iconEditCategory").click(function () {
-                categoryId = $(this).data("id");
-                $("#modalCategoryId").val(categoryId);
+        //For edit Category 
+        let categoryId;
+        $(".iconEditCategory").click(function () {
+            categoryId = $(this).data("id");
+            $("#modalCategoryId").val(categoryId);
 
-                $.ajax({
-                    url: '@Url.Action("EditCategory", "Menu")',
-                    type: "GET",
-                    data: { categoryId: categoryId },
-                    success: function (response) {
-                        console.log(response);
-                        $("#modalCategoryName").val(response.categoryName);
-                        $("#modalCategoryDesc").val(response.categoryDesc)
-                    }
-                });
-            });
-
-            $(".iconDeleteCategory").click(function () {
-                categoryId = $(this).data("id");
-            });
-
-            $("#confirmDelete").click(function () {
-                $.ajax({
-                    url: '@Url.Action("SoftDelete", "Menu")',
-                    type: "GET",
-                    data: { categoryId: categoryId },
-                    success: function (response) {
-                        console.log("Category with id ", categoryId, " is deleted.");
-                    },
-                    error: function () {
-                        console.log("error input deleting user");
-                    }
-                });
-            });
-
-            $('#uploadImage').change(function () {
-                let file = this.files[0];
-                $('#showUploadImageName').text(file.name);
-            });
-
-            //for Soft Delete of Items
-            let itemId;
-            $(document).on("click", ".deleteItemIcon", function () {
-                itemId = $(this).data("id");
-                console.log("Item id is ", itemId);
-            });
-
-            $(document).on("click", "#SoftDeleteItem", function () {
-                $.ajax({
-                    url: '@Url.Action("SoftDeleteItem", "Menu")',
-                    type: "POST",
-                    data: { id: itemId },
-                    success: function (response) {
-                        if (response.success) {
-                            toastr.success(response.message)
-                            setTimeout(function () {
-                                location.reload();
-                            },000);
-                        }
-                        else {
-                            toastr.error(response.message)
-                        }
-                    },
-                    error: function () {
-                        console.log("Item not deleted!");
-                    }
-                });
-            });
-
-
-            @* this is Pagination of items *@
-                $(".li-category>a").on("click", function () {
-                    categoryId = $(this).parent().data("id");
-                    $(".li-category").each(function () {
-                        $(this).children().removeClass("blue");
-                    });
-                    $(this).addClass("blue");
-
-                    ItemsPaginationAjax(1);
-                });
-
-            $(document).ready(function () {
-                categoryId = $("#ul-category>li:first").data("id");
-                $("#ul-category>li:first>a").addClass("blue");
-                ItemsPaginationAjax(1); // Load users on page load
-            });
-
-            $(document).on("change", "#itemsPerPage", function () {
-                ItemsPaginationAjax(1); // Reload data with new page size
-            });
-
-            $(document).on("input", "#searchItem", function () {
-                ItemsPaginationAjax(1); // Reload data with new page size
-            });
-
-
-            function ItemsPaginationAjax(pageNumber) {
-                if (!pageNumber) {
-                    pageNumber = @((Model?.ItemsPageVM?.Page?.CurrentPage ?? 1));
+            $.ajax({
+                url: '@Url.Action("EditCategory", "Menu")',
+                type: "GET",
+                data: { categoryId: categoryId },
+                success: function (response) {
+                    console.log(response);
+                    $("#modalCategoryName").val(response.categoryName);
+                    $("#modalCategoryDesc").val(response.categoryDesc)
                 }
-                let pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
-                let searchItem = $("#searchItem").val();
+            });
+        });
+
+        $(".iconDeleteCategory").click(function () {
+            categoryId = $(this).data("id");
+        });
+
+        $("#confirmDelete").click(function () {
+            $.ajax({
+                url: '@Url.Action("SoftDelete", "Menu")',
+                type: "GET",
+                data: { categoryId: categoryId },
+                success: function (response) {
+                    console.log("Category with id ", categoryId, " is deleted.");
+                },
+                error: function () {
+                    console.log("error input deleting user");
+                }
+            });
+        });
+
+        $('#uploadImage').change(function () {
+            let file = this.files[0];
+            $('#showUploadImageName').text(file.name);
+        });
+
+        //for Soft Delete of Items
+        let itemId;
+        $(document).on("click", ".deleteItemIcon", function () {
+            itemId = $(this).data("id");
+            console.log("Item id is ", itemId);
+        });
+
+        $(document).on("click", "#SoftDeleteItem", function () {
+            $.ajax({
+                url: '@Url.Action("SoftDeleteItem", "Menu")',
+                type: "POST",
+                data: { id: itemId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function () {
+                            location.reload();
+                        },000);
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Item not deleted!");
+                }
+            });
+        });
+
+
+        @* this is Pagination of items *@
+            $(".li-category>a").on("click", function () {
+                categoryId = $(this).parent().data("id");
+                $(".li-category").each(function () {
+                    $(this).children().removeClass("blue");
+                });
+                $(this).addClass("blue");
+
+                ItemsPaginationAjax(1);
+            });
+
+        $(document).ready(function () {
+            categoryId = $("#ul-category>li:first").data("id");
+            $("#ul-category>li:first>a").addClass("blue");
+            ItemsPaginationAjax(1); // Load users on page load
+        });
+
+        $(document).on("change", "#itemsPerPage", function () {
+            ItemsPaginationAjax(1); // Reload data with new page size
+        });
+
+        $(document).on("input", "#searchItem", function () {
+            ItemsPaginationAjax(1); // Reload data with new page size
+        });
+
+
+        function ItemsPaginationAjax(pageNumber) {
+            if (!pageNumber) {
+                pageNumber = @((Model?.ItemsPageVM?.Page?.CurrentPage ?? 1));
+            }
+            let pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
+            let searchItem = $("#searchItem").val();
+            $.ajax({
+                url: "/Menu/GetItems",
+                data: {
+                    'categoryId': categoryId,
+                    'pageSize': pageSize,
+                    'pageNumber': pageNumber,
+                    'search': searchItem
+                },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#itemTableOuter").html(data);
+                    $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Items Found");
+                    $("#itemsListContent").html('An error has occurred');
+                }
+            });
+
+
+            $(document).on("click", "#newItemBtn", function () {
+                loadAddEditModal(0);
+            });
+
+            $(document).on("click", ".editItemBtn", function () {
+                loadAddEditModal($(this).data("id"));
+                console.log("itemId id on clicking icons ", $(this).data("id"));
+            });
+
+            function loadAddEditModal(id) {
                 $.ajax({
-                    url: "/Menu/GetItems",
-                    data: {
-                        'categoryId': categoryId,
-                        'pageSize': pageSize,
-                        'pageNumber': pageNumber,
-                        'search': searchItem
-                    },
+                    url: '@Url.Action("GetItemModal", "Menu")',
                     type: "GET",
+                    data: { itemId: id },
                     dataType: "html",
                     success: function (data) {
-                        $("#itemTableOuter").html(data);
-                        $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
+                        $("#addEditItemModal").html(data);
+                        modifierGroupList = [];
+                        $(".modifierGroupDetail").each(function () {
+                            modifierGroupList.push(Number($(this).data("id")));
+                        });
                     },
                     error: function () {
                         console.log("There is error.Not successful");
@@ -417,197 +412,193 @@
                         $("#itemsListContent").html('An error has occurred');
                     }
                 });
-
-
-                $(document).on("click", "#newItemBtn", function () {
-                    loadAddEditModal(0);
-                });
-
-                $(document).on("click", ".editItemBtn", function () {
-                    loadAddEditModal($(this).data("id"));
-                    console.log("itemId id on clicking icons ", $(this).data("id"));
-                });
-
-                function loadAddEditModal(id) {
-                    $.ajax({
-                        url: '@Url.Action("GetItemModal", "Menu")',
-                        type: "GET",
-                        data: { itemId: id },
-                        dataType: "html",
-                        success: function (data) {
-                            $("#addEditItemModal").html(data);
-                            modifierGroupList = [];
-                            $(".modifierGroupDetail").each(function () {
-                                modifierGroupList.push(Number($(this).data("id")));
-                            });
-                        },
-                        error: function () {
-                            console.log("There is error.Not successful");
-                            alert("No Items Found");
-                            $("#itemsListContent").html('An error has occurred');
-                        }
-                    });
-                }
-
-
-
             }
-        </script>
+
+
+
+        }
+    </script>
 
     @* Intermediate Checkbox For Items Script*@
-        <script>
+    <script>
 
-            $(document).ready(function () {
+        $(document).ready(function () {
+            $("#itemMassDeleteIcon").prop("disabled", true);
+        });
+
+        function toggleMasterDeleteBtn() {
+            console.log($(".itemChildCheckbox:checked").length)
+            if ($(".itemChildCheckbox:checked").length > 0) {
+                $("#itemMassDeleteIcon").prop("disabled", false);
+            }
+            else {
                 $("#itemMassDeleteIcon").prop("disabled", true);
-            });
-
-            function toggleMasterDeleteBtn() {
-                console.log($(".itemChildCheckbox:checked").length)
-                if ($(".itemChildCheckbox:checked").length > 0) {
-                    $("#itemMassDeleteIcon").prop("disabled", false);
-                }
-                else {
-                    $("#itemMassDeleteIcon").prop("disabled", true);
-                }
             }
+        }
 
-            $(document).on("change", "#itemParentCheckbox", function () {
-                $(".itemChildCheckbox").each(function () {
-                    $(this).prop("checked", $("#itemParentCheckbox").prop("checked"));
-                });
-                toggleMasterDeleteBtn();
+        $(document).on("change", "#itemParentCheckbox", function () {
+            $(".itemChildCheckbox").each(function () {
+                $(this).prop("checked", $("#itemParentCheckbox").prop("checked"));
             });
+            toggleMasterDeleteBtn();
+        });
 
-            $(document).on("change", ".itemChildCheckbox", function () {
-                let totalchildCheckBox = $(".itemChildCheckbox").length;
-                let checkedchildCheckBox = $(".itemChildCheckbox:checked").length;
-                if (checkedchildCheckBox === totalchildCheckBox) {
-                    $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", true);
-                }
-                else if (checkedchildCheckBox === 0) {
-                    $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", false);
-                }
-                else {
-                    $("#itemParentCheckbox").prop("indeterminate", true);
-                }
-                toggleMasterDeleteBtn();
-            });
-
-            //For mass delete of Items
-            let itemList = [];
-            $(document).on("click", "#itemMassDeleteIcon", function () {
-                $(".itemChildCheckbox:checked").each(function () {
-                    itemList.push($(this).data("id"));
-                });
-            });
-
-            $(document).on("click", "#confirmMassDeleteItem", function () {
-                $.ajax({
-                    url: '@Url.Action("MassDeleteItems", "Menu")',
-                    type: "POST",
-                    data: { itemsList: itemList },
-                    success: function (response) {
-                        if (response.success) {
-                            toastr.success(response.message)
-                            setTimeout(function () {
-                                location.reload();
-                            }, 3000);
-                        }
-                        else {
-                            toastr.error(response.message)
-                        }
-                    },
-                    error: function () {
-                        console.log("Item not deleted!");
-                    }
-                });
-            });
-
-        </script>
-
-    @* Select Modifier in items *@
-        <script>
-
-            let modifierGroupList = [];
-            $(document).on("change", "#selectModifierGroup", function () {
-                let modifierGroupId = $(this).val();
-                if (modifierGroupList.indexOf(Number(modifierGroupId)) === -1) {
-                    modifierGroupList.push(Number(modifierGroupId));
-                    getSelectedModifierGroup(modifierGroupId);
-                }
-                $("#selectModifierGroup").val("-1");
-            });
-
-            $(document).on("click", ".deselectModifierGroup", function () {
-                let modifierGroupId = $(this).data("id");
-                console.log("delete modifier group id is", modifierGroupId);
-                modifierGroupList = $.grep(modifierGroupList, function (element) {
-                    return element != modifierGroupId;
-                });
-                $("div").remove(".modifierGroupDetail[data-id ='" + modifierGroupId + "']")
-            });
-
-            function getSelectedModifierGroup(id) {
-                $.ajax({
-                    url: '@Url.Action("SelectModifierGroup", "Menu")',
-                    type: "GET",
-                    data: { modifierGroupId: id },
-                    dataType: "html",
-                    success: function (data) {
-                        $("#showModifierGroup").append(data);
-                    },
-                    error: function () {
-                        console.log("There is error in fetching modifier group.Not successful");
-                    }
-                });
+        $(document).on("change", ".itemChildCheckbox", function () {
+            let totalchildCheckBox = $(".itemChildCheckbox").length;
+            let checkedchildCheckBox = $(".itemChildCheckbox:checked").length;
+            if (checkedchildCheckBox === totalchildCheckBox) {
+                $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", true);
             }
+            else if (checkedchildCheckBox === 0) {
+                $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", false);
+            }
+            else {
+                $("#itemParentCheckbox").prop("indeterminate", true);
+            }
+            toggleMasterDeleteBtn();
+        });
 
-        </script>
+        //For mass delete of Items
+        let itemList = [];
+        $(document).on("click", "#itemMassDeleteIcon", function () {
+            $(".itemChildCheckbox:checked").each(function () {
+                itemList.push($(this).data("id"));
+            });
+        });
 
-    @* Add/Update Item Form Submit *@
-        <script>
-            $(document).on("submit", "#AddUpdateItemForm", function (e) {
-                e.preventDefault();
-
-                let modifiergroupArr = [];
-
-                $(".modifierGroupDetail").each(function () {
-                    let id = $(this).data("id");
-                    modifiergroupArr.push({
-                        ModifierGroupId: id,
-                        MinAllowed: Number($(".minAllowed[data-id ='" + id + "']").val()),
-                        MaxAllowed: Number($(".maxAllowed[data-id ='" + id + "']").val())
-                    });
-
-
-                });
-                console.log(modifiergroupArr);
-
-                $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
-
-                let formData = new FormData(this);
-
-
-                $.ajax({
-                    url: $(this).attr("action"),
-                    type: $(this).attr("method"),
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        $("#addEditItem").hide;
-                        toastr.success("Item Added successfully!");
+        $(document).on("click", "#confirmMassDeleteItem", function () {
+            $.ajax({
+                url: '@Url.Action("MassDeleteItems", "Menu")',
+                type: "POST",
+                data: { itemsList: itemList },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
                         setTimeout(function () {
                             location.reload();
                         }, 3000);
-                    },
-                    error: function () {
-                        console.log("There is error.Not successful");
-                        alert("No Items Found");
-                        $("#itemsListContent").html('An error has occurred');
                     }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Item not deleted!");
+                }
+            });
+        });
+
+    </script>
+
+    @* Select Modifier in items *@
+    <script>
+
+        let modifierGroupList = [];
+        $(document).on("change", "#selectModifierGroup", function () {
+            let modifierGroupId = $(this).val();
+            if (modifierGroupList.indexOf(Number(modifierGroupId)) === -1) {
+                modifierGroupList.push(Number(modifierGroupId));
+                getSelectedModifierGroup(modifierGroupId);
+            }
+            $("#selectModifierGroup").val("-1");
+        });
+
+        $(document).on("click", ".deselectModifierGroup", function () {
+            let modifierGroupId = $(this).data("id");
+            console.log("delete modifier group id is", modifierGroupId);
+            modifierGroupList = $.grep(modifierGroupList, function (element) {
+                return element != modifierGroupId;
+            });
+            $("div").remove(".modifierGroupDetail[data-id ='" + modifierGroupId + "']")
+        });
+
+        function getSelectedModifierGroup(id) {
+            $.ajax({
+                url: '@Url.Action("SelectModifierGroup", "Menu")',
+                type: "GET",
+                data: { modifierGroupId: id },
+                dataType: "html",
+                success: function (data) {
+                    $("#showModifierGroup").append(data);
+                },
+                error: function () {
+                    console.log("There is error in fetching modifier group.Not successful");
+                }
+            });
+        }
+
+    </script>
+
+    @* Add/Update Item Form Submit *@
+    <script>
+        $(document).on("submit", "#AddUpdateItemForm", function (e) {
+            e.preventDefault();
+
+            let modifiergroupArr = [];
+
+            $(".modifierGroupDetail").each(function () {
+                let id = $(this).data("id");
+                modifiergroupArr.push({
+                    ModifierGroupId: id,
+                    MinAllowed: Number($(".minAllowed[data-id ='" + id + "']").val()),
+                    MaxAllowed: Number($(".maxAllowed[data-id ='" + id + "']").val())
                 });
 
+
             });
-        </script>
+            console.log(modifiergroupArr);
+
+            $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
+
+            let formData = new FormData(this);
+
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $("#addEditItem").hide;
+                    toastr.success("Item Added successfully!");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Items Found");
+                    $("#itemsListContent").html('An error has occurred');
+                }
+            });
+
+        });
+    </script>
+
+    <script>
+
+        $(document).on("click","#modifier-tab",function(){
+            console.log("Modifier Tab");
+            getModifierTab();
+        });
+
+        @* $("#modifier-tab").click(function(){
+            console.log("hh")
+        }) *@
+
+        function getModifierTab(){
+            $.ajax({
+                url: '@Url.Action("GetModifierTab", "Menu")',
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#modifierTab").html(data);
+                },
+                error: function () {
+                    console.log("There is error in fetching modifier tab.Not successful");
+                }
+            });
+        }
+    </script>
 }

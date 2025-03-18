@@ -43,7 +43,7 @@ public class CategoryItemService : ICategoryItemService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public List<CategoryViewModel> GetCategory()
     {
-        var categories = _categoryRepository.GetByCondition(c => c.IsDeleted == false)
+        List<CategoryViewModel>? categories = _categoryRepository.GetByCondition(c => c.IsDeleted == false)
         .Select(category => new CategoryViewModel
         {
             CategoryId = category.Id,

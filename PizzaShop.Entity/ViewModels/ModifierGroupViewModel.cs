@@ -8,9 +8,6 @@ public class ModifierGroupViewModel
 
     public string Name { get; set; }
 
-    public string Description { get; set; }
+    public string? Description { get; set; } = null!;
 
-    public List<ModifierGroup> ModifierGroups { get; set; } = new List<ModifierGroup>();
-
-    public List<Modifier> Modifiers { get; set; } = new List<Modifier>();
 }
