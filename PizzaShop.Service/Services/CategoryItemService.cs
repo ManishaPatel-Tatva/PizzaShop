@@ -188,20 +188,26 @@ public class CategoryItemService : ICategoryItemService
         model.Description = item.Description;
         model.ItemImageUrl = item.ImageUrl;
         
-
-        model.ItemModifierGroups = _itemModifierGroupRepository.GetByCondition(i => i.ItemId == itemId).
-        Select(i => new ItemModifierViewModel{
+        model.ItemModifierGroups = _itemModifierGroupRepository.GetByConditionInclude(
+            i => i.ItemId == itemId && !i.IsDeleted,
+            includes: new List<Expression<Func<ItemModifierGroup, object>>> { i => i.ModifierGroup },
+            thenIncludes: new List<Expression<Func<ItemModifierGroup, object>>> { m => m.ModifierGroup.Modifiers }
+            )
+            .Result
+            .Select(i => new ItemModifierViewModel{
             ModifierGroupId = i.ModifierGroupId,
             ModifierGroupName = i.ModifierGroup.Name,
             MinAllowed = i.MinAllowed,
             MaxAllowed = i.MaxAllowed,
-            ModifierList = _modifierRepository.GetByCondition(ml => ml.ModifierGroupId == i.ModifierGroupId).Select( m => new ModifierViewModel{
-                ModifierId = m.Id,
-                ModifierName = m.Name,
-                Unit = m.Unit.Name,
-                Rate = m.Rate,
-                Quantity = m.Quantity,
-            }).ToList()
+            ModifierList = i.ModifierGroup.Modifiers
+                .Where(i => !i.IsDeleted)
+                .Select( m => new ModifierViewModel{
+                    ModifierId = m.Id,
+                    ModifierName = m.Name,
+                    Unit = m.Unit.Name,
+                    Rate = m.Rate,
+                    Quantity = m.Quantity,
+                }).ToList()
         }).ToList();
 
         return model;
@@ -242,10 +248,30 @@ public class CategoryItemService : ICategoryItemService
     #endregion Get Add/Edit Item 
 
     #region  Add Item
-    public async Task<bool> AddItem(AddItemViewModel model, string createrEmail)
+
+    public async Task<bool> AddUpdateItem(AddItemViewModel model, string createrEmail)
     {
         User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
         long createrId = creater.Id;
+
+        if(model.ItemId == 0)
+        {
+            return await AddItem(model, createrId);
+        }
+        else if(model.ItemId > 0)
+        {
+            return await UpdateItem(model, createrId);
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+
+    public async Task<bool> AddItem(AddItemViewModel model, long createrId)
+    {
 
         Item item = new()
         {
@@ -320,7 +346,7 @@ public class CategoryItemService : ICategoryItemService
     #endregion Add Item
 
     #region Update Item
-    public async Task<bool> UpdateItem(AddItemViewModel model)
+    public async Task<bool> UpdateItem(AddItemViewModel model, long createrId)
     {
 
         Item item = await _itemRepository.GetByIdAsync(model.ItemId);
@@ -356,7 +382,56 @@ public class CategoryItemService : ICategoryItemService
             item.ImageUrl = $"/itemImages/{fileName}";
         }
 
-        return await _itemRepository.UpdateAsync(item); ;
+        bool itemUpdated = await _itemRepository.UpdateAsync(item);
+
+        if (!itemUpdated)
+            return false;
+        
+        bool success = await UpdateItemModifierGroup(model.ItemId, model.ItemModifierGroups, createrId);
+        
+        return success;
+    }
+
+    public async Task<bool> UpdateItemModifierGroup(long itemId, List<ItemModifierViewModel> itemModifierList, long createrId)
+    {
+        List<long> existingGroupList = _itemModifierGroupRepository
+        .GetByCondition(m => m.ItemId == itemId && !m.IsDeleted)
+        .Select(mg => mg.ModifierGroupId)
+        .ToList(); 
+
+        List<long> currentGroupList = itemModifierList.Select(mg => mg.ModifierGroupId).ToList();
+
+        List<long> removeGroupList = existingGroupList.Except(currentGroupList).ToList();
+
+        foreach (long groupId in removeGroupList)
+        {
+            ItemModifierGroup? itemModifierGroup = await _itemModifierGroupRepository.GetByStringAsync(mg => mg.ModifierGroupId == groupId && mg.ItemId == itemId && !mg.IsDeleted);
+            itemModifierGroup.IsDeleted = true; 
+            bool success = await _itemModifierGroupRepository.UpdateAsync(itemModifierGroup);
+            if (!success)
+                return  false;
+        }
+
+        foreach (ItemModifierViewModel itemModifier in itemModifierList)
+        {
+            ItemModifierGroup existingGroup = await _itemModifierGroupRepository.GetByStringAsync(mg =>mg.ItemId ==itemModifier.ItemId &&  mg.ModifierGroupId == itemModifier.ModifierGroupId && mg.IsDeleted == false);
+            if (existingGroup == null)
+            {
+                bool success = await AddItemModifierGroup(itemId, itemModifier, createrId);
+                if (!success)
+                    return false;
+            }
+            else{
+                existingGroup.MinAllowed = itemModifier.MinAllowed;
+                existingGroup.MaxAllowed = itemModifier.MaxAllowed;
+                bool success = await _itemModifierGroupRepository.UpdateAsync(existingGroup);
+                if (!success)
+                    return  false;
+
+            }
+        }
+
+        return true;
     }
 
     #endregion Update Item
@@ -393,6 +468,8 @@ public class CategoryItemService : ICategoryItemService
     }
 
     #endregion Soft Delete
+
+
 
 
     #endregion Items

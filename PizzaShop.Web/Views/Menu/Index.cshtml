@@ -403,6 +403,10 @@
                     dataType: "html",
                     success: function (data) {
                         $("#addEditItemModal").html(data);
+                        modifierGroupList = [];
+                        $(".modifierGroupDetail").each(function(){
+                            modifierGroupList.push(Number($(this).data("id")));
+                        });
                     },
                     error: function () {
                         console.log("There is error.Not successful");
@@ -540,10 +544,12 @@
                 modifiergroupArr.push({
                     ModifierGroupId : id,
                     MinAllowed : Number($(".minAllowed[data-id ='"+id+"']").val()),
-                    MaxAllowed : Number($(".maxAllowed[data-id ='"+id+"']").val()),
+                    MaxAllowed : Number($(".maxAllowed[data-id ='"+id+"']").val())
                 });
 
+
             });
+            console.log(modifiergroupArr);
 
             $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
 

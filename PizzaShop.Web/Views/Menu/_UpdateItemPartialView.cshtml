@@ -128,9 +128,9 @@
                         <div class="row modifier-option">
                             <div class="col-6">
                                 <select asp-for="@modifierGroup.MinAllowed" class="form-select minAllowed" aria-label=""
-                                    data-id="@Model.ModifierGroupId">
+                                    data-id="@modifierGroup.ModifierGroupId">
                                     <option selected value="">0</option>
-                                    @for (int num = 1; num <= modifierGroup.MaxAllowed; num++)
+                                    @for (int num = 1; num <= modifierGroup.ModifierList.Count(); num++)
                                     {
                                         <option value="@num">@num</option>
                                     }
@@ -140,7 +140,7 @@
                                 <select asp-for="@modifierGroup.MaxAllowed" class="form-select maxAllowed" aria-label=""
                                     data-id="@modifierGroup.ModifierGroupId">
                                     <option selected value="">0</option>
-                                    @for (int num = 1; num <= modifierGroup.MaxAllowed; num++)
+                                    @for (int num = 1; num <= modifierGroup.ModifierList.Count(); num++)
                                     {
                                         <option value="@num">@num</option>
                                     }
@@ -164,12 +164,7 @@
                 }
             </div>
 
-
-
-
         </div>
-
-
     </div>
 
     <div class="modal-footer">

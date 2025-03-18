@@ -11,16 +11,16 @@ public class GenericRepository<T> : IGenericRepository<T>
 {
     private readonly PizzaShopContext _context;
     private readonly DbSet<T> _dbSet;
-    
+
     public GenericRepository(PizzaShopContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();
     }
 
-#region C : Create
-/*------------------------------adds a new entity (record) to the database----------------------------------------
--------------------------------------------------------------------------------------------------------*/
+    #region C : Create
+    /*------------------------------adds a new entity (record) to the database----------------------------------------
+    -------------------------------------------------------------------------------------------------------*/
     public async Task<bool> AddAsync(T entity)
     {
         try
@@ -29,10 +29,10 @@ public class GenericRepository<T> : IGenericRepository<T>
             await _context.SaveChangesAsync();
             return true;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return false;
-        } 
+        }
     }
 
     public async Task<long> AddAsyncReturnId(T entity)
@@ -50,30 +50,59 @@ public class GenericRepository<T> : IGenericRepository<T>
 
             return 0;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return -1;
-        } 
+        }
 
     }
 
-     
 
-#endregion C : Create
 
-#region R : Read
-/*----------------------------To Get the all the values from table----------------------------------------
--------------------------------------------------------------------------------------------------------*/
+    #endregion C : Create
+
+    #region R : Read
+    /*----------------------------To Get the all the values from table----------------------------------------
+    -------------------------------------------------------------------------------------------------------*/
     public IEnumerable<T> GetAll() => _dbSet;
 
     public IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate)
     {
-        return  _dbSet.Where(predicate);
+        return _dbSet.Where(predicate);
+    }
+
+    public async Task<IEnumerable<T>> GetByConditionInclude(
+    Expression<Func<T, bool>> predicate,
+    List<Expression<Func<T, object>>>? includes = null,
+    List<Expression<Func<T, object>>>? thenIncludes = null)
+    {
+        IQueryable<T> query = _dbSet.Where(predicate);  // Base query
+
+        // Apply Includes (first-level navigation properties)
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        // Apply ThenIncludes (second-level navigation properties)
+        if (thenIncludes != null)
+        {
+            foreach (var thenInclude in thenIncludes)
+            {
+                query = query.Include(thenInclude);
+            }
+        }
+
+        return await query.ToListAsync();
     }
 
 
- /*------------------------------To Get sorted and paginated records with search functionality---------------
--------------------------------------------------------------------------------------------------------*/ 
+
+    /*------------------------------To Get sorted and paginated records with search functionality---------------
+   -------------------------------------------------------------------------------------------------------*/
     public async Task<(IEnumerable<T> items, int totalCount)> GetPagedRecordsAsync(
         int pageSize,
         int pageNumber,
@@ -93,7 +122,7 @@ public class GenericRepository<T> : IGenericRepository<T>
         {
             foreach (var include in includes)
             {
-                query =  query.Include(include);
+                query = query.Include(include);
             }
         }
 
@@ -110,47 +139,48 @@ public class GenericRepository<T> : IGenericRepository<T>
             .ToList();
 
         return (items, totalCount);
-        
+
     }
 
-    
-/*----------------------retrieves a single record from the database by its primary key (id)----------------------------------------
--------------------------------------------------------------------------------------------------------*/
+
+    /*----------------------retrieves a single record from the database by its primary key (id)----------------------------------------
+    -------------------------------------------------------------------------------------------------------*/
 
     public async Task<T?> GetByIdAsync(long id) => await _dbSet.FindAsync(id);
 
 
-/*----------------------fetches a single record from the database based on a given condition----------------------------------------
--------------------------------------------------------------------------------------------------------*/
+    /*----------------------fetches a single record from the database based on a given condition----------------------------------------
+    -------------------------------------------------------------------------------------------------------*/
     public async Task<T?> GetByStringAsync(Expression<Func<T, bool>> predicate)
     {
         return await _dbSet.FirstOrDefaultAsync(predicate);
     }
 
-#endregion R : Read
+    #endregion R : Read
 
-#region U : Update
-/*------------------------------updates an existing entity in the database----------------------------------------
--------------------------------------------------------------------------------------------------------*/
+    #region U : Update
+    /*------------------------------updates an existing entity in the database----------------------------------------
+    -------------------------------------------------------------------------------------------------------*/
     public async Task<bool> UpdateAsync(T entity)
     {
-        try{
+        try
+        {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
             return true;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return false;
         }
-        
+
     }
 
-#endregion U : Update
+    #endregion U : Update
 
-#region D : Delete
-/*------------------Deletes an entity from the database based on its id------------------------------------
--------------------------------------------------------------------------------------------------------*/
+    #region D : Delete
+    /*------------------Deletes an entity from the database based on its id------------------------------------
+    -------------------------------------------------------------------------------------------------------*/
     public async Task DeleteAsync(int id)
     {
         var entity = await GetByIdAsync(id);
@@ -162,8 +192,8 @@ public class GenericRepository<T> : IGenericRepository<T>
     }
 
 
-/*-------------------------Deletes multiple records based on a given condition (predicate)---------------
--------------------------------------------------------------------------------------------------------*/
+    /*-------------------------Deletes multiple records based on a given condition (predicate)---------------
+    -------------------------------------------------------------------------------------------------------*/
     public async Task DeleteAssociatedEntitiesAsync(Expression<Func<T, bool>> predicate)
     {
         var entities = _dbSet.Where(predicate);
@@ -171,11 +201,11 @@ public class GenericRepository<T> : IGenericRepository<T>
         await _context.SaveChangesAsync();
     }
 
-#endregion D : Delete
+    #endregion D : Delete
 
-#region Common
-/*---------------Counts the number of records in a table, with an optional filter (predicate)-------------
--------------------------------------------------------------------------------------------------------*/
+    #region Common
+    /*---------------Counts the number of records in a table, with an optional filter (predicate)-------------
+    -------------------------------------------------------------------------------------------------------*/
     public async Task<int> GetCount(Expression<Func<T, bool>>? predicate)
     {
         if (predicate is not null)

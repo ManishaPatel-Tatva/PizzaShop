@@ -141,29 +141,15 @@ public class MenuController : Controller
             model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList);
         }
 
-        if(model.ItemId == 0)
-        {
-            var token = Request.Cookies["authToken"];
-            var createrEmail = _jwtService.GetClaimValue(token, "email");
+        string token = Request.Cookies["authToken"];
+        string createrEmail = _jwtService.GetClaimValue(token, "email");
 
-            bool isAdded = await _categoryItemService.AddItem(model, createrEmail);
-            
-            if (!isAdded)
-            {
-                AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
-                TempData["errorMessage"] = "Item Not Updated";
-                return RedirectToAction("Index");
-            }
-            TempData["successMessage"] = "Item Added Successfully!";
-            return RedirectToAction("Index");
-        }
+        bool success = await _categoryItemService.AddUpdateItem(model, createrEmail);
 
-        bool isUpdated = await _categoryItemService.UpdateItem(model);
-        if (!isUpdated)
+        if (!success)
         {
             AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
-            TempData["errorMessage"] = "Item Not Updated";
-            return RedirectToAction("Index");
+            return PartialView("_UpdateItemPartialView", updatedModel); 
         }
 
         TempData["successMessage"] = "Item Updated";

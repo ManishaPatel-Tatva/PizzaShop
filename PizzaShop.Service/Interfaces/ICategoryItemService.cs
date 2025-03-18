@@ -20,11 +20,13 @@ public interface ICategoryItemService
     Task<AddItemViewModel> GetEditItem(long itemId);
     Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId);
 
-
-    Task<bool> UpdateItem(AddItemViewModel model);
+    Task<bool> AddUpdateItem(AddItemViewModel model, string createrEmail);
+    
+    Task<bool> UpdateItem(AddItemViewModel model, long createrId);
+    Task<bool> UpdateItemModifierGroup(long itemId, List<ItemModifierViewModel> itemModifierList, long createrId);
     Task<bool> AddItemModifierGroup(long itemId, ItemModifierViewModel model, long createrId);
 
-    Task<bool> AddItem(AddItemViewModel model,string createrEmail);
+    Task<bool> AddItem(AddItemViewModel model,long createrId);
 
     Task<bool> SoftDeleteItem(long id);
 

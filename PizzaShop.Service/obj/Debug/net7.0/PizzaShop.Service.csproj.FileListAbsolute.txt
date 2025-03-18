@@ -1,37 +1,3 @@
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.deps.json
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.dll
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.pdb
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Entity.dll
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Repository.dll
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Repository.pdb
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Entity.pdb
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.AssemblyReference.cache
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.AssemblyInfoInputs.cache
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.AssemblyInfo.cs
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.CoreCompileInputs.cache
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.CopyComplete
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.dll
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\refint\PizzaShop.Service.dll
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.pdb
-C:\Users\MANISHA PATEL\Desktop\Tatvasoft\Learning\PizzaShop\PizzaShop.Service\obj\Debug\net7.0\ref\PizzaShop.Service.dll
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.deps.json
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.dll
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.pdb
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Entity.dll
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Repository.dll
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Repository.pdb
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Entity.pdb
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.AssemblyReference.cache
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.AssemblyInfoInputs.cache
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.AssemblyInfo.cs
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.CoreCompileInputs.cache
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.CopyComplete
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.dll
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\refint\PizzaShop.Service.dll
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.pdb
-C:\Users\pci47\Desktop\PizzaShop-master\PizzaShop-master\PizzaShop.Service\obj\Debug\net7.0\ref\PizzaShop.Service.dll
 C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.deps.json
 C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.dll
 C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.pdb
@@ -49,20 +15,3 @@ C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\obj\Debug\net7.0\PizzaShop
 C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\obj\Debug\net7.0\refint\PizzaShop.Service.dll
 C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.pdb
 C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Service\obj\Debug\net7.0\ref\PizzaShop.Service.dll
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.deps.json
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.dll
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Service.pdb
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Entity.dll
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Repository.dll
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Repository.pdb
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\bin\Debug\net7.0\PizzaShop.Entity.pdb
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.AssemblyReference.cache
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.GeneratedMSBuildEditorConfig.editorconfig
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.AssemblyInfoInputs.cache
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.AssemblyInfo.cs
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.CoreCompileInputs.cache
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.csproj.CopyComplete
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.dll
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\refint\PizzaShop.Service.dll
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\PizzaShop.Service.pdb
-M:\Tatvasoft\Pizzashop\PizzaShop.Service\obj\Debug\net7.0\ref\PizzaShop.Service.dll

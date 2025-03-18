@@ -225,6 +225,10 @@
       "PackagePath": "staticwebassets\\itemImages\\5f9d593f-efff-48a8-a68c-fc05302c75b7_download.jfif"
     },
     {
+      "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\b2274629-8a28-4952-b3c0-0cb2979b55f4_SpicyBurger.jpg",
+      "PackagePath": "staticwebassets\\itemImages\\b2274629-8a28-4952-b3c0-0cb2979b55f4_SpicyBurger.jpg"
+    },
+    {
       "Id": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\wwwroot\\itemImages\\e8932dc4-ed19-430e-a2a0-52967b4b47b4_transperent-pizza.png",
       "PackagePath": "staticwebassets\\itemImages\\e8932dc4-ed19-430e-a2a0-52967b4b47b4_transperent-pizza.png"
     },
