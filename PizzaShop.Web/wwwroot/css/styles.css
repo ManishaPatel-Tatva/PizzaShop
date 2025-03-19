@@ -242,36 +242,36 @@ td{
     font-weight: 600;
 }
 
-.category-list a, .modifier-list a{
+.category-list a, .modifierGroup-list a{
     color: #686868;
     font-weight: 600;
 }
 
-.category-list ul, .modifier-list ul {
+.category-list ul, .modifierGroup-list ul {
     list-style: none;
     padding:8px
 }
 
-.category-list li, .modifier-list li{
+.category-list li, .modifierGroup-list li{
     color: #686868;
     margin-top: 20px;
 }
 
-.grid-img, .modifier-list>img{
+.grid-img{
     transform: rotate(90deg);
     margin-right: 4px;
 }
 
-.category-list{
+.category-list, .modifierGroup-list{
     overflow-y: scroll;
     height: 350px;
 }
 
-.category{
+.category, .modifierGroup{
     width: fit-content;
 }
 
-.EditDeleteCategory{
+.EditDeleteCategory, .EditDeleteModifierGroup{
     visibility: hidden;
 }
 
@@ -308,16 +308,16 @@ td{
 }
 
 @media (max-width: 1290px) {
-    .category{
+    .category, .modifierGroup{
         width: 100%;
         height: fit-content;
     }
 
-    .category-list{
+    .category-list , .modifierGroup-list{
         height: 170px;
     }
 
-    .category-list ul{
+    .category-list ul, .modifierGroup-list ul{
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         column-gap: 8px;
@@ -325,7 +325,7 @@ td{
 }
 
 @media (max-width: 620px) {
-    .category-list ul{
+    .category-list ul, .modifierGroup-list ul{
         display: grid;
         grid-template-columns: 1fr 1fr;
         column-gap: 10px;
@@ -333,7 +333,7 @@ td{
 }
 
 @media (max-width: 460px) {
-    .category-list ul{
+    .category-list ul, .modifierGroup-list ul{
         display: grid;
         grid-template-columns: 1fr;
         column-gap: 10px;

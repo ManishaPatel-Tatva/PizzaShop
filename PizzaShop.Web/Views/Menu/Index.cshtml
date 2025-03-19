@@ -117,133 +117,169 @@
 
         <!----------------------------------------------------- Modifiers and Modifier Group-----------------------------------------------------------------------------------
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
-        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
-            tabindex="0">
-            <div class="row" id="modifierTab">
+        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+            <div class="row">
 
-                <!-- Modifier Group Partial View -->
+                <!----------------------------------------------------- Modifier Groups starts ------------------------------------------------------->
+                <div class="modifierGroup col-12 col-md-3 pt-2 bg-dark-grey" id="modifierTab">
+                    <!-- Modifier Group Partial View -->
+                </div>
+                <!----------------------------------------------------- Modifier Groups ends ------------------------------------------------------->
+
+                <!----------------------------------------------------- Modifiers starts ------------------------------------------------------>
+                <div class="col pt-2" id="Modifiers-Content">
+                    <div class="fs-5 fw-bold blue-text">
+                        Modifiers
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <div class="input-group w-25 me-2">
+                            <input type="search" class="form-control" placeholder="Search" name="searchModifier"
+                                id="searchModifier">
+                            <button type="submit" class="input-group-text"> 
+                                <img src="~/images/icons/search.svg" alt="">
+                            </button>
+                        </div>
+                        <button class="btn border me-2" id="modifierMassDeleteIcon" data-bs-toggle="modal"
+                            data-bs-target="#massDeleteModifier">
+                            <img src="~/images/icons/delete.svg" alt="">
+                        </button>
+                        <button class="btn btn-blue me-2 newModifierBtn" id="newModifierBtn" data-bs-toggle="modal"
+                            data-bs-target="#addEditModifier">
+                            + New Modifier
+                        </button>
+                    </div>
+
+                    <div id="modifierTableOuter">
+                        <!-- Modifiers Partial View -->
+                    </div>
+
+                </div>
+                <!----------------------------------------------------- Modifiers ends ------------------------------------------------------->
 
             </div>
         </div>
 
 
-        </div>
-
-
     </div>
-    <!-- Items tab ends -->
 
 
-    <!--------------------------------------Modals------------------------------------------------------------------------------------------
+</div>
+<!-- Items tab ends -->
+
+
+<!--------------------------------------Modals------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------->
-    <!-- Modal Add Category starts -->
-    <div class="modal fade" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Add Category</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form asp-action="AddCategory" asp-controller="Menu" method="Post">
-                    <div class="modal-body">
-                        <div class="form">
-                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                                placeholder="Name">
-                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
-                                placeholder="Description"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-blue btn-modal" id="saveAddCategory">Save</button>
-                        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
+<!-- Modal Add Category starts -->
+<div class="modal fade" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Add Category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form asp-action="AddCategory" asp-controller="Menu" method="Post">
+                <div class="modal-body">
+                    <div class="form">
+                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
+                            placeholder="Name">
+                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
+                            placeholder="Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-blue btn-modal" id="saveAddCategory">Save</button>
+                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
-    <!-- Modal Add Category ends -->
+</div>
+<!-- Modal Add Category ends -->
 
-    <!-- Modal Edit Category starts -->
-    <div class="modal fade" id="editCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form asp-action="EditCategory" asp-controller="Menu" method="Post">
-                    <div class="modal-body">
-                        <div class="form">
-                            <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
-                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                                id="modalCategoryName" placeholder="Name">
-                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
-                                id="modalCategoryDesc" placeholder="Description"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
-                        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
+<!-- Modal Edit Category starts -->
+<div class="modal fade" id="editCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form asp-action="EditCategory" asp-controller="Menu" method="Post">
+                <div class="modal-body">
+                    <div class="form">
+                        <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
+                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
+                            id="modalCategoryName" placeholder="Name">
+                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3" id="modalCategoryDesc"
+                            placeholder="Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
+                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
-    <!-- Modal Edit Category ends -->
+</div>
+<!-- Modal Edit Category ends -->
 
-    <!-- Modal Delete Category starts-->
-    <div class="modal fade" id="deleteCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Confirmation</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex flex-column justify-content-center align-items-center">
-                    <img src="~/images/icons/warning.svg" alt="" width="50px">
-                    <span>Are you sure you want to delete this category?</span>
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <button type="button" id="confirmDelete" class="btn btn-blue btn-modal"
-                        data-bs-dismiss="modal">YES</button>
-                    <button type="button" class="btn btn-white btn-modal">NO</button>
-                </div>
+<!-- Modal Delete Category starts-->
+<div class="modal fade" id="deleteCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <img src="~/images/icons/warning.svg" alt="" width="50px">
+                <span>Are you sure you want to delete this category?</span>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" id="confirmDelete" class="btn btn-blue btn-modal"
+                    data-bs-dismiss="modal">YES</button>
+                <button type="button" class="btn btn-white btn-modal">NO</button>
             </div>
         </div>
     </div>
-    <!-- Modal Delete Category ends-->
+</div>
+<!-- Modal Delete Category ends-->
 
-    <!-- Modal Add/Update Item satrts here-->
-    <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form asp-action="EditCategory" asp-controller="Menu" method="Post">
-                    <div class="modal-body">
-                        <div class="form">
-                            <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
-                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                                id="modalCategoryName" placeholder="Name">
-                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
-                                id="modalCategoryDesc" placeholder="Description"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
-                        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
+<!-- Modal Add/Update Item satrts here-->
+<div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form asp-action="EditCategory" asp-controller="Menu" method="Post">
+                <div class="modal-body">
+                    <div class="form">
+                        <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
+                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
+                            id="modalCategoryName" placeholder="Name">
+                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3" id="modalCategoryDesc"
+                            placeholder="Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
+                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
-    <!-- Modal Add/Update Item ends here-->
+</div>
+<!-- Modal Add/Update Item ends here-->
+
+
 
 
 
@@ -251,10 +287,10 @@
     <script>
         @* Javascript for Category *@
 
-            //For showing edit and delete icons on hovering 
-            $(".li-category").mouseover(function () {
-                $(this).children("div.EditDeleteCategory").css("visibility", "visible");
-            });
+        //For showing edit and delete icons on hovering 
+        $(".li-category").mouseover(function () {
+            $(this).children("div.EditDeleteCategory").css("visibility", "visible");
+        });
         $(".li-category").mouseout(function () {
             $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
         });
@@ -576,18 +612,14 @@
         });
     </script>
 
+    @* Get Modifier Tab *@
     <script>
-
-        $(document).on("click","#modifier-tab",function(){
+        $(document).on("click", "#modifier-tab", function () {
             console.log("Modifier Tab");
             getModifierTab();
         });
 
-        @* $("#modifier-tab").click(function(){
-            console.log("hh")
-        }) *@
-
-        function getModifierTab(){
+        function getModifierTab() {
             $.ajax({
                 url: '@Url.Action("GetModifierTab", "Menu")',
                 type: "GET",
@@ -601,4 +633,5 @@
             });
         }
     </script>
+
 }

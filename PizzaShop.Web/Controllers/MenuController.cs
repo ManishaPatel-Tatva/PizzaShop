@@ -202,8 +202,11 @@ public class MenuController : Controller
     [HttpGet]
     public IActionResult GetModifierTab()
     {
-        List<ModifierGroupViewModel>? modifierGroupList = _modifierService.GetModifierGroups();
-        return PartialView("_ModifierTabPartialView", modifierGroupList); 
+        ModifierTabViewModel model = new(){
+            ModifierGroups = _modifierService.GetModifierGroups()
+        };
+        
+        return PartialView("_ModifierTabPartialView", model); 
     }
 #endregion Read Modifier Group
 
