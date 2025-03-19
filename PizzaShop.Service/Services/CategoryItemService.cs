@@ -126,7 +126,7 @@ public class CategoryItemService : ICategoryItemService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search)
     {
-        var (items, totalRecord) = await _itemRepository.GetPagedRecordsAsync(
+        (IEnumerable<Item> items, int totalRecord) = await _itemRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
             filter: i => !i.IsDeleted &&

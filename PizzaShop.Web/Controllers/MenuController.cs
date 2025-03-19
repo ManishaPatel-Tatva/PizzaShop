@@ -196,7 +196,7 @@ public class MenuController : Controller
 
 #region Modifiers    
  
-#region Read Modifier Group
+#region Read Modifier Groups
  /*-------------------------------------------------------- Read Modifier Group---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
@@ -208,7 +208,74 @@ public class MenuController : Controller
         
         return PartialView("_ModifierTabPartialView", model); 
     }
-#endregion Read Modifier Group
+#endregion Read Modifier Groups
+
+#region Get Modifier Group
+ /*-------------------------------------------------------- Get Modifier Group---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [HttpGet]
+    public async Task<IActionResult> GetModifierGroupModal(long modifierGroupId)
+    {
+        ModifierGroupViewModel model = await _modifierService.GetModifierGroup(modifierGroupId);
+        return PartialView("_AddModifierGroupPartialView", model); 
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SaveModifierGroup(ModifierGroupViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
+            return PartialView("_AddModifierGroupPartialView", updatedModel); 
+        }
+
+        string token = Request.Cookies["authToken"];
+        string createrEmail = _jwtService.GetClaimValue(token, "email");
+
+        bool success = await _modifierService.SaveModifierGroup(model, createrEmail);
+        if (!success)
+        {
+            ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
+            return PartialView("_AddModifierGroupPartialView", updatedModel); 
+        }
+        return Json(new {success = true, message = "Modifier Group Added Successful!"});
+
+    }
+
+#endregion Get Modifier Group
+
+#region  Modifiers List
+
+    [HttpGet]
+    public async Task<IActionResult> GetModifiersList(long modifierGroupId, int pageSize, int pageNumber = 1, string search="")
+    {
+        ModifiersPaginationViewModel model = await _modifierService.GetPagedModifiers(modifierGroupId, pageSize, pageNumber, search);
+
+        if (model == null)
+        {
+            return NotFound(); // This triggers AJAX error
+        }
+
+        return PartialView("_ModifiersPartialView", model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExistingModifiers(int pageSize, int pageNumber = 1, string search="")
+    {
+        ModifiersPaginationViewModel model = await _modifierService.GetAllModifiers(pageSize, pageNumber, search);
+
+        if (model == null)
+        {
+            return NotFound(); // This triggers AJAX error
+        }
+
+        return PartialView("_ExistingModifierPartialView", model);
+    }
+
+
+
+#endregion  Modifiers List
+
 
 #endregion Modifiers
 

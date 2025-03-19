@@ -268,7 +268,7 @@ td{
 }
 
 .category, .modifierGroup{
-    width: fit-content;
+    width: 300px;
 }
 
 .EditDeleteCategory, .EditDeleteModifierGroup{
@@ -438,6 +438,10 @@ td{
 }
 
 .add-user-password .form-floating>label{
+    left: 0px;
+}
+
+.addMG-form .form-floating>label{
     left: 0px;
 }
 

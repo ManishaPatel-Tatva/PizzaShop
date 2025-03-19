@@ -1,16 +1,29 @@
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
 public class ModifierService : IModifierService
 {
-    private readonly IGenericRepository<ModifierGroup> _modifierGroup;
+    private readonly IGenericRepository<Modifier> _modifierRepository;
+    private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
+    private readonly IGenericRepository<ModifierMapping> _modifierMappingRepository;
 
-    public ModifierService(IGenericRepository<ModifierGroup> modifierGroup)
+
+    private readonly IGenericRepository<User> _userRepository;
+
+    public ModifierService(IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<User> userRepository, IGenericRepository<Modifier> modifierRepository, IGenericRepository<ModifierMapping> modifierMappingRepository)
     {
-        _modifierGroup = modifierGroup;
+        _modifierRepository = modifierRepository;
+        _modifierGroupRepository = modifierGroupRepository;
+        _modifierMappingRepository = modifierMappingRepository;
+        _userRepository = userRepository;
+
     }
 
     #region Read Modifier Groups
@@ -18,7 +31,7 @@ public class ModifierService : IModifierService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public List<ModifierGroupViewModel> GetModifierGroups()
     {
-        List<ModifierGroupViewModel> modifierGroups = _modifierGroup.GetByCondition(mg => mg.IsDeleted == false)
+        List<ModifierGroupViewModel> modifierGroups = _modifierGroupRepository.GetByCondition(mg => mg.IsDeleted == false)
         .Select(mg => new ModifierGroupViewModel
         {
             ModifierGroupId = mg.Id,
@@ -29,6 +42,153 @@ public class ModifierService : IModifierService
         return modifierGroups;
     }
     #endregion Read Modifier Groups
+
+    #region Add Modifier Groups
+    /*-----------------------------------------------------------Get Modifier Group By Id---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<ModifierGroupViewModel> GetModifierGroup(long modifierGroupId)
+    {
+        if(modifierGroupId == 0)
+        {
+            return new ModifierGroupViewModel();
+        }
+
+        ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
+
+        ModifierGroupViewModel model = new ModifierGroupViewModel
+        {
+            ModifierGroupId = modifierGroup.Id,
+            Name = modifierGroup.Name,
+            Description = modifierGroup.Description
+        };
+
+        return model;
+    }
+
+    public async Task<bool> SaveModifierGroup(ModifierGroupViewModel model, string createrEmail)
+    {
+        User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        long createrId = creater.Id;
+
+        if(model.ModifierGroupId == 0)
+        {
+            return await AddModifierGroup(model, createrId);
+        }
+        else if(model.ModifierGroupId > 0)
+        {
+            return await UpdateModifierGroup(model, createrId);
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    public async Task<bool> AddModifierGroup(ModifierGroupViewModel model, long createrId)
+    {
+        ModifierGroup modifierGroup = new ModifierGroup()
+        {
+            Name = model.Name,
+            Description = model.Description,
+            CreatedBy = createrId
+        };
+
+        return await _modifierGroupRepository.AddAsync(modifierGroup);
+    }
+    #endregion Add Modifier Groups
+
+    #region Update Modifier Groups
+    public async Task<bool> UpdateModifierGroup(ModifierGroupViewModel model, long createrId)
+    {
+        ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(model.ModifierGroupId);
+
+        modifierGroup.Name = model.Name;
+        modifierGroup.Description = model.Description;
+        modifierGroup.UpdatedBy = createrId;
+        modifierGroup.UpdatedAt = DateTime.Now;
+
+        return await _modifierGroupRepository.UpdateAsync(modifierGroup);
+    }
+
+    #endregion Update Modifier Groups
+
+    #region Read Modifiers
+
+    public async Task<ModifiersPaginationViewModel> GetPagedModifiers(long modifierGroupId, int pageSize, int pageNumber, string search)
+    {
+        (IEnumerable<ModifierMapping> modifierMapping, int totalRecord)  = await _modifierMappingRepository.GetPagedRecordsAsync(
+            pageSize,
+            pageNumber,
+            filter: mm => !mm.IsDeleted &&
+                    mm.Modifiergroupid == modifierGroupId &&
+                    (string.IsNullOrEmpty(search.ToLower()) ||
+                    mm.Modifier.Name.ToLower().Contains(search.ToLower())),
+            orderBy: q => q.OrderBy(u => u.Id),
+            includes: new List<Expression<Func<ModifierMapping, object>>> 
+            { 
+                m => m.Modifier 
+            },
+            thenIncludes: new List<Func<IQueryable<ModifierMapping>, IQueryable<ModifierMapping>>>
+            {
+                q => q.Include(mm => mm.Modifier)
+                    .ThenInclude(m => m.Unit)
+            }
+        );
+
+        ModifiersPaginationViewModel model = new() { Page = new () };
+
+        model.Modifiers = modifierMapping.Select(m => new ModifierViewModel()
+        {
+            ModifierId = m.Modifierid,
+            ModifierName = m.Modifier.Name,
+            UnitName = m.Modifier.Unit.Name,
+            Rate = m.Modifier.Rate,
+            Quantity = m.Modifier.Quantity,
+        }).ToList();
+
+        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        return model;
+    }
+
+
+    public async Task<ModifiersPaginationViewModel> GetAllModifiers(int pageSize, int pageNumber, string search)
+    {
+        (IEnumerable<ModifierMapping> modifierMapping, int totalRecord)  = await _modifierMappingRepository.GetPagedRecordsAsync(
+            pageSize,
+            pageNumber,
+            filter: mm => !mm.IsDeleted &&
+                    (string.IsNullOrEmpty(search.ToLower()) ||
+                    mm.Modifier.Name.ToLower().Contains(search.ToLower())),
+            orderBy: q => q.OrderBy(u => u.Id),
+            includes: new List<Expression<Func<ModifierMapping, object>>> 
+            { 
+                m => m.Modifier 
+            },
+            thenIncludes: new List<Func<IQueryable<ModifierMapping>, IQueryable<ModifierMapping>>>
+            {
+                q => q.Include(mm => mm.Modifier)
+                    .ThenInclude(m => m.Unit)
+            }
+        );
+
+        ModifiersPaginationViewModel model = new() { Page = new () };
+
+        model.Modifiers = modifierMapping.Select(m => new ModifierViewModel()
+        {
+            ModifierId = m.Modifierid,
+            ModifierName = m.Modifier.Name,
+            UnitName = m.Modifier.Unit.Name,
+            Rate = m.Modifier.Rate,
+            Quantity = m.Modifier.Quantity,
+        }).ToList();
+
+        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        return model;
+    }
+    
+    #endregion Read Modifiers
+
 
 
 }

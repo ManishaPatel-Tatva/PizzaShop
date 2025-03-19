@@ -1,0 +1,63 @@
+@using PizzaShop.Entity.ViewModels
+@model ModifiersPaginationViewModel
+
+<!-- Table -->
+<div class="table-responsive bg-white menu-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">
+                    <input class="form-check-input me-2 " type="checkbox" value="" id="existingModifierParentCheckbox"> 
+                    Name
+                </th>
+                <th scope="col">Unit</th>
+                <th scope="col">Rate</th>
+                <th scope="col">Quantity</th>
+            </tr>
+        </thead>
+        <tbody class="" id="">
+            @foreach (ModifierViewModel modifier in Model.Modifiers)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" value="" id="" class="me-2 existingModifierChildCheckbox" data-id="@modifier.ModifierId">
+                        @modifier.ModifierName
+                    </td>
+                    <td>@modifier.UnitName</td>
+                    <td>@modifier.Rate</td>
+                    <td>@modifier.Quantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<!-- Table ends -->
+
+<!-- Pagination Starts -->
+<div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+        <span>Items per page:</span>
+        <select class="form-select w-auto" id="existingModifiersPerPage" aria-label="Select modifiers per page">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+        </select>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+        <!-- Previous Page Button -->
+        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+            onclick="existingModifiers(@Model.Page.CurrentPage - 1)">
+            <img src="~/images/icons/chevron-left.svg" alt="">
+        </button>
+
+        <!-- Next Page Button -->
+        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+            onclick="existingModifiers(@Model.Page.CurrentPage + 1)">
+            <img src="~/images/icons/chevron-right.svg" alt="">
+        </button>
+    </div>
+</div>
+<!-- Pagination Ends -->

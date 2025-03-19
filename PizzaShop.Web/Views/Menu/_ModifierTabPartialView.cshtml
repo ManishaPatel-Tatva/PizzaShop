@@ -1,12 +1,15 @@
 @using PizzaShop.Entity.ViewModels
+
 @model ModifierTabViewModel
 
-
 <!----------------------------------------------------- Modifier Groups starts ------------------------------------------------------->
+<div class="modifierGroup col-12 col-md-3 pt-2 bg-dark-grey">
+
     <div class="d-flex justify-content-between align-items-center mb-2">
         <span class="fs-5 fw-bold blue-text">Modifier Group</span>
         <!-- Button trigger modal -->
-        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addModifierGroup">
+        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addModifierGroup"
+            id="addModifierGroupBtn">
             <img src="~/images/icons/plus-square.svg" alt="" width="25px">
         </button>
     </div>
@@ -21,11 +24,11 @@
                         <span class="modifierGroupName">@mg.Name</span>
                     </a>
                     <div class="EditDeleteModifierGroup">
-                        <button class="btn p-0 pe-1 iconEditModifierGroup" data-bs-toggle="modal" data-bs-target="#editModifierGroup"
-                            data-id="@mg.ModifierGroupId">
+                        <button class="btn p-0 pe-1 editModifierGroupBtn" data-bs-toggle="modal"
+                            data-bs-target="#addModifierGroup" data-id="@mg.ModifierGroupId">
                             <img src="~/images/icons/edit.svg" alt="" />
                         </button>
-                        <button class="btn p-0 pe-1 iconDeleteModifierGroup" data-bs-toggle="modal"
+                        <button class="btn p-0 pe-1 deleteModifierGroupBtn" data-bs-toggle="modal"
                             data-bs-target="#deleteModifierGroup" data-id="@mg.ModifierGroupId">
                             <img src="~/images/icons/delete.svg" alt="">
                         </button>
@@ -34,50 +37,60 @@
             }
         </ul>
     </div>
-<!----------------------------------------------------- Modifier Groups ends  ------------------------------------------------------->
+
+</div>
+<!----------------------------------------------------- Modifier Groups ends ------------------------------------------------------->
+
+<!----------------------------------------------------- Modifiers starts ------------------------------------------------------>
+<div class="col pt-2" id="Modifiers-Content">
+    <div class="fs-5 fw-bold blue-text">
+        Modifiers
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <div class="input-group w-25 me-2">
+            <input type="search" class="form-control" placeholder="Search" name="searchModifier" id="searchModifier">
+            <button type="submit" class="input-group-text">
+                <img src="~/images/icons/search.svg" alt="">
+            </button>
+        </div>
+        <button class="btn border me-2" id="modifierMassDeleteIcon" data-bs-toggle="modal"
+            data-bs-target="#massDeleteModifier">
+            <img src="~/images/icons/delete.svg" alt="">
+        </button>
+        <button class="btn btn-blue me-2 newModifierBtn" id="newModifierBtn" data-bs-toggle="modal"
+            data-bs-target="#addEditModifier">
+            + New Modifier
+        </button>
+    </div>
+
+    <div id="modifierTableOuter">
+        <!-- Modifiers List Partial View -->
+    </div>
+
+</div>
+<!----------------------------------------------------- Modifiers ends ------------------------------------------------------->
+
+
 
 <!--------------------------------------Modals------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------->
 @* <!-- Modal Add Modifier Group starts -->
 <div class="modal fade" id="addModifierGroup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Add Modifier Group</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="AddModifierGroup" asp-controller="Menu" method="Post">
-                <div class="modal-body">
-                    <div class="form">
-                        <input asp-for="ModifierGroupVM.Name" type="text" class="form-control mb-3"
-                            placeholder="Name">
-                        <textarea asp-for="ModifierGroupVM.Description" class="form-control" rows="1"
-                            placeholder="Description"></textarea>
-                    </div>
-
-                    <div class="mt-3">
-                        <span class="blue ">
-                            +Add Existing Modifiers
-                        </span>
-                    </div>
-
-                    
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-blue btn-modal" id="saveModifierGroup">Save</button>
-                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" id="addModifierGroupModal">
+            <!-- Add Modifier Group Modal Partial View -->
         </div>
     </div>
 </div>
 <!-- Modal Add Modifier Group ends --> *@
 
-<!-- Modal Add Existing Modifier in Modifier Group starts -->
-<div class="modal fade" id="addModifierGroup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+
+@* <!-- Modal Add Existing Modifier in Modifier Group starts -->
+<div class="modal fade" id="" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Select Existing Modifier</h1>
@@ -87,33 +100,37 @@
                 <div class="modal-body">
                     <div class="form">
                         <div class="input-group w-50">
-                            <input type="search" class="form-control" placeholder="Search" name="searchExistingModifier" id="searchExistingModifier">
-                            <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt=""> </button>  
+                            <input type="search" class="form-control" placeholder="Search" name="searchExistingModifier"
+                                id="searchExistingModifier">
+                            <button type="submit" class="input-group-text">
+                                <img src="~/images/icons/search.svg" alt="">
+                            </button>
                         </div>
                     </div>
 
                     <table class="table modifier-table">
                         <thead>
                             <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Unit</th>
-                            <th scope="col">Rate</th>
-                            <th scope="col">Quantity</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Unit</th>
+                                <th scope="col">Rate</th>
+                                <th scope="col">Quantity</th>
                             </tr>
                         </thead>
                         <tbody class="table-group-divider">
-                            @foreach(var modifier in Model.Modifiers)
+                            @foreach (var modifier in Model.Modifiers)
                             {
                                 <tr>
                                     <td scope="row">
-                                        <input class="form-check-input me-2 " type="checkbox" value="" id="itemParentCheckbox">
+                                        <input class="form-check-input me-2 " type="checkbox" value=""
+                                            id="itemParentCheckbox">
                                         <span>@modifier.Name</span>
                                     </td>
                                     <td>@modifier.Unit</td>
                                     <td>@modifier.Rate</td>
                                     <td>@modifier.Quantity</td>
                                 </tr>
-                            }       
+                            }
                         </tbody>
                     </table>
 
@@ -129,7 +146,7 @@
                             </select>
                         </div>
 
-                        @* <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+                        <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
                             <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
 
                             <!-- Previous Page Button -->
@@ -139,26 +156,77 @@
                             </button>
 
                             <!-- Next Page Button -->
-                            <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+                            <button
+                                class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
                                 onclick="PaginationAjax(@Model.Page.CurrentPage + 1)">
                                 <img src="~/images/icons/chevron-right.svg" alt="">
                             </button>
-                        </div> *@
+                        </div>
                     </div>
                     <!-- Pagination Ends -->
 
-                    
+
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-blue btn-modal" id="saveModifierGroup">Save</button>
-                    <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-blue btn-modal" id="saveModifierGroup" data-bs-toggle="modal"
+                        data-bs-target="#addModifierGroup">Save</button>
+                    <button type="button" class="btn btn-white btn-modal" data-bs-toggle="modal"
+                        data-bs-target="#addModifierGroup">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal Add Existing Modifier in Modifier Group ends --> *@
+
+
+<!-- Modal Add Modifier Group starts -->
+<div class="modal fade" id="addModifierGroup" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" id="addModifierGroupModal">
+            <!-- Add Modifier Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Add Modifier Group ends -->
+
+
+<!-- Modal Add Existing Modifier in Modifier Group starts -->
+<div class="modal fade" id="addExistingGroup" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="">Select Existing Modifier</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="">
+                <div class="modal-body">
+                    <div class="form">
+                        <div class="input-group w-50">
+                            <input type="search" class="form-control" placeholder="Search" name="searchExistingModifier"
+                                id="searchExistingModifier">
+                            <button type="submit" class="input-group-text">
+                                <img src="~/images/icons/search.svg" alt="">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="existingModifiersContent">
+                        <!-- Modifiers table Partial View -->
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-blue btn-modal" data-bs-target="#addModifierGroup"
+                        data-bs-toggle="modal">Add</button>
+                    <button type="button" class="btn btn-white btn-modal" data-bs-target="#addModifierGroup"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 <!-- Modal Add Existing Modifier in Modifier Group ends -->
-
 
 
 

@@ -1,0 +1,40 @@
+@using PizzaShop.Entity.ViewModels
+@model ModifierGroupViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="mgModalToggleLabel">Add Modifier Group</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form asp-action="SaveModifierGroup" asp-controller="Menu" id="SaveModifierGroupForm" method="Post">
+    <div class="modal-body">
+        <div class="form addMG-form">
+
+            <input asp-for="ModifierGroupId" type="text" class="form-control" id="mgId" hidden>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" type="text" class="form-control" placeholder="" id="mgName">
+                <label for="mgName">Name*</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Description" class="form-control" rows="1" placeholder="mgDesc"></textarea>
+                <label for="mgDesc">Description*</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+        </div>
+
+        <div class="mt-3">
+            <a class="blue btn" data-bs-target="#addExistingGroup" data-bs-toggle="modal" id="addExistingModifiers">
+                +Add Existing Modifiers
+            </a>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue btn-modal" id="saveModifierGroup">Save</button>
+        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>
+

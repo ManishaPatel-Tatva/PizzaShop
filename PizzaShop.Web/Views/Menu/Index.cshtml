@@ -118,45 +118,8 @@
         <!----------------------------------------------------- Modifiers and Modifier Group-----------------------------------------------------------------------------------
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
-            <div class="row">
-
-                <!----------------------------------------------------- Modifier Groups starts ------------------------------------------------------->
-                <div class="modifierGroup col-12 col-md-3 pt-2 bg-dark-grey" id="modifierTab">
-                    <!-- Modifier Group Partial View -->
-                </div>
-                <!----------------------------------------------------- Modifier Groups ends ------------------------------------------------------->
-
-                <!----------------------------------------------------- Modifiers starts ------------------------------------------------------>
-                <div class="col pt-2" id="Modifiers-Content">
-                    <div class="fs-5 fw-bold blue-text">
-                        Modifiers
-                    </div>
-
-                    <div class="d-flex justify-content-end">
-                        <div class="input-group w-25 me-2">
-                            <input type="search" class="form-control" placeholder="Search" name="searchModifier"
-                                id="searchModifier">
-                            <button type="submit" class="input-group-text"> 
-                                <img src="~/images/icons/search.svg" alt="">
-                            </button>
-                        </div>
-                        <button class="btn border me-2" id="modifierMassDeleteIcon" data-bs-toggle="modal"
-                            data-bs-target="#massDeleteModifier">
-                            <img src="~/images/icons/delete.svg" alt="">
-                        </button>
-                        <button class="btn btn-blue me-2 newModifierBtn" id="newModifierBtn" data-bs-toggle="modal"
-                            data-bs-target="#addEditModifier">
-                            + New Modifier
-                        </button>
-                    </div>
-
-                    <div id="modifierTableOuter">
-                        <!-- Modifiers Partial View -->
-                    </div>
-
-                </div>
-                <!----------------------------------------------------- Modifiers ends ------------------------------------------------------->
-
+            <div class="row" id="modifierTab">
+                <!-- Partial View -->
             </div>
         </div>
 
@@ -287,10 +250,10 @@
     <script>
         @* Javascript for Category *@
 
-        //For showing edit and delete icons on hovering 
-        $(".li-category").mouseover(function () {
-            $(this).children("div.EditDeleteCategory").css("visibility", "visible");
-        });
+            //For showing edit and delete icons on hovering 
+            $(".li-category").mouseover(function () {
+                $(this).children("div.EditDeleteCategory").css("visibility", "visible");
+            });
         $(".li-category").mouseout(function () {
             $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
         });
@@ -579,15 +542,11 @@
                     MinAllowed: Number($(".minAllowed[data-id ='" + id + "']").val()),
                     MaxAllowed: Number($(".maxAllowed[data-id ='" + id + "']").val())
                 });
-
-
             });
-            console.log(modifiergroupArr);
 
             $("#modifierGroupList").val(JSON.stringify(modifiergroupArr));
 
             let formData = new FormData(this);
-
 
             $.ajax({
                 url: $(this).attr("action"),
@@ -619,6 +578,13 @@
             getModifierTab();
         });
 
+        function IntializeModifier() {
+            currentMgId = $("#ul-modifierGroup>li:first").data("id");
+            $("#ul-modifierGroup>li:first>a").addClass("blue");
+            console.log("document ready", currentMgId);
+            ModifiersPaginationAjax(1); // Load modifiers on page load
+        }
+
         function getModifierTab() {
             $.ajax({
                 url: '@Url.Action("GetModifierTab", "Menu")',
@@ -626,11 +592,165 @@
                 dataType: "html",
                 success: function (data) {
                     $("#modifierTab").html(data);
+                    IntializeModifier();
                 },
                 error: function () {
                     console.log("There is error in fetching modifier tab.Not successful");
                 }
             });
+        }
+    </script>
+
+    @* Add Modifier Group Modal *@
+    <script>
+        $(document).on("click", "#addModifierGroupBtn", function () {
+            GetModifierGroup(0);
+        });
+
+        $(document).on("click", ".editModifierGroupBtn", function () {
+            console.log("Modifier Group id on clicking icons ", $(this).data("id"));
+            GetModifierGroup($(this).data("id"));
+        });
+
+        function GetModifierGroup(id) {
+            $.ajax({
+                url: '@Url.Action("GetModifierGroupModal", "Menu")',
+                type: "GET",
+                data: { modifierGroupId: id },
+                dataType: "html",
+                success: function (data) {
+                    $("#addModifierGroupModal").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Modifier Group Found");
+                }
+            })
+        }
+    </script>
+
+    @* Add/Update Modifier Group Form Submit *@
+    <script>
+        $(document).on("submit", "#SaveModifierGroupForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (data) {
+                    $("#addEditItem").hide;
+                    toastr.success("Modifier Group Added successfully!");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Items Found");
+                    $("#itemsListContent").html('An error has occurred');
+                }
+            });
+        });
+    </script>
+
+    @* Modifiers List Pagination Partial View Ajax *@
+    <script>
+
+        let currentMgId = 5;
+
+        $(document).on("click", ".li-modifierGroup>a", function () {
+            currentMgId = $(this).parent().data("id");
+            $(".li-modifierGroup").each(function () {
+                $(this).children().removeClass("blue");
+            });
+            $(this).addClass("blue");
+
+            ModifiersPaginationAjax(1);
+        });
+
+        $(document).on("change", "#modifiersPerPage", function () {
+            ModifiersPaginationAjax(1); // Reload data with new page size
+        });
+
+        $(document).on("input", "#searchModifier", function () {
+            ModifiersPaginationAjax(1); // Reload after serach query
+        });
+
+        function ModifiersPaginationAjax(pageNumber) {
+            let pageSize = $("#modifiersPerPage").val() || 5; // Default to 5 if no value selected
+
+            let searchQuery = $("#searchModifier").val();
+            if (searchQuery == null) {
+                searchQuery = ""
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetModifiersList", "Menu")',
+                data: {
+                    'modifierGroupId': currentMgId,
+                    'search': searchQuery,
+                    'pageSize': pageSize,
+                    'pageNumber': pageNumber
+                },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#modifierTableOuter").html(data);
+                    $("#modifiersPerPage").val(pageSize); // Reapply selected value after reload
+                },
+                error: function () {
+                    alert("No Modifier Found");
+                    $("#modifierTableOuter").html('An error has occurred');
+                }
+            });
+
+        }
+    </script>
+
+    <script>
+        $(document).on("click", "#addExistingModifiers", function () {
+             console.log("inside click function");
+            existingModifiers(1); // Reload data with new page size
+        })
+
+        $(document).on("change", "#existingModifiersPerPage", function () {
+            existingModifiers(1); // Reload data with new page size
+        });
+
+        $(document).on("input", "#searchModifier", function () {
+            existingModifiers(1); // Reload after serach query
+        });
+
+        function existingModifiers(pageNumber) {
+            console.log("inside existingModifiers function");
+            let pageSize = $("#existingModifiersPerPage").val() || 5; // Default to 5 if no value selected
+
+            let searchQuery = $("#searchModifier").val();
+            if (searchQuery == null) {
+                searchQuery = ""
+            }
+
+            $.ajax({
+                url: '@Url.Action("ExistingModifiers", "Menu")',
+                data: {
+                    'search': searchQuery,
+                    'pageSize': pageSize,
+                    'pageNumber': pageNumber
+                },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    console.log("Hello",data);
+                    $("#existingModifiersContent").html(data);
+                    $("#existingModifiersPerPage").val(pageSize); // Reapply selected value after reload
+                },
+                error: function () {
+                    alert("No Modifier Found");
+                    $("#modifierTableOuter").html('An error has occurred');
+                }
+            });
+
         }
     </script>
 

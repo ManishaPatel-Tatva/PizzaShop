@@ -25,7 +25,8 @@ public interface IGenericRepository<T>
         int pageNumber,
         Expression<Func<T, bool>>? filter = null,
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        List<Expression<Func<T, object>>>? includes = null
+        List<Expression<Func<T, object>>>? includes = null,
+        List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null
     );
 
     Task<T?> GetByIdAsync(long id);

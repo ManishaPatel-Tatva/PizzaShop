@@ -110,7 +110,8 @@ public class GenericRepository<T> : IGenericRepository<T>
         int pageNumber,
         Expression<Func<T, bool>>? filter = null,
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        List<Expression<Func<T, object>>>? includes = null)
+        List<Expression<Func<T, object>>>? includes = null,
+        List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null)
     {
 
         IQueryable<T> query = _dbSet;
@@ -128,7 +129,16 @@ public class GenericRepository<T> : IGenericRepository<T>
             }
         }
 
-        var totalCount = await query.CountAsync();
+        // Apply ThenIncludes (Deeper navigation properties)
+        if (thenIncludes != null)
+        {
+            foreach (var thenInclude in thenIncludes)
+            {
+                query = thenInclude(query);
+            }
+        }
+
+        int totalCount = await query.CountAsync();
 
         if (orderBy != null)
         {
