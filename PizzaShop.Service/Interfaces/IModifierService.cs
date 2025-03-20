@@ -10,6 +10,13 @@ public interface IModifierService
     Task<bool> SaveModifierGroup(ModifierGroupViewModel model, string createrEmail);
     Task<bool> AddModifierGroup(ModifierGroupViewModel model, long createrId);
     Task<bool> UpdateModifierGroup(ModifierGroupViewModel model, long createrId);
+    Task<bool> DeleteModifierGroup(long modifierGroupId);
     Task<ModifiersPaginationViewModel> GetPagedModifiers(long modifierGroupId, int pageSize, int pageNumber, string search);
     Task<ModifiersPaginationViewModel> GetAllModifiers(int pageSize, int pageNumber, string search);
+    Task<ModifierViewModel> GetModifier(long modifierId);
+    Task<bool> SaveModifier(ModifierViewModel model, string createrEmail);
+    Task<bool> AddModifier(ModifierViewModel model, long createrId);
+    Task<bool> UpdateModifier(ModifierViewModel model, long createrId);
+    Task<bool> DeleteModifier(long modifierId);
+    Task<bool> MassDeleteModifiers(List<long> modifierIdList);
 }

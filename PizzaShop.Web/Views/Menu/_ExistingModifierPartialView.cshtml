@@ -12,7 +12,7 @@
                 </th>
                 <th scope="col">Unit</th>
                 <th scope="col">Rate</th>
-                <th scope="col">Quantity</th>
+                <th scope="col" style="width: 100px;">Quantity</th>
             </tr>
         </thead>
         <tbody class="" id="">
@@ -48,16 +48,16 @@
         <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
 
         <!-- Previous Page Button -->
-        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+        <a class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
             onclick="existingModifiers(@Model.Page.CurrentPage - 1)">
             <img src="~/images/icons/chevron-left.svg" alt="">
-        </button>
+        </a>
 
         <!-- Next Page Button -->
-        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+        <a class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
             onclick="existingModifiers(@Model.Page.CurrentPage + 1)">
             <img src="~/images/icons/chevron-right.svg" alt="">
-        </button>
+        </a>
     </div>
 </div>
 <!-- Pagination Ends -->

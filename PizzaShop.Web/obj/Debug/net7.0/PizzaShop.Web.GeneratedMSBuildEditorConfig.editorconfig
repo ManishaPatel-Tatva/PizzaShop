@@ -64,8 +64,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudVxfSXRlbXNQYXJ0aWFsVmlldy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/Menu/_ModifiersPartialView.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudVxfTW9kaWZpZXJzUGFydGlhbFZpZXcuY3NodG1s
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/Menu/_ModifierPartialView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudVxfTW9kaWZpZXJQYXJ0aWFsVmlldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/Menu/_ModifiersListPartialView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVudVxfTW9kaWZpZXJzTGlzdFBhcnRpYWxWaWV3LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/Menu/_ModifierTabPartialView.cshtml]

@@ -27,44 +27,25 @@ public class MenuController : Controller
     public IActionResult Index()
     {
         var categoriesList = _categoryItemService.GetCategory();
-    
+
         MenuViewModel model = new MenuViewModel
         {
             Categories = categoriesList,
-            ItemsPageVM = new ItemsPaginationViewModel{
+            ItemsPageVM = new ItemsPaginationViewModel
+            {
                 Items = Enumerable.Empty<ItemInfoViewModel>(),
-                Page = new Pagination() 
+                Page = new Pagination()
             }
         };
         ViewData["sidebar-active"] = "Menu";
         return View(model);
     }
 
-#region Category    
- 
-#region Edit Category
- /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public IActionResult EditCategory(long categoryId)
-    {
-        var category = _categoryItemService.GetCategoryById(categoryId);
-        return Json(category);
-    }
+    #region Category   
 
-/*--------------------------------------------------------Edit Category Post---------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [HttpPost]
-    public async Task<IActionResult> EditCategory(MenuViewModel model)
-    {
-        CategoryViewModel categoryVM = model.CategoryVM;
-        var success = await _categoryItemService.EditCategory(categoryVM);
-        return RedirectToAction("Index", "Menu");
-    }
-#endregion Edit Category
-
-#region Add Category
-/*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Add Category
+    /*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
     public async Task<IActionResult> AddCategory(MenuViewModel model)
     {
@@ -75,71 +56,90 @@ public class MenuController : Controller
         var success = await _categoryItemService.AddCategory(categoryVM, createrEmail);
         return RedirectToAction("Index", "Menu");
     }
-#endregion Add Category
+    #endregion Add Category
 
-#region Delete Category
-/*--------------------------------------------------------Menu Index--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Edit Category
+    /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public IActionResult EditCategory(long categoryId)
+    {
+        var category = _categoryItemService.GetCategoryById(categoryId);
+        return Json(category);
+    }
+
+    /*--------------------------------------------------------Edit Category Post---------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [HttpPost]
+    public async Task<IActionResult> EditCategory(MenuViewModel model)
+    {
+        CategoryViewModel categoryVM = model.CategoryVM;
+        var success = await _categoryItemService.EditCategory(categoryVM);
+        return RedirectToAction("Index", "Menu");
+    }
+    #endregion Edit Category
+
+    #region Delete Category
+    /*--------------------------------------------------------Menu Index--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public async Task<IActionResult> SoftDelete(long categoryId)
     {
         var success = await _categoryItemService.SoftDelete(categoryId);
-        return RedirectToAction("Index","Menu");
+        return RedirectToAction("Index", "Menu");
     }
 
-#endregion Delete Category
+    #endregion Delete Category
 
-#endregion Category
+    #endregion Category
 
-#region Items
+    #region Items
 
-#region  Display Item
-/*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+    #region  Display Item
+    /*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
-    public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search="")
+    public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search = "")
     {
-        var model = await _categoryItemService.GetPagedItems(categoryId, pageSize, pageNumber,search);
+        var model = await _categoryItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error
         }
         return PartialView("_ItemsPartialView", model);
     }
-#endregion Display Item
+    #endregion Display Item
 
-#region Get Add/Update
-/*--------------------------------------------------------Get Add/Update Items--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Get Add/Update
+    /*--------------------------------------------------------Get Add/Update Items--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public async Task<IActionResult> GetItemModal(long itemId)
     {
         AddItemViewModel model = await _categoryItemService.GetEditItem(itemId);
-        return PartialView("_UpdateItemPartialView", model); 
+        return PartialView("_UpdateItemPartialView", model);
     }
 
     public async Task<IActionResult> SelectModifierGroup(long modifierGroupId)
     {
         ItemModifierViewModel model = await _categoryItemService.GetModifierOnSelection(modifierGroupId);
-        return PartialView("_ItemModifierPartialView", model); 
+        return PartialView("_ItemModifierPartialView", model);
     }
-    
-#endregion Get Add/Update
 
-#region Update Item
-/*--------------------------------------------------------Add/Update Item--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #endregion Get Add/Update
+
+    #region Update Item
+    /*--------------------------------------------------------Add/Update Item--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
     public async Task<IActionResult> AddUpdateItem(AddItemViewModel model, string modifierGroupList)
     {
         if (!ModelState.IsValid)
         {
             AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
-            return PartialView("_UpdateItemPartialView", updatedModel); 
+            return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
-        if(!string.IsNullOrEmpty(modifierGroupList))
+        if (!string.IsNullOrEmpty(modifierGroupList))
         {
             model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList);
         }
@@ -152,73 +152,74 @@ public class MenuController : Controller
         if (!success)
         {
             AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
-            return PartialView("_UpdateItemPartialView", updatedModel); 
+            return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
         TempData["successMessage"] = "Item Updated";
         return RedirectToAction("Index");
     }
+    #endregion Update Item
 
-
-#endregion Update Item
-
-#region Delete Item
-/*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Delete Item
+    /*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<IActionResult> SoftDeleteItem(long id)
     {
         bool success = await _categoryItemService.SoftDeleteItem(id);
 
-        if(!success)
+        if (!success)
         {
-            return Json(new {success = false, message="Item Not deleted"});
+            return Json(new { success = false, message = "Item Not deleted" });
         }
-        return Json(new {success = true, message="Item deleted Successfully!"});
+        return Json(new { success = true, message = "Item deleted Successfully!" });
     }
 
-/*--------------------------------------------------------Delete Multiple Items--------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------------------------Delete Multiple Items--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<IActionResult> MassDeleteItems(List<long> itemsList)
     {
         bool success = await _categoryItemService.MassDeleteItems(itemsList);
 
-        if(!success)
+        if (!success)
         {
-            return Json(new {success = false, message="Items Not deleted"});
+            return Json(new { success = false, message = "Items Not deleted" });
         }
-        return Json(new {success = true, message="All selected Items deleted Successfully!"});
+        return Json(new { success = true, message = "All selected Items deleted Successfully!" });
     }
 
-#endregion Delete Item
+    #endregion Delete Item
 
+    #endregion Items
 
-#endregion Items
+    #region Modifier Group
 
-#region Modifiers    
- 
-#region Read Modifier Groups
- /*-------------------------------------------------------- Read Modifier Group---------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Modifier Tab
+    /*-------------------------------------------------------- Read Modifier Group---------------------------------------------------------------------------------------------------
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public IActionResult GetModifierTab()
     {
-        ModifierTabViewModel model = new(){
+        ModifierTabViewModel model = new()
+        {
             ModifierGroups = _modifierService.GetModifierGroups()
         };
-        
-        return PartialView("_ModifierTabPartialView", model); 
-    }
-#endregion Read Modifier Groups
 
-#region Get Modifier Group
- /*-------------------------------------------------------- Get Modifier Group---------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        return PartialView("_ModifierTabPartialView", model);
+    }
+    #endregion Get Modifier Tab
+
+    #region Display Modifier Group
+    /*-------------------------------------------------------- Get Modifier Group---------------------------------------------------------------------------------------------------
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public async Task<IActionResult> GetModifierGroupModal(long modifierGroupId)
     {
         ModifierGroupViewModel model = await _modifierService.GetModifierGroup(modifierGroupId);
-        return PartialView("_AddModifierGroupPartialView", model); 
+        return PartialView("_AddModifierGroupPartialView", model);
     }
+    #endregion Display Modifier Group
+
+    #region Add/Update Modifier Group
 
     [HttpPost]
     public async Task<IActionResult> SaveModifierGroup(ModifierGroupViewModel model)
@@ -226,7 +227,7 @@ public class MenuController : Controller
         if (!ModelState.IsValid)
         {
             ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
-            return PartialView("_AddModifierGroupPartialView", updatedModel); 
+            return PartialView("_AddModifierGroupPartialView", updatedModel);
         }
 
         string token = Request.Cookies["authToken"];
@@ -236,18 +237,34 @@ public class MenuController : Controller
         if (!success)
         {
             ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
-            return PartialView("_AddModifierGroupPartialView", updatedModel); 
+            return PartialView("_AddModifierGroupPartialView", updatedModel);
         }
-        return Json(new {success = true, message = "Modifier Group Added Successful!"});
+        return Json(new { success = true, message = "Modifier Group Added Successful!" });
 
     }
+    #endregion Add/Update Modifier Group
 
-#endregion Get Modifier Group
+    #region Delete Modifier Group
+    [HttpGet]
+    public async Task<IActionResult> DeleteModifierGroup(long modifierGroupId)
+    {
+        bool success = await _modifierService.DeleteModifierGroup(modifierGroupId);
+        if (!success)
+        {
+            return Json(new { success = false, message = "Modifier Not deleted!" });
+        }
+        return Json(new { success = true, message = "Modifier deleted Successfully!" });
+    }
+    #endregion Delete Modifier Group
 
-#region  Modifiers List
+    #endregion Modifier Group
+
+    #region Modifier
+
+    #region Display Modifiers
 
     [HttpGet]
-    public async Task<IActionResult> GetModifiersList(long modifierGroupId, int pageSize, int pageNumber = 1, string search="")
+    public async Task<IActionResult> GetModifiersList(long modifierGroupId, int pageSize, int pageNumber = 1, string search = "")
     {
         ModifiersPaginationViewModel model = await _modifierService.GetPagedModifiers(modifierGroupId, pageSize, pageNumber, search);
 
@@ -256,11 +273,11 @@ public class MenuController : Controller
             return NotFound(); // This triggers AJAX error
         }
 
-        return PartialView("_ModifiersPartialView", model);
+        return PartialView("_ModifiersListPartialView", model);
     }
 
     [HttpGet]
-    public async Task<IActionResult> ExistingModifiers(int pageSize, int pageNumber = 1, string search="")
+    public async Task<IActionResult> ExistingModifiers(int pageSize, int pageNumber = 1, string search = "")
     {
         ModifiersPaginationViewModel model = await _modifierService.GetAllModifiers(pageSize, pageNumber, search);
 
@@ -272,11 +289,63 @@ public class MenuController : Controller
         return PartialView("_ExistingModifierPartialView", model);
     }
 
+    #endregion Display Modifiers
 
+    #region Add/Update Modifier
 
-#endregion  Modifiers List
+    [HttpPost]
+    public async Task<IActionResult> SaveModifier(ModifierViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
+            return PartialView("_AddModifierGroupPartialView", updatedModel);
+        }
 
+        string token = Request.Cookies["authToken"];
+        string createrEmail = _jwtService.GetClaimValue(token, "email");
 
-#endregion Modifiers
+        bool success = await _modifierService.SaveModifier(model, createrEmail);
+        if (!success)
+        {
+            ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
+            return PartialView("_AddModifierGroupPartialView", updatedModel);
+        }
+        return Json(new { success = true, message = "Modifier Added Successful!" });
+
+    }
+    #endregion Add/Update Modifier
+
+    #region Delete Modifier
+    /*--------------------------------------------------------Delete One Modifier--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<IActionResult> DeleteModifier(long modifierId)
+    {
+        bool success = await _modifierService.DeleteModifier(modifierId);
+
+        if (!success)
+        {
+            return Json(new { success = false, message = "Modifier Not deleted!" });
+        }
+        return Json(new { success = true, message = "Modifier deleted Successfully!" });
+    }
+
+    /*--------------------------------------------------------Delete Multiple Modifiers--------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<IActionResult> MassDeleteModifier(List<long> modifierIdList)
+    {
+        bool success = await _modifierService.MassDeleteModifiers(modifierIdList);
+
+        if (!success)
+        {
+            return Json(new { success = false, message = "Items Not deleted" });
+        }
+        return Json(new { success = true, message = "All selected Items deleted Successfully!" });
+    }
+
+    #endregion Delete Modifier
+
+    #endregion Modifier
+
 
 }

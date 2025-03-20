@@ -269,7 +269,6 @@
                 type: "GET",
                 data: { categoryId: categoryId },
                 success: function (response) {
-                    console.log(response);
                     $("#modalCategoryName").val(response.categoryName);
                     $("#modalCategoryDesc").val(response.categoryDesc)
                 }
@@ -426,8 +425,8 @@
         });
 
         function toggleMasterDeleteBtn() {
-            console.log($(".itemChildCheckbox:checked").length)
-            if ($(".itemChildCheckbox:checked").length > 0) {
+            if ($(".itemChildCheckbox:checked").length > 0) 
+            {
                 $("#itemMassDeleteIcon").prop("disabled", false);
             }
             else {
@@ -443,12 +442,12 @@
         });
 
         $(document).on("change", ".itemChildCheckbox", function () {
-            let totalchildCheckBox = $(".itemChildCheckbox").length;
-            let checkedchildCheckBox = $(".itemChildCheckbox:checked").length;
-            if (checkedchildCheckBox === totalchildCheckBox) {
+            let totalChildCheckBox = $(".itemChildCheckbox").length;
+            let checkedChildCheckBox = $(".itemChildCheckbox:checked").length;
+            if (checkedChildCheckBox === totalChildCheckBox) {
                 $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", true);
             }
-            else if (checkedchildCheckBox === 0) {
+            else if (checkedChildCheckBox === 0) {
                 $("#itemParentCheckbox").prop("indeterminate", false).prop("checked", false);
             }
             else {
@@ -718,7 +717,7 @@
             existingModifiers(1); // Reload data with new page size
         });
 
-        $(document).on("input", "#searchModifier", function () {
+        $(document).on("input", "#searchExistingModifier", function () {
             existingModifiers(1); // Reload after serach query
         });
 
@@ -741,13 +740,12 @@
                 type: "GET",
                 dataType: "html",
                 success: function (data) {
-                    console.log("Hello",data);
                     $("#existingModifiersContent").html(data);
                     $("#existingModifiersPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
                     alert("No Modifier Found");
-                    $("#modifierTableOuter").html('An error has occurred');
+                    $("#existingModifiersContent").html('An error has occurred');
                 }
             });
 
