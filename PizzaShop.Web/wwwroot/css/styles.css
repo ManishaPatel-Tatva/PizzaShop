@@ -242,17 +242,17 @@ td{
     font-weight: 600;
 }
 
-.category-list a, .modifierGroup-list a{
+.category-list a, .modifierGroup-list a, .section-list a{
     color: #686868;
     font-weight: 600;
 }
 
-.category-list ul, .modifierGroup-list ul {
+.category-list ul, .modifierGroup-list ul, .section-list ul {
     list-style: none;
     padding:8px
 }
 
-.category-list li, .modifierGroup-list li{
+.category-list li, .modifierGroup-list li, .section-list li{
     color: #686868;
     margin-top: 20px;
 }
@@ -267,11 +267,11 @@ td{
     height: 350px;
 }
 
-.category, .modifierGroup{
+.category, .modifierGroup, .section{
     width: 300px;
 }
 
-.EditDeleteCategory, .EditDeleteModifierGroup{
+.EditDeleteCategory, .EditDeleteModifierGroup, .EditDeleteSection{
     visibility: hidden;
 }
 
@@ -308,16 +308,16 @@ td{
 }
 
 @media (max-width: 1290px) {
-    .category, .modifierGroup{
+    .category, .modifierGroup, .section{
         width: 100%;
         height: fit-content;
     }
 
-    .category-list , .modifierGroup-list{
+    .category-list , .modifierGroup-list, .section-list{
         height: 170px;
     }
 
-    .category-list ul, .modifierGroup-list ul{
+    .category-list ul, .modifierGroup-list ul, .section-list ul{
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         column-gap: 8px;
@@ -325,7 +325,7 @@ td{
 }
 
 @media (max-width: 620px) {
-    .category-list ul, .modifierGroup-list ul{
+    .category-list ul, .modifierGroup-list ul, .section-list ul{
         display: grid;
         grid-template-columns: 1fr 1fr;
         column-gap: 10px;
@@ -333,7 +333,7 @@ td{
 }
 
 @media (max-width: 460px) {
-    .category-list ul, .modifierGroup-list ul{
+    .category-list ul, .modifierGroup-list ul, .section-list ul{
         display: grid;
         grid-template-columns: 1fr;
         column-gap: 10px;

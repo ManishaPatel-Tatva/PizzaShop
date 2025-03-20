@@ -215,7 +215,7 @@ public class MenuController : Controller
     public async Task<IActionResult> GetModifierGroupModal(long modifierGroupId)
     {
         ModifierGroupViewModel model = await _modifierService.GetModifierGroup(modifierGroupId);
-        return PartialView("_AddModifierGroupPartialView", model);
+        return PartialView("_ModifierGroupPartialView", model);
     }
     #endregion Display Modifier Group
 
@@ -227,7 +227,7 @@ public class MenuController : Controller
         if (!ModelState.IsValid)
         {
             ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
-            return PartialView("_AddModifierGroupPartialView", updatedModel);
+            return PartialView("_ModifierGroupPartialView", updatedModel);
         }
 
         string token = Request.Cookies["authToken"];
@@ -237,7 +237,7 @@ public class MenuController : Controller
         if (!success)
         {
             ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
-            return PartialView("_AddModifierGroupPartialView", updatedModel);
+            return PartialView("_ModifierGroupPartialView", updatedModel);
         }
         return Json(new { success = true, message = "Modifier Group Added Successful!" });
 
@@ -262,6 +262,14 @@ public class MenuController : Controller
     #region Modifier
 
     #region Display Modifiers
+    /*-------------------------------------------------------- Get Modifier Group---------------------------------------------------------------------------------------------------
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [HttpGet]
+    public async Task<IActionResult> GetModifierModal(long modifierId)
+    {
+        ModifierViewModel model = await _modifierService.GetModifier(modifierId);
+        return PartialView("_ModifierPartialView", model);
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetModifiersList(long modifierGroupId, int pageSize, int pageNumber = 1, string search = "")
@@ -299,7 +307,7 @@ public class MenuController : Controller
         if (!ModelState.IsValid)
         {
             ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
-            return PartialView("_AddModifierGroupPartialView", updatedModel);
+            return PartialView("_ModifierGroupPartialView", updatedModel);
         }
 
         string token = Request.Cookies["authToken"];
@@ -309,7 +317,7 @@ public class MenuController : Controller
         if (!success)
         {
             ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
-            return PartialView("_AddModifierGroupPartialView", updatedModel);
+            return PartialView("_ModifierGroupPartialView", updatedModel);
         }
         return Json(new { success = true, message = "Modifier Added Successful!" });
 

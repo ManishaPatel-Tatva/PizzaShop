@@ -29,7 +29,7 @@
                             <img src="~/images/icons/edit.svg" alt="" />
                         </button>
                         <button class="btn p-0 pe-1 deleteModifierGroupBtn" data-bs-toggle="modal"
-                            data-bs-target="#deleteModifierGroup" data-id="@mg.ModifierGroupId">
+                            data-bs-target="#deleteModifierGroupModal" data-id="@mg.ModifierGroupId">
                             <img src="~/images/icons/delete.svg" alt="">
                         </button>
                     </div>
@@ -58,8 +58,8 @@
             data-bs-target="#massDeleteModifier">
             <img src="~/images/icons/delete.svg" alt="">
         </button>
-        <button class="btn btn-blue me-2 newModifierBtn" id="newModifierBtn" data-bs-toggle="modal"
-            data-bs-target="#addEditModifier">
+        <button class="btn btn-blue me-2 newModifierBtn" id="addModifierBtn" data-bs-toggle="modal"
+            data-bs-target="#addModifier">
             + New Modifier
         </button>
     </div>
@@ -123,6 +123,40 @@
     </div>
 </div>
 <!-- Modal Add Existing Modifier in Modifier Group ends -->
+
+<!-- Modal Add Modifier  starts -->
+<div class="modal fade" id="addModifier" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" id="addModifierModal">
+            <!-- Add Modifier Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Add Modifier  ends -->
+
+<!-- Modal Delete Modifier Group starts-->
+<div class="modal fade" id="deleteModifierGroupModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModifierModalLabel">Delete Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <img src="~/images/icons/warning.svg" alt="" width="50px">
+                <span>Are you sure you want to delete this modifier group?</span>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button id="DeleteModifier" type="button" class="btn btn-blue" data-bs-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Delete Modifier Group starts-->
+
+
 
 
 

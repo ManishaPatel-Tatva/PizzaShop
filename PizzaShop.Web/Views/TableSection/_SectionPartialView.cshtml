@@ -1,0 +1,33 @@
+@using PizzaShop.Entity.ViewModels
+@model SectionViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="secModalToggleLabel">Add Section</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form asp-action="SaveSection" asp-controller="TableSection" id="SaveSectionForm" method="Post">
+    <div class="modal-body">
+        <div class="form addSection-form">
+
+            <input asp-for="SectionId" type="text" class="form-control" id="secId" hidden>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Name" type="text" class="form-control" placeholder="" id="secName">
+                <label for="secName">Name*</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="Description" class="form-control" rows="1" placeholder="secDesc"></textarea>
+                <label for="secDesc">Description*</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue btn-modal" id="saveSection">Save</button>
+        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>

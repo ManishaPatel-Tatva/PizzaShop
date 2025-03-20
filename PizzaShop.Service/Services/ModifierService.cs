@@ -13,8 +13,6 @@ public class ModifierService : IModifierService
     private readonly IGenericRepository<Modifier> _modifierRepository;
     private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
     private readonly IGenericRepository<ModifierMapping> _modifierMappingRepository;
-
-
     private readonly IGenericRepository<User> _userRepository;
 
     public ModifierService(IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<User> userRepository, IGenericRepository<Modifier> modifierRepository, IGenericRepository<ModifierMapping> modifierMappingRepository)
@@ -207,7 +205,7 @@ public class ModifierService : IModifierService
         return model;
     }
 
-    /*-----------------------------------------------------------Get Modifier Group By Id---------------------------------------------------------------------------------
+    /*-----------------------------------------------------------Get Modifier By Id---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ModifierViewModel> GetModifier(long modifierId)
     {

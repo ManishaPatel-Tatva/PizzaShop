@@ -247,13 +247,13 @@
 
 
 @section Scripts {
-    <script>
-        @* Javascript for Category *@
 
-            //For showing edit and delete icons on hovering 
-            $(".li-category").mouseover(function () {
-                $(this).children("div.EditDeleteCategory").css("visibility", "visible");
-            });
+    @* Javascript for Category *@
+    <script>
+        //For showing edit and delete icons on hovering 
+        $(".li-category").mouseover(function () {
+            $(this).children("div.EditDeleteCategory").css("visibility", "visible");
+        });
         $(".li-category").mouseout(function () {
             $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
         });
@@ -425,8 +425,7 @@
         });
 
         function toggleMasterDeleteBtn() {
-            if ($(".itemChildCheckbox:checked").length > 0) 
-            {
+            if ($(".itemChildCheckbox:checked").length > 0) {
                 $("#itemMassDeleteIcon").prop("disabled", false);
             }
             else {
@@ -646,18 +645,60 @@
                 },
                 error: function () {
                     console.log("There is error.Not successful");
-                    alert("No Items Found");
-                    $("#itemsListContent").html('An error has occurred');
                 }
             });
         });
     </script>
 
+    @* Add Existing Modifiers in Modifier Group *@
+    <script>
+        $(document).on("click", "#addExistingModifiers", function () {
+            console.log("inside click function");
+            existingModifiers(1); // Reload data with new page size
+        })
+
+        $(document).on("change", "#existingModifiersPerPage", function () {
+            existingModifiers(1); // Reload data with new page size
+        });
+
+        $(document).on("input", "#searchExistingModifier", function () {
+            existingModifiers(1); // Reload after serach query
+        });
+
+        function existingModifiers(pageNumber) {
+            console.log("inside existingModifiers function");
+            let pageSize = $("#existingModifiersPerPage").val() || 5; // Default to 5 if no value selected
+
+            let searchQuery = $("#searchModifier").val();
+            if (searchQuery == null) {
+                searchQuery = ""
+            }
+
+            $.ajax({
+                url: '@Url.Action("ExistingModifiers", "Menu")',
+                data: {
+                    'search': searchQuery,
+                    'pageSize': pageSize,
+                    'pageNumber': pageNumber
+                },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#existingModifiersContent").html(data);
+                    $("#existingModifiersPerPage").val(pageSize); // Reapply selected value after reload
+                },
+                error: function () {
+                    alert("No Modifier Found");
+                    $("#existingModifiersContent").html('An error has occurred');
+                }
+            });
+
+        }
+    </script>
+
     @* Modifiers List Pagination Partial View Ajax *@
     <script>
-
         let currentMgId = 5;
-
         $(document).on("click", ".li-modifierGroup>a", function () {
             currentMgId = $(this).parent().data("id");
             $(".li-modifierGroup").each(function () {
@@ -707,49 +748,32 @@
         }
     </script>
 
+    @* Add Modifier Modal *@
     <script>
-        $(document).on("click", "#addExistingModifiers", function () {
-             console.log("inside click function");
-            existingModifiers(1); // Reload data with new page size
-        })
-
-        $(document).on("change", "#existingModifiersPerPage", function () {
-            existingModifiers(1); // Reload data with new page size
+        $(document).on("click", "#addModifierBtn", function () {
+            GetModifier(0);
         });
 
-        $(document).on("input", "#searchExistingModifier", function () {
-            existingModifiers(1); // Reload after serach query
+        $(document).on("click", ".editModifierBtn", function () {
+            console.log("Modifier id on clicking icons ", $(this).data("id"));
+            GetModifier($(this).data("id"));
         });
 
-        function existingModifiers(pageNumber) {
-            console.log("inside existingModifiers function");
-            let pageSize = $("#existingModifiersPerPage").val() || 5; // Default to 5 if no value selected
-
-            let searchQuery = $("#searchModifier").val();
-            if (searchQuery == null) {
-                searchQuery = ""
-            }
-
+        function GetModifier(id) {
             $.ajax({
-                url: '@Url.Action("ExistingModifiers", "Menu")',
-                data: {
-                    'search': searchQuery,
-                    'pageSize': pageSize,
-                    'pageNumber': pageNumber
-                },
+                url: '@Url.Action("GetModifierModal", "Menu")',
                 type: "GET",
+                data: { modifierId: id },
                 dataType: "html",
                 success: function (data) {
-                    $("#existingModifiersContent").html(data);
-                    $("#existingModifiersPerPage").val(pageSize); // Reapply selected value after reload
+                    console.log(data);
+                    $("#addModifierModal").html(data);
                 },
                 error: function () {
+                    console.log("There is error.Not successful");
                     alert("No Modifier Found");
-                    $("#existingModifiersContent").html('An error has occurred');
                 }
-            });
-
+            })
         }
     </script>
-
 }

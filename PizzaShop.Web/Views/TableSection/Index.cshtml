@@ -1,0 +1,348 @@
+@using PizzaShop.Entity.ViewModels
+@model List<SectionViewModel>
+
+@{
+    ViewData["Title"] = "Table and Section";
+    Layout = "_Layout";
+}
+
+<!-- Menu heading -->
+<div class="mb-3">
+    <h1 class="blue-text">Sections/Table</h1>
+</div>
+
+<div class="row">
+
+    <!----------------------------------------------------- Section starts ------------------------------------------------------->
+    <div class="section col-12 col-md-3 pt-2 bg-dark-grey">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fs-5 fw-bold blue-text">Section</span>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn p-0" id="addSectionBtn" data-bs-toggle="modal"
+                data-bs-target="#addSectionModal">
+                <img src="~/images/icons/plus-square.svg" alt="" width="25px">
+            </button>
+        </div>
+
+        <div class="section-list pe-1">
+            <ul class="pe-1" id="ul-section">
+
+                @foreach (SectionViewModel sec in Model)
+                {
+                    <li class="d-flex justify-content-between li-section" data-id="@sec.SectionId">
+                        <a class="d-flex align-items-center">
+                            <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
+                            <span class="sectionName">@sec.Name</span>
+                        </a>
+                        <div class="EditDeleteSection">
+                            <button class="btn p-0 pe-1 editSectionBtn" data-bs-toggle="modal"
+                                data-bs-target="#addSectionModal" data-id="@sec.SectionId">
+                                <img src="~/images/icons/edit.svg" alt="" />
+                            </button>
+                            <button class="btn p-0 pe-1 deleteSectionBtn" data-bs-toggle="modal"
+                                data-bs-target="#deleteSectionModal" data-id="@sec.SectionId">
+                                <img src="~/images/icons/delete.svg" alt="">
+                            </button>
+                        </div>
+                    </li>
+                }
+
+            </ul>
+        </div>
+    </div>
+    <!----------------------------------------------------- Section ends  ------------------------------------------------------->
+
+    <!----------------------------------------------------- Table starts ------------------------------------------------------>
+    <div class="col pt-2 bg-white" id="tables-Content">
+        <div class="fs-5 fw-bold blue-text">
+            Tables
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <div class="input-group w-25 me-2">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTable">
+                <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
+                </button>
+            </div>
+            <button class="btn border me-2" id="tableMassDeleteIcon" data-bs-toggle="modal"
+                data-bs-target="#massDeleteTableModal">
+                <img src="~/images/icons/delete.svg" alt="">
+            </button>
+            <button class="btn btn-blue me-2 newTableBtn" id="addTableBtn" data-bs-toggle="modal"
+                data-bs-target="#addTableModal">
+                + New Table
+            </button>
+        </div>
+
+        <div id="tableOuter">
+            <!-- Tables Partial View -->
+        </div>
+
+    </div>
+    <!----------------------------------------------------- Table ends ------------------------------------------------------->
+
+</div>
+
+<!--------------------------------------Modals------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------->
+
+<!-- Modal Add/Edit Section starts -->
+<div class="modal fade" id="addSectionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" id="addSection">
+            <!-- Add Section Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Add/Edit Section ends -->
+
+<!-- Modal Delete Section starts-->
+<div class="modal fade" id="deleteSectionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <img src="~/images/icons/warning.svg" alt="" width="50px">
+                <span>Are you sure you want to delete this Section?</span>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" id="confirmDeleteSection" class="btn btn-blue btn-modal"
+                    data-bs-dismiss="modal">YES</button>
+                <button type="button" class="btn btn-white btn-modal">NO</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Delete Section ends-->
+
+
+@section Scripts {
+
+    @* Table List Pagination Partial View Ajax *@
+    <script>
+
+        let currentSectionId;
+
+        $(document).ready(function () {
+            currentSectionId = $("#ul-section>li:first").data("id");
+            $("#ul-section>li:first>a").addClass("blue");
+            TablesPaginationAjax(1); // Load users on page load
+        });
+
+        $(document).on("click", ".li-section>a", function () {
+            currentSectionId = $(this).parent().data("id");
+            $(".li-section").each(function () {
+                $(this).children().removeClass("blue");
+            });
+            $(this).addClass("blue");
+
+            TablesPaginationAjax(1);
+        });
+
+        $(document).on("change", "#tablesPerPage", function () {
+            TablesPaginationAjax(1); // Reload data with new page size
+        });
+
+        $(document).on("input", "#searchTable", function () {
+            TablesPaginationAjax(1); // Reload after serach query
+        });
+
+        function TablesPaginationAjax(pageNumber) {
+            let pageSize = $("#tablesPerPage").val() || 5; // Default to 5 if no value selected
+
+            let searchQuery = $("#searchTable").val();
+            if (searchQuery == null) {
+                searchQuery = ""
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetTablesList", "TableSection")',
+                data: {
+                    'sectionId': currentSectionId,
+                    'search': searchQuery,
+                    'pageSize': pageSize,
+                    'pageNumber': pageNumber
+                },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#tableOuter").html(data);
+                    $("#tablesPerPage").val(pageSize); // Reapply selected value after reload
+                },
+                error: function (data) {
+                    alert("No Table Found");
+                    $("#tableOuter").html('An error has occurred');
+                }
+            });
+
+        }
+    </script>
+
+    @* Showing section edit/delete icon on hovering *@
+    <script>
+        $(".li-section").mouseover(function () {
+            $(this).children("div.EditDeleteSection").css("visibility", "visible");
+        });
+        $(".li-section").mouseout(function () {
+            $(this).children("div.EditDeleteSection").css("visibility", "hidden");
+        });
+    </script>
+
+    @* Add/Update Section Modal *@
+    <script>
+        $(document).on("click", "#addSectionBtn", function () {
+            GetSection(0);
+        });
+
+        $(document).on("click", ".editSectionBtn", function () {
+            GetSection($(this).data("id"));
+        });
+
+        function GetSection(id) {
+            $.ajax({
+                url: '@Url.Action("GetSectionModal", "TableSection")',
+                type: "GET",
+                data: { sectionId: id },
+                dataType: "html",
+                success: function (data) {
+                    $("#addSection").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Section Found");
+                }
+            })
+        }
+    </script>
+
+    @* Add/Update Section Form Submit *@
+    <script>
+        $(document).on("submit", "#SaveSectionForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (data) {
+                    $("#addEditItem").hide;
+                    toastr.success("Section Added successfully!");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
+    @* Delete Section *@
+    <script>
+        let deleteSectionId;
+        $(".deleteSectionBtn").click(function () {
+            deleteSectionId = $(this).data("id");
+        });
+
+        $("#confirmDeleteSection").click(function () {
+            $.ajax({
+                url: '@Url.Action("DeleteSection", "TableSection")',
+                type: "GET",
+                data: { sectionId: deleteSectionId },
+                success: function (response) {
+                    location.reload()
+                },
+                error: function () {
+                    console.log("error input deleting user");
+                }
+            });
+        });
+    </script>
+
+    @* Add/Update Table *@
+    <script>
+        $(document).on("click", "#addTableBtn", function () {
+            GetTable(0);
+        });
+
+        $(document).on("click", ".editTableBtn", function () {
+            GetTable($(this).data("id"));
+        });
+
+        function GetTable(id) {
+            console.log("Inside Table function");
+            $.ajax({
+                url: '@Url.Action("GetTableModal", "TableSection")',
+                type: "GET",
+                data: { tableId: id },
+                dataType: "html",
+                success: function (data) {
+                    $("#addTable").html(data);
+                    $("#selectSection").val(currentSectionId);
+                    $("#sectionId").val(currentSectionId);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Table Found");
+                }
+            })
+        }
+    </script>
+
+    @* Add/Update Table Form Submit *@
+    <script>
+        $(document).on("submit", "#SaveTableForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (data) {
+                    $("#addTableModal").hide;
+                    toastr.success("Table Added successfully!");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
+    @* Delete Table *@
+    <script>
+        let deleteTableId;
+        $(document).on("click",".deleteTableBtn", function () {
+            deleteTableId = $(this).data("id");
+            console.log("deleteTableId is",deleteTableId);
+        });
+
+        $(document).on("click","#confirmDeleteTable", function () {
+            console.log("confirm deleteTableId is",deleteTableId);
+            $.ajax({
+                url: '@Url.Action("DeleteTable", "TableSection")',
+                type: "GET",
+                data: { tableId: deleteTableId },
+                success: function (response) {
+                    location.reload()
+                },
+                error: function () {
+                    console.log("error input deleting table");
+                }
+            });
+        });
+    </script>
+
+
+
+
+}

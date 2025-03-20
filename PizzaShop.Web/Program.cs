@@ -51,10 +51,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 builder.Services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
 
-//CategoryItem service
+//Menu service
 builder.Services.AddScoped<ICategoryItemService, CategoryItemService>();
 builder.Services.AddScoped<IModifierService, ModifierService>();
 
+//Table and Section
+builder.Services.AddScoped<ITableSectionService, TableSectionService>();
 
 //Session 
 builder.Services.AddSession(options =>

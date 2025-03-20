@@ -5,17 +5,21 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PizzaShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
 
 </head>
+
 <body class="bg-grey vh-100">
 
     <div class="h-100">
@@ -27,36 +31,45 @@
                         <img src="~/images/icons/menu-bar.svg" alt="Menu Bar" class="" height="25px">
                     </button>
                     <div class="pizzashop-text d-flex align-items-center pe-3 py-2">
-                        <img class="pe-1" src="~/images/logos/pizzashop_logo.png" alt="pizza shop logo" width="60x"> 
+                        <img class="pe-1" src="~/images/logos/pizzashop_logo.png" alt="pizza shop logo" width="60x">
                         <span>PIZZASHOP</span>
                     </div>
-                        
+
                 </div>
 
                 <div class="btn-group">
                     <a type="button" class="btn " data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src= @(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") class="rounded-circle" alt="profile" height="35px" width="35px">
+                        <img src=@(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png")
+                            class="rounded-circle" alt="profile" height="35px" width="35px">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg-end">
                         <li class="mb-2 ms-3 d-flex align-items-center">
-                            <img class="me-2 rounded-circle" src= @(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") alt="" height="30px" width="30px">
+                            <img class="me-2 rounded-circle" src=@(profileImg != null ? profileImg :
+                                "~/images/Default_pfp.svg.png") alt = "" height = "30px" width = "30px" >
                             <span>@userName</span>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" asp-action="MyProfile" asp-controller="Profile">
-                                <img class="me-2 myprofile-icons" src="~/images/icons/person-circle.svg" alt="" height="24px">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" asp-action="MyProfile"
+                                asp-controller="Profile">
+                                <img class="me-2 myprofile-icons" src="~/images/icons/person-circle.svg" alt=""
+                                    height="24px">
                                 <span>My Profile</span>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" asp-action="ChangePassword" asp-controller="Profile">
-                                <img class="me-2 myprofile-icons" src="~/images/icons/change-password.svg" alt="" height="20px">
+                            <a class="dropdown-item d-flex align-items-center" asp-action="ChangePassword"
+                                asp-controller="Profile">
+                                <img class="me-2 myprofile-icons" src="~/images/icons/change-password.svg" alt=""
+                                    height="20px">
                                 <span>Change Password</span>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#LogoutModal">
+                            <a class="dropdown-item d-flex align-items-center" data-bs-toggle="modal"
+                                data-bs-target="#LogoutModal">
                                 <img class="me-2 myprofile-icons" src="~/images/icons/logout.svg" alt="" height="20px">
                                 <span>Logout</span>
                             </a>
@@ -68,26 +81,41 @@
         </nav>
         <!-- Navbar ends -->
 
-        <div class="container-fluid bg-grey below-navbar h-100"> 
+        <div class="container-fluid bg-grey below-navbar h-100">
             <div class="row h-100">
 
                 <!-- Sidebar starts-->
                 <div class="sidebar col-2 px-0" id="sidebar">
                     <!--Navigation Pane  -->
                     <div class="d-flex flex-column">
-                        <a asp-action="Dashboard" asp-controller="Profile" class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "side-dash" : "")">
-                            <img src="~/images/navigation/dashboard.svg" alt="" class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "blue" : "")"> Dashboard 
+                        <a asp-action="Dashboard" asp-controller="Profile"
+                            class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "side-dash" : "")">
+                            <img src="~/images/navigation/dashboard.svg" alt=""
+                                class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "blue" : "")">
+                            Dashboard
                         </a>
-                        <a asp-action="Index" asp-controller="ManageUsers" class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")">
-                            <img src="~/images/navigation/user.svg" alt="" class=" @((ViewData["sidebar-active"] as string) == "Users" ? "blue" : "")"> Users 
+                        <a asp-action="Index" asp-controller="ManageUsers"
+                            class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")">
+                            <img src="~/images/navigation/user.svg" alt=""
+                                class=" @((ViewData["sidebar-active"] as string) == "Users" ? "blue" : "")"> Users
                         </a>
-                        <a asp-action="Role" asp-controller="RolePermission" class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash" : "")">
-                            <img src="~/images/navigation/role.svg" alt="" class=" @((ViewData["sidebar-active"] as string) == "RolePermission" ? "blue" : "")"> Roles and Permissions
+                        <a asp-action="Role" asp-controller="RolePermission"
+                            class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash" : "")">
+                            <img src="~/images/navigation/role.svg" alt=""
+                                class=" @((ViewData["sidebar-active"] as string) == "RolePermission" ? "blue" : "")">
+                            Roles and Permissions
                         </a>
-                        <a asp-action="Index" asp-controller="Menu" class="@((ViewData["sidebar-active"] as string) == "Menu" ? "side-dash" : "")">
-                            <img src="~/images/navigation/menu.png" alt="" height="20px" class=" @((ViewData["sidebar-active"] as string) == "Menu" ? "blue" : "")"> Menu 
+                        <a asp-action="Index" asp-controller="Menu"
+                            class="@((ViewData["sidebar-active"] as string) == "Menu" ? "side-dash" : "")">
+                            <img src="~/images/navigation/menu.png" alt="" height="20px"
+                                class=" @((ViewData["sidebar-active"] as string) == "Menu" ? "blue" : "")"> Menu
                         </a>
-                        <a href="#"><img src="~/images/navigation/table.svg" alt=""> Tables and Sections </a>
+                        <a asp-action="Index" asp-controller="TableSection"
+                            class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "side-dash" : "")">
+                            <img src="~/images/navigation/table.svg" alt=""
+                                class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "blue" : "")">
+                            Tables and Sections
+                        </a>
                         <a href="#"><img src="~/images/navigation/taxes.svg" alt=""> Taxes and Fees </a>
                         <a href="#"><img src="~/images/navigation/orders.svg" alt=""> Orders </a>
                         <a href="#"><img src="~/images/navigation/customer.svg" alt=""> Customers </a>
@@ -97,7 +125,7 @@
 
                 <!-- Main content starts-->
                 <div class="main-content col px-0">
-                    
+
                     <!-- User content starts -->
                     <div class=" px-3 px-md-4 px-lg-5 py-2">
                         <main role="main" class="">
@@ -109,32 +137,35 @@
                 <!-- User Content ends -->
 
                 <!-- Logout Modal starts here -->
-                <div class="modal fade" id="LogoutModal" data-bs-backdrop="LogoutModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal fade" id="LogoutModal" data-bs-backdrop="LogoutModal" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="LogoutLabel">Logout</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body d-flex flex-column justify-content-center align-items-center">
                                 <img src="~/images/icons/warning.svg" alt="" width="50px">
-                                <span>Are you sure you want to logout?</span> 
+                                <span>Are you sure you want to logout?</span>
                             </div>
                             <div class="modal-footer d-flex justify-content-center">
-                                <a asp-action="Logout" asp-controller="Profile" type="button" class="btn btn-blue" >Yes</a>
+                                <a asp-action="Logout" asp-controller="Profile" type="button"
+                                    class="btn btn-blue">Yes</a>
                                 <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </div>
-                <!-- Logout Modal ends here  -->      
+                <!-- Logout Modal ends here  -->
             </div>
             <!-- Main content ends -->
-        </div> 
+        </div>
     </div>
-    
 
-    
+
+
 
     @* <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> *@
     @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
@@ -146,7 +177,5 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-</html>
 
-    
-    
+</html>

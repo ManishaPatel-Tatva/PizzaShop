@@ -1,0 +1,58 @@
+@using PizzaShop.Entity.ViewModels
+@model TableViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="secModalToggleLabel">Add Table</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form asp-action="SaveTable" asp-controller="TableSection" id="SaveTableForm" method="Post">
+    <div class="modal-body">
+        <div class="form addTable-form row">
+
+            <input asp-for="TableId" type="text" class="form-control" id="tableId" hidden>
+
+            <div class="col-12 col-sm-6 form-floating mb-3">
+                <input asp-for="Name" type="text" class="form-control" placeholder="" id="tableName">
+                <label for="tableName">Name*</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <input asp-for="SectionId" type="text" class="form-control" id="sectionId" hidden>
+
+            <div class="col-12 col-sm-6 form-floating mb-3">
+                <select asp-for="@Model.SectionId" class="form-select" aria-label="" id="selectSection" disabled>
+                    <option selected value="">Select Section </option>
+                    @foreach (var sec in Model.SectionList)
+                    {
+                        <option value="@sec.Id"> @sec.Name</option>
+                    }
+                </select>
+                <label for="selectSection">Sections</label>
+            </div>
+
+            <div class="col-12 col-sm-6 form-floating mb-3">
+                <input asp-for="Capacity" type="text" class="form-control" placeholder="" id="secCapacity">
+                <label for="secCapacity">Capacity*</label>
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 col-sm-6 form-floating mb-3">
+                <select asp-for="@Model.StatusId" class="form-select" aria-label="" id="selectStatus" disabled>
+                    <option value="">Select Status</option>
+                    @foreach (var status in Model.StatusList)
+                    {
+                        <option value="@status.Id"> @status.Name</option>
+                    }
+                </select>
+                <label for="selectStatus">Status</label>
+            </div>
+
+
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue btn-modal" id="saveTable">Save</button>
+        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>
