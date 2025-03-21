@@ -14,14 +14,15 @@ public class ModifierService : IModifierService
     private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
     private readonly IGenericRepository<ModifierMapping> _modifierMappingRepository;
     private readonly IGenericRepository<User> _userRepository;
+    private readonly IGenericRepository<Unit> _unitRepository;
 
-    public ModifierService(IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<User> userRepository, IGenericRepository<Modifier> modifierRepository, IGenericRepository<ModifierMapping> modifierMappingRepository)
+    public ModifierService(IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<User> userRepository, IGenericRepository<Modifier> modifierRepository, IGenericRepository<ModifierMapping> modifierMappingRepository, IGenericRepository<Unit> unitRepository)
     {
         _modifierRepository = modifierRepository;
         _modifierGroupRepository = modifierGroupRepository;
         _modifierMappingRepository = modifierMappingRepository;
         _userRepository = userRepository;
-
+        _unitRepository = unitRepository;
     }
 
     #region Modifier Group
@@ -57,7 +58,20 @@ public class ModifierService : IModifierService
         {
             ModifierGroupId = modifierGroup.Id,
             Name = modifierGroup.Name,
-            Description = modifierGroup.Description
+            Description = modifierGroup.Description,
+
+            Modifiers = _modifierMappingRepository.GetByConditionInclude(
+                mm => mm.Modifiergroupid == modifierGroupId && !mm.IsDeleted,
+                includes: new List<Expression<Func<ModifierMapping, object>>>
+                {
+                    m => m.Modifier
+                }
+            ).Result
+            .Select(i => new ModifierInfoViewModel
+            {
+                ModifierId = i.Modifierid,
+                ModifierName = i.Modifier.Name
+            }).ToList()
         };
 
         return model;
@@ -65,7 +79,8 @@ public class ModifierService : IModifierService
     #endregion Read Modifier Groups
 
     #region Add Modifier Groups
-
+    /*-----------------------------------------------------------Save Modifier Group---------------------------------------------------------------------------------
+   ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<bool> SaveModifierGroup(ModifierGroupViewModel model, string createrEmail)
     {
         User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
@@ -86,6 +101,8 @@ public class ModifierService : IModifierService
 
     }
 
+    /*-----------------------------------------------------------Add Modifier Groups---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<bool> AddModifierGroup(ModifierGroupViewModel model, long createrId)
     {
         ModifierGroup modifierGroup = new ModifierGroup()
@@ -95,11 +112,48 @@ public class ModifierService : IModifierService
             CreatedBy = createrId
         };
 
-        return await _modifierGroupRepository.AddAsync(modifierGroup);
+        long modifierGroupId = await _modifierGroupRepository.AddAsyncReturnId(modifierGroup);
+
+        if (modifierGroupId < 1)
+        {
+            return false;
+        }
+
+        if (modifierGroupId > 0)
+        {
+            foreach (long modifierId in model.ModifierIdList)
+            {
+                bool success = await AddModifierMapping(modifierGroupId, modifierId, createrId);
+                if (!success)
+                    return false;
+            }
+        }
+        return true;
+
     }
+
+    /*-----------------------------------------------------------Add Modifier Mapping in Modifier Group---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<bool> AddModifierMapping(long modifierGroupId, long modifierId, long createrId)
+    {
+        bool success;
+
+        ModifierMapping mapping = new ModifierMapping()
+        {
+            Modifierid = modifierId,
+            Modifiergroupid = modifierGroupId,
+            CreatedBy = createrId
+        };
+
+        return await _modifierMappingRepository.AddAsync(mapping);
+    }
+
+
     #endregion Add Modifier Groups
 
     #region Update Modifier Groups
+    /*-----------------------------------------------------------Update Modifier Groups---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<bool> UpdateModifierGroup(ModifierGroupViewModel model, long createrId)
     {
         ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(model.ModifierGroupId);
@@ -109,7 +163,53 @@ public class ModifierService : IModifierService
         modifierGroup.UpdatedBy = createrId;
         modifierGroup.UpdatedAt = DateTime.Now;
 
-        return await _modifierGroupRepository.UpdateAsync(modifierGroup);
+        bool success = await _modifierGroupRepository.UpdateAsync(modifierGroup);
+        if (!success)
+            return false;
+
+        List<long> modifierList = model.Modifiers.Select(m => m.ModifierId).ToList();
+
+        return await UpdateModifierMapping(model.ModifierGroupId, modifierList, createrId);
+    }
+
+    /*-----------------------------------------------------------Update Modifier Mapping in Modifier Group---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<bool> UpdateModifierMapping(long modifierGroupId, List<long> modifierList, long createrId)
+    {
+        List<long> existingModifiersList = _modifierMappingRepository
+        .GetByCondition(mm => mm.Modifiergroupid == modifierGroupId && !mm.IsDeleted)
+        .Select(m => m.Modifierid)
+        .ToList();
+
+
+        List<long> removeModifiers = existingModifiersList.Except(modifierList).ToList();
+
+        foreach (long modifierId in removeModifiers)
+        {
+            ModifierMapping mapping = await _modifierMappingRepository
+            .GetByStringAsync(mm => mm.Modifiergroupid == modifierGroupId && mm.Modifierid == modifierId && !mm.IsDeleted);
+
+            mapping.IsDeleted = true;
+            mapping.UpdatedBy = createrId;
+            mapping.UpdatedAt = DateTime.Now;
+
+            bool success = await _modifierMappingRepository.UpdateAsync(mapping);
+            if (!success)
+                return false;
+        }
+
+        foreach (long modifierId in modifierList)
+        {
+            ModifierMapping existingModifier = await _modifierMappingRepository.GetByStringAsync(mg => mg.Modifiergroupid == modifierGroupId && mg.Modifierid == modifierId && mg.IsDeleted == false);
+            if (existingModifier == null)
+            {
+                bool success = await AddModifierMapping(modifierGroupId, modifierId, createrId);
+                if (!success)
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     #endregion Update Modifier Groups
@@ -117,13 +217,31 @@ public class ModifierService : IModifierService
     #region Delete Modifier Group
     /*----------------------------------------------------------------Delete Modifier Group---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> DeleteModifierGroup(long modifierGroupId)
+    public async Task<bool> DeleteModifierGroup(long modifierGroupId, string createrEmail)
     {
+        User user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
         ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
-
         modifierGroup.IsDeleted = true;
+        bool success = await _modifierGroupRepository.UpdateAsync(modifierGroup);
 
-        return await _modifierGroupRepository.UpdateAsync(modifierGroup);
+        if (!success)
+            return false;
+
+        List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == modifierGroupId).ToList();
+
+        foreach (ModifierMapping mapping in modifierMappings)
+        {
+            mapping.IsDeleted = true;
+            mapping.UpdatedBy = user.Id;
+            mapping.UpdatedAt = DateTime.Now;
+            success = await _modifierMappingRepository.UpdateAsync(mapping);
+            if (!success)
+                return false;
+        }
+
+        return success;
+
+
     }
 
     #endregion Delete Modifier Group
@@ -209,21 +327,25 @@ public class ModifierService : IModifierService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ModifierViewModel> GetModifier(long modifierId)
     {
+        ModifierViewModel model = new ModifierViewModel
+        {
+            ModifierGroups = _modifierGroupRepository.GetAll().ToList(),
+            Units = _unitRepository.GetAll().ToList()
+        };
+
         if (modifierId == 0)
         {
-            return new ModifierViewModel();
+            return model;
         }
 
         Modifier modifier = await _modifierRepository.GetByIdAsync(modifierId);
 
-        ModifierViewModel model = new ModifierViewModel
-        {
-            ModifierName = modifier.Name,
-            Rate = modifier.Rate,
-            Quantity = modifier.Quantity,
-            UnitId = modifier.UnitId,
-            Description = modifier.Description
-        };
+        // model.ModifierGroupId = _modifierMappingRepository.GetByCondition(mm => mm.Modifierid == modifierId).Select(m => m.Modifierid);
+        model.ModifierName = modifier.Name;
+        model.Rate = modifier.Rate;
+        model.Quantity = modifier.Quantity;
+        model.UnitId = modifier.UnitId;
+        model.Description = modifier.Description;
 
         return model;
     }
@@ -261,6 +383,7 @@ public class ModifierService : IModifierService
             Rate = model.Rate,
             Quantity = model.Quantity,
             UnitId = model.UnitId,
+            FoodTypeId = 2,
             Description = model.Description,
             CreatedBy = createrId
         };
@@ -294,27 +417,38 @@ public class ModifierService : IModifierService
 
     /*----------------------------------------------------------------Delete Modifier Group---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> DeleteModifier(long modifierId)
+    public async Task<bool> DeleteModifier(long modifierId, long modifierGroupId, string createrEmail)
     {
-        Modifier modifier = await _modifierRepository.GetByIdAsync(modifierId);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        if (user == null)
+            return false;
 
-        modifier.IsDeleted = true;
+        ModifierMapping mapping = await _modifierMappingRepository.GetByStringAsync(mm => mm.Modifierid == modifierId && mm.Modifiergroupid == modifierGroupId);
+        if (mapping == null)
+            return false;
 
-        return await _modifierRepository.UpdateAsync(modifier);
+        mapping.IsDeleted = true;
+        mapping.UpdatedBy = user.Id;
+        mapping.UpdatedAt = DateTime.Now;
+
+        return await _modifierMappingRepository.UpdateAsync(mapping);
     }
 
-    public async Task<bool> MassDeleteModifiers(List<long> modifierIdList)
+    public async Task<bool> MassDeleteModifiers(List<long> modifierIdList, long modifierGroupId, string createrEmail)
     {
-        bool success;
-        foreach (long id in modifierIdList)
-        {
-            Modifier modifier = await _modifierRepository.GetByIdAsync(id);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
 
-            if (modifier == null)
+        foreach (long modifierId in modifierIdList)
+        {
+            ModifierMapping mapping = await _modifierMappingRepository.GetByStringAsync(mm => mm.Modifierid == modifierId && mm.Modifiergroupid == modifierGroupId);
+
+            if (mapping == null)
                 return false;
 
-            modifier.IsDeleted = true;
-            success = await _modifierRepository.UpdateAsync(modifier);
+            mapping.IsDeleted = true;
+            mapping.UpdatedBy = user.Id;
+            mapping.UpdatedAt = DateTime.Now;
+            bool success = await _modifierMappingRepository.UpdateAsync(mapping);
             if (!success)
                 return false;
         }

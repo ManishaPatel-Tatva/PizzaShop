@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "G1O4A4fjoQjSSCbKhzYyFfoE3kHRqwCJW87ALla7yGUl3DARiDF4hvWz0Ccf/Mp8u7rnYpjlUbwn6xlGcP1uTA==",
+  "dgSpecHash": "928HJqlPuIPo08f7A7HjZUXbkxGzwQWSxNwI4Ry83KIymIi3qTg/YS4AsL3Zufzeop6zNyV2qRTtvE/iCiX+Iw==",
   "success": true,
-  "projectFilePath": "c:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj",
+  "projectFilePath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Entity\\PizzaShop.Entity.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\pci47\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http\\2.3.0\\microsoft.aspnetcore.http.2.3.0.nupkg.sha512",

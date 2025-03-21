@@ -28,7 +28,7 @@
                             data-bs-target="#addModifierGroup" data-id="@mg.ModifierGroupId">
                             <img src="~/images/icons/edit.svg" alt="" />
                         </button>
-                        <button class="btn p-0 pe-1 deleteModifierGroupBtn" data-bs-toggle="modal"
+                        <button class="btn p-0 pe-1 deleteMgBtn" data-bs-toggle="modal"
                             data-bs-target="#deleteModifierGroupModal" data-id="@mg.ModifierGroupId">
                             <img src="~/images/icons/delete.svg" alt="">
                         </button>
@@ -54,8 +54,8 @@
                 <img src="~/images/icons/search.svg" alt="">
             </button>
         </div>
-        <button class="btn border me-2" id="modifierMassDeleteIcon" data-bs-toggle="modal"
-            data-bs-target="#massDeleteModifier">
+        <button class="btn border me-2" id="modifierMassDeleteBtn" data-bs-toggle="modal"
+            data-bs-target="#massDeleteModifierModal">
             <img src="~/images/icons/delete.svg" alt="">
         </button>
         <button class="btn btn-blue me-2 newModifierBtn" id="addModifierBtn" data-bs-toggle="modal"
@@ -114,7 +114,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-blue btn-modal" data-bs-target="#addModifierGroup"
-                        data-bs-toggle="modal">Add</button>
+                        data-bs-toggle="modal" id="addModifierToGroup">Add</button>
                     <button type="button" class="btn btn-white btn-modal" data-bs-target="#addModifierGroup"
                         data-bs-toggle="modal" data-bs-dismiss="modal">Cancel</button>
                 </div>
@@ -148,7 +148,7 @@
                 <span>Are you sure you want to delete this modifier group?</span>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-                <button id="DeleteModifier" type="button" class="btn btn-blue" data-bs-dismiss="modal">Yes</button>
+                <button id="confirmDeleteMg" type="button" class="btn btn-blue" data-bs-dismiss="modal">Yes</button>
                 <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
             </div>
         </div>

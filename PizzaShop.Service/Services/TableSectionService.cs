@@ -216,6 +216,7 @@ public class TableSectionService : ITableSectionService
             SectionId = model.SectionId,
             Capacity = model.Capacity,
             StatusId = model.StatusId,
+            
             CreatedBy = createrId
         };
 

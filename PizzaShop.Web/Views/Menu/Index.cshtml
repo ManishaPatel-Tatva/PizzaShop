@@ -618,6 +618,11 @@
                 dataType: "html",
                 success: function (data) {
                     $("#addModifierGroupModal").html(data);
+                    selectedModifierList = [];
+                    $(".spanModifier").each(function(){
+                        selectedModifierList.push({ id: $(this).data("id"), name: $(this).data("name") });
+                        
+                    });
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -631,6 +636,13 @@
     <script>
         $(document).on("submit", "#SaveModifierGroupForm", function (e) {
             e.preventDefault();
+
+            let modifierList = [];
+            $(".spanModifier").each(function(){
+                modifierList.push($(this).data("id"));
+            });
+
+            $("#modifierList").val(JSON.stringify(modifierList));
 
             $.ajax({
                 url: $(this).attr("action"),
@@ -666,10 +678,9 @@
         });
 
         function existingModifiers(pageNumber) {
-            console.log("inside existingModifiers function");
             let pageSize = $("#existingModifiersPerPage").val() || 5; // Default to 5 if no value selected
 
-            let searchQuery = $("#searchModifier").val();
+            let searchQuery = $("#searchExistingModifier").val();
             if (searchQuery == null) {
                 searchQuery = ""
             }
@@ -686,6 +697,7 @@
                 success: function (data) {
                     $("#existingModifiersContent").html(data);
                     $("#existingModifiersPerPage").val(pageSize); // Reapply selected value after reload
+                    checkSelectedModifier();
                 },
                 error: function () {
                     alert("No Modifier Found");
@@ -696,9 +708,109 @@
         }
     </script>
 
+    @* Intermediate Checkbox For Existing Modifiers*@
+    <script>
+
+        $(document).on("change", "#existingModifierParentCb", function () {
+            $(".existingModifierChildCb").each(function () {
+                $(this).prop("checked", $("#existingModifierParentCb").prop("checked")).trigger("change");
+            });
+            masterModifierDeleteBtn();
+        });
+
+        $(document).on("change", ".existingModifierChildCb", function () {
+            let totalChildCheckBox = $(".existingModifierChildCb").length;
+            let checkedChildCheckBox = $(".existingModifierChildCb:checked").length;
+            if (checkedChildCheckBox === totalChildCheckBox) {
+                $("#existingModifierParentCb").prop("indeterminate", false).prop("checked", true);
+            }
+            else if (checkedChildCheckBox === 0) {
+                $("#existingModifierParentCb").prop("indeterminate", false).prop("checked", false);
+            }
+            else {
+                $("#existingModifierParentCb").prop("indeterminate", true);
+            }
+            toggleMasterDeleteBtn();
+        });
+
+        //For mass selection of Modifiers in modifier group
+        let selectedModifierList = [];
+        $(document).on("change", ".existingModifierChildCb", function () {
+            let modifierId = $(this).data("id");
+            let modifierName = $(this).data("name");
+
+            if (!selectedModifierList.some(i => i.id == modifierId)) {
+                selectedModifierList.push({ id: modifierId, name: modifierName });
+            }
+            else {
+                selectedModifierList = selectedModifierList.filter(i => i.id !== modifierId)
+            }
+        });
+
+        //Add Selected Modifier
+        $(document).on("click", "#addModifierToGroup", function () {
+            $("#selectMod").empty();
+            $.each(selectedModifierList, function (index, modifier) {
+                $("#selectMod").append(` 
+                    <span class="spanModifier d-flex align-items-center border rounded-5 px-2" data-id="${modifier.id}" data-name="${modifier.name}">
+                        <span class="p-1 fw-semibold text-grey" data-id="${modifier.id}">${modifier.name}</span>
+                        <button type="button" class="btn-close fs-6" aria-label="Close" data-id="${modifier.id}"></button>
+                    </span>
+                `)
+            })
+        })
+
+        //checked selected modifiers
+        function checkSelectedModifier(){
+            $(".existingModifierChildCb").each(function(){
+                if(selectedModifierList.some(i => i.id === $(this).data("id")))
+                {
+                    $(this).prop("checked",true);
+                }
+            })
+        }
+
+        //remove selected modifier
+        $(document).on("click",".deselectModifier",function(){
+            let id = $(this).data("id");
+            selectedModifierList = selectedModifierList.filter(i => i.id !== id);
+            $("span").remove(".spanModifier[data-id = '"+id+"']");
+        })
+
+
+    </script>
+
+    @* Delete Modifier Group *@
+    <script>
+        let deleteMgId;
+        $(document).on("click", ".deleteMgBtn", function () {
+            deleteMgId = $(this).data("id");
+        });
+
+        $(document).on("click", "#confirmDeleteMg", function () {
+            $.ajax({
+                url: '@Url.Action("DeleteModifierGroup", "Menu")',
+                type: "POST",
+                data: { modifierGroupId: deleteMgId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        getModifierTab();
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Modifier group not deleted!");
+                }
+            });
+        });
+    </script>
+
     @* Modifiers List Pagination Partial View Ajax *@
     <script>
-        let currentMgId = 5;
+        let currentMgId;
         $(document).on("click", ".li-modifierGroup>a", function () {
             currentMgId = $(this).parent().data("id");
             $(".li-modifierGroup").each(function () {
@@ -776,4 +888,132 @@
             })
         }
     </script>
+
+    @* Add/Update Modifier Form Submit *@
+    <script>
+        $(document).on("submit", "#SaveModifierForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (data) {
+                    $("#addModifier").hide;
+                    toastr.success("Modifier Added successfully!");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
+    @* Intermediate Checkbox For Modifiers*@
+    <script>
+
+        $(document).ready(function () {
+            $("#modifierMassDeleteBtn").prop("disabled", true);
+        });
+
+        function masterModifierDeleteBtn() {
+            if ($(".modifierChildCheckbox:checked").length > 0) {
+                $("#modifierMassDeleteBtn").prop("disabled", false);
+            }
+            else {
+                $("#modifierMassDeleteBtn").prop("disabled", true);
+            }
+        }
+
+        $(document).on("change", "#modifierParentCheckbox", function () {
+            $(".modifierChildCheckbox").each(function () {
+                $(this).prop("checked", $("#modifierParentCheckbox").prop("checked"));
+            });
+            masterModifierDeleteBtn();
+        });
+
+        $(document).on("change", ".modifierChildCheckbox", function () {
+            let totalChildCheckBox = $(".modifierChildCheckbox").length;
+            let checkedChildCheckBox = $(".modifierChildCheckbox:checked").length;
+            if (checkedChildCheckBox === totalChildCheckBox) {
+                $("#modifierParentCheckbox").prop("indeterminate", false).prop("checked", true);
+            }
+            else if (checkedChildCheckBox === 0) {
+                $("#modifierParentCheckbox").prop("indeterminate", false).prop("checked", false);
+            }
+            else {
+                $("#modifierParentCheckbox").prop("indeterminate", true);
+            }
+            toggleMasterDeleteBtn();
+        });
+
+        //For mass delete of Modifiers
+        let deleteModifierIdList = [];
+        $(document).on("click", "#modifierMassDeleteBtn", function () {
+            $(".modifierChildCheckbox:checked").each(function () {
+                deleteModifierIdList.push($(this).data("id"));
+            });
+        });
+
+        $(document).on("click", "#confirmMassDeleteModifier", function () {
+            $.ajax({
+                url: '@Url.Action("MassDeleteModifiers", "Menu")',
+                type: "POST",
+                data: {
+                    'modifierIdList': deleteModifierIdList,
+                    'modifierGroupId': currentMgId,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        ModifiersPaginationAjax(1);
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Modifier not deleted!");
+                }
+            });
+        });
+
+    </script>
+
+    @* Delete Modifier  *@
+    <script>
+        let deleteModifierId;
+        $(document).on("click", ".deleteModifierBtn", function () {
+            deleteModifierId = $(this).data("id");
+            console.log("Modifier id is ", deleteModifierId);
+        });
+
+        $(document).on("click", "#confirmDeleteModifier", function () {
+            $.ajax({
+                url: '@Url.Action("DeleteModifier", "Menu")',
+                type: "POST",
+                data:
+                {
+                    'modifierId': deleteModifierId,
+                    'modifierGroupId': currentMgId
+                },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        ModifiersPaginationAjax(1);
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Modifier not deleted!");
+                }
+            });
+        });
+    </script>
+
 }

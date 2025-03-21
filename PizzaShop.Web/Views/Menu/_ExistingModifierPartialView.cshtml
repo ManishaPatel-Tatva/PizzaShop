@@ -7,7 +7,7 @@
         <thead>
             <tr>
                 <th scope="col">
-                    <input class="form-check-input me-2 " type="checkbox" value="" id="existingModifierParentCheckbox"> 
+                    <input class="form-check-input me-2 " type="checkbox" value="" id="existingModifierParentCb"> 
                     Name
                 </th>
                 <th scope="col">Unit</th>
@@ -20,7 +20,7 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" value="" id="" class="me-2 existingModifierChildCheckbox" data-id="@modifier.ModifierId">
+                        <input type="checkbox" class="existingModifierChildCb me-2" value="" id="" class="me-2 " data-id="@modifier.ModifierId" data-name="@modifier.ModifierName">
                         @modifier.ModifierName
                     </td>
                     <td>@modifier.UnitName</td>

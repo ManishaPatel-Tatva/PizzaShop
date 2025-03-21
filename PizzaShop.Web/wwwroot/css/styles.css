@@ -351,6 +351,11 @@ td{
     }
 }
 
+.selectMod .btn-close{
+    width: 0.5em;
+    height: 0.5em;
+}
+
 
 /* Modal */
 
