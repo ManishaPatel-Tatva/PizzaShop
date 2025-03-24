@@ -1,3 +1,4 @@
+@using PizzaShop.Entity.Models
 @using PizzaShop.Entity.ViewModels
 @model ModifierViewModel
 
@@ -10,16 +11,24 @@
         <div class="form addM-form row">
 
             <input asp-for="ModifierId" type="text" class="form-control" id="mId" hidden>
+            <input name="selectedMG" type="text" class="form-control" id="selectedMgList" hidden>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
-                <select asp-for="@Model.ModifierGroupId" class="form-select" aria-label="" id="selectModifierGroup">
-                    <option selected value="-1">Select Modifier Groups(s)</option>
-                    @foreach (var modifierGroup in Model.ModifierGroups)
-                    {
-                        <option value="@modifierGroup.Id"> @modifierGroup.Name</option>
-                    }
-                </select>
-                <label for="selectModifierGroup">Modifier Groups*</label>
+                <div class="dropdown h-100">
+                    <a class="btn dropdown-toggle border d-flex align-items-center h-100 w-100" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Select Modifier Groups(s)
+                    </a>
+                    <ul class="dropdown-menu w-100">
+                        @foreach (ModifierGroup modifierGroup in Model.ModifierGroups)
+                        {
+                            <li class="d-flex p-2">
+                                <input type="checkbox" value="" class="me-2 mgCheckbox" data-id="@modifierGroup.Id">
+                                <span class="">@modifierGroup.Name</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
@@ -41,15 +50,16 @@
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
 
-           <div class="col-12 col-sm-6 col-md-4 form-floating mb-3">
+            <div class="col-12 col-sm-6 col-md-4 form-floating mb-3">
                 <select asp-for="@Model.UnitId" class="form-select" aria-label="" id="mUnit">
-                    <option selected value="">Select a type</option>
+                    <option selected value="-1">Select a type</option>
                     @foreach (var unit in Model.Units)
                     {
                         <option value="@unit.Id"> @unit.Name</option>
                     }
                 </select>
                 <label for="mUnit">Unit*</label>
+                <span asp-validation-for="@Model.UnitId" class="text-danger"></span>
             </div>
 
             <div class="col-12 form-floating mb-3">

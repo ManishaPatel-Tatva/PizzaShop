@@ -12,6 +12,7 @@ public interface IModifierService
     Task<bool> AddModifierMapping(long modifierGroupId, long modifierId, long createrId);
     Task<bool> UpdateModifierGroup(ModifierGroupViewModel model, long createrId);
     Task<bool> UpdateModifierMapping(long modifierGroupId, List<long> modifierList, long createrId);
+    Task<bool> UpdateModifierGroupMapping(long modifierId, List<long> modifierGroupList, long createrId);
     Task<bool> DeleteModifierGroup(long modifierGroupId, string createrEmail);
     Task<ModifiersPaginationViewModel> GetPagedModifiers(long modifierGroupId, int pageSize, int pageNumber, string search);
     Task<ModifiersPaginationViewModel> GetAllModifiers(int pageSize, int pageNumber, string search);

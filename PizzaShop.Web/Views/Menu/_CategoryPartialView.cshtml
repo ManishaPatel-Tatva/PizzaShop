@@ -1,0 +1,36 @@
+@using PizzaShop.Entity.ViewModels
+@model CategoryViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="mgModalToggleLabel"> @(Model.CategoryId == 0 ? "Add New " : "Update") Category </h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<form asp-action="SaveCategory" asp-controller="Menu" id="SaveCategoryForm" method="Post">
+
+    <div class="modal-body">
+        <div class="form addCategoryform">
+
+            <input asp-for="CategoryId" type="text" class="form-control" id="categoryId" hidden>
+
+            <div class="form-floating mb-3">
+                <input asp-for="CategoryName" type="text" class="form-control" placeholder="" id="categoryName">
+                <label for="categoryName">Name*</label>
+                <span asp-validation-for="CategoryName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea asp-for="CategoryDesc" class="form-control" rows="1" placeholder="categoryDesc"></textarea>
+                <label for="categoryDesc">Description*</label>
+                <span asp-validation-for="CategoryDesc" class="text-danger"></span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue btn-modal" id="saveCategory">Save</button>
+        <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
+    </div>
+
+</form>

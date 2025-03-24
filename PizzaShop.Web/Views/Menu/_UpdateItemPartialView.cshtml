@@ -1,7 +1,8 @@
 @model PizzaShop.Entity.ViewModels.AddItemViewModel;
 
 <div class="modal-header">
-    <h3 class="modal-title fw-bold text-grey" id="staticBackdropLabel"> @(Model.ItemId == 0 ? "Add New " : "Update") Menu
+    <h3 class="modal-title fw-bold text-grey" id="staticBackdropLabel"> @(Model.ItemId == 0 ? "Add New " : "Update")
+        Menu
         Item</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
@@ -15,15 +16,17 @@
 
         <div class="modal-item col-12 col-md-8 row">
             <div class="col-12 col-sm-6 form-floating mb-3">
-                <select asp-for="@Model.CategoryId" class="form-select" aria-label="" id="Countries">
-                    <option selected value="">Select Category</option>
+                <select asp-for="@Model.CategoryId" class="form-select" aria-label="" id="categories">
+                    <option selected value="-1">Select Category</option>
                     @foreach (var category in Model.Categories)
                     {
                         <option value="@category.Id"> @category.Name</option>
                     }
                 </select>
-                <label for="countries">Categories*</label>
+                <label for="categories">Categories*</label>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
+
             <div class="col-12 col-sm-6 form-floating mb-3">
                 <input asp-for="@Model.Name" type="text" class="form-control" id="itemName">
                 <label for="itemName">Name*</label>
@@ -31,44 +34,50 @@
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <select asp-for="@Model.ItemTypeId" class="form-select" aria-label="" id="itemType">
-                    <option selected value="">Select a type</option>
+                    <option selected value="-1">Select a type</option>
                     @foreach (var type in Model.ItemTypes)
                     {
                         <option value="@type.Id"> @type.Name</option>
                     }
                 </select>
                 <label for="itemType">Item Type*</label>
+                <span asp-validation-for="ItemTypeId" class="text-danger"></span>
+
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <input asp-for="@Model.Rate" type="text" class="form-control" id="itemRate">
                 <label for="itemRate">Rate*</label>
-                <span asp-validation-for="Rate" class="text-danger"></span>
+                <span asp-validation-for="@Model.Rate" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <input asp-for="@Model.Quantity" type="text" class="form-control" id="itemQuantity">
                 <label for="itemQuantity">Quantity*</label>
-                <span asp-validation-for="Rate" class="text-danger"></span>
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <select asp-for="@Model.UnitId" class="form-select" aria-label="" id="itemUnit">
-                    <option selected value="">Select a type</option>
+                    <option selected value="-1">Select a type</option>
                     @foreach (var unit in Model.Units)
                     {
                         <option value="@unit.Id"> @unit.Name</option>
                     }
                 </select>
                 <label for="itemUnit">Unit*</label>
+                <span asp-validation-for="UnitId" class="text-danger"></span>
+
             </div>
             <div class="col-6 col-lg-3 form-check form-switch mb-3 p-3 d-flex align-items-center">
                 <input asp-for="Available" class="form-check-input m-0 fs-3" type="checkbox" role="switch"
                     id="Available">
                 <label class="form-check-label p-1" for="Available"> Available</label>
+                <span asp-validation-for="Available" class="text-danger"></span>
             </div>
 
             <div class="col-6 col-lg-3 form-check form-switch mb-3 p-3 d-flex align-items-center">
                 <input asp-for="DefaultTax" class="form-check-input m-0 fs-3" type="checkbox" role="switch"
                     id="DefaultTax">
                 <label class="form-check-label p-1" for="DefaultTax"> Default Tax</label>
+                <span asp-validation-for="DefaultTax" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <input asp-for="@Model.TaxPercentage" type="text" class="form-control" id="taxPercentage">
@@ -93,7 +102,7 @@
                     <div class="d-flex justify-content-center align-items-center mt-4">
                         <img src="~/images/icons/browse.svg" class="me-2" height="20px">
                         <span class="d-flex" id="showUploadImageName"> Drag and Drop or Browse Files</span>
-                        @* <span class="d-flex" id="showUploadImageName">@(!string.IsNullOrEmpty(Model.ItemImageUrl) ? Model.ItemImageUrl.Split('_')[1] : "Drag and Drop or Browse Files")</span> *@
+                        @* <span class="d-flex" id="showUploadImageName">@(!string.IsNullOrEmpty(Model.ItemImageUrl) ? Model.ItemImageUrl.Split('_')[1] : "Drag and Drop or Browse Files")</ span > *@
                     </div>
                 </label>
                 <span asp-validation-for="Image" class="text-danger"></span>
@@ -145,6 +154,7 @@
                                         <option value="@num">@num</option>
                                     }
                                 </select>
+                                <span asp-validation-for="@modifierGroup.MaxAllowed" class="text-danger"></span>
                             </div>
                             <div class="col-12">
                                 <ul>

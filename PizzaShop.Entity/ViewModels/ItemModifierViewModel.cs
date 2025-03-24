@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PizzaShop.Entity.ViewModels;
 
 public class ItemModifierViewModel

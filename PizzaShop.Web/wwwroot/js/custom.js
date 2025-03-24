@@ -1,3 +1,20 @@
+// Function to reinitialize validation for dynamically added elements
+function reinitializeValidation() {
+    $("form").each(function () {
+      $.validator.unobtrusive.parse($(this));
+    });
+  }
+  
+  // Call this function after any AJAX request that adds forms dynamically
+  $(document).ajaxComplete(function () {
+    reinitializeValidation();
+  });
+  
+  // Apply validation on input change globally
+  $(document).on("keyup change", "input:not([type=checkbox]):not([type=radio]), select, textarea", function () {
+    $(this).valid();
+  });
+
 function togglePassword(inputId, icon) {
     var inputField = document.getElementById(inputId);
     if (inputField.type === "password") {

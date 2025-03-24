@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <span class="fs-5 fw-bold blue-text">Modifier Group</span>
         <!-- Button trigger modal -->
-        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addModifierGroup"
+        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addMgModal"
             id="addModifierGroupBtn">
             <img src="~/images/icons/plus-square.svg" alt="" width="25px">
         </button>
@@ -25,7 +25,7 @@
                     </a>
                     <div class="EditDeleteModifierGroup">
                         <button class="btn p-0 pe-1 editModifierGroupBtn" data-bs-toggle="modal"
-                            data-bs-target="#addModifierGroup" data-id="@mg.ModifierGroupId">
+                            data-bs-target="#addMgModal" data-id="@mg.ModifierGroupId">
                             <img src="~/images/icons/edit.svg" alt="" />
                         </button>
                         <button class="btn p-0 pe-1 deleteMgBtn" data-bs-toggle="modal"
@@ -77,9 +77,9 @@
 ------------------------------------------------------------------------------------------------------------------------->
 
 <!-- Modal Add Modifier Group starts -->
-<div class="modal fade" id="addModifierGroup" tabindex="-1">
+<div class="modal fade" id="addMgModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" id="addModifierGroupModal">
+        <div class="modal-content" id="addMgContent">
             <!-- Add Modifier Partial View -->
         </div>
     </div>
@@ -113,9 +113,9 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-blue btn-modal" data-bs-target="#addModifierGroup"
+                    <button type="button" class="btn btn-blue btn-modal" data-bs-target="#addMgModal"
                         data-bs-toggle="modal" id="addModifierToGroup">Add</button>
-                    <button type="button" class="btn btn-white btn-modal" data-bs-target="#addModifierGroup"
+                    <button type="button" class="btn btn-white btn-modal" data-bs-target="#addMgModal"
                         data-bs-toggle="modal" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>

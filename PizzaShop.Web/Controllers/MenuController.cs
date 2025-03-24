@@ -28,7 +28,7 @@ public class MenuController : Controller
     {
         var categoriesList = _categoryItemService.GetCategory();
 
-        MenuViewModel model = new MenuViewModel
+        MenuViewModel model = new()
         {
             Categories = categoriesList,
             ItemsPageVM = new ItemsPaginationViewModel
@@ -41,6 +41,7 @@ public class MenuController : Controller
         return View(model);
     }
 
+
     #region Category   
 
     #region Add Category
@@ -48,16 +49,26 @@ public class MenuController : Controller
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     
     [HttpPost]
-    public async Task<IActionResult> SaveCategory(MenuViewModel model)
+    public async Task<IActionResult> SaveCategory(CategoryViewModel model)
     {
         var token = Request.Cookies["authToken"];
         var createrEmail = _jwtService.GetClaimValue(token, "email");
 
-        CategoryViewModel categoryVM = model.CategoryVM;
-        var success = await _categoryItemService.SaveCategory(categoryVM, createrEmail);
+        bool success = await _categoryItemService.SaveCategory(model, createrEmail);
         if (!success)
-            return Json(new { success = false, message = "Category Not Added!" });
-                return Json(new { success = true, message = "Modifier Added Successful!" });
+        {
+            return PartialView("_CategoryPartialView", model);
+        }
+
+        if (model.CategoryId == 0)
+        {
+            return Json(new { success = true, message = "Category Added Successful!" });
+        }
+        else
+        {
+            return Json(new { success = true, message = "Category Updated Successful!" });
+
+        }
 
     }
     #endregion Add Category
@@ -65,10 +76,11 @@ public class MenuController : Controller
     #region Edit Category
     /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<IActionResult> GetCategoryById(long categoryId)
+    [HttpGet]
+    public async Task<IActionResult> GetCategoryModal(long categoryId)
     {
-        var category = await _categoryItemService.GetCategoryById(categoryId);
-        return Json(category);
+        CategoryViewModel model = await _categoryItemService.GetCategoryById(categoryId);
+        return PartialView("_CategoryPartialView", model);
     }
 
     #endregion Edit Category
@@ -150,8 +162,14 @@ public class MenuController : Controller
             return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
-        TempData["successMessage"] = "Item Updated";
-        return RedirectToAction("Index");
+        if(model.ItemId == 0)
+        {
+            return Json(new { success = true, message = "Item Added Successfully!" });
+        }
+        else
+        {
+            return Json(new { success = true, message = "Item Updated Successfully!" });
+        }
     }
     #endregion Update Item
 
@@ -239,7 +257,15 @@ public class MenuController : Controller
             ModifierGroupViewModel updatedModel = await _modifierService.GetModifierGroup(model.ModifierGroupId);
             return PartialView("_ModifierGroupPartialView", updatedModel);
         }
-        return Json(new { success = true, message = "Modifier Group Added Successful!" });
+
+        if(model.ModifierGroupId == 0)
+        {
+            return Json(new { success = true, message = "Modifier Group Added Successful!" });
+        }
+        else
+        {
+            return Json(new { success = true, message = "Modifier Group Updated Successful!" });
+        }
 
     }
     #endregion Add/Update Modifier Group
@@ -305,12 +331,17 @@ public class MenuController : Controller
     #region Add/Update Modifier
 
     [HttpPost]
-    public async Task<IActionResult> SaveModifier(ModifierViewModel model)
+    public async Task<IActionResult> SaveModifier(ModifierViewModel model, string selectedMG)
     {
         if (!ModelState.IsValid)
         {
             ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
             return PartialView("_ModifierGroupPartialView", updatedModel);
+        }
+
+        if (!string.IsNullOrEmpty(selectedMG))
+        {
+            model.SelectedMgList = JsonSerializer.Deserialize<List<long>>(selectedMG);
         }
 
         string token = Request.Cookies["authToken"];
