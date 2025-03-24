@@ -135,6 +135,11 @@ a{
     width: calc(100% - 260px);
 }
 
+.sidebar>div{
+    position: fixed;
+    width: inherit;
+}
+
 .sidebar a{
     font-size: large;
     padding: 12px;

@@ -7,11 +7,12 @@ public interface ICategoryItemService
 {
     List<CategoryViewModel> GetCategory();
 
-    CategoryViewModel GetCategoryById(long categoryId);
+    Task<CategoryViewModel> GetCategoryById(long categoryId);
 
-    Task<bool> AddCategory(CategoryViewModel model,string createrEmail);
+    Task<bool> SaveCategory(CategoryViewModel model,string createrEmail);
     
-    Task<bool> EditCategory(CategoryViewModel model);
+    Task<bool> AddCategory(CategoryViewModel model, long createrId);
+    Task<bool> EditCategory(CategoryViewModel model, long createrId);
 
     Task<bool> SoftDelete(long categoryId);
 

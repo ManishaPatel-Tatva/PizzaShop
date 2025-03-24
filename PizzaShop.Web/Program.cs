@@ -58,6 +58,9 @@ builder.Services.AddScoped<IModifierService, ModifierService>();
 //Table and Section
 builder.Services.AddScoped<ITableSectionService, TableSectionService>();
 
+// Taxes and Fees
+builder.Services.AddScoped<ITaxesFeesService, TaxesFeesService>();
+
 //Session 
 builder.Services.AddSession(options =>
 {

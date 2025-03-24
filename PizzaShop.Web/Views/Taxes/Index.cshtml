@@ -1,0 +1,168 @@
+@{
+    ViewData["Title"] = "Taxes and Fees";
+    Layout = "_Layout";
+}
+
+<!-- User heading, search and add button -->
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-3 ">
+    <div>
+        <h1 class="blue-text">Taxes/Fees</h1>
+    </div>
+    <div class="justify-content-end d-flex align-items-center">
+        <div class="me-2">
+            <div class="input-group">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTax">
+                <button type="submit" class="input-group-text"> 
+                    <img src="~/images/icons/search.svg" alt=""> 
+                </button>
+            </div>
+        </div>
+        <div>
+            <a asp-action="SaveTax" asp-controller="Taxes" class="btn btn-blue text-nowrap" id="addTaxBtn"
+            data-bs-toggle="modal" data-bs-target="#addTaxModal">
+                + Add Tax
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-responsive bg-white px-3" id="taxContent">
+    <!-- Partial View -->
+
+
+</div>
+
+<!--------------------------------------Modals------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------->
+
+<!-- Modal Add Tax starts -->
+<div class="modal fade" id="addTaxModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" id="addTaxContent">
+            <!-- Add Tax Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Add Tax Group ends -->
+
+
+
+
+
+@section Scripts {
+
+    @* Get the list of all taxes *@
+    <script>
+        $(document).ready(function(){
+             GetAllTaxes();
+        });
+
+        $(document).on("input", "#searchTax", function () {
+            GetAllTaxes();
+        });
+
+        function GetAllTaxes() {
+            let searchQuery = $("#searchTax").val();
+            if (searchQuery == null) {
+                searchQuery = ""
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetAllTaxes", "Taxes")',
+                data: {search: searchQuery},
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#taxContent").html(data);
+                },
+                error: function () {
+                    alert("No Tax Found");
+                    $("#taxContent").html('An error has occurred');
+                }
+            });
+        }
+    </script>
+
+    @* Add Tax Modal *@
+    <script>
+        $(document).on("click", "#addTaxBtn", function () {
+            GetTax(0);
+        });
+
+        $(document).on("click", ".editTaxBtn", function () {
+            console.log("Tax id on clicking icons ", $(this).data("id"));
+            GetTax($(this).data("id"));
+        });
+
+        function GetTax(id) {
+            $.ajax({
+                url: '@Url.Action("GetTaxModal", "Taxes")',
+                type: "GET",
+                data: { taxId: id },
+                dataType: "html",
+                success: function (data) {
+                    console.log(data);
+                    $("#addTaxContent").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Tax Found");
+                }
+            })
+        }
+    </script>
+
+    @* Add/Update Tax Form Submit *@
+    <script>
+        $(document).on("submit", "#SaveTaxForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (data) {
+                    $("#addTaxModal").hide;
+                    toastr.success("Tax Added successfully!");
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
+    @* Delete Tax  *@
+    <script>
+        let deleteTaxId;
+        $(document).on("click", ".deleteTaxBtn", function () {
+            deleteTaxId = $(this).data("id");
+            console.log("Tax id is ", deleteTaxId);
+        });
+
+        $(document).on("click", "#confirmDeleteTax", function () {
+            $.ajax({
+                url: '@Url.Action("DeleteTax", "Taxes")',
+                type: "POST",
+                data: { taxId : deleteTaxId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        GetAllTaxes();
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Tax not deleted!");
+                }
+            });
+        });
+    </script>
+   
+}

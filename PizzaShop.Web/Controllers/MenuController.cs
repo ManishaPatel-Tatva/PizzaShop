@@ -46,36 +46,31 @@ public class MenuController : Controller
     #region Add Category
     /*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    
     [HttpPost]
-    public async Task<IActionResult> AddCategory(MenuViewModel model)
+    public async Task<IActionResult> SaveCategory(MenuViewModel model)
     {
         var token = Request.Cookies["authToken"];
         var createrEmail = _jwtService.GetClaimValue(token, "email");
 
         CategoryViewModel categoryVM = model.CategoryVM;
-        var success = await _categoryItemService.AddCategory(categoryVM, createrEmail);
-        return RedirectToAction("Index", "Menu");
+        var success = await _categoryItemService.SaveCategory(categoryVM, createrEmail);
+        if (!success)
+            return Json(new { success = false, message = "Category Not Added!" });
+                return Json(new { success = true, message = "Modifier Added Successful!" });
+
     }
     #endregion Add Category
 
     #region Edit Category
     /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public IActionResult EditCategory(long categoryId)
+    public async Task<IActionResult> GetCategoryById(long categoryId)
     {
-        var category = _categoryItemService.GetCategoryById(categoryId);
+        var category = await _categoryItemService.GetCategoryById(categoryId);
         return Json(category);
     }
 
-    /*--------------------------------------------------------Edit Category Post---------------------------------------------------------------------------------------------------
-    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [HttpPost]
-    public async Task<IActionResult> EditCategory(MenuViewModel model)
-    {
-        CategoryViewModel categoryVM = model.CategoryVM;
-        var success = await _categoryItemService.EditCategory(categoryVM);
-        return RedirectToAction("Index", "Menu");
-    }
     #endregion Edit Category
 
     #region Delete Category

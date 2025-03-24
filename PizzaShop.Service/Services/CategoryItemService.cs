@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PizzaShop.Entity.Models;
@@ -9,7 +10,6 @@ using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
-
 public class CategoryItemService : ICategoryItemService
 {
     private readonly IGenericRepository<Category> _categoryRepository;
@@ -57,17 +57,42 @@ public class CategoryItemService : ICategoryItemService
     #endregion
 
     #region  Add Category
+    /*-------------------------------------------------------------Save Category---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<bool> SaveCategory(CategoryViewModel model, string createrEmail)
+    {
+        User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        long createrId = creater.Id;
+
+        if(createrId == 0)
+            return false;
+
+        if(model.CategoryId == 0)
+        {
+            return await AddCategory( model,  createrId);
+        }
+        else if(model.CategoryId > 0)
+        {
+            return await EditCategory(model, createrId);
+        }
+        else{
+            return false;
+        }
+        return false;
+        
+    }
+
+
     /*-------------------------------------------------------------Add Category---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> AddCategory(CategoryViewModel model, string createrEmail)
+    public async Task<bool> AddCategory(CategoryViewModel model, long createrId)
     {
-        var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
 
         Category category = new Category
         {
             Name = model.CategoryName,
             Description = model.CategoryDesc,
-            CreatedBy = creater.Id
+            CreatedBy = createrId
         };
         return await _categoryRepository.AddAsync(category);
     }
@@ -76,15 +101,20 @@ public class CategoryItemService : ICategoryItemService
     #region Edit Category
     /*--------------------------------------------------------------Get Category for Editing---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public CategoryViewModel GetCategoryById(long categoryId)
+    public async Task<CategoryViewModel> GetCategoryById(long categoryId)
     {
-        var category = _categoryRepository.GetByIdAsync(categoryId);
+        if(categoryId == 0)
+        {
+            return new CategoryViewModel();
+        }
+
+        Category category = await _categoryRepository.GetByIdAsync(categoryId);
 
         CategoryViewModel categoryVM = new CategoryViewModel
         {
-            CategoryId = category.Result.Id,
-            CategoryName = category.Result.Name,
-            CategoryDesc = category.Result.Description
+            CategoryId = category.Id,
+            CategoryName = category.Name,
+            CategoryDesc = category.Description
         };
 
         return categoryVM;
@@ -92,12 +122,14 @@ public class CategoryItemService : ICategoryItemService
 
     /*--------------------------------------------------------Update the edited Category---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> EditCategory(CategoryViewModel model)
+    public async Task<bool> EditCategory(CategoryViewModel model, long createrId)
     {
         Category category = await _categoryRepository.GetByIdAsync(model.CategoryId);
 
         category.Name = model.CategoryName;
         category.Description = model.CategoryDesc;
+        category.UpdatedBy = createrId;
+        category.UpdatedAt = DateTime.Now;
 
         return await _categoryRepository.UpdateAsync(category);
     }
@@ -485,6 +517,7 @@ public class CategoryItemService : ICategoryItemService
     }
 
     #endregion Soft Delete
+
 
 
 

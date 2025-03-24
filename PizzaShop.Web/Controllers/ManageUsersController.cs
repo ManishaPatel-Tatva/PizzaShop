@@ -39,15 +39,13 @@ namespace PizzaShop.Web.Controllers
         
         public async Task<IActionResult> GetUsersList(int pageSize, int pageNumber = 1, string search="")
         {
-            var model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
-
+            UsersListViewModel? model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
             if (model == null)
             {
                 return NotFound(); // This triggers AJAX error
             }
 
             return PartialView("_UsersPartialView", model);
-           
         }
 #endregion
 

@@ -30,7 +30,7 @@ public class UserService : IUserService
 
     public async Task<UsersListViewModel> GetPagedRecords(int pageSize, int pageNumber, string search)
     {
-        var (users, totalRecord) = await _userRepository.GetPagedRecordsAsync(
+        (IEnumerable<User> users, int totalRecord) = await _userRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
             filter: u => !u.IsDeleted && 
@@ -42,19 +42,21 @@ public class UserService : IUserService
             includes: new List<Expression<Func<User, object>>> { u => u.Role }
         );
 
-        UsersListViewModel model = new() { Page = new() };
-
-        model.Users = users.Select(u => new UserInfoViewModel()
+        UsersListViewModel model = new()
         {
-            FirstName = u.FirstName,
-            LastName = u.LastName,
-            Email = u.Email,
-            Phone = u.Phone,
-            Role = u.Role.Name,
-            Status = u.IsActive,
-            UserId = u.Id,
-            ProfileImageUrl = u.ProfileImg
-        }).ToList();
+            Page = new(),
+            Users = users.Select(u => new UserInfoViewModel()
+            {
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Phone = u.Phone,
+                Role = u.Role.Name,
+                Status = u.IsActive,
+                UserId = u.Id,
+                ProfileImageUrl = u.ProfileImg
+            }).ToList()
+        };
 
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;

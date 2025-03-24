@@ -49,7 +49,8 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="fs-5 fw-bold blue-text">Category</span>
                         <!-- Button trigger modal -->
-                        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#addCategory">
+                        <button type="button" id="addCategoryBtn" class="btn p-0" data-bs-toggle="modal"
+                            data-bs-target="#addCategoryModal">
                             <img src="~/images/icons/plus-square.svg" alt="" width="25px">
                         </button>
                     </div>
@@ -65,8 +66,8 @@
                                         <span class="categoryName">@category.CategoryName</span>
                                     </a>
                                     <div class="EditDeleteCategory">
-                                        <button class="btn p-0 pe-1 iconEditCategory" data-bs-toggle="modal"
-                                            data-bs-target="#editCategory" data-id="@category.CategoryId">
+                                        <button class="btn p-0 pe-1 editCategoryBtn" data-bs-toggle="modal"
+                                            data-bs-target="#addCategoryModal" data-id="@category.CategoryId">
                                             <img src="~/images/icons/edit.svg" alt="" />
                                         </button>
                                         <button class="btn p-0 pe-1 iconDeleteCategory" data-bs-toggle="modal"
@@ -133,7 +134,7 @@
 
 <!--------------------------------------Modals------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------->
-<!-- Modal Add Category starts -->
+@* <!-- Modal Add Category starts -->
 <div class="modal fade" id="addCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -159,10 +160,10 @@
         </div>
     </div>
 </div>
-<!-- Modal Add Category ends -->
+<!-- Modal Add Category ends --> *@
 
 <!-- Modal Edit Category starts -->
-<div class="modal fade" id="editCategory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+<div class="modal fade" id="addCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -170,18 +171,30 @@
                 <h1 class="modal-title fs-5 grey-text" id="staticBackdropLabel">Edit Category</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form asp-action="EditCategory" asp-controller="Menu" method="Post">
+            <form asp-action="SaveCategory" asp-controller="Menu" id="SaveCategoryForm" method="Post">
                 <div class="modal-body">
                     <div class="form">
+
                         <input asp-for="CategoryVM.CategoryId" id="modalCategoryId" value="" hidden>
-                        <input asp-for="CategoryVM.CategoryName" type="text" class="form-control mb-3"
-                            id="modalCategoryName" placeholder="Name">
-                        <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3" id="modalCategoryDesc"
-                            placeholder="Description"></textarea>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="CategoryVM.CategoryName" type="text" class="form-control"
+                                id="modalCategoryName" placeholder="">
+                            <label asp-for="CategoryVM.CategoryName">Name</label>
+                            <span asp-validation-for="CategoryVM.CategoryName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="CategoryVM.CategoryDesc" class="form-control" rows="3"
+                                id="modalCategoryDesc" placeholder="Description"></textarea>
+                            <label asp-for="CategoryVM.CategoryDesc">Description</label>
+                            <span asp-validation-for="CategoryVM.CategoryDesc" class="text-danger"></span>
+                        </div>
+
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-blue btn-modal" id="saveEditCategory">Save</button>
+                    <button type="submit" class="btn btn-blue btn-modal" id="SaveCategory">Save</button>
                     <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>
@@ -258,22 +271,6 @@
             $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
         });
 
-        //For edit Category 
-        let categoryId;
-        $(".iconEditCategory").click(function () {
-            categoryId = $(this).data("id");
-            $("#modalCategoryId").val(categoryId);
-
-            $.ajax({
-                url: '@Url.Action("EditCategory", "Menu")',
-                type: "GET",
-                data: { categoryId: categoryId },
-                success: function (response) {
-                    $("#modalCategoryName").val(response.categoryName);
-                    $("#modalCategoryDesc").val(response.categoryDesc)
-                }
-            });
-        });
 
         $(".iconDeleteCategory").click(function () {
             categoryId = $(this).data("id");
@@ -417,6 +414,60 @@
         }
     </script>
 
+    @* Add Category Modal *@
+    <script>
+        $(document).on("click", "#addCategoryBtn", function () {
+            GetCategory(0);
+        });
+
+        $(document).on("click", ".editCategoryBtn", function () {
+            console.log("Category id on clicking button ", $(this).data("id"));
+            GetCategory($(this).data("id"));
+        });
+
+        function GetCategory(id) {
+            $.ajax({
+                url: '@Url.Action("GetCategoryById", "Menu")',
+                type: "GET",
+                data: { categoryId: id },
+                success: function (response) {
+                    $("#modalCategoryId").val(id);
+                    $("#modalCategoryName").val(response.categoryName);
+                    $("#modalCategoryDesc").val(response.categoryDesc)
+                }
+            });
+        }
+
+    </script>
+
+    @* Add/Update Category Form Submit *@
+    <script>
+        $(document).on("submit", "#SaveCategoryForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $("#addCategoryModal").modal("hide");
+                        toastr.success(response.message)
+                        setTimeout(function () {
+                            location.reload();
+                        },2000);
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
     @* Intermediate Checkbox For Items Script*@
     <script>
 
@@ -553,7 +604,7 @@
                 processData: false,
                 contentType: false,
                 success: function (data) {
-                    $("#addEditItem").hide;
+                    $("#addEditItem").modal("hide");
                     toastr.success("Item Added successfully!");
                     setTimeout(function () {
                         location.reload();
@@ -619,9 +670,9 @@
                 success: function (data) {
                     $("#addModifierGroupModal").html(data);
                     selectedModifierList = [];
-                    $(".spanModifier").each(function(){
+                    $(".spanModifier").each(function () {
                         selectedModifierList.push({ id: $(this).data("id"), name: $(this).data("name") });
-                        
+
                     });
                 },
                 error: function () {
@@ -638,7 +689,7 @@
             e.preventDefault();
 
             let modifierList = [];
-            $(".spanModifier").each(function(){
+            $(".spanModifier").each(function () {
                 modifierList.push($(this).data("id"));
             });
 
@@ -752,29 +803,28 @@
             $("#selectMod").empty();
             $.each(selectedModifierList, function (index, modifier) {
                 $("#selectMod").append(` 
-                    <span class="spanModifier d-flex align-items-center border rounded-5 px-2" data-id="${modifier.id}" data-name="${modifier.name}">
-                        <span class="p-1 fw-semibold text-grey" data-id="${modifier.id}">${modifier.name}</span>
-                        <button type="button" class="btn-close fs-6" aria-label="Close" data-id="${modifier.id}"></button>
-                    </span>
-                `)
+                                    <span class="spanModifier d-flex align-items-center border rounded-5 px-2" data-id="${modifier.id}" data-name="${modifier.name}">
+                                        <span class="p-1 fw-semibold text-grey" data-id="${modifier.id}">${modifier.name}</span>
+                                        <button type="button" class="btn-close fs-6" aria-label="Close" data-id="${modifier.id}"></button>
+                                    </span>
+                                `)
             })
         })
 
         //checked selected modifiers
-        function checkSelectedModifier(){
-            $(".existingModifierChildCb").each(function(){
-                if(selectedModifierList.some(i => i.id === $(this).data("id")))
-                {
-                    $(this).prop("checked",true);
+        function checkSelectedModifier() {
+            $(".existingModifierChildCb").each(function () {
+                if (selectedModifierList.some(i => i.id === $(this).data("id"))) {
+                    $(this).prop("checked", true);
                 }
             })
         }
 
         //remove selected modifier
-        $(document).on("click",".deselectModifier",function(){
+        $(document).on("click", ".deselectModifier", function () {
             let id = $(this).data("id");
             selectedModifierList = selectedModifierList.filter(i => i.id !== id);
-            $("span").remove(".spanModifier[data-id = '"+id+"']");
+            $("span").remove(".spanModifier[data-id = '" + id + "']");
         })
 
 

@@ -116,7 +116,12 @@
                                 class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "blue" : "")">
                             Tables and Sections
                         </a>
-                        <a href="#"><img src="~/images/navigation/taxes.svg" alt=""> Taxes and Fees </a>
+                        <a asp-action="Index" asp-controller="Taxes"
+                            class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "side-dash" : "")">
+                            <img src="~/images/navigation/taxes.svg" alt=""
+                                class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "blue" : "")">
+                            Taxes and Fees
+                        </a>
                         <a href="#"><img src="~/images/navigation/orders.svg" alt=""> Orders </a>
                         <a href="#"><img src="~/images/navigation/customer.svg" alt=""> Customers </a>
                     </div>

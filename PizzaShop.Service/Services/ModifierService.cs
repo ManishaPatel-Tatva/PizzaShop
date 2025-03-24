@@ -167,7 +167,7 @@ public class ModifierService : IModifierService
         if (!success)
             return false;
 
-        List<long> modifierList = model.Modifiers.Select(m => m.ModifierId).ToList();
+        List<long> modifierList = model.ModifierIdList;
 
         return await UpdateModifierMapping(model.ModifierGroupId, modifierList, createrId);
     }
@@ -290,33 +290,28 @@ public class ModifierService : IModifierService
 
     public async Task<ModifiersPaginationViewModel> GetAllModifiers(int pageSize, int pageNumber, string search)
     {
-        (IEnumerable<ModifierMapping> modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecordsAsync(
+        (IEnumerable<Modifier> modifiers, int totalRecord) = await _modifierRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: mm => !mm.IsDeleted &&
+            filter: m => !m.IsDeleted &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
-                    mm.Modifier.Name.ToLower().Contains(search.ToLower())),
+                    m.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
-            includes: new List<Expression<Func<ModifierMapping, object>>>
+            includes: new List<Expression<Func<Modifier, object>>>
             {
-                m => m.Modifier
-            },
-            thenIncludes: new List<Func<IQueryable<ModifierMapping>, IQueryable<ModifierMapping>>>
-            {
-                q => q.Include(mm => mm.Modifier)
-                    .ThenInclude(m => m.Unit)
+                m => m.Unit
             }
         );
 
         ModifiersPaginationViewModel model = new() { Page = new() };
 
-        model.Modifiers = modifierMapping.Select(m => new ModifierViewModel()
+        model.Modifiers = modifiers.Select(m => new ModifierViewModel()
         {
-            ModifierId = m.Modifierid,
-            ModifierName = m.Modifier.Name,
-            UnitName = m.Modifier.Unit.Name,
-            Rate = m.Modifier.Rate,
-            Quantity = m.Modifier.Quantity,
+            ModifierId = m.Id,
+            ModifierName = m.Name,
+            UnitName = m.Unit.Name,
+            Rate = m.Rate,
+            Quantity = m.Quantity,
         }).ToList();
 
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
@@ -339,8 +334,7 @@ public class ModifierService : IModifierService
         }
 
         Modifier modifier = await _modifierRepository.GetByIdAsync(modifierId);
-
-        // model.ModifierGroupId = _modifierMappingRepository.GetByCondition(mm => mm.Modifierid == modifierId).Select(m => m.Modifierid);
+        
         model.ModifierName = modifier.Name;
         model.Rate = modifier.Rate;
         model.Quantity = modifier.Quantity;
