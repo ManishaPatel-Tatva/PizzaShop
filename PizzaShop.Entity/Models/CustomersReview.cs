@@ -19,7 +19,7 @@ public partial class CustomersReview
 
     public int? Rating { get; set; }
 
-    public string Review { get; set; } = null!;
+    public string? Review { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

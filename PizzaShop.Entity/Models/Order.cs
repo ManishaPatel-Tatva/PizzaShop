@@ -15,8 +15,6 @@ public partial class Order
 
     public long PaymentMethodId { get; set; }
 
-    public int Rating { get; set; }
-
     public string? Instructions { get; set; }
 
     public decimal TotalAmount { get; set; }
@@ -42,6 +40,8 @@ public partial class Order
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual PaymentMethod PaymentMethod { get; set; } = null!;
+
+    public virtual OrderStatus Status { get; set; } = null!;
 
     public virtual User? UpdatedByNavigation { get; set; }
 }

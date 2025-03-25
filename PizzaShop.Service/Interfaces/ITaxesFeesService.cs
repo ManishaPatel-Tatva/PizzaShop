@@ -4,7 +4,7 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface ITaxesFeesService
 {
-    Task<List<TaxViewModel>> GetAllTaxes(string search);
+    Task<TaxPaginationViewModel> GetPagedTaxes(int pageSize, int pageNumber, string search);
     Task<TaxViewModel> GetTax(long TaxId);
     Task<bool> SaveTax(TaxViewModel model, string createrEmail);
     Task<bool> AddTax(TaxViewModel model, long createrId);

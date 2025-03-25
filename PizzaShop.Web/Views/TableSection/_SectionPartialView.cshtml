@@ -2,7 +2,9 @@
 @model SectionViewModel
 
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="secModalToggleLabel">Add Section</h1>
+    <h1 class="modal-title fs-5" id="secModalToggleLabel">
+        @(Model.SectionId == 0 ? "Add New " : "Update") Section
+    </h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form asp-action="SaveSection" asp-controller="TableSection" id="SaveSectionForm" method="Post">
@@ -20,7 +22,7 @@
             <div class="form-floating mb-3">
                 <textarea asp-for="Description" class="form-control" rows="1" placeholder="secDesc"></textarea>
                 <label for="secDesc">Description*</label>
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
         </div>

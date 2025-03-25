@@ -304,9 +304,16 @@
                 url: $(this).attr("action"),
                 type: $(this).attr("method"),
                 data: $(this).serialize(),
-                success: function (data) {
+                success: function (response) {
                     $("#addTableModal").hide;
-                    toastr.success("Table Added successfully!");
+                    if(response.success)
+                    {
+                        toastr.success(response.message);
+                    }
+                    else{
+                        toastr.error(response.message);
+                    }
+                   
                     setTimeout(function () {
                         location.reload();
                     }, 3000);

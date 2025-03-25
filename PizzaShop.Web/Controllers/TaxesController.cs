@@ -15,7 +15,6 @@ public class TaxesController : Controller
     {
         _taxService = taxService;
         _jwtService = jwtService;
-
     }
 
     /*---------------------------Display Users---------------------------------------------
@@ -26,9 +25,10 @@ public class TaxesController : Controller
         return View();
     }
 
-    public async Task<IActionResult> GetAllTaxes(string search = "")
+    [HttpPost]
+    public async Task<IActionResult> GetAllTaxes(int pageSize, int pageNumber = 1, string search="")
     {
-        List<TaxViewModel>? model = await _taxService.GetAllTaxes(search);
+        TaxPaginationViewModel model = await _taxService.GetPagedTaxes(pageSize, pageNumber, search);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error
@@ -37,7 +37,7 @@ public class TaxesController : Controller
     }
 
     /*-------------------------------------------------------- Get Tax ---------------------------------------------------------------------------------------------------
-   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public async Task<IActionResult> GetTaxModal(long taxId)
     {

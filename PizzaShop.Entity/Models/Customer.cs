@@ -11,7 +11,7 @@ public partial class Customer
 
     public string Email { get; set; } = null!;
 
-    public int Phone { get; set; }
+    public long Phone { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

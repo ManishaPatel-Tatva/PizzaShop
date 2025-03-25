@@ -11,7 +11,7 @@ public partial class Modifier
 
     public string? Description { get; set; }
 
-    public long FoodTypeId { get; set; }
+    public long? FoodTypeId { get; set; }
 
     public decimal Rate { get; set; }
 
@@ -31,7 +31,7 @@ public partial class Modifier
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
-    public virtual FoodType FoodType { get; set; } = null!;
+    public virtual FoodType? FoodType { get; set; }
 
     public virtual ICollection<ModifierMapping> ModifierMappings { get; set; } = new List<ModifierMapping>();
 

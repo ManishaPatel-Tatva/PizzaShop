@@ -211,6 +211,7 @@ public class CategoryItemService : ICategoryItemService
         if (item == null)
             return model;
 
+        model.ItemId = item.Id;
         model.CategoryId = item.CategoryId;
         model.Name = item.Name;
         model.ItemTypeId = item.FoodTypeId;

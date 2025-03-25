@@ -1,6 +1,6 @@
 @using PizzaShop.Entity.ViewModels
 
-@model List<TaxViewModel>
+@model TaxPaginationViewModel
 
 <!-- Table -->
 <table class="table user-table">
@@ -15,7 +15,7 @@
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        @foreach (TaxViewModel tax in Model)
+        @foreach (TaxViewModel tax in Model.Taxes)
         {
             <tr>
                 <td scope="row">
@@ -50,6 +50,35 @@
     </tbody>
 </table>
 
+<!-- Pagination Starts -->
+<div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+        <span>Items per page:</span>
+        <select class="form-select w-auto" id="taxesPerPage" aria-label="Select items per page">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+        <!-- Previous Page Button -->
+        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+            onclick="TaxPaginationAjax(@Model.Page.CurrentPage - 1)">
+            <img src="~/images/icons/chevron-left.svg" alt="">
+        </button>
+
+        <!-- Next Page Button -->
+        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+            onclick="TaxPaginationAjax(@Model.Page.CurrentPage + 1)">
+            <img src="~/images/icons/chevron-right.svg" alt="">
+        </button>
+    </div>
+</div>
+<!-- Pagination Ends -->
 
 <!-- Modal -->
 <div class="modal fade" id="deleteTaxModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"

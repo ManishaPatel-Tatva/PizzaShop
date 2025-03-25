@@ -473,7 +473,6 @@ public partial class PizzaShopContext : DbContext
 
             entity.HasOne(d => d.FoodType).WithMany(p => p.Modifiers)
                 .HasForeignKey(d => d.FoodTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("modifier_food_type_id_fkey");
 
             entity.HasOne(d => d.Unit).WithMany(p => p.Modifiers)
@@ -570,7 +569,6 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnName("instructions");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
-            entity.Property(e => e.Rating).HasColumnName("rating");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.TotalAmount).HasColumnName("total_amount");
             entity.Property(e => e.UpdatedAt)
@@ -592,6 +590,11 @@ public partial class PizzaShopContext : DbContext
                 .HasForeignKey(d => d.PaymentMethodId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("orders_payment_method_id_fkey");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("orders_status_id_fkey");
 
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.OrderUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
@@ -875,7 +878,10 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.IsAvailable).HasColumnName("is_available");
+            entity.Property(e => e.IsAvailable)
+                .IsRequired()
+                .HasDefaultValueSql("true")
+                .HasColumnName("is_available");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")

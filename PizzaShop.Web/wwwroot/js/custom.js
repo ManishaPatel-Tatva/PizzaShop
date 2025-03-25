@@ -11,7 +11,7 @@ function reinitializeValidation() {
   });
   
   // Apply validation on input change globally
-  $(document).on("keyup change", "input:not([type=checkbox]):not([type=radio]), select, textarea", function () {
+  $(document).on("keyup change", "form input:not([type=checkbox]):not([type=radio]),form select,form textarea", function () {
     $(this).valid();
   });
 

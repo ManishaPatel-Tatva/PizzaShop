@@ -45,35 +45,6 @@
             PaginationAjax(1, selectedPageSize); // Reload data with new page size
         });
 
-
-        //for Soft Delete of Users
-        let userId;
-        $(document).on("click", ".deleteIcon", function () {
-            userId = $(this).data("id");
-        })
-
-        $(document).on("click", "#SoftDelete", function () {
-            $.ajax({
-                url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
-                type: "POST",
-                data: { id: userId },
-                success: function (response) {
-                    if (response.success) {
-                        toastr.success(response.message)
-                        setTimeout(function(){
-                            location.reload();
-                        },000);
-                    }
-                    else{
-                        toastr.error(response.message)
-                    }
-                },
-                error: function () {
-                    console.log("User not deleted!");
-                }
-            })
-        })
-
         $(document).on("input", "#search", function () {
             var selectedPageSize = $("#itemsPerPage").val();
             PaginationAjax(1, selectedPageSize); // Reload data with new page size
@@ -111,6 +82,34 @@
                 }
             });
         }
+
+        //for Soft Delete of Users
+        let userId;
+        $(document).on("click", ".deleteIcon", function () {
+            userId = $(this).data("id");
+        })
+
+        $(document).on("click", "#SoftDelete", function () {
+            $.ajax({
+                url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
+                type: "POST",
+                data: { id: userId },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function(){
+                            location.reload();
+                        },000);
+                    }
+                    else{
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("User not deleted!");
+                }
+            })
+        })
 
     </script>
 }

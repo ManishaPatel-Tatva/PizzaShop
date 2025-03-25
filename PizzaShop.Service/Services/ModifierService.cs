@@ -334,6 +334,7 @@ public class ModifierService : IModifierService
 
         Modifier modifier = await _modifierRepository.GetByIdAsync(modifierId);
         
+        model.ModifierId = modifierId;
         model.ModifierName = modifier.Name;
         model.Rate = modifier.Rate;
         model.Quantity = modifier.Quantity;
@@ -416,10 +417,15 @@ public class ModifierService : IModifierService
         modifier.UpdatedBy = createrId;
         modifier.UpdatedAt = DateTime.Now;
 
-        return await _modifierRepository.UpdateAsync(modifier);
+        bool success = await _modifierRepository.UpdateAsync(modifier);
+        if (!success)
+            return false;
+
+        return await UpdateModifierGroupMapping( model.ModifierId, model.SelectedMgList ,  createrId);
+
     }
 
-    async Task<bool> UpdateModifierGroupMapping(long modifierId, List<long> modifierGroupList, long createrId)
+    public async Task<bool> UpdateModifierGroupMapping(long modifierId, List<long> modifierGroupList, long createrId)
     {
         List<long> existingMgList = _modifierMappingRepository
         .GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted)
@@ -447,7 +453,7 @@ public class ModifierService : IModifierService
             ModifierMapping existingModifierGroup = await _modifierMappingRepository.GetByStringAsync(mg => mg.Modifiergroupid == mgId && mg.Modifierid == modifierId && mg.IsDeleted == false);
             if (existingModifierGroup == null)
             {
-                bool success = await AddModifierMapping(modifierId, modifierId, createrId);
+                bool success = await AddModifierMapping(mgId, modifierId, createrId);
                 if (!success)
                     return false;
             }
@@ -502,8 +508,11 @@ public class ModifierService : IModifierService
         return true;
     }
 
+
     #endregion Delete Modifier 
 
     #endregion Modifier
+
+
 
 }

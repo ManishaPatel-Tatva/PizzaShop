@@ -117,8 +117,8 @@ public class TableSectionController : Controller
     {
         if (!ModelState.IsValid)
         {
-            TableViewModel updatedModel = await _tableSectionService.GetTable(model.TableId);
-            return Json(new { success = false, message = "Table Not Added !" });
+           TableViewModel updatedModel = await _tableSectionService.GetTable(model.TableId);
+            return PartialView("_TablePartialView", updatedModel);
         }
 
         string token = Request.Cookies["authToken"];
@@ -130,7 +130,16 @@ public class TableSectionController : Controller
             TableViewModel updatedModel = await _tableSectionService.GetTable(model.TableId);
             return PartialView("_TablePartialView", updatedModel);
         }
-        return Json(new { success = true, message = "Table Added Successfully!" });
+
+        if(model.TableId == 0)
+        {
+            return Json(new { success = true, message = "Table Added Successfully!" });
+        }
+        else
+        {
+            return Json(new { success = true, message = "Table Updated Successfully!" });
+
+        }
 
     }
     #endregion Add/Update Table

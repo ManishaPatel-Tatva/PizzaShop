@@ -645,7 +645,7 @@
         });
     </script>
 
-    @* Add Existing Modifiers in Modifier Group *@
+    @* Add Existing Modifiers Modal in Modifier Group *@
     <script>
         $(document).on("click", "#addExistingModifiers", function () {
             console.log("inside click function");
@@ -860,7 +860,6 @@
                 data: { modifierId: id },
                 dataType: "html",
                 success: function (data) {
-                    console.log(data);
                     $("#addModifierModal").html(data);
                 },
                 error: function () {
@@ -871,37 +870,27 @@
         }
     </script>
 
-    @* Select Modifier groups for modifier *@
-    <script>
-
-        let selectedMgList = [];
-        $(document).on("change", ".mgCheckbox", function () {
-            let mgId = $(this).data("id");
-            if (selectedMgList.indexOf(Number(mgId)) === -1) {
-                selectedMgList.push(Number(mgId));
-            }
-            else {
-                selectedMgList = $.grep(selectedMgList, function (element) {
-                    return element != mgId;
-                });
-            }
-        });
-
-    </script>
 
     @* Add/Update Modifier Form Submit *@
     <script>
         $(document).on("submit", "#SaveModifierForm", function (e) {
             e.preventDefault();
 
+            //For adding checked modifier group in selected modifier group
+            let selectedMgList = [];
+            $(".mgCheckbox:checked").each(function(){
+                selectedMgList.push($(this).data("id"));
+            })
+
             $("#selectedMgList").val(JSON.stringify(selectedMgList));
+            console.log(selectedMgList);
 
             $.ajax({
                 url: $(this).attr("action"),
                 type: $(this).attr("method"),
                 data: $(this).serialize(),
                 success: function (data) {
-                    $("#addModifier").hide;
+                    $("#addModifierModal").hide;
                     toastr.success("Modifier Added successfully!");
                     setTimeout(function () {
                         location.reload();

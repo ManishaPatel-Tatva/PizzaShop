@@ -174,7 +174,8 @@ public class TableSectionService : ITableSectionService
             return model;
 
         Table table = await _tableRepository.GetByIdAsync(tableId);
-        
+
+        model.TableId = tableId;
         model.Name = table.Name;
         model.SectionId = table.SectionId;
         model.Capacity = table.Capacity;

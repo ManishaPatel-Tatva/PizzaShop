@@ -2,7 +2,9 @@
 @model TableViewModel
 
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="secModalToggleLabel">Add Table</h1>
+    <h1 class="modal-title fs-5" id="secModalToggleLabel">
+        @(Model.TableId == 0 ? "Add New " : "Update") Table
+    </h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form asp-action="SaveTable" asp-controller="TableSection" id="SaveTableForm" method="Post">

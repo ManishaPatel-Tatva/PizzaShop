@@ -17,27 +17,35 @@ public class TaxesFeesService : ITaxesFeesService
         _userRepository = userRepository;
     }
 
-    public async Task<List<TaxViewModel>> GetAllTaxes(string search)
+
+    public async Task<TaxPaginationViewModel> GetPagedTaxes(int pageSize, int pageNumber, string search)
     {
-        IEnumerable<Taxis> taxes = _taxesRepository.GetByCondition(
-           t => t.IsDeleted == false &&
-           string.IsNullOrEmpty(search.ToLower()) ||
-           t.Name.ToLower().Contains(search.ToLower())
+        (IEnumerable<Taxis> taxes, int totalRecord) = await _taxesRepository.GetPagedRecordsAsync(
+            pageSize,
+            pageNumber,
+            filter: t => !t.IsDeleted &&
+                        (string.IsNullOrEmpty(search.ToLower()) ||
+                        t.Name.ToLower().Contains(search.ToLower())),
+            orderBy: q => q.OrderBy(u => u.Id)
         );
 
-        List<TaxViewModel> TaxList = taxes.Select(t => new TaxViewModel()
+        TaxPaginationViewModel model = new()
         {
-            TaxId = t.Id,
-            Name = t.Name,
-            Type = t.Type,
-            IsEnabled = t.IsEnabled,
-            Default = t.DefaultTax,
-            TaxValue = t.TaxValue
-        }).ToList();
+            Page = new(),
+            Taxes = taxes.Select(t => new TaxViewModel()
+            {
+                TaxId = t.Id,
+                Name = t.Name,
+                Type = t.Type,
+                IsEnabled = t.IsEnabled,
+                Default = t.DefaultTax,
+                TaxValue = t.TaxValue
+            }).ToList()
+        };
 
-        return TaxList;
+        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        return model;
     }
-
 
     public async Task<TaxViewModel> GetTax(long TaxId)
     {
@@ -87,9 +95,8 @@ public class TaxesFeesService : ITaxesFeesService
             TaxValue = model.TaxValue,
             CreatedBy = createrId
         };
-
+        
         return await _taxesRepository.AddAsync(tax);
-
     }
 
 
