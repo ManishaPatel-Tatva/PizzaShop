@@ -52,38 +52,7 @@
 
 @section Scripts {
 
-    @* Get the list of all taxes *@
-    @* <script>
-        $(document).ready(function(){
-             GetAllTaxes();
-        });
-
-        $(document).on("input", "#searchTax", function () {
-            GetAllTaxes();
-        });
-
-        function GetAllTaxes() {
-            let searchQuery = $("#searchTax").val();
-            if (searchQuery == null) {
-                searchQuery = ""
-            }
-
-            $.ajax({
-                url: '@Url.Action("GetAllTaxes", "Taxes")',
-                data: {search: searchQuery},
-                type: "GET",
-                dataType: "html",
-                success: function (data) {
-                    $("#taxContent").html(data);
-                },
-                error: function () {
-                    alert("No Tax Found");
-                    $("#taxContent").html('An error has occurred');
-                }
-            });
-        }
-    </script> *@
-
+    @* Tax Pagination *@
     <script>
         $(document).ready(function () {
             TaxPaginationAjax(1);

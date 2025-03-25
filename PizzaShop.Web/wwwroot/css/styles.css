@@ -37,6 +37,10 @@ a{
     color: #929292
 }
 
+.clr-yellow{
+    color: #f7bc51;
+}
+
 /* Login Page */
 .hero-img{
     height: 100%;
@@ -219,7 +223,7 @@ td{
 .form-floating>label {
     z-index: 5;
     top: -5px;
-    left: 12px;
+    left: 0px;
 }
 
 .browse>label{
@@ -443,7 +447,7 @@ td{
     max-width: 420px;
 }
 
-.ChangePassword-form .form-floating>label{
+/* .ChangePassword-form .form-floating>label{
     left: 0px;
 }
 
@@ -453,7 +457,7 @@ td{
 
 .addMG-form .form-floating>label{
     left: 0px;
-}
+} */
 
 .change-content{
     padding: 10px 10%;
@@ -487,6 +491,16 @@ td{
     background-color: #0066A8;
     border-color: #0066A8;
 }
+
+/* Orders */
+.order-export-div{
+    /* height: 50px; */
+}
+
+/* .dateRange-div .form-floating>.form-control{
+    padding-top: 0px;
+    padding-bottom: 0px;
+} */
 
 
 

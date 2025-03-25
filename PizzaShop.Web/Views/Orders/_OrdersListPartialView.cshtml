@@ -1,0 +1,82 @@
+@using PizzaShop.Entity.ViewModels
+
+@model OrderPaginationViewModel
+
+<!-- Table -->
+<table class="table user-table">
+    <thead>
+        <tr class="">
+            <th scope="col" class="col">Order</th>
+            <th scope="col" class="col">Date</th>
+            <th scope="col" class="col">Customer</th>
+            <th scope="col" class="col">Status</th>
+            <th scope="col" class="col">Payment Mode</th>
+            <th scope="col" class="col">Rating</th>
+            <th scope="col" class="col">Total Amount</th>
+            <th scope="col" class="col-1">Action</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        @foreach (OrderViewModel order in Model.Orders)
+        {
+            <tr>
+                <td scope="row">
+                    @order.OrderId
+                </td>
+                <td>@order.Date</td>
+                <td>@order.CustomerName</td>
+                <td>@order.Status</td>
+                <td>@order.PaymentMode</td>
+                <td>
+                    @for (int num = 1; num <= order.Rating; num++)
+                    {
+                        <i class="fa fa-star clr-yellow"></i>
+                    }
+                    @for (int num = 1; num <= (5 - order.Rating); num++)
+                    {
+                        <i class="fa fa-star-o clr-yellow"></i>
+                    }
+                </td>
+                <td>@order.TotalAmount</td>
+                <td>
+                    <a type="button" class="downloadInvoiceBtn btn ps-0" data-id="@order.OrderId">
+                        <img src="~/images/icons/filetype-pdf.svg" alt="" />
+                    </a>
+                    <a type="button" class="ViewOrderBtn btn ps-0" data-id="@order.OrderId">
+                        <img src="~/images/icons/eye-open.svg" alt="">
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination Starts -->
+<div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+        <span>Items per page:</span>
+        <select class="form-select w-auto" id="orderesPerPage" aria-label="Select items per page">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+        <!-- Previous Page Button -->
+        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+            onclick="OrderPaginationAjax(@Model.Page.CurrentPage - 1)">
+            <img src="~/images/icons/chevron-left.svg" alt="">
+        </button>
+
+        <!-- Next Page Button -->
+        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+            onclick="OrderPaginationAjax(@Model.Page.CurrentPage + 1)">
+            <img src="~/images/icons/chevron-right.svg" alt="">
+        </button>
+    </div>
+</div>
+<!-- Pagination Ends -->

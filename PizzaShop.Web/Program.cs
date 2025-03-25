@@ -61,6 +61,10 @@ builder.Services.AddScoped<ITableSectionService, TableSectionService>();
 // Taxes and Fees
 builder.Services.AddScoped<ITaxesFeesService, TaxesFeesService>();
 
+//Orders
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+
 //Session 
 builder.Services.AddSession(options =>
 {

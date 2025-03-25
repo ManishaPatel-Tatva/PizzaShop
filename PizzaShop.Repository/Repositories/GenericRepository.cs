@@ -113,44 +113,50 @@ public class GenericRepository<T> : IGenericRepository<T>
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null)
     {
-
-        IQueryable<T> query = _dbSet;
-
-        if (filter != null)
+        try
         {
-            query = query.Where(filter);
-        }
+            IQueryable<T> query = _dbSet;
 
-        if (includes != null)
-        {
-            foreach (var include in includes)
+            if (filter != null)
             {
-                query = query.Include(include);
+                query = query.Where(filter);
             }
-        }
 
-        // Apply ThenIncludes (Deeper navigation properties)
-        if (thenIncludes != null)
-        {
-            foreach (var thenInclude in thenIncludes)
+            if (includes != null)
             {
-                query = thenInclude(query);
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
             }
+
+            // Apply ThenIncludes (Deeper navigation properties)
+            if (thenIncludes != null)
+            {
+                foreach (var thenInclude in thenIncludes)
+                {
+                    query = thenInclude(query);
+                }
+            }
+
+            int totalCount = await query.CountAsync();
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            var items = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (items, totalCount);
         }
-
-        int totalCount = await query.CountAsync();
-
-        if (orderBy != null)
+        catch (Exception ex)
         {
-            query = orderBy(query);
+            return (null,0);
         }
-
-        var items = query
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-
-        return (items, totalCount);
 
     }
 
