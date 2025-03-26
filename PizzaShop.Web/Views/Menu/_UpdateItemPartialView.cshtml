@@ -28,7 +28,7 @@
             </div>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="@Model.Name" type="text" class="form-control" id="itemName">
+                <input asp-for="@Model.Name" type="text" placeholder="" class="form-control" id="itemName">
                 <label for="itemName">Name*</label>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
@@ -45,12 +45,12 @@
 
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
-                <input asp-for="@Model.Rate" type="text" class="form-control" id="itemRate">
+                <input asp-for="@Model.Rate" type="text" placeholder="" class="form-control" id="itemRate">
                 <label for="itemRate">Rate*</label>
                 <span asp-validation-for="@Model.Rate" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
-                <input asp-for="@Model.Quantity" type="text" class="form-control" id="itemQuantity">
+                <input asp-for="@Model.Quantity" type="text" placeholder="" class="form-control" id="itemQuantity">
                 <label for="itemQuantity">Quantity*</label>
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
@@ -80,12 +80,12 @@
                 <span asp-validation-for="DefaultTax" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
-                <input asp-for="@Model.TaxPercentage" type="text" class="form-control" id="taxPercentage">
+                <input asp-for="@Model.TaxPercentage" type="text" placeholder="" class="form-control" id="taxPercentage">
                 <label for="taxPercentage">Tax Percentage</label>
                 <span asp-validation-for="TaxPercentage" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
-                <input asp-for="@Model.ShortCode" type="text" class="form-control" id="itemShortCode">
+                <input asp-for="@Model.ShortCode" type="text" placeholder="" class="form-control" id="itemShortCode">
                 <label for="itemShortCode">Short Code</label>
                 <span asp-validation-for="ShortCode" class="text-danger"></span>
             </div>

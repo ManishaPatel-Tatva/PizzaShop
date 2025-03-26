@@ -223,7 +223,8 @@ td{
 .form-floating>label {
     z-index: 5;
     top: -5px;
-    left: 0px;
+    /* left: 10px; */
+    left: unset;
 }
 
 .browse>label{
@@ -414,50 +415,12 @@ td{
     left: -25px;
 }
 
-/*Media query for login page*/
-@media (max-width: 435px) {
-    .profile-img{
-        /* border: 1px solid gray;
-        border-radius: 50%; */
-        position: relative;
-        top: -25px;
-        left: 10px;
-        height: 60px;
-    }
-
-    .camera-div{
-        height: fit-content;
-        width: fit-content;
-        border: 1px solid gray;
-        border-radius: 50%;
-        position: relative;
-        top: 40px;
-        left: -25px;
-        width: 20px;
-    }
-
-    .camera-img{
-        width: 20px;
-    }
-}
 
 /* Change Password */
 .ChangePassword-form input{ 
     min-width: 220px;
     max-width: 420px;
 }
-
-/* .ChangePassword-form .form-floating>label{
-    left: 0px;
-}
-
-.add-user-password .form-floating>label{
-    left: 0px;
-}
-
-.addMG-form .form-floating>label{
-    left: 0px;
-} */
 
 .change-content{
     padding: 10px 10%;

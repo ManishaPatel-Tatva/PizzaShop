@@ -39,6 +39,12 @@ public class OrdersController : Controller
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
     }
 
+    public IActionResult OrderDetails()
+    {
+        ViewData["sidebar-active"] = "Orders";
+        return View();
+    }
+
 
 
 }

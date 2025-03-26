@@ -13,7 +13,7 @@
         <a asp-action="Dashboard" class="btn btn-white">
             <img src="~/images/icons/chevron-left-blue.svg" alt="">
             <span>Back</span>
-        </a>  
+        </a>
     </div>
 </div>
 
@@ -25,165 +25,168 @@
 <!-- Form -->
 <div class="row bg-white px-3 pb-4 mx-0">
 
-        <!-- Admin heading and image -->
+    <!-- Admin heading and image -->
+    <div class="d-flex flex-column flex-sm-row">
         <div class="d-flex">
-            <img id="img-preview" class="profile-img rounded-circle" src="@(Model.ProfileImageUrl != null ? Model.ProfileImageUrl : "~/images/Default_pfp.svg.png")">
+            <img id="img-preview" class="profile-img rounded-circle"
+                src="@(Model.ProfileImageUrl != null ? Model.ProfileImageUrl : "~/images/Default_pfp.svg.png")">
             <div class="camera-div bg-white">
                 <label for="profileImage">
-                    <img  class="camera-img" src="~/images/icons/camera.svg" alt="Upload Profile Image">
+                    <img class="camera-img" src="~/images/icons/camera.svg" alt="Upload Profile Image">
                 </label>
             </div>
-            <div class="w-100">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                    <span class=" fs-3 fw-bold">@Model.FirstName @Model.LastName</span>
-                    <span class="">@Model.Email</span>
-                </div>
-                <div class="fs-5">@Model.Role</div>
-            </div>
         </div>
-            
-        <form asp-action="MyProfile" asp-controller="Profile" class="row" method="post" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
 
-            <input asp-for="Image" type="file" id="profileImage" class="d-none">
 
-             <!-- Email -->
-            <input asp-for="Email" hidden>
+        <div class="w-100">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <span class=" fs-3 fw-bold">@Model.FirstName @Model.LastName</span>
+                <span class="">@Model.Email</span>
+            </div>
+            <div class="fs-5 mb-3">@Model.Role</div>
+        </div>
+    </div>
 
-            <!-- First row -->                       
-            <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="FirstName" type="text" class="form-control" id="firstName" required>
-                <label for="firstName">First Name</label>
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="LastName" type="text" class="form-control" id="lastName" required>
-                <label for="lastName">Last Name</label>
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="UserName" type="text" class="form-control" id="userName" required>
-                <label for="userName">User Name</label>
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
+    <form asp-action="MyProfile" asp-controller="Profile" class="row" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
 
-            <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="Phone" type="text" class="form-control" id="phone" required>
-                <label for="phone">Phone</label>
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
+        <!-- Email -->
+        <input asp-for="Email" hidden>
+        <input asp-for="Image" type="file" id="profileImage" class="d-none">
 
-            <!-- Address blocks-->
-            <div class="col-12 col-sm-4 form-floating mb-3">
-                <select asp-for="CountryId" class="form-select" aria-label="" id="Countries" required>
-                    <option selected value="">Select Country</option>
-                    @foreach (var country in Model.Countries)
-                    {
-                        <option value="@country.Id"> @country.Name</option>
-                    }
-                </select>
-                <label for="Countries">Country</label>
-                <span asp-validation-for="CountryId" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-sm-4 form-floating mb-3">
-                <select asp-for="StateId" class="form-select" aria-label="" id="States" required>
-                    <option selected value="">Select State</option>
-                    @foreach (var state in Model.States){
-                        <option value="@state.Id"> @state.Name</option>
-                    }
-                </select>
-                <label for="States">State</label>
-                <span asp-validation-for="StateId" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-sm-4 form-floating mb-3">
-                <select asp-for="CityId" class="form-select" aria-label="" id="Cities" required>
-                    <option selected value="">Select City</option>
-                    @foreach (var city in Model.Cities){
-                        <option value="@city.Id"> @city.Name</option>
-                    }
-                </select>
-                <label for="Cities">City</label>
-                <span asp-validation-for="CityId" class="text-danger"></span>
-            </div>
+        <!-- First row -->
+        <div class="col-12 col-sm-6 form-floating mb-3">
+            <input asp-for="FirstName" type="text" placeholder="" class="form-control" id="firstName" required>
+            <label for="firstName">First Name</label>
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-sm-6 form-floating mb-3">
+            <input asp-for="LastName" type="text" placeholder="" class="form-control" id="lastName" required>
+            <label for="lastName">Last Name</label>
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-sm-6 form-floating mb-3">
+            <input asp-for="UserName" type="text" placeholder="" class="form-control" id="userName" required>
+            <label for="userName">User Name</label>
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
 
-            <div class="col-12 col-sm-8 form-floating mb-3">
-                <input asp-for="@Model.Address" type="text" class="form-control" id="address" required>
-                <label for="address">Address</label>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="col-12 col-sm-4 form-floating mb-3">
-                <input asp-for="@Model.ZipCode" type="text" class="form-control" id="zipCode" required>
-                <label for="zipCode">Zip Code</label>
-                <span asp-validation-for="ZipCode" class="text-danger"></span>
-            </div>
+        <div class="col-12 col-sm-6 form-floating mb-3">
+            <input asp-for="Phone" type="text" placeholder="" class="form-control" id="phone" required>
+            <label for="phone">Phone</label>
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
 
-            <div class="d-flex justify-content-end gap-3">
-                <button class="btn btn-blue" type="submit">
-                    Update
-                </button>
-                <button class="btn btn-white" type="reset">
-                    Cancel
-                </button>
-            </div>
-        </form>
+        <!-- Address blocks-->
+        <div class="col-12 col-sm-4 form-floating mb-3">
+            <select asp-for="CountryId" class="form-select" aria-label="" id="Countries" required>
+                <option selected value="">Select Country</option>
+                @foreach (var country in Model.Countries)
+                {
+                    <option value="@country.Id"> @country.Name</option>
+                }
+            </select>
+            <label for="Countries">Country</label>
+            <span asp-validation-for="CountryId" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-sm-4 form-floating mb-3">
+            <select asp-for="StateId" class="form-select" aria-label="" id="States" required>
+                <option selected value="">Select State</option>
+                @foreach (var state in Model.States)
+                {
+                    <option value="@state.Id"> @state.Name</option>
+                }
+            </select>
+            <label for="States">State</label>
+            <span asp-validation-for="StateId" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-sm-4 form-floating mb-3">
+            <select asp-for="CityId" class="form-select" aria-label="" id="Cities" required>
+                <option selected value="">Select City</option>
+                @foreach (var city in Model.Cities)
+                {
+                    <option value="@city.Id"> @city.Name</option>
+                }
+            </select>
+            <label for="Cities">City</label>
+            <span asp-validation-for="CityId" class="text-danger"></span>
+        </div>
+
+        <div class="col-12 col-sm-8 form-floating mb-3">
+            <input asp-for="@Model.Address" type="text" placeholder="" class="form-control" id="address" required>
+            <label for="address">Address</label>
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+        <div class="col-12 col-sm-4 form-floating mb-3">
+            <input asp-for="@Model.ZipCode" type="text" placeholder="" class="form-control" id="zipCode" required>
+            <label for="zipCode">Zip Code</label>
+            <span asp-validation-for="ZipCode" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3">
+            <button class="btn btn-blue" type="submit">
+                Update
+            </button>
+            <button class="btn btn-white" type="reset">
+                Cancel
+            </button>
+        </div>
+    </form>
 
 </div>
 
-@section Scripts{
- 
-<script>
-    $(document).ready(function () 
-    {
+@section Scripts {
 
-        $('#Countries').change(function () {
-            var countryId = $(this).val();
-            $.getJSON('@Url.Action("GetStates")', { countryId: countryId }, function (states) {
-                var statesSelect = $('#States');
-                statesSelect.empty();
-                $("#Cities").empty();
-                statesSelect.append('<option selected value="">Select State</option>');
-                $("#Cities").append('<option selected value="">Select City</option>');
-                $.each(states, function (index, state) {
-                    statesSelect.append($('<option/>', {
-                        value: state.value,
-                        text: state.text
-                    }));
+    <script>
+        $(document).ready(function () {
+
+            $('#Countries').change(function () {
+                var countryId = $(this).val();
+                $.getJSON('@Url.Action("GetStates")', { countryId: countryId }, function (states) {
+                    var statesSelect = $('#States');
+                    statesSelect.empty();
+                    $("#Cities").empty();
+                    statesSelect.append('<option selected value="">Select State</option>');
+                    $("#Cities").append('<option selected value="">Select City</option>');
+                    $.each(states, function (index, state) {
+                        statesSelect.append($('<option/>', {
+                            value: state.value,
+                            text: state.text
+                        }));
+                    });
                 });
             });
-        });
 
-        $('#States').change(function () {
-            var stateId = $(this).val();
-            $.getJSON('@Url.Action("GetCities")', { stateId: stateId }, function (cities) {
-                var citiesSelect = $('#Cities');
-                citiesSelect.empty();
-                citiesSelect.append('<option selected value="">Select City</option>');
-                $.each(cities, function (index, city) {
-                    citiesSelect.append($('<option/>', {
-                        value: city.value,
-                        text: city.text
-                    }));
+            $('#States').change(function () {
+                var stateId = $(this).val();
+                $.getJSON('@Url.Action("GetCities")', { stateId: stateId }, function (cities) {
+                    var citiesSelect = $('#Cities');
+                    citiesSelect.empty();
+                    citiesSelect.append('<option selected value="">Select City</option>');
+                    $.each(cities, function (index, city) {
+                        citiesSelect.append($('<option/>', {
+                            value: city.value,
+                            text: city.text
+                        }));
+                    });
                 });
             });
+
+            $("#profileImage").change(function () {
+                const file = this.files[0];
+                if (file) {
+                    const fileReader = new FileReader();
+                    fileReader.onload = function (event) {
+                        $("#img-preview").attr("src", event.target.result);
+                    };
+                    fileReader.readAsDataURL(file);
+                }
+            });
+
         });
 
-        $("#profileImage").change(function () {
-            const file = this.files[0];
-            if (file) {
-                const fileReader = new FileReader();
-                fileReader.onload = function (event) {
-                    $("#img-preview").attr("src", event.target.result);
-                };
-                fileReader.readAsDataURL(file);
-            }
-        });
-
-    });
 
 
-
-</script>
+    </script>
 
 }
-
-

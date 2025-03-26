@@ -5,7 +5,7 @@
     Layout = "_Layout";
 }
 
-<div class="d-flex justify-content-between users mb-3">
+<div class="d-flex justify-content-between align-items-center users mb-3">
     <div>
         <h1 class="blue-text">Edit User</h1>
     </div>
@@ -27,17 +27,17 @@
 
         <!-- First row -->                       
         <div class="col-12 col-sm-6 form-floating mb-3">
-            <input asp-for="@Model.FirstName" type="text" class="form-control" id="firstName" >
+            <input asp-for="@Model.FirstName" type="text" placeholder="" class="form-control" id="firstName" >
             <label for="firstName">First Name</label>
             <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
         <div class="col-12 col-sm-6 form-floating mb-3">
-            <input asp-for="@Model.LastName" type="text" class="form-control" id="lastName" >
+            <input asp-for="@Model.LastName" type="text" placeholder="" class="form-control" id="lastName" >
                 <label for="lastName">Last Name</label>
                 <span asp-validation-for="LastName" class="text-danger"></span>
         </div>
         <div class="col-12 col-sm-6 form-floating mb-3">
-            <input asp-for="@Model.UserName" type="text" class="form-control" id="userName" >
+            <input asp-for="@Model.UserName" type="text" placeholder="" class="form-control" id="userName" >
                 <label for="firstName">User Name</label>
                 <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
@@ -51,9 +51,9 @@
             </select>
             <label for="roles">Role</label>
         </div>
-        <input asp-for="@Model.Email" type="text" class="form-control" id="email" hidden>
+        <input asp-for="@Model.Email" type="text" placeholder="" class="form-control" id="email" hidden>
         <div class="col-12 col-sm-6 form-floating mb-3">
-            <input value="@Model.Email" type="text" class="form-control" id="email" disabled>
+            <input value="@Model.Email" type="text" placeholder="" class="form-control" id="email" disabled>
             <label for="firstName">Email</label>
         </div>
         <div class="col-12 col-sm-6 form-floating mb-3">
@@ -105,17 +105,17 @@
             <label for="cities">City</label>
         </div>
         <div class="col-12 col-sm-4 form-floating mb-3">
-            <input asp-for="@Model.ZipCode" type="text" class="form-control" id="zipCode" >
+            <input asp-for="@Model.ZipCode" type="text" placeholder="" class="form-control" id="zipCode" >
             <label for="floatingPassword">Zip Code</label>
             <span asp-validation-for="ZipCode" class="text-danger"></span>
         </div>
         <div class="col-12 col-sm-4 form-floating mb-3">
-            <input asp-for="@Model.Address" type="text" class="form-control" id="address" >
+            <input asp-for="@Model.Address" type="text" placeholder="" class="form-control" id="address" >
             <label for="floatingPassword">Address</label>
             <span asp-validation-for="Address" class="text-danger"></span>
         </div>
         <div class="col-12 col-sm-4 form-floating mb-3">
-             <input asp-for="@Model.Phone" type="text" class="form-control" id="phone" >
+             <input asp-for="@Model.Phone" type="text" placeholder="" class="form-control" id="phone" >
             <label for="phone">Phone</label>
             <span asp-validation-for="Phone" class="text-danger"></span>
         </div>

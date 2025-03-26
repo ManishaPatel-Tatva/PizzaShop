@@ -77,7 +77,8 @@
                     <a type="button" class="downloadInvoiceBtn btn ps-0" data-id="@order.OrderId">
                         <img src="~/images/icons/filetype-pdf.svg" alt="" />
                     </a>
-                    <a type="button" class="ViewOrderBtn btn ps-0" data-id="@order.OrderId">
+                    <a asp-action="OrderDetails" asp-controller="Orders"
+                        type="button" class="ViewOrderBtn btn ps-0" data-id="@order.OrderId">
                         <img src="~/images/icons/eye-open.svg" alt="">
                     </a>
                 </td>
