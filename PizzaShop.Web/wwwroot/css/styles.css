@@ -497,11 +497,15 @@ td{
     /* height: 50px; */
 }
 
-/* .dateRange-div .form-floating>.form-control{
-    padding-top: 0px;
-    padding-bottom: 0px;
-} */
 
+
+.dateRange-div .form-floating>.form-control{
+    max-width: fit-content;
+}
+
+td{
+    vertical-align: center;
+}
 
 
 

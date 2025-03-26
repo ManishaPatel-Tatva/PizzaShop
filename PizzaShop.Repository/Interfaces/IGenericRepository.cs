@@ -29,6 +29,11 @@ public interface IGenericRepository<T>
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null
     );
 
+    Task<IEnumerable<T>> GetRecordDetails(
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        List<Expression<Func<T, object>>>? includes = null);
+
     Task<T?> GetByIdAsync(long id);
 
     Task<T?> GetByStringAsync(Expression<Func<T, bool>> predicate);
