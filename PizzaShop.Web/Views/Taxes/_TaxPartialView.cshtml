@@ -21,9 +21,13 @@
             </div>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="Type" type="text" class="form-control" placeholder="">
-                <label asp-for="Type">Type*</label>
-                <span asp-validation-for="Type" class="text-danger"></span>
+                <select asp-for="IsPercentage" class="form-select" aria-label="" id="selectType">
+                    <option selected value="">Tax Type*</option>
+                    <option value="true">Percentage</option>
+                    <option value="false">Flat Amount</option>
+                </select>
+                <label for="selectType">Type</label>
+                <span asp-validation-for="IsPercentage" class="text-danger"></span>
             </div>
 
             <div class="col-12 col-sm-6 form-floating mb-3">

@@ -169,15 +169,6 @@ nav{
     z-index: 10;
 }
 
-.searchBox{
-    position: relative;
-}
-
-.searchIcon{
-    position: absolute;
-    right: 8px;
-    top: 5px;
-}
 
 /* Users */
 .btn-blue{
@@ -277,7 +268,7 @@ td{
 }
 
 .category-list, .modifierGroup-list, .section-list{
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 350px;
 }
 
@@ -287,6 +278,10 @@ td{
 
 .EditDeleteCategory, .EditDeleteModifierGroup, .EditDeleteSection{
     visibility: hidden;
+}
+
+.search-group{
+    min-width: 200px;
 }
 
 table{

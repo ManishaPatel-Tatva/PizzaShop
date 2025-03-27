@@ -930,9 +930,7 @@ public partial class PizzaShopContext : DbContext
 
         modelBuilder.Entity<Taxis>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("taxes_pkey");
-
-            entity.ToTable("taxes");
+            entity.HasKey(e => e.Id).HasName("Taxes_pkey");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.CreatedAt)
@@ -943,13 +941,14 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.DefaultTax).HasColumnName("default_tax");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.IsEnabled).HasColumnName("is_enabled");
+            entity.Property(e => e.IsPercentage)
+                .IsRequired()
+                .HasDefaultValueSql("true")
+                .HasColumnName("is_percentage");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
             entity.Property(e => e.TaxValue).HasColumnName("tax_value");
-            entity.Property(e => e.Type)
-                .HasColumnType("character varying")
-                .HasColumnName("type");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
@@ -958,11 +957,11 @@ public partial class PizzaShopContext : DbContext
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.TaxisCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("taxes_created_by_fkey");
+                .HasConstraintName("Taxes_created_by_fkey");
 
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.TaxisUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
-                .HasConstraintName("taxes_updated_by_fkey");
+                .HasConstraintName("Taxes_updated_by_fkey");
         });
 
         modelBuilder.Entity<Unit>(entity =>

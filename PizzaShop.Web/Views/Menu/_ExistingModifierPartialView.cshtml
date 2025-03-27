@@ -6,13 +6,13 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">
-                    <input class="form-check-input me-2 " type="checkbox" value="" id="existingModifierParentCb"> 
+                <th scope="col" class="col">
+                    <input class="form-check-input me-2 " type="checkbox" value="" id="existingModifierParentCb">
                     Name
                 </th>
-                <th scope="col">Unit</th>
-                <th scope="col">Rate</th>
-                <th scope="col" style="width: 100px;">Quantity</th>
+                <th scope="col" class="col">Unit</th>
+                <th scope="col" class="col">Rate</th>
+                <th scope="col" class="col-1">Quantity</th>
             </tr>
         </thead>
         <tbody class="" id="">
@@ -20,7 +20,8 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" class="existingModifierChildCb me-2" value="" id="" class="me-2 " data-id="@modifier.ModifierId" data-name="@modifier.ModifierName">
+                        <input type="checkbox" class="existingModifierChildCb me-2" value="" id="" class="me-2 "
+                            data-id="@modifier.ModifierId" data-name="@modifier.ModifierName">
                         @modifier.ModifierName
                     </td>
                     <td>@modifier.UnitName</td>

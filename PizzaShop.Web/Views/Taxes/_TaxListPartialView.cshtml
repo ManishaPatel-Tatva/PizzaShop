@@ -3,16 +3,16 @@
 @model TaxPaginationViewModel
 
 <!-- Table -->
-<div class="table-responsive">
+<div class="table-responsive p-2">
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">IsEnabled</th>
-                <th scope="col">Default</th>
-                <th scope="col">TaxValue</th>
-                <th scope="col">Action</th>
+                <th scope="col" class="col">Name</th>
+                <th scope="col" class="col">Type</th>
+                <th scope="col" class="col">IsEnabled</th>
+                <th scope="col" class="col">Default</th>
+                <th scope="col" class="col">TaxValue</th>
+                <th scope="col" class="col-1">Action</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -22,7 +22,7 @@
                     <td scope="row">
                         @tax.Name
                     </td>
-                    <td>@tax.Type</td>
+                    <td>@(tax.IsPercentage == true ? "Percentage" : "Flat Amount")</td>
                     <td>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="isEnabledCheckbox"
@@ -35,7 +35,9 @@
                                 @(tax.Default ? "checked" : "")>
                         </div>
                     </td>
-                    <td>@tax.TaxValue</td>
+                    <td>
+                        @(tax.IsPercentage == true ? tax.TaxValue+"%" : "₹"+tax.TaxValue)
+                    </td>
                     <td>
                         <a type="button" class="btn editTaxBtn ps-0" data-bs-toggle="modal" data-bs-target="#addTaxModal"
                             data-id="@tax.TaxId">

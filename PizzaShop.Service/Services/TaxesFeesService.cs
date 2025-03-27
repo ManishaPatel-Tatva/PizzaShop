@@ -36,7 +36,7 @@ public class TaxesFeesService : ITaxesFeesService
             {
                 TaxId = t.Id,
                 Name = t.Name,
-                Type = t.Type,
+                IsPercentage = (bool)t.IsPercentage,
                 IsEnabled = t.IsEnabled,
                 Default = t.DefaultTax,
                 TaxValue = t.TaxValue
@@ -58,7 +58,7 @@ public class TaxesFeesService : ITaxesFeesService
 
         model.TaxId = TaxId;
         model.Name = tax.Name;
-        model.Type = tax.Type;
+        model.IsPercentage = (bool)tax.IsPercentage;
         model.IsEnabled = tax.IsEnabled;
         model.Default = tax.DefaultTax;
         model.TaxValue = tax.TaxValue;
@@ -90,7 +90,7 @@ public class TaxesFeesService : ITaxesFeesService
         Taxis tax = new()
         {
             Name = model.Name,
-            Type = model.Type,
+            IsPercentage = model.IsPercentage,
             IsEnabled = model.IsEnabled,
             DefaultTax = model.Default,
             TaxValue = model.TaxValue,
@@ -106,7 +106,7 @@ public class TaxesFeesService : ITaxesFeesService
         Taxis tax = await _taxesRepository.GetByIdAsync(model.TaxId);
 
         tax.Name = model.Name;
-        tax.Type = model.Type;
+        tax.IsPercentage = model.IsPercentage;
         tax.IsEnabled = model.IsEnabled;
         tax.DefaultTax = model.Default;
         tax.TaxValue = model.TaxValue;

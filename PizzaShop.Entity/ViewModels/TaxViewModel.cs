@@ -10,8 +10,8 @@ public class TaxViewModel
     public string Name { get; set; }
 
     [Required(ErrorMessage = "Type is required.")]
-    [StringLength(50, ErrorMessage = "Type cannot exceed 50 characters.")]
-    public string Type { get; set; }
+    public bool? IsPercentage { get; set; } = true;
+    // public string Type { get; set; }
 
     [Display(Name = "Is Enabled")]
     public bool IsEnabled { get; set; }
