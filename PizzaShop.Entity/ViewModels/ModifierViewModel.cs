@@ -9,7 +9,7 @@ public class ModifierViewModel
 
     public long ModifierGroupId { get; set; } = 0;
     public List<ModifierGroup>? ModifierGroups { get; set; } = new List<ModifierGroup>();
-    public List<long>  SelectedMgList{ get; set; } = new List<long>();
+    public List<long> SelectedMgList{ get; set; } = new List<long>();
 
 
     [Required(ErrorMessage = "Name is required")]
@@ -19,7 +19,7 @@ public class ModifierViewModel
 
     [Required(ErrorMessage = "Unit is required")]
     [Range(1, int.MaxValue, ErrorMessage = "Unit is required")]
-    public long UnitId { get; set; }
+    public long UnitId { get; set; } = 0;
     public string? UnitName { get; set; } = null!;
     public List<Unit>? Units { get; set; } = new List<Unit>();
 

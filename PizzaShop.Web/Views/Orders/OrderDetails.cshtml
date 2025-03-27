@@ -1,17 +1,230 @@
 @{
-    ViewData["Title"] = "Add User";
+    ViewData["Title"] = "Order Details";
     Layout = "_Layout";
 }
 
-<!-- Order Detail heading and back button -->
-<div class="d-flex justify-content-between align-items-center users mb-3">
-    <div>
-        <h1 class="blue-text">Order-Details</h1>
+<div class="d-flex justify-content-center">
+
+    <div class="w-75 d-flex flex-column gap-3">
+        <!-- Order Detail heading and back button -->
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="blue-text">Order-Details</h1>
+            </div>
+            <div>
+                <a asp-action="Index" asp-controller="Orders" class="btn btn-white">
+                    <img src="images/icons/chevron-left-blue.svg" alt="">
+                    <span>Back</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Order Summary bg-white div starts-->
+        <div class="bg-white p-3 pt-2 d-flex flex-column gap-2 rounded-1">
+
+            <!-- Heading and export button -->
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fs-3 fw-semibold">Order Summary</span>
+                    <span class="bg-light-blue">InProgress</span>
+                </div>
+                <button class="btn btn-blue text-nowrap d-flex align-items-center gap-2" id="exportSummaryBtn">
+                    <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
+                    Export
+                </button>
+            </div>
+
+            <div>
+                <span class="fw-semibold">Invoice No. :</span>
+                <span>#DOM2025000229</span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <span>
+                    <span class="fw-semibold">Paid on :</span>
+                </span>
+                <span>
+                    <span class="fw-semibold">Placed on :</span>
+                    <span class="">20-08-2024 15:12</span>
+                </span>
+                <span>
+                    <span class="fw-semibold">Modified on :</span>
+                    <span class="">22-01-2025 11:47</span>
+                </span>
+                <span>
+                    <span class="fw-semibold">Order Duration :</span>
+                </span>
+            </div>
+
+        </div>
+        <!-- Order Summary bg-white div ends-->
+
+
+        <!-- Customer and Table Cards starts-->
+        <div class="d-flex gap-2">
+
+            <!-- Customer Details -->
+            <div class="bg-white p-3 w-100 rounded-1">
+                <div class="d-flex align-items-center pb-3 gap-2">
+                    <img src="~/images/icons/person-lines-fill.svg" alt="" width="25px">
+                    <span class="fs-3 fw-semibold">Customer Details</span>
+                </div>
+
+                <div>
+                    <div>
+                        <span>Name:</span>
+                        <span>Ajeet Lodhi</span>
+                    </div>
+
+                    <div>
+                        <span>Phone:</span>
+                        <span>9874563210</span>
+                    </div>
+
+                    <div>
+                        <span>No of Person:</span>
+                        <span>7</span>
+                    </div>
+
+                    <div>
+                        <span>Email:</span>
+                        <span>ajeet@yopmail.com</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Table Details -->
+            <div class="bg-white p-3 w-100 rounded-1">
+                <div class="d-flex align-items-center pb-3 gap-2">
+                    <img src="~/images/icons/dining-table-icon.svg" alt="" width="25px">
+                    <span class="fs-3 fw-semibold">Table Details</span>
+                </div>
+
+                <div>
+                    <div>
+                        <span>Table:</span>
+                        <span>T3</span>
+                    </div>
+
+                    <div>
+                        <span>Section:</span>
+                        <span>Ground Floor</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- Customer and Table Cards ends-->
+
+        <!-- Order Items starts-->
+        <div class="bg-white p-3">
+            <div class="fs-3 fw-semibold">Order Items</div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col-1">Sr.No.</th>
+                            <th scope="col" class="col">Item</th>
+                            <th scope="col" class="col">Quantity</th>
+                            <th scope="col" class="col">Price</th>
+                            <th scope="col" class="col-1 text-end">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                Grilled burger
+                                <ul class="">
+                                    <li>Tomato</li>
+                                </ul>
+                            </td>
+                            <td>
+                                1
+                                <ul class="list-unstyled">
+                                    <li>1</li>
+                                </ul>
+                            </td>
+                            
+                            <td>
+                                70
+                                <ul class="list-unstyled">
+                                    <li>10</li>
+                                </ul>
+                            </td>
+                            
+                            <td class="text-end">
+                                70
+                                <ul class="list-unstyled">
+                                    <li>10</li>
+                                </ul>
+                            </td>
+                            
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                Grilled burger
+                                <ul class="">
+                                    <li>Tomato</li>
+                                </ul>
+                            </td>
+                            <td>
+                                1
+                                <ul class="list-unstyled">
+                                    <li>1</li>
+                                </ul>
+                            </td>
+                            
+                            <td>
+                                70
+                                <ul class="list-unstyled">
+                                    <li>10</li>
+                                </ul>
+                            </td>
+                            
+                            <td class="text-end">
+                                70
+                                <ul class="list-unstyled">
+                                    <li>10</li>
+                                </ul>
+                            </td>
+                            
+                        </tr>
+                       
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-end ">
+                <table class="table table-borderless subtotal-table me-2">
+                    <tbody>
+                        <tr>
+                            <td class="text-start">Subtotal:</td>
+                            <td class="text-end">₹500</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start">GST</td>
+                            <td class="text-end">₹100</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start">Total:</td>
+                            <td class="text-end">₹600</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Order Items ends-->
+
+
+
     </div>
-    <div>
-        <a asp-action="Index" asp-controller="Orders" class="btn btn-white">
-            <img src="images/icons/chevron-left-blue.svg" alt="">
-            <span>Back</span>
-        </a>  
-    </div>
+
+
+
 </div>

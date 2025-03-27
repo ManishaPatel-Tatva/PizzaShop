@@ -29,6 +29,8 @@ public partial class Table
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
+    public virtual ICollection<OrderTableMapping> OrderTableMappings { get; set; } = new List<OrderTableMapping>();
+
     public virtual Section Section { get; set; } = null!;
 
     public virtual TableStatus Status { get; set; } = null!;

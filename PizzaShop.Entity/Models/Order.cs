@@ -37,11 +37,17 @@ public partial class Order
 
     public virtual ICollection<CustomersReview> CustomersReviews { get; set; } = new List<CustomersReview>();
 
+    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
     public virtual ICollection<Kot> Kots { get; set; } = new List<Kot>();
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
+    public virtual ICollection<OrderTableMapping> OrderTableMappings { get; set; } = new List<OrderTableMapping>();
+
     public virtual PaymentMethod PaymentMethod { get; set; } = null!;
+
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual OrderStatus Status { get; set; } = null!;
 

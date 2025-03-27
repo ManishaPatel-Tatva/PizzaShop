@@ -25,6 +25,10 @@ a{
     background-color: #fdf5e6;
 }
 
+.bg-light-blue{
+    background-color: lightblue;
+}
+
 .blue-text{
     color: #0066A8 !important;
 }
@@ -437,6 +441,16 @@ table td,th{
 .form-check-input:checked {
     background-color: #0066A8;
     border-color: #0066A8;
+}
+
+/* Order Details */
+.subtotal-table{
+    width: 160px;
+}
+
+.subtotal-table td{
+    color: black !important;
+    padding: 0px;
 }
 
 

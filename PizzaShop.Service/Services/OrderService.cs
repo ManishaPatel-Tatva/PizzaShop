@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using PizzaShop.Entity.Models;
@@ -31,7 +32,8 @@ public class OrderService : IOrderService
         return model;
     }
 
-
+    /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderPaginationViewModel> GetPagedOrder(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, int pageSize, int pageNumber, string search)
     {
         (IEnumerable<Order> orders, int totalRecord) = await _orderRepository.GetPagedRecordsAsync(
@@ -124,6 +126,8 @@ public class OrderService : IOrderService
         return model;
     }
 
+    /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<byte[]> ExportOrderDetails(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, string search)
     {
         IEnumerable<Order> orders = await _orderRepository.GetRecordDetails(
@@ -454,4 +458,33 @@ public class OrderService : IOrderService
         return await Task.FromResult(package.GetAsByteArray());
     }
     
+    /*----------------------------------------------------Order Details----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<OrderDetailViewModel> GetOrderDetail(long orderId)
+    {
+        var order =  _orderRepository.GetByConditionInclude(
+            o => o.Id == orderId && !o.IsDeleted,
+            includes: new List<Expression<Func<Order, object>>>
+            {
+                o => o.Invoices,
+                o => o.Customer,
+                o => o.OrderTableMappings,
+                o => o.OrderItems,
+            },
+            thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
+            {
+                q => q.Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.OrderItemsModifiers)
+            }
+        ).Result
+        .Select(o => new OrderDetailViewModel{
+            OrderId = o.Id,
+            InvoiceNo = o.Invoices.Where(i => i.OrderId == o.Id).Select(i => i.InvoiceNo).First(),
+            PaidOn = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First().ToString() ?? "",
+            PlacedOn = o.CreatedAt.ToString(),
+            ModifiedOn = o.UpdatedAt.ToString() ?? "",
+            
+
+        });
+    }
 }

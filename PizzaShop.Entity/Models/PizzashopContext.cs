@@ -51,6 +51,10 @@ public partial class PizzaShopContext : DbContext
 
     public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
 
+    public virtual DbSet<OrderTableMapping> OrderTableMappings { get; set; }
+
+    public virtual DbSet<Payment> Payments { get; set; }
+
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
     public virtual DbSet<Permission> Permissions { get; set; }
@@ -275,41 +279,35 @@ public partial class PizzaShopContext : DbContext
             entity.ToTable("invoices");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CgstTax)
-                .HasPrecision(10, 2)
-                .HasColumnName("cgst_tax");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.CustomerId)
-                .HasColumnType("character varying")
-                .HasColumnName("customer_id");
+            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
             entity.Property(e => e.FinalAmount)
                 .HasPrecision(10, 2)
                 .HasColumnName("final_amount");
-            entity.Property(e => e.GstTax)
-                .HasPrecision(10, 2)
-                .HasColumnName("gst_tax");
             entity.Property(e => e.InvoiceNo)
                 .HasColumnType("character varying")
                 .HasColumnName("invoice_no");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
-            entity.Property(e => e.OrderId)
-                .HasColumnType("character varying")
-                .HasColumnName("order_id");
-            entity.Property(e => e.OtherTax)
-                .HasPrecision(10, 2)
-                .HasColumnName("other_tax");
-            entity.Property(e => e.SgstTax)
-                .HasPrecision(10, 2)
-                .HasColumnName("sgst_tax");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("invoices_created_by_fkey");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("invoices_customer_id_fkey");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("invoices_order_id_fkey");
         });
 
         modelBuilder.Entity<Item>(entity =>
@@ -663,6 +661,9 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.ModifierId).HasColumnName("modifier_id");
             entity.Property(e => e.OrderItemId).HasColumnName("order_item_id");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValueSql("1")
+                .HasColumnName("quantity");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
@@ -693,6 +694,50 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<OrderTableMapping>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("OrderTableMapping_pkey");
+
+            entity.ToTable("OrderTableMapping");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.TableId).HasColumnName("table_id");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderTableMappings)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("OrderTableMapping_order_id_fkey");
+
+            entity.HasOne(d => d.Table).WithMany(p => p.OrderTableMappings)
+                .HasForeignKey(d => d.TableId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("OrderTableMapping_table_id_fkey");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Payments_pkey");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Date)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("date");
+            entity.Property(e => e.IsPaid).HasColumnName("is_paid");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Payments_order_id_fkey");
+
+            entity.HasOne(d => d.PaymentMethod).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.PaymentMethodId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Payments_payment_method_id_fkey");
         });
 
         modelBuilder.Entity<PaymentMethod>(entity =>

@@ -25,5 +25,7 @@ public partial class PaymentMethod
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
     public virtual User? UpdatedByNavigation { get; set; }
 }

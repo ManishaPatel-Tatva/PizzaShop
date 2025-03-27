@@ -14,10 +14,10 @@ public class TaxViewModel
     // public string Type { get; set; }
 
     [Display(Name = "Is Enabled")]
-    public bool IsEnabled { get; set; }
+    public bool IsEnabled { get; set; } = true;
 
     [Display(Name = "Is Default")]
-    public bool Default { get; set; }
+    public bool Default { get; set; } =true;
 
     // [Range(0, 100, ErrorMessage = "Tax Value must be between 0 and 100.")]
     [Required(ErrorMessage = "Tax Value is required.")]

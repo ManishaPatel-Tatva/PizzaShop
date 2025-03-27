@@ -9,17 +9,9 @@ public partial class Invoice
 
     public string InvoiceNo { get; set; } = null!;
 
-    public string OrderId { get; set; } = null!;
+    public long OrderId { get; set; }
 
-    public string CustomerId { get; set; } = null!;
-
-    public decimal CgstTax { get; set; }
-
-    public decimal SgstTax { get; set; }
-
-    public decimal GstTax { get; set; }
-
-    public decimal OtherTax { get; set; }
+    public long CustomerId { get; set; }
 
     public decimal FinalAmount { get; set; }
 
@@ -30,4 +22,8 @@ public partial class Invoice
     public bool IsDeleted { get; set; }
 
     public virtual User CreatedByNavigation { get; set; } = null!;
+
+    public virtual Customer Customer { get; set; } = null!;
+
+    public virtual Order Order { get; set; } = null!;
 }
