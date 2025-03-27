@@ -245,6 +245,10 @@ td{
     border-radius: 0px;
 }
 
+.nav-pills .nav-link.active img{
+    filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);
+}
+
 .nav-link{
     color: black;
 }
@@ -272,7 +276,7 @@ td{
     margin-right: 4px;
 }
 
-.category-list, .modifierGroup-list{
+.category-list, .modifierGroup-list, .section-list{
     overflow-y: scroll;
     height: 350px;
 }
@@ -285,20 +289,17 @@ td{
     visibility: hidden;
 }
 
-.menu-table, .user-table{
+table{
     overflow-x: auto; 
     white-space: nowrap; 
 }
 
-.menu-table th{
-    color: #686868;
-}
 
-.menu-table td{
+table td{
     font-weight: 500;
 }
 
-.menu-table td,th{
+table td,th{
     color: #686868 !important;
     white-space: nowrap;
 }
@@ -438,37 +439,11 @@ td{
     max-width: 1300px;
 }
 
-.role-table td{
-    color: #686868;
-}
-
-.role-table thead{
-    font-weight: 700;
-}
-
-.role-table tbody{
-    font-weight: 600;
-}
-
 .form-check-input:checked {
     background-color: #0066A8;
     border-color: #0066A8;
 }
 
-/* Orders */
-.order-export-div{
-    /* height: 50px; */
-}
-
-
-
-.dateRange-div .form-floating>.form-control{
-    max-width: fit-content;
-}
-
-td{
-    vertical-align: center;
-}
 
 
 

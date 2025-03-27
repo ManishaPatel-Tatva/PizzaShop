@@ -3,89 +3,91 @@
 @model OrderPaginationViewModel
 
 <!-- Table -->
-<table class="table user-table">
-    <thead>
-        <tr class="">
-            <th scope="col" class="col ">
-                #Order
-                <button class="btn p-0 sortBtn" data-column="order" data-order="asc">
-                    <img src="~/images/icons/arrow-up.svg" alt="">
-                </button>
-                <button class="btn p-0 sortBtn" data-column="order" data-order="desc">
-                    <img src="~/images/icons/arrow-down.svg" alt="">
-                </button> 
-            </th>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr class="">
+                <th scope="col" class="col ">
+                    #Order
+                    <button class="btn p-0 sortBtn" data-column="order" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="order" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
 
-            <th scope="col" class="col " >
-                Date
-                <button class="btn p-0 sortBtn" data-column="date" data-order="asc">
-                    <img src="~/images/icons/arrow-up.svg" alt="">
-                </button>
-                <button class="btn p-0 sortBtn" data-column="date" data-order="desc">
-                    <img src="~/images/icons/arrow-down.svg" alt="">
-                </button>
-            </th>
+                <th scope="col" class="col ">
+                    Date
+                    <button class="btn p-0 sortBtn" data-column="date" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="date" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
 
-            <th scope="col" class="col ">
-                Customer
-                <button class="btn p-0 sortBtn" data-column="customer" data-order="asc">
-                    <img src="~/images/icons/arrow-up.svg" alt="">
-                </button>
-                <button class="btn p-0 sortBtn" data-column="customer" data-order="desc">
-                    <img src="~/images/icons/arrow-down.svg" alt="">
-                </button>
-            </th>
+                <th scope="col" class="col ">
+                    Customer
+                    <button class="btn p-0 sortBtn" data-column="customer" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="customer" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
 
-            <th scope="col" class="col">Status</th>
-            <th scope="col" class="col">Payment Mode</th>
-            <th scope="col" class="col">Rating</th>
-             <th scope="col" class="col">
-                Total Amount
-                <button class="btn p-0 sortBtn" data-column="amount" data-order="asc">
-                    <img src="~/images/icons/arrow-up.svg" alt="">
-                </button>
-                <button class="btn p-0 sortBtn" data-column="amount" data-order="desc">
-                    <img src="~/images/icons/arrow-down.svg" alt="">
-                </button>
-            </th>
-            <th scope="col" class="col-1">Action</th>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
-        @foreach (OrderViewModel order in Model.Orders)
-        {
-            <tr>
-                <td scope="row">
-                    #@order.OrderId
-                </td>
-                <td>@order.Date</td>
-                <td>@order.CustomerName</td>
-                <td>@order.Status</td>
-                <td>@order.PaymentMode</td>
-                <td>
-                    @for (int num = 1; num <= order.Rating; num++)
-                    {
-                        <i class="fa fa-star clr-yellow"></i>
-                    }
-                    @for (int num = 1; num <= (5 - order.Rating); num++)
-                    {
-                        <i class="fa fa-star-o clr-yellow"></i>
-                    }
-                </td>
-                <td>@order.TotalAmount</td>
-                <td>
-                    <a type="button" class="downloadInvoiceBtn btn ps-0" data-id="@order.OrderId">
-                        <img src="~/images/icons/filetype-pdf.svg" alt="" />
-                    </a>
-                    <a asp-action="OrderDetails" asp-controller="Orders"
-                        type="button" class="ViewOrderBtn btn ps-0" data-id="@order.OrderId">
-                        <img src="~/images/icons/eye-open.svg" alt="">
-                    </a>
-                </td>
+                <th scope="col" class="col">Status</th>
+                <th scope="col" class="col">Payment Mode</th>
+                <th scope="col" class="col">Rating</th>
+                <th scope="col" class="col">
+                    Total Amount
+                    <button class="btn p-0 sortBtn" data-column="amount" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="amount" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
+                <th scope="col" class="col-1">Action</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody class="table-group-divider">
+            @foreach (OrderViewModel order in Model.Orders)
+            {
+                <tr>
+                    <td scope="row">
+                        #@order.OrderId
+                    </td>
+                    <td>@order.Date</td>
+                    <td>@order.CustomerName</td>
+                    <td>@order.Status</td>
+                    <td>@order.PaymentMode</td>
+                    <td>
+                        @for (int num = 1; num <= order.Rating; num++)
+                        {
+                            <i class="fa fa-star clr-yellow"></i>
+                        }
+                        @for (int num = 1; num <= (5 - order.Rating); num++)
+                        {
+                            <i class="fa fa-star-o clr-yellow"></i>
+                        }
+                    </td>
+                    <td>@order.TotalAmount</td>
+                    <td>
+                        <a type="button" class="downloadInvoiceBtn btn ps-0" data-id="@order.OrderId">
+                            <img src="~/images/icons/filetype-pdf.svg" alt="" />
+                        </a>
+                        <a asp-action="OrderDetails" asp-controller="Orders" type="button" class="ViewOrderBtn btn ps-0"
+                            data-id="@order.OrderId">
+                            <img src="~/images/icons/eye-open.svg" alt="">
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 <!-- Pagination Starts -->
 <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">

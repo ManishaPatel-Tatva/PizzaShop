@@ -56,6 +56,7 @@ public class TaxesFeesService : ITaxesFeesService
 
         Taxis tax = await _taxesRepository.GetByIdAsync(TaxId);
 
+        model.TaxId = TaxId;
         model.Name = tax.Name;
         model.Type = tax.Type;
         model.IsEnabled = tax.IsEnabled;

@@ -2,7 +2,9 @@
 @model TaxViewModel
 
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="mModalToggleLabel">Add Tax Modifier</h1>
+    <h1 class="modal-title fs-5" id="mModalToggleLabel">
+        @(Model.TaxId == 0 ? "Add New " : "Update") Tax
+    </h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
@@ -11,7 +13,6 @@
         <div class="form addTaxForm row">
 
             <input asp-for="TaxId" type="text" class="form-control" id="taxId" hidden>
-
 
             <div class="col-12 form-floating mb-3">
                 <input asp-for="Name" type="text" class="form-control" placeholder="" id="mName">
@@ -31,12 +32,12 @@
                 <span asp-validation-for="TaxValue" class="text-danger"></span>
             </div>
 
-            <div class="col-12 col-sm-6 col-lg-3 form-check form-switch mb-3 p-3 d-flex align-items-center">
+            <div class="col-12 col-sm-6 col-lg-3 form-check form-switch mb-3 px-3 d-flex align-items-center">
                 <input asp-for="IsEnabled" class="form-check-input m-0 fs-3" type="checkbox" role="switch">
                 <label class="form-check-label p-1" asp-for="IsEnabled">IsEnabled</label>
             </div>
 
-            <div class="col-12 col-sm-6 col-lg-3 form-check form-switch mb-3 p-3 d-flex align-items-center">
+            <div class="col-12 col-sm-6 col-lg-3 form-check form-switch mb-3 px-3 d-flex align-items-center">
                 <input asp-for="Default" class="form-check-input m-0 fs-3" type="checkbox" role="switch"
                     id="">
                 <label class="form-check-label p-1" asp-for="Default"> Default Tax</label>

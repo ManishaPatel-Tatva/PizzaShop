@@ -1,45 +1,47 @@
 @model PizzaShop.Entity.ViewModels.UsersListViewModel
 
 <!-- Table -->
-<table class="table user-table">
-    <thead>
-        <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Email</th>
-        <th scope="col">Phone</th>
-        <th scope="col">Role</th>
-        <th scope="col">Status</th>
-        <th scope="col">Action</th>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
-        @foreach(var user in Model.Users)
-        {
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td scope="row">
-                    <img src="@user.ProfileImageUrl" alt="" width="35px" height="35px" class="rounded-circle">
-                    <span>@user.FirstName @user.LastName</span>
-                </td>
-                <td>@user.Email</td>
-                <td>@user.Phone</td>
-                <td>@user.Role</td>
-                <td>
-                    <span class="@(user.Status==true?"bg-active":"bg-inactive")">@(user.Status==true?"Active":"Inactive")</span> 
-                </td>
-                <td>
-                    
-                    <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="ps-0 btn @(user.Role == "Admin"? "a-disabled":"")">
-                        <img src="~/images/icons/edit.svg" alt=""/>
-                    </a>
-                    
-                    <a type="button" class="btn deleteIcon @(user.Role == "Admin"? "a-disabled":"")" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId" >
-                        <img src="~/images/icons/delete.svg" alt="">
-                    </a>
-                </td>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Role</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
             </tr>
-        }       
-    </tbody>
-</table>
+        </thead>
+        <tbody class="table-group-divider">
+            @foreach(var user in Model.Users)
+            {
+                <tr>
+                    <td scope="row">
+                        <img src="@user.ProfileImageUrl" alt="" width="35px" height="35px" class="rounded-circle">
+                        <span>@user.FirstName @user.LastName</span>
+                    </td>
+                    <td>@user.Email</td>
+                    <td>@user.Phone</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <span class="@(user.Status==true?"bg-active":"bg-inactive")">@(user.Status==true?"Active":"Inactive")</span> 
+                    </td>
+                    <td>
+                        
+                        <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="ps-0 btn @(user.Role == "Admin"? "a-disabled":"")">
+                            <img src="~/images/icons/edit.svg" alt=""/>
+                        </a>
+                        
+                        <a type="button" class="btn deleteIcon @(user.Role == "Admin"? "a-disabled":"")" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId" >
+                            <img src="~/images/icons/delete.svg" alt="">
+                        </a>
+                    </td>
+                </tr>
+            }       
+        </tbody>
+    </table>
+</div>
 
 <!-- Pagination Starts -->
 <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
