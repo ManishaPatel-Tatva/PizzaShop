@@ -568,6 +568,9 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnType("character varying")
                 .HasColumnName("instructions");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.Members)
+                .HasDefaultValueSql("1")
+                .HasColumnName("members");
             entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.TotalAmount).HasColumnName("total_amount");
