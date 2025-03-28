@@ -569,7 +569,6 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.Members)
                 .HasDefaultValueSql("1")
                 .HasColumnName("members");
-            entity.Property(e => e.PaymentMethodId).HasColumnName("payment_method_id");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
             entity.Property(e => e.TotalAmount).HasColumnName("total_amount");
             entity.Property(e => e.UpdatedAt)
@@ -586,11 +585,6 @@ public partial class PizzaShopContext : DbContext
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("orders_customer_id_fkey");
-
-            entity.HasOne(d => d.PaymentMethod).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.PaymentMethodId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("orders_payment_method_id_fkey");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.StatusId)
@@ -674,6 +668,11 @@ public partial class PizzaShopContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("order_items_modifier_created_by_fkey");
 
+            entity.HasOne(d => d.Modifier).WithMany(p => p.OrderItemsModifiers)
+                .HasForeignKey(d => d.ModifierId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_items_modifier_modifier_id_fkey");
+
             entity.HasOne(d => d.OrderItem).WithMany(p => p.OrderItemsModifiers)
                 .HasForeignKey(d => d.OrderItemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -723,6 +722,7 @@ public partial class PizzaShopContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Date)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("date");
             entity.Property(e => e.IsPaid).HasColumnName("is_paid");
@@ -1059,12 +1059,6 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.ProfileImg)
                 .HasColumnType("character varying")
                 .HasColumnName("profile_img");
-            entity.Property(e => e.Resettoken)
-                .HasColumnType("character varying")
-                .HasColumnName("resettoken");
-            entity.Property(e => e.Resettokenexpiry)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("resettokenexpiry");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.StateId).HasColumnName("state_id");
             entity.Property(e => e.UpdatedAt)

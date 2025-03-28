@@ -3,6 +3,7 @@ namespace PizzaShop.Entity.ViewModels;
 public class OrderDetailViewModel
 {
     public long OrderId { get; set; }
+    public string OrderStatus { get; set; }
     public string InvoiceNo { get; set; }
     public string PaidOn { get; set; }
     public string PlacedOn { get; set; }
@@ -11,8 +12,8 @@ public class OrderDetailViewModel
     public string CustomerName { get; set; }
     public long CustomerPhone { get; set; }
     public int NoOfPerson { get; set; }
-    public string Email { get; set; }
-    public List<string> TableNameList { get; set; }
+    public string CustomerEmail { get; set; }
+    public List<string> TableList { get; set; }
     public string Section { get; set; }
     public List<OrderItemViewModel> ItemsList { get; set; } = new List<OrderItemViewModel>();
     public decimal Subtotal { get; set; }

@@ -35,6 +35,8 @@ public partial class Modifier
 
     public virtual ICollection<ModifierMapping> ModifierMappings { get; set; } = new List<ModifierMapping>();
 
+    public virtual ICollection<OrderItemsModifier> OrderItemsModifiers { get; set; } = new List<OrderItemsModifier>();
+
     public virtual Unit Unit { get; set; } = null!;
 
     public virtual User? UpdatedByNavigation { get; set; }

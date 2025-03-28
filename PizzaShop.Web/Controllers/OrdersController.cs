@@ -39,12 +39,12 @@ public class OrdersController : Controller
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
     }
 
-    public IActionResult OrderDetails()
+    public async Task<IActionResult> OrderDetails(long orderId)
     {
+        OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
         ViewData["sidebar-active"] = "Orders";
-        return View();
+        return View(model);
     }
-
 
 
 }

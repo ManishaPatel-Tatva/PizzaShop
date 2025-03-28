@@ -13,8 +13,6 @@ public partial class Order
 
     public long StatusId { get; set; }
 
-    public long PaymentMethodId { get; set; }
-
     public string? Instructions { get; set; }
 
     public decimal TotalAmount { get; set; }
@@ -44,8 +42,6 @@ public partial class Order
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual ICollection<OrderTableMapping> OrderTableMappings { get; set; } = new List<OrderTableMapping>();
-
-    public virtual PaymentMethod PaymentMethod { get; set; } = null!;
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 

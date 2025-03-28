@@ -444,13 +444,36 @@ table td,th{
 }
 
 /* Order Details */
+.dateRange-div button{
+    min-width: 80px;
+    max-width: 145px;
+}
+
 .subtotal-table{
-    width: 160px;
+    width: 200px;
 }
 
 .subtotal-table td{
     color: black !important;
     padding: 0px;
+}
+
+.order-detail{
+    max-width: 75%;
+}
+
+@media (max-width: 767px) {
+    .order-detail{
+        max-width: 90%;
+    }
+
+    .dateRange-div button{
+        width: 145px;
+    }
+    .order-export-div{
+        width: 300px;
+    }
+
 }
 
 

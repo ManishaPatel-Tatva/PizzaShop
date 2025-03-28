@@ -26,13 +26,13 @@
                     <td>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="isEnabledCheckbox"
-                                @(tax.IsEnabled ? "checked" : "")>
+                                @(tax.IsEnabled ? "checked" : "") disabled>
                         </div>
                     </td>
                     <td>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="defaultTaxCheckbox"
-                                @(tax.Default ? "checked" : "")>
+                                @(tax.Default ? "checked" : "") disabled>
                         </div>
                     </td>
                     <td>

@@ -15,12 +15,13 @@ public class OrderService : IOrderService
 {
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
+    private readonly IGenericRepository<Taxis> _taxesRepository;
 
-    public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository)
+    public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository, IGenericRepository<Taxis> taxesRepository)
     {
         _orderRepository = orderRepository;
         _orderStatusRepository = orderStatusRepository;
-
+        _taxesRepository = taxesRepository;
     }
 
     public async Task<OrderIndexViewModel> GetOrderIndex()
@@ -46,10 +47,16 @@ public class OrderService : IOrderService
             includes: new List<Expression<Func<Order, object>>>
             {
                 o => o.Customer,
-                o => o.PaymentMethod,
+                o => o.Payments,
                 o => o.Status,
                 o => o.CustomersReviews
+            },
+            thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
+            {
+                q => q.Include(op => op.Payments)
+                .ThenInclude(p => p.PaymentMethod)
             }
+            
         );
 
         //For applying status filter
@@ -79,9 +86,9 @@ public class OrderService : IOrderService
         }
 
         //Filtering Custom Dates
-        if(fromDate.HasValue)
+        if (fromDate.HasValue)
             orders = orders.Where(o => o.Date >= fromDate.Value);
-        if(toDate.HasValue)
+        if (toDate.HasValue)
             orders = orders.Where(o => o.Date <= toDate.Value);
 
         //For sorting the column according to order
@@ -116,7 +123,7 @@ public class OrderService : IOrderService
                 Date = o.Date,
                 CustomerName = o.Customer.Name,
                 Status = o.Status.Name,
-                PaymentMode = o.PaymentMethod.Name,
+                PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
                 Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
                 TotalAmount = o.TotalAmount
             })
@@ -138,7 +145,7 @@ public class OrderService : IOrderService
             includes: new List<Expression<Func<Order, object>>>
             {
                 o => o.Customer,
-                o => o.PaymentMethod,
+                o => o.Payments,
                 o => o.Status,
                 o => o.CustomersReviews
             }
@@ -171,9 +178,9 @@ public class OrderService : IOrderService
         }
 
         //Filtering Custom Dates
-        if(fromDate.HasValue)
+        if (fromDate.HasValue)
             orders = orders.Where(o => o.Date >= fromDate.Value);
-        if(toDate.HasValue)
+        if (toDate.HasValue)
             orders = orders.Where(o => o.Date <= toDate.Value);
 
         //For sorting the column according to order
@@ -208,7 +215,7 @@ public class OrderService : IOrderService
                 Date = o.Date,
                 CustomerName = o.Customer.Name,
                 Status = o.Status.Name,
-                PaymentMode = o.PaymentMethod.Name,
+                PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
                 Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
                 TotalAmount = o.TotalAmount
             })
@@ -426,7 +433,7 @@ public class OrderService : IOrderService
             startCol += 3;
 
             worksheet.Cells[row, startCol, row, startCol + 1].Merge = true;
-            worksheet.Cells[row, startCol].Value = order.PaymentMethod.Name;
+            worksheet.Cells[row, startCol].Value = order.Payments.Where(p => p.OrderId == order.Id).Select(p => p.PaymentMethod.Name).First();
             startCol += 2;
 
             worksheet.Cells[row, startCol, row, startCol + 1].Merge = true;
@@ -457,34 +464,121 @@ public class OrderService : IOrderService
         }
         return await Task.FromResult(package.GetAsByteArray());
     }
-    
+
     /*----------------------------------------------------Order Details----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderDetailViewModel> GetOrderDetail(long orderId)
     {
-        var order =  _orderRepository.GetByConditionInclude(
+        try{
+
+        var orderDetail =  _orderRepository.GetByConditionInclude(
             o => o.Id == orderId && !o.IsDeleted,
             includes: new List<Expression<Func<Order, object>>>
             {
+                o => o.Status,
                 o => o.Invoices,
                 o => o.Customer,
                 o => o.OrderTableMappings,
                 o => o.OrderItems,
+                o => o.Payments
             },
             thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
             {
+                q => q.Include(o => o.OrderTableMappings)
+                    .ThenInclude(otm => otm.Table)
+                    .ThenInclude(t => t.Section),
+                q => q.Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Item),   
                 q => q.Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.OrderItemsModifiers)
-            }
-        ).Result
-        .Select(o => new OrderDetailViewModel{
-            OrderId = o.Id,
-            InvoiceNo = o.Invoices.Where(i => i.OrderId == o.Id).Select(i => i.InvoiceNo).First(),
-            PaidOn = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First().ToString() ?? "",
-            PlacedOn = o.CreatedAt.ToString(),
-            ModifiedOn = o.UpdatedAt.ToString() ?? "",
-            
+                    .ThenInclude(m => m.Modifier),
+                q => q.Include(o => o.Payments)
+                    .ThenInclude(p => p.PaymentMethod)
 
-        });
+            }
+        ).Result;
+
+        var model = orderDetail
+        .Select(o => new OrderDetailViewModel
+        {
+            OrderId = o.Id,
+
+            OrderStatus = o.Status.Name,
+
+            InvoiceNo = o.Invoices
+                        .Where(i => i.OrderId == o.Id)
+                        .Select(i => i.InvoiceNo)
+                        .First(),
+
+            PaidOn = o.Payments
+                    .Where(p => p.OrderId == o.Id)
+                    .Select(p => p.Date)
+                    .First()
+                    .ToString() ?? "",
+
+            PlacedOn = o.CreatedAt.ToString(),
+
+            ModifiedOn = o.UpdatedAt.ToString() ?? "",
+
+            OrderDuration = (o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First()
+                            - o.CreatedAt)
+                            .ToString() ?? "",
+
+            CustomerName = o.Customer.Name,
+
+            CustomerPhone = o.Customer.Phone,
+
+            NoOfPerson = o.Members,
+
+            CustomerEmail = o.Customer.Email,
+
+            TableList = o.OrderTableMappings
+                        .Where(ot => ot.OrderId == o.Id)
+                        .Select(ot => ot.Table.Name)
+                        .ToList(),
+
+            Section = o.OrderTableMappings
+                    .Where(ot => ot.OrderId == o.Id)
+                    .Select(ot => ot.Table.Section.Name)
+                    .First(),
+
+            ItemsList = o.OrderItems
+                        .Where(oi => oi.OrderId == o.Id)
+                        .Select(oi => new OrderItemViewModel
+                        {
+                            ItemName = oi.Item.Name,
+                            Quantity = oi.Quantity,
+                            Price = oi.Item.Rate,
+                            TotalAmount = oi.Quantity * oi.Item.Rate,
+                            ModifiersList = oi.OrderItemsModifiers
+                                            .Where(oim => oim.OrderItemId == oi.Id)
+                                            .Select(oim => new ModifierViewModel
+                                            {
+                                                ModifierName = oim.Modifier.Name,
+                                                Quantity = oim.Quantity,
+                                                Rate = oim.Modifier.Rate,
+                                                TotalAmount = oim.Quantity * oim.Modifier.Rate
+                                            }).ToList()
+                        }).ToList(),
+                    
+            Subtotal = o.TotalAmount
+        }).FirstOrDefault();
+
+
+        model.TaxList =  _taxesRepository.GetAll()
+                        .Select(t => new TaxViewModel{
+                            Name = t.Name,
+                            IsPercentage = t.IsPercentage,
+                            IsEnabled = t.IsEnabled,
+                            TaxValue = t.TaxValue
+        }).ToList();
+
+        return model;
+
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
     }
 }

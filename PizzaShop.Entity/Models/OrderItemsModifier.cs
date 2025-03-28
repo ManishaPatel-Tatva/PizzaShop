@@ -25,6 +25,8 @@ public partial class OrderItemsModifier
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
+    public virtual Modifier Modifier { get; set; } = null!;
+
     public virtual OrderItem OrderItem { get; set; } = null!;
 
     public virtual User? UpdatedByNavigation { get; set; }

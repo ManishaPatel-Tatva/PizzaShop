@@ -264,7 +264,7 @@ public class CategoryItemService : ICategoryItemService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
     {
-        ItemModifierViewModel itemModifierGroups = _modifierGroupRepository.GetByConditionInclude(
+        ItemModifierViewModel itemModifierGroups =  _modifierGroupRepository.GetByConditionInclude(
             m => m.Id == modifierGroupId && !m.IsDeleted,
             includes: new List<Expression<Func<ModifierGroup, object>>>
             {
