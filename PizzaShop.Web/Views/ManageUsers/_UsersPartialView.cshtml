@@ -1,5 +1,7 @@
 @model PizzaShop.Entity.ViewModels.UsersListViewModel
-
+@{
+    List<string> permissions = User.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
+}
 <!-- Table -->
 <div class="table-responsive">
     <table class="table">
@@ -29,7 +31,7 @@
                     </td>
                     <td>
                         
-                        <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="ps-0 btn @(user.Role == "Admin"? "a-disabled":"")">
+                        <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="ps-0 btn @(user.Role == "Admin" || permissions.Contains("Edit_Users") ? "a-disabled":"")">
                             <img src="~/images/icons/edit.svg" alt=""/>
                         </a>
                         

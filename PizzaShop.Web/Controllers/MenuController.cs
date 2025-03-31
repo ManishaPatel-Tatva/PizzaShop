@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
+using PizzaShop.Web.Filters;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -22,11 +23,11 @@ public class MenuController : Controller
 
     /*--------------------------------------------------------Menu Index---------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+    [CustomAuthorize("View_Menu")]
     [HttpGet]
     public IActionResult Index()
     {
-        var categoriesList = _categoryItemService.GetCategory();
+        List<CategoryViewModel>? categoriesList = _categoryItemService.GetCategory();
 
         MenuViewModel model = new()
         {
@@ -47,12 +48,12 @@ public class MenuController : Controller
     #region Add Category
     /*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    
+    [CustomAuthorize("Edit_Menu")]
     [HttpPost]
     public async Task<IActionResult> SaveCategory(CategoryViewModel model)
     {
-        var token = Request.Cookies["authToken"];
-        var createrEmail = _jwtService.GetClaimValue(token, "email");
+        string? token = Request.Cookies["authToken"];
+        string? createrEmail = _jwtService.GetClaimValue(token, "email");
 
         bool success = await _categoryItemService.SaveCategory(model, createrEmail);
         if (!success)
@@ -67,7 +68,6 @@ public class MenuController : Controller
         else
         {
             return Json(new { success = true, message = "Category Updated Successful!" });
-
         }
 
     }
@@ -76,6 +76,7 @@ public class MenuController : Controller
     #region Edit Category
     /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetCategoryModal(long categoryId)
     {
@@ -88,10 +89,11 @@ public class MenuController : Controller
     #region Delete Category
     /*--------------------------------------------------------Menu Index--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Delete_Menu")]
     [HttpGet]
     public async Task<IActionResult> SoftDelete(long categoryId)
     {
-        var success = await _categoryItemService.SoftDelete(categoryId);
+        bool success = await _categoryItemService.SoftDelete(categoryId);
         return RedirectToAction("Index", "Menu");
     }
 
@@ -104,10 +106,11 @@ public class MenuController : Controller
     #region  Display Item
     /*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("View_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search = "")
     {
-        var model = await _categoryItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
+        ItemsPaginationViewModel? model = await _categoryItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error
@@ -119,6 +122,7 @@ public class MenuController : Controller
     #region Get Add/Update
     /*--------------------------------------------------------Get Add/Update Items--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetItemModal(long itemId)
     {
@@ -126,6 +130,7 @@ public class MenuController : Controller
         return PartialView("_UpdateItemPartialView", model);
     }
 
+    [CustomAuthorize("Edit_Menu")]
     public async Task<IActionResult> SelectModifierGroup(long modifierGroupId)
     {
         ItemModifierViewModel model = await _categoryItemService.GetModifierOnSelection(modifierGroupId);
@@ -137,6 +142,7 @@ public class MenuController : Controller
     #region Update Item
     /*--------------------------------------------------------Add/Update Item--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Menu")]
     [HttpPost]
     public async Task<IActionResult> AddUpdateItem(AddItemViewModel model, string modifierGroupList)
     {
@@ -176,6 +182,7 @@ public class MenuController : Controller
     #region Delete Item
     /*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Delete_Menu")]
     public async Task<IActionResult> SoftDeleteItem(long id)
     {
         bool success = await _categoryItemService.SoftDeleteItem(id);
@@ -189,6 +196,7 @@ public class MenuController : Controller
 
     /*--------------------------------------------------------Delete Multiple Items--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Delete_Menu")]
     public async Task<IActionResult> MassDeleteItems(List<long> itemsList)
     {
         bool success = await _categoryItemService.MassDeleteItems(itemsList);
@@ -209,6 +217,7 @@ public class MenuController : Controller
     #region Modifier Tab
     /*-------------------------------------------------------- Read Modifier Group---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("View_Menu")]
     [HttpGet]
     public IActionResult GetModifierTab()
     {
@@ -224,6 +233,7 @@ public class MenuController : Controller
     #region Display Modifier Group
     /*-------------------------------------------------------- Get Modifier Group---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetModifierGroupModal(long modifierGroupId)
     {
@@ -234,6 +244,7 @@ public class MenuController : Controller
 
     #region Add/Update Modifier Group
 
+    [CustomAuthorize("Edit_Menu")]
     [HttpPost]
     public async Task<IActionResult> SaveModifierGroup(ModifierGroupViewModel model, string modifierList)
     {
@@ -271,6 +282,7 @@ public class MenuController : Controller
     #endregion Add/Update Modifier Group
 
     #region Delete Modifier Group
+    [CustomAuthorize("Delete_Menu")]
     [HttpPost]
     public async Task<IActionResult> DeleteModifierGroup(long modifierGroupId)
     {
@@ -293,6 +305,7 @@ public class MenuController : Controller
     #region Display Modifiers
     /*-------------------------------------------------------- Get Modifier ---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetModifierModal(long modifierId)
     {
@@ -300,6 +313,7 @@ public class MenuController : Controller
         return PartialView("_ModifierPartialView", model);
     }
 
+    [CustomAuthorize("View_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetModifiersList(long modifierGroupId, int pageSize, int pageNumber = 1, string search = "")
     {
@@ -313,6 +327,7 @@ public class MenuController : Controller
         return PartialView("_ModifiersListPartialView", model);
     }
 
+    [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> ExistingModifiers(int pageSize, int pageNumber = 1, string search = "")
     {
@@ -330,6 +345,7 @@ public class MenuController : Controller
 
     #region Add/Update Modifier
 
+    [CustomAuthorize("Edit_Menu")]
     [HttpPost]
     public async Task<IActionResult> SaveModifier(ModifierViewModel model, string selectedMG)
     {
@@ -361,6 +377,7 @@ public class MenuController : Controller
     #region Delete Modifier
     /*--------------------------------------------------------Delete One Modifier--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Delete_Menu")]
     [HttpPost]
     public async Task<IActionResult> DeleteModifier(long modifierId,long modifierGroupId)
     {
@@ -378,6 +395,7 @@ public class MenuController : Controller
 
     /*--------------------------------------------------------Delete Multiple Modifiers--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Delete_Menu")]
     [HttpPost]
     public async Task<IActionResult> MassDeleteModifiers(List<long> modifierIdList,long modifierGroupId)
     {

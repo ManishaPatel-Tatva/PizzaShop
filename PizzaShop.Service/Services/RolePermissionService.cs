@@ -28,7 +28,7 @@ public class RolePermissionService : IRolePermissionService
 
     /*--------------------Permission-----------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------*/
-    public RolePermissionViewModel GetRolePermission(long roleId)
+    public RolePermissionViewModel GetRolePermissions(long roleId)
     {
         return _rolePermissionRepository.GetRolePermissions(roleId);
     }

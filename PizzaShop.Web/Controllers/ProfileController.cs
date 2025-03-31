@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
+using PizzaShop.Web.Filters;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -23,6 +25,7 @@ public class ProfileController : Controller
 #region Dashboard
 /*--------------------------------------------------------Dashboard---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("View_Orders")]
     [HttpGet]
     public IActionResult Dashboard()
     {
@@ -86,21 +89,21 @@ public class ProfileController : Controller
     [HttpGet]
     public IActionResult GetCountries()
     {
-        var countries = _addressService.GetCountries();
+        List<Country>? countries = _addressService.GetCountries();
         return Json(new SelectList(countries, "Id", "Name"));
     }
 
     [HttpGet]
     public IActionResult GetStates(long countryId)
     {
-        var states = _addressService.GetStates(countryId);
+        List<State>? states = _addressService.GetStates(countryId);
         return Json(new SelectList(states, "Id", "Name"));
     }
 
     [HttpGet]
     public IActionResult GetCities(long stateId)
     {
-        var cities = _addressService.GetCities(stateId);
+        List<City>? cities = _addressService.GetCities(stateId);
         return Json(new SelectList(cities, "Id", "Name"));
     }
 
@@ -147,7 +150,10 @@ public class ProfileController : Controller
         // Delete the "Remember Me" cookie
         if (Request.Cookies["emailCookie"] != null)
         {
+            Response.Cookies.Delete("authToken");
             Response.Cookies.Delete("emailCookie");
+            Response.Cookies.Delete("profileImg");
+            Response.Cookies.Delete("userName");
         }
         return RedirectToAction("Login","Auth");
     }

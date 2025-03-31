@@ -16,12 +16,13 @@ public class RolePermissionRepository : IRolePermissionRepository
 
     public RolePermissionViewModel GetRolePermissions(long roleId)
     {
-        var selectedRole = _context.Roles.SingleOrDefault(u => u.Id == roleId);
+        Role? selectedRole = _context.Roles.SingleOrDefault(u => u.Id == roleId);
         
-        var rolePermission = _context.RolePermissions.Where(u => u.RoleId == selectedRole.Id);
+        IQueryable<RolePermission>? rolePermission = _context.RolePermissions.Where(u => u.RoleId == selectedRole.Id);
 
-        var permissionsVM = rolePermission
+        List<PermissionViewModel>? permissionsVM = rolePermission
         .Include(u => u.Permission)
+        .OrderBy(u => u.Permission.Id)
         .Select(u => new PermissionViewModel
         {
             PermissionId = u.PermissionId,
@@ -44,7 +45,7 @@ public class RolePermissionRepository : IRolePermissionRepository
         {
             foreach(var permission in model)
             {
-                var specificPermission = await _context.RolePermissions.FirstOrDefaultAsync(p => p.PermissionId == permission.PermissionId);
+                var specificPermission = await _context.RolePermissions.FirstOrDefaultAsync(p => p.PermissionId == permission.PermissionId && p.RoleId == roleId);
                 specificPermission.View = permission.CanView;
                 specificPermission.AddOrEdit = permission.CanEdit;
                 specificPermission.Delete = permission.CanDelete;

@@ -133,10 +133,6 @@
               "target": "Package",
               "version": "[7.0.20, )"
             },
-            "Newtonsoft.Json": {
-              "target": "Package",
-              "version": "[7.0.1, )"
-            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[7.0.18, )"

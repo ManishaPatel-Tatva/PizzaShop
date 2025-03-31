@@ -5,17 +5,8 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IUserService
 {
-    // public List<Role> GetRoles();
-
-    // public Task<UsersListViewModel> GetUsersListAsync(int pageNumber, int pageSize, string search);
+    Task<User> GetUserByEmail(string email);
     
-    // Task<List<UserInfoViewModel>> GetUserInfoAsync();
-
-    // Task<User?> GetUserByEmailAsync(string email);
-
-
-    // UsersListViewModel GetPagedRecords(int pageSize, int pageNumber);
-
     Task<UsersListViewModel> GetPagedRecords(int pageSize, int pageNumber, string search);
 
     Task<AddUserViewModel> GetAddUser();

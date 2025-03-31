@@ -23,6 +23,9 @@ public class AuthController : Controller
         if (Request.Cookies["emailCookie"] != null)
             return RedirectToAction("Dashboard", "Profile");
 
+        // if(HttpContext.Session.GetString("authToken") != null)
+        //     return RedirectToAction("Dashboard", "Profile");
+
         return View();
     }
 
@@ -39,12 +42,15 @@ public class AuthController : Controller
 
         if (token != null)
         {
-            CookieOptions options = new CookieOptions
+            CookieOptions options = new()
             {
                 Expires = DateTime.Now.AddDays(1),
                 HttpOnly = true,
                 IsEssential = true
             };
+
+            // HttpContext.Session.SetString("authToken", token);
+
             Response.Cookies.Append("authToken", token, options);
             Response.Cookies.Append("userName", userName, options);
             Response.Cookies.Append("profileImg", profileImg, options);

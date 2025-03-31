@@ -19,4 +19,5 @@ public class OrderDetailViewModel
     public decimal Subtotal { get; set; }
     public List<TaxViewModel> TaxList { get; set; } = new List<TaxViewModel>();
     public decimal TotalAmount { get; set; }
+    public string PaymentMethod { get; set; }
 }

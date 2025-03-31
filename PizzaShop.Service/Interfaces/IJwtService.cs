@@ -4,7 +4,7 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IJwtService
 {
-    string GenerateToken(string email, string role);
+    Task<string> GenerateToken(string email, string role);
 
     ClaimsPrincipal? GetClaimsFromToken(string token);
 

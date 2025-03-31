@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
+using PizzaShop.Web.Filters;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -19,12 +20,14 @@ public class TaxesController : Controller
 
     /*---------------------------Display Users---------------------------------------------
     ---------------------------------------------------------------------------------------*/
+    [CustomAuthorize("View_Taxes and Fees")]
     public IActionResult Index()
     {
         ViewData["sidebar-active"] = "Taxes";
         return View();
     }
 
+    [CustomAuthorize("View_Taxes and Fees")]
     [HttpPost]
     public async Task<IActionResult> GetAllTaxes(int pageSize, int pageNumber = 1, string search="")
     {
@@ -38,6 +41,7 @@ public class TaxesController : Controller
 
     /*-------------------------------------------------------- Get Tax ---------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Taxes and Fees")]
     [HttpGet]
     public async Task<IActionResult> GetTaxModal(long taxId)
     {
@@ -45,6 +49,7 @@ public class TaxesController : Controller
         return PartialView("_TaxPartialView", model);
     }
 
+    [CustomAuthorize("Edit_Taxes and Fees")]
     [HttpPost]
     public async Task<IActionResult> SaveTax(TaxViewModel model)
     {
@@ -68,6 +73,7 @@ public class TaxesController : Controller
    
     /*--------------------------------------------------------Delete One Tax--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Delete_Taxes and Fees")]
     [HttpPost]
     public async Task<IActionResult> DeleteTax(long taxId)
     {

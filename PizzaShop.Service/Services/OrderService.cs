@@ -581,4 +581,11 @@ public class OrderService : IOrderService
             return null;
         }
     }
+
+    public async Task<byte[]> GenerateInvoice(long orderId)
+    {
+        OrderDetailViewModel model = await GetOrderDetail(orderId);
+        var createPdf = Helpers.PdfHelper.CreatePdf(model);
+        return createPdf;
+    }
 }

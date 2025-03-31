@@ -1,6 +1,6 @@
 ﻿@{
-    var userName = Context.Request.Cookies["userName"];
-    var profileImg = Context.Request.Cookies["profileImg"];
+    string? userName = Context.Request.Cookies["userName"];
+    string? profileImg = Context.Request.Cookies["profileImg"];
 }
 
 <!DOCTYPE html>
@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PizzaShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />

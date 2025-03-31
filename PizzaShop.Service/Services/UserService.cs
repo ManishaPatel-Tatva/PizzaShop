@@ -5,7 +5,7 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using BusinessLogicLayer.Helpers;
+using PizzaShop.Service.Helpers;
 
 namespace PizzaShop.Service.Services;
 
@@ -22,6 +22,12 @@ public class UserService : IUserService
         _roleRepository = roleRepository;
         _addressService = addressService;
         _emailService = emailService;
+    }
+
+    public async Task<User> GetUserByEmail(string email)
+    {
+        User user = await _userRepository.GetByStringAsync(u => u.Email == email);
+        return user;
     }
 
 #region Display User List
@@ -70,7 +76,7 @@ public class UserService : IUserService
     //This method is used for getting the countries in 
     public async Task<AddUserViewModel> GetAddUser()
     {
-        AddUserViewModel newUser = new AddUserViewModel
+        AddUserViewModel newUser = new()
         {
             Countries = _addressService.GetCountries(),
             Roles = _roleRepository.GetAll().ToList()

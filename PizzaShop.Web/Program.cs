@@ -8,6 +8,7 @@ using PizzaShop.Repository.Repositories;
 using PizzaShop.Service.Configuration;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Services;
+using PizzaShop.Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,9 @@ builder.Services.AddScoped<ITaxesFeesService, TaxesFeesService>();
 
 //Orders
 builder.Services.AddScoped<IOrderService, OrderService>();
+
+//Customers
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 
 //Session 
@@ -138,6 +142,9 @@ app.Use(async (context, next) =>
 
     await next();
 });
+
+//For initialising middleware - custom authorization
+app.UseMiddleware<RolePermissionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

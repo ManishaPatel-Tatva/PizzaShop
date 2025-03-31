@@ -43,7 +43,7 @@
                     <span class="fs-5 fw-semibold">Order Summary</span>
                     <span class="bg-light-blue p-1 rounded-1">@Model.OrderStatus</span>
                 </div>
-                <button class="btn btn-blue text-nowrap d-flex align-items-center gap-2" id="exportSummaryBtn">
+                <button asp-action="GenerateInvoice" asp-controller="Orders" asp-route-orderId="@Model.OrderId" class="btn btn-blue text-nowrap d-flex align-items-center gap-2" id="exportSummaryBtn">
                     <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
                     Export
                 </button>

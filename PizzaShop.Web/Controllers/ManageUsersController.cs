@@ -4,6 +4,8 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using PizzaShop.Web.Filters;
+using PizzaShop.Entity.Models;
 
 namespace PizzaShop.Web.Controllers
 {
@@ -26,9 +28,11 @@ namespace PizzaShop.Web.Controllers
 /*---------------------------Display Users---------------------------------------------
 ---------------------------------------------------------------------------------------*/
 
+        [CustomAuthorize("View_Users")]
         public IActionResult Index()
         {
-            UsersListViewModel model = new UsersListViewModel{ 
+            UsersListViewModel model = new()
+            { 
                 Users = Enumerable.Empty<UserInfoViewModel>(),
                 Page = new Pagination() 
             };
@@ -37,6 +41,7 @@ namespace PizzaShop.Web.Controllers
             return View(model);       
         }
         
+        [CustomAuthorize("View_Users")]
         public async Task<IActionResult> GetUsersList(int pageSize, int pageNumber = 1, string search="")
         {
             UsersListViewModel? model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
@@ -53,7 +58,8 @@ namespace PizzaShop.Web.Controllers
 #region Add user
 /*---------------------------Add User---------------------------------------------
 ---------------------------------------------------------------------------------------*/
-        [Authorize(Roles = "Admin")]
+        
+        [CustomAuthorize("Edit_Users")]
         [HttpGet]
         public async Task<IActionResult> AddUser()
         {
@@ -73,10 +79,10 @@ namespace PizzaShop.Web.Controllers
                 return View(addUserModel);
             }
                 
-            var token = Request.Cookies["authToken"];
-            var createrEmail = _jwtService.GetClaimValue(token, "email");
+            string? token = Request.Cookies["authToken"];
+            string? createrEmail = _jwtService.GetClaimValue(token, "email");
 
-            var (isAdded, message) = await _userService.AddUserAsync(model, createrEmail);
+            (bool isAdded, string message) = await _userService.AddUserAsync(model, createrEmail);
             if (!isAdded)
             {
                 AddUserViewModel addUserModel = await _userService.GetAddUser();
@@ -97,21 +103,21 @@ namespace PizzaShop.Web.Controllers
     [HttpGet]
     public IActionResult GetCountries()
     {
-        var countries = _addressService.GetCountries();
+        List<Country>? countries = _addressService.GetCountries();
         return Json(new SelectList(countries, "Id", "Name"));
     }
 
     [HttpGet]
     public IActionResult GetStates(long countryId)
     {
-        var states = _addressService.GetStates(countryId);
+        List<State>? states = _addressService.GetStates(countryId);
         return Json(new SelectList(states, "Id", "Name"));
     }
 
     [HttpGet]
     public IActionResult GetCities(long stateId)
     {
-        var cities = _addressService.GetCities(stateId);
+        List<City>? cities = _addressService.GetCities(stateId);
         return Json(new SelectList(cities, "Id", "Name"));
     }
 
@@ -120,7 +126,7 @@ namespace PizzaShop.Web.Controllers
 #region Edit User
 /*---------------------------Edit User---------------------------------------------
 ---------------------------------------------------------------------------------------*/
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize("Edit_Users")]
         [HttpGet]
         public async Task<IActionResult> EditUser(long userId)
         {
@@ -135,7 +141,7 @@ namespace PizzaShop.Web.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize("Edit_Users")]
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
@@ -146,7 +152,7 @@ namespace PizzaShop.Web.Controllers
                 return View(editUserModel);
             }
 
-            var (isUpdated, message) = await _userService.UpdateUser(model);
+            (bool isUpdated, string message) = await _userService.UpdateUser(model);
 
             if (!isUpdated)
             {
@@ -165,7 +171,7 @@ namespace PizzaShop.Web.Controllers
 #region Soft Delete User
 /*-------------------------------------Soft Delete User-------------------------------------------------------
 -------------------------------------------------------------------------------------------------------*/
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize("Delete_Users")]
         [HttpPost]
         public async Task<IActionResult> SoftDeleteUser(long id)
         {

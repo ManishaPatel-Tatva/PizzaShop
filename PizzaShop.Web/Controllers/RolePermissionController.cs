@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
+using PizzaShop.Web.Filters;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -19,6 +20,7 @@ public class RolePermissionController : Controller
 #region Roles
 /*---------------------------------------------------------Roles-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("View_Role and Permission")]
     [HttpGet]
     public IActionResult Role()
     {
@@ -31,15 +33,16 @@ public class RolePermissionController : Controller
 #region Permissions
 /*---------------------------------------------------------Permission-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("View_Role and Permission")]
     [HttpGet]
     public IActionResult Permission(long id)
     {
-        var model = _rolePermissionService.GetRolePermission(id);
+        var model = _rolePermissionService.GetRolePermissions(id);
         ViewData["sidebar-active"] = "RolePermission";
         return View(model);
     }
 
-    [Authorize(Roles = "Admin")]
+    [CustomAuthorize("Edit_Role and Permission")]
     [HttpPost]
     public async Task<IActionResult> UpdatePermission(long roleId, List<PermissionViewModel> model)
     {

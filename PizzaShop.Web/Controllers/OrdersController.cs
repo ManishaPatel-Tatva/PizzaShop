@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
+using PizzaShop.Web.Filters;
 
 namespace PizzaShop.Web.Controllers;
 
+[Authorize]
 public class OrdersController : Controller
 {
     private readonly IOrderService _orderService;
@@ -21,6 +24,7 @@ public class OrdersController : Controller
         return View(model);
     }
 
+    [CustomAuthorize("View_Orders")]
     [HttpGet]
     public async Task<IActionResult> GetOrdersList(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", int pageSize=5, int pageNumber = 1, string search="")
     {
@@ -32,6 +36,7 @@ public class OrdersController : Controller
         return PartialView("_OrdersListPartialView", model);
     }
 
+    [CustomAuthorize("View_Orders")]
     [HttpGet]
     public async Task<IActionResult> ExportOrderDetails(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", string search="")
     {
@@ -39,12 +44,21 @@ public class OrdersController : Controller
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
     }
 
+    [CustomAuthorize("View_Orders")]
     public async Task<IActionResult> OrderDetails(long orderId)
     {
         OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
         ViewData["sidebar-active"] = "Orders";
         return View(model);
     }
+
+    [CustomAuthorize("View_Orders")]
+    public async Task<IActionResult> GenerateInvoice(long orderId)
+    {
+        byte[]? pdf = await _orderService.GenerateInvoice(orderId);
+        return File(pdf, "application/pdf", "Order.pdf");;
+    }
+
 
 
 }

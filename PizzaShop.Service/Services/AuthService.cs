@@ -2,7 +2,7 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Entity.Models;
-using BusinessLogicLayer.Helpers;
+using PizzaShop.Service.Helpers;
 
 namespace PizzaShop.Service.Services;
 
@@ -39,8 +39,8 @@ public class AuthService : IAuthService
             return (null,null,null, "Invalid Credentials!");
 
         var role = await _roleRepository.GetByStringAsync(u => u.Id == user.RoleId);
-        var token = _jwtService.GenerateToken(email, role.Name);
-        return (token,user.Username, user.ProfileImg, null);
+        var token = await _jwtService.GenerateToken(email, role.Name);
+        return (token, user.Username, user.ProfileImg, null);
     }
 
 #endregion
