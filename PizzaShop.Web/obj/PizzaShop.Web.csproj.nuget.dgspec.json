@@ -304,6 +304,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.20, )"
+            },
+            "Rotativa.AspNetCore": {
+              "target": "Package",
+              "version": "[1.4.0, )"
             }
           },
           "imports": [

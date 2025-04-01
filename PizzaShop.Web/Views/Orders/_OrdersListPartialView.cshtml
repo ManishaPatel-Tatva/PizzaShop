@@ -75,7 +75,7 @@
                     </td>
                     <td>@order.TotalAmount</td>
                     <td>
-                        <a asp-action="GenerateInvoice" asp-controller="Orders" asp-route-orderId="@order.OrderId"
+                        <a asp-action="Invoice" asp-controller="Orders" asp-route-orderId="@order.OrderId"
                             type="button" class="downloadInvoiceBtn btn ps-0" data-id="@order.OrderId">
                             <img src="~/images/icons/filetype-pdf.svg" alt="" />
                         </a>

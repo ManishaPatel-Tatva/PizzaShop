@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "r0m1qOL1ehm4Ze2Ou3aQJhvm7+UClf8l5GZeAgUJbDBfbpbjcYR1e6cZiAmovGoyujrugq6PS9RkD7VF4E/e8g==",
+  "dgSpecHash": "mFlQNWbBil1N8ePfVOcwihdeoCAIfHm28QVhC6gqOO1oXsoVmwcy70eopzL3lpw1PZgoFqkZhYxqhfMf6iGH/g==",
   "success": true,
   "projectFilePath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\PizzaShop.Web.csproj",
   "expectedPackageFiles": [
@@ -68,6 +68,7 @@
     "C:\\Users\\pci47\\.nuget\\packages\\npgsql\\7.0.7\\npgsql.7.0.7.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\7.0.18\\npgsql.entityframeworkcore.postgresql.7.0.18.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql.design\\1.1.0\\npgsql.entityframeworkcore.postgresql.design.1.1.0.nupkg.sha512",
+    "C:\\Users\\pci47\\.nuget\\packages\\rotativa.aspnetcore\\1.4.0\\rotativa.aspnetcore.1.4.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",

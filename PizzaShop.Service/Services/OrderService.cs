@@ -561,7 +561,10 @@ public class OrderService : IOrderService
                                             }).ToList()
                         }).ToList(),
                     
-            Subtotal = o.TotalAmount
+            Subtotal = o.TotalAmount,
+
+            PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First()
+
         }).FirstOrDefault();
 
 

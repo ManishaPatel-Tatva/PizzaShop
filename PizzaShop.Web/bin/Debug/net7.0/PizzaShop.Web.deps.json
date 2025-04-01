@@ -10,7 +10,8 @@
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": "7.0.20",
           "Microsoft.EntityFrameworkCore.Tools": "7.0.20",
-          "PizzaShop.Service": "1.0.0"
+          "PizzaShop.Service": "1.0.0",
+          "Rotativa.AspNetCore": "1.4.0"
         },
         "runtime": {
           "PizzaShop.Web.dll": {}
@@ -730,6 +731,14 @@
           "lib/netstandard1.3/Npgsql.EntityFrameworkCore.PostgreSQL.Design.dll": {
             "assemblyVersion": "1.1.0.0",
             "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "Rotativa.AspNetCore/1.4.0": {
+        "runtime": {
+          "lib/net7.0/Rotativa.AspNetCore.dll": {
+            "assemblyVersion": "1.4.0.0",
+            "fileVersion": "1.4.0.0"
           }
         }
       },
@@ -2010,6 +2019,13 @@
       "sha512": "sha512-+taA6t8sRI0JTbyCZH0GobEtJYvU4aAGBf5/2/CutWHiYpO2nLfJ8SQSyWYMKakrwn1/NDM9VV85mGEAzBZ7LQ==",
       "path": "npgsql.entityframeworkcore.postgresql.design/1.1.0",
       "hashPath": "npgsql.entityframeworkcore.postgresql.design.1.1.0.nupkg.sha512"
+    },
+    "Rotativa.AspNetCore/1.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zn0KgqCQqiTuNPYgeqrIJxXafjJUfDJBcUJIhAV5NgWSCX3DOEeg339zMJTbzcCyoJgGPL5LrG+IKZ3k8/Uk9Q==",
+      "path": "rotativa.aspnetcore/1.4.0",
+      "hashPath": "rotativa.aspnetcore.1.4.0.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",

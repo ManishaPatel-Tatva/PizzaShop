@@ -4,7 +4,6 @@ a{
     text-decoration: none;
 }
 
-
 .blue{
     filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);
 }

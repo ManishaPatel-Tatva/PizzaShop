@@ -1,0 +1,210 @@
+@using PizzaShop.Entity.ViewModels
+@model OrderDetailViewModel
+
+@{
+    Layout = null;
+
+    decimal taxAmount = 0;
+@functions {
+    public static string FormatDateString(string dateString)
+    {
+        if (DateTime.TryParse(dateString, out DateTime parsedDate))
+        {
+            return parsedDate.ToString("dd-MM-yyyy HH:mm");
+        }
+        return "";
+    }
+}
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+
+        body{
+           font-family: Verdana, Geneva, Tahoma, sans-serif;
+           font-size: 18px;
+        }
+
+        tbody tr{
+            page-break-inside: avoid;
+        }
+
+        h1 {
+            font-size: 40px;
+        }
+
+        .header {
+            display: -webkit-box;
+            -webkit-box-pack: center;
+        }
+
+        .customerOrderDetails {
+            display: -webkit-box;
+        }
+
+        .customerDetails, .orderDetails{
+            width: 50%;
+        }
+
+        th {
+            color: white !important;
+            background-color: #0066A8 !important;
+        }
+
+        table,td,tr,th,thead,tbody{
+            border: none;
+        }
+
+        td {
+            border-bottom: 1px solid lightblue !important;
+        }
+
+        .subTotalTable td{
+            border-bottom: none !important;
+            padding: 2px;
+        }
+
+       
+    </style>
+</head>
+
+<body class="p-5">
+    <div class="header m-3">
+        <img src="/images/logos/pizzashop_logo.png" alt="" width="60px" class="me-2">
+        <h1 class="blue-text fw-semibold">PIZZASHOP</h1>
+    </div>
+
+    <!-- Customer and Order Details -->
+    <div class="customerOrderDetails mb-3">
+        <div class="customerDetails">
+            <div class="blue-text fs-5 fw-semibold">Customer Details</div>
+            <div>Name : @Model.CustomerName</div>
+            <div>Mob : @Model.CustomerPhone</div>
+        </div>
+        <div class="orderDetails">
+            <div class="blue-text fs-5 fw-semibold">Order Details</div>
+            <div>Invoice Number: @Model.InvoiceNo</div>
+            <div>Date: @Model.PlacedOn</div>
+            <div>Section: @Model.Section</div>
+            <div>Table:
+                @foreach (var tableName in Model.TableList)
+                {
+                    @tableName
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items starts-->
+    <div class="bg-white">
+        <div class="">
+            <table class="table">
+                <thead class="table-header">
+                    <tr>
+                        <th scope="col" class="">Sr.No.</th>
+                        <th scope="col" class=" text-start">Item</th>
+                        <th scope="col" class=" text-center">Quantity</th>
+                        <th scope="col" class=" text-end">Price</th>
+                        <th scope="col" class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.ItemsList.Count; i++)
+                    {
+                        <tr>
+                            <td class="align-text-top">@(i + 1)</td>
+                            <td class="">
+                                @Model.ItemsList[i].ItemName
+                                @foreach (var modifier in Model.ItemsList[i].ModifiersList)
+                                {
+                                    <ul class="mb-0">
+                                        <li>@modifier.ModifierName</li>
+                                    </ul>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @Model.ItemsList[i].Quantity
+                                @foreach (var modifier in Model.ItemsList[i].ModifiersList)
+                                {
+                                    <ul class="list-unstyled mb-0">
+                                        <li>@modifier.Quantity</li>
+                                    </ul>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                @Model.ItemsList[i].Price
+                                @foreach (var modifier in Model.ItemsList[i].ModifiersList)
+                                {
+                                    <ul class="list-unstyled mb-0">
+                                        <li>@modifier.Rate</li>
+                                    </ul>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                @Model.ItemsList[i].TotalAmount
+                                @foreach (var modifier in Model.ItemsList[i].ModifiersList)
+                                {
+                                    <ul class="list-unstyled mb-0">
+                                        <li>@modifier.TotalAmount</li>
+                                    </ul>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end ">
+            <table class="table table-borderless subTotalTable">
+                <tbody>
+                    <tr>
+                        <td class="text-start">Sub Total:</td>
+                        <td class="text-end">₹@Model.Subtotal</td>
+                    </tr>
+                    @foreach (var tax in Model.TaxList)
+                    {
+                        @if (tax.IsEnabled)
+                        {
+                            <tr>
+                                <td class="text-start">@tax.Name:</td>
+                                <td class="text-end">₹@(tax.IsPercentage == true ? (tax.TaxValue * Model.Subtotal)/100 :
+                                                                tax.TaxValue)</td>
+                    </tr>
+                                        taxAmount += (tax.IsPercentage == true ? (tax.TaxValue * Model.Subtotal) / 100 : tax.TaxValue);
+                        }
+
+                    }
+
+                    <tr class="border-top">
+                        <td class="text-start blue-text fw-semibold" style="border-top: 1px solid #0066A8;">Total Amount Due:</td>
+                        <td class="text-end blue-text fw-semibold" style="border-top: 1px solid #0066A8;">₹@(taxAmount + Model.Subtotal)</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Order Items ends-->
+
+    <!-- Payment Info-->
+    <div>
+        <div class="blue-text fs-5 fw-semibold">Payment Information</div>
+        <div>Payment Method : @Model.PaymentMethod</div>
+    </div>
+
+    <div class="fs-5 fw-semibold blue-text text-center">THANK YOU!</div>
+</body>
+
+</html>

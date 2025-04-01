@@ -9,6 +9,7 @@ using PizzaShop.Service.Configuration;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Services;
 using PizzaShop.Web.Middlewares;
+using Rotativa.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -154,6 +155,9 @@ app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Rotativa
+app.UseRotativa();
 
 app.MapControllerRoute(
     name: "default",

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
+using Rotativa.AspNetCore;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -17,6 +18,8 @@ public class OrdersController : Controller
         _orderService = orderService;
     }
 
+    [CustomAuthorize("View_Orders")]
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         OrderIndexViewModel model = await _orderService.GetOrderIndex();
@@ -59,6 +62,29 @@ public class OrdersController : Controller
         return File(pdf, "application/pdf", "Order.pdf");;
     }
 
+    public async Task<IActionResult> Invoice(long orderId)
+    {
+        OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
+         ViewAsPdf? pdf = new("Invoice", model){
+            FileName = "Invoice.pdf"
+        };
+        
+        return pdf;
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> OrderDetailsPdf(long orderId)
+    {
+        OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
+         ViewAsPdf? pdf = new("OrderDetailsPdf", model){
+            FileName = "Invoice.pdf"
+        };
+        
+        return pdf;
+
+        return View(model);
+    }
 
 
 }
