@@ -32,7 +32,7 @@ public class OrderService : IOrderService
         };
         return model;
     }
-
+    #region Order Pagination
     /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderPaginationViewModel> GetPagedOrder(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, int pageSize, int pageNumber, string search)
@@ -132,7 +132,9 @@ public class OrderService : IOrderService
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;
     }
+    #endregion
 
+    #region Export Excel
     /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<byte[]> ExportOrderDetails(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, string search)
@@ -464,7 +466,9 @@ public class OrderService : IOrderService
         }
         return await Task.FromResult(package.GetAsByteArray());
     }
+    #endregion
 
+    #region Order Details
     /*----------------------------------------------------Order Details----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderDetailViewModel> GetOrderDetail(long orderId)
@@ -584,11 +588,7 @@ public class OrderService : IOrderService
             return null;
         }
     }
+    #endregion
 
-    public async Task<byte[]> GenerateInvoice(long orderId)
-    {
-        OrderDetailViewModel model = await GetOrderDetail(orderId);
-        var createPdf = Helpers.PdfHelper.CreatePdf(model);
-        return createPdf;
-    }
+
 }

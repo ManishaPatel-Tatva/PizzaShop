@@ -31,11 +31,11 @@
                     </td>
                     <td>
                         
-                        <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="ps-0 btn @(user.Role == "Admin" || permissions.Contains("Edit_Users") ? "a-disabled":"")">
+                        <a asp-action="EditUser" asp-controller="ManageUsers" asp-route-userId="@user.UserId" class="ps-0 btn @(user.Role == "Admin" || !permissions.Contains("Edit_Users") ? "a-disabled":"")">
                             <img src="~/images/icons/edit.svg" alt=""/>
                         </a>
                         
-                        <a type="button" class="btn deleteIcon @(user.Role == "Admin"? "a-disabled":"")" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId" >
+                        <a type="button" class="btn deleteIcon @(user.Role == "Admin" || !permissions.Contains("Edit_Users") ? "a-disabled":"")" data-bs-toggle="modal" id="deleteIcon" data-bs-target="#staticBackdrop" data-id="@user.UserId" >
                             <img src="~/images/icons/delete.svg" alt="">
                         </a>
                     </td>

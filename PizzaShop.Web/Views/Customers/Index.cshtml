@@ -1,0 +1,226 @@
+@{
+    ViewData["Title"] = "Customers";
+    Layout = "_Layout";
+}
+
+<!-- Order heading, search and export button -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-1 gap-md-5">
+    <div>
+        <h1 class="blue-text">Customers</h1>
+    </div>
+
+    <div class="justify-content-end d-flex flex-column flex-md-row order-export-div ">
+
+        <div class="input-group me-2 my-2">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchCustomer">
+            <button type="submit" class="input-group-text">
+                <img src="~/images/icons/search.svg" alt="">
+            </button>
+        </div>
+
+        <select class="form-select me-2 my-2" id="dateRange">
+            <option selected value="All Time">All Time</option>
+            <option selected value="All Time">Today</option>
+            <option value="Last 7 Days">Last 7 Days</option>
+            <option value="Last 30 Days">Last 30 Days</option>
+            <option value="Current Month">Current Month</option>
+            <option value="Current Month">Custom Date</option>
+        </select>
+
+        <a class="btn btn-blue text-nowrap d-flex align-items-center my-2" id="exportOrderBtn">
+            <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
+            Export
+        </a>
+
+    </div>
+</div>
+
+<div class="d-flex flex-column flex-md-row justify-content-end align-items-center mb-3 gap-2 dateRange-div">
+
+    <div class="d-flex justify-content-center gap-2">
+        <div class="form-floating ">
+            <input type="date" class="form-control" id="fromDate" placeholder="">
+            <label for="fromDate">From Date</label>
+        </div>
+
+        <div class="form-floating ">
+            <input type="date" class="form-control" id="toDate" placeholder="">
+            <label for="toDate">To Date</label>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-blue text-nowrap" id="searchByDate">
+            Search
+        </button>
+
+        <button class="btn btn-white text-nowrap" id="clearFilterBtn">
+            Clear
+        </button>
+    </div>
+
+
+</div>
+
+<!-- Table -->
+<div class="bg-white px-3" id="orderContent">
+    <!-- Partial View -->
+</div>
+
+
+@section Scripts {
+    @* Order Pagination *@
+    <script>
+        $(document).ready(function () {
+            OrderPaginationAjax(1);
+            let today = new Date().toISOString().split("T")[0];
+            $("#fromDate, #toDate").attr("max", today);
+        });
+
+        $(document).on("change", "#ordersPerPage", function () {
+            OrderPaginationAjax(1); // Reload data with new page size
+        });
+
+        $(document).on("input", "#searchOrder", function () {
+            OrderPaginationAjax(1); // Reload data with new page size
+        });
+
+        //sortingColumn
+        let sortingColumn;
+        let sortingOrder;
+        $(document).on("click", ".sortBtn", function () {
+            sortingColumn = $(this).data("column");
+            sortingOrder = $(this).data("order");
+            OrderPaginationAjax(1);
+        });
+
+        //Applying Filter
+        $(document).on("change", "#orderStatus", function () {
+            OrderPaginationAjax(1);
+        });
+
+        $(document).on("change", "#dateRange", function () {
+            OrderPaginationAjax(1);
+        });
+
+        $(document).on("click", "#searchByDate", function () {
+            OrderPaginationAjax(1);
+        });
+
+        $(document).on("click", "#clearFilterBtn", function () {
+            $("#searchOrder").val("");
+            $("#orderStatus").val("All Status");
+            $("#dateRange").val("All Time");
+            $("#fromDate").val("");
+            $("#toDate").val("");
+            OrderPaginationAjax(1);
+        });
+
+        function OrderPaginationAjax(pageNumber) {
+            let orderStatus = $("#orderStatus").val();
+            let dateRange = $("#dateRange").val();
+            let fromDate = $("#fromDate").val();
+            let toDate = $("#toDate").val();
+
+            let pageSize = $("#ordersPerPage").val() || 5; // Default to 5 if no value selected
+            let searchOrder = $("#searchOrder").val();
+
+            $.ajax({
+                url: '@Url.Action("GetOrdersList", "Orders")',
+                data: {
+                    'status': orderStatus,
+                    'dateRange': dateRange,
+                    'fromDate': fromDate,
+                    'toDate': toDate,
+                    'column': sortingColumn,
+                    'sort': sortingOrder,
+                    'pageSize': pageSize,
+                    'pageNumber': pageNumber,
+                    'search': searchOrder
+                },
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#orderContent").html(data);
+                    $("#ordersPerPage").val(pageSize); // Reapply selected value after reload
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Items Found");
+                    $("#itemsListContent").html('An error has occurred');
+                }
+            });
+        }
+
+        // Validate Date
+        $(document).on("change", "#fromDate", function () {
+            let fromDate = $(this).val();
+            $("#toDate").attr("min", fromDate); // Restrict "To Date" to not be before "From Date"
+        });
+
+        $(document).on("change", "#toDate", function () {
+            let toDate = $(this).val();
+            $("#fromDate").attr("max", toDate); // Restrict "From Date" to not be after "To Date"
+        });
+    </script>
+
+    @* Export Order Details *@
+    <script>
+
+        $(document).on("click", "#exportOrderBtn", function () {
+            console.log("export btn clicked");
+            exportOrderDetails();
+        })
+
+        function exportOrderDetails() {
+            console.log("export function called");
+            let orderStatus = $("#orderStatus").val();
+            let dateRange = $("#dateRange").val();
+            let fromDate = $("#fromDate").val();
+            let toDate = $("#toDate").val();
+            let searchOrder = $("#searchOrder").val();
+
+            $.ajax({
+                url: '@Url.Action("ExportOrderDetails", "Orders")',
+                data: {
+                    'status': orderStatus,
+                    'dateRange': dateRange,
+                    'fromDate': fromDate,
+                    'toDate': toDate,
+                    'column': sortingColumn,
+                    'sort': sortingOrder,
+                    'search': searchOrder
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data, status, xhr) {
+                    let filename = "Orders.xlsx";
+
+                    let disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        let matches = /filename="([^"]+)"/.exec(disposition);
+                        if (matches !== null && matches[1]) filename = matches[1];
+                    }
+
+                    let blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    console.log("Export Successful");
+
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("Not exported!");
+                }
+            });
+        }
+
+    </script>
+
+}

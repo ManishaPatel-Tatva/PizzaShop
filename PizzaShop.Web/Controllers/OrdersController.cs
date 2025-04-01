@@ -55,13 +55,7 @@ public class OrdersController : Controller
         return View(model);
     }
 
-    [CustomAuthorize("View_Orders")]
-    public async Task<IActionResult> GenerateInvoice(long orderId)
-    {
-        byte[]? pdf = await _orderService.GenerateInvoice(orderId);
-        return File(pdf, "application/pdf", "Order.pdf");;
-    }
-
+    
     public async Task<IActionResult> Invoice(long orderId)
     {
         OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);

@@ -1,6 +1,7 @@
 ﻿@{
     string? userName = Context.Request.Cookies["userName"];
     string? profileImg = Context.Request.Cookies["profileImg"];
+    List<string> permissions = User.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
 }
 
 <!DOCTYPE html>
@@ -42,7 +43,7 @@
                     <ul class="dropdown-menu dropdown-menu-lg-end">
                         <li class="mb-2 ms-3 d-flex align-items-center">
                             <img class="me-2 rounded-circle" src=@(profileImg != null ? profileImg :
-                                "~/images/Default_pfp.svg.png") alt = "" height = "30px" width = "30px" >
+                                                                                             "~/images/Default_pfp.svg.png") alt="" height="30px" width="30px">
                             <span>@userName</span>
                         </li>
                         <li>
@@ -85,48 +86,82 @@
                 <div class="sidebar col-2 px-0" id="sidebar">
                     <!--Navigation Pane  -->
                     <div class="d-flex flex-column">
+
                         <a asp-action="Dashboard" asp-controller="Profile"
                             class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "side-dash" : "")">
                             <img src="~/images/navigation/dashboard.svg" alt=""
                                 class=" @((ViewData["sidebar-active"] as string) == "Dashboard" ? "blue" : "")">
                             Dashboard
                         </a>
-                        <a asp-action="Index" asp-controller="ManageUsers"
-                            class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")">
-                            <img src="~/images/navigation/user.svg" alt=""
-                                class=" @((ViewData["sidebar-active"] as string) == "Users" ? "blue" : "")"> Users
-                        </a>
-                        <a asp-action="Role" asp-controller="RolePermission"
-                            class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash" : "")">
-                            <img src="~/images/navigation/role.svg" alt=""
-                                class=" @((ViewData["sidebar-active"] as string) == "RolePermission" ? "blue" : "")">
-                            Roles and Permissions
-                        </a>
-                        <a asp-action="Index" asp-controller="Menu"
-                            class="@((ViewData["sidebar-active"] as string) == "Menu" ? "side-dash" : "")">
-                            <img src="~/images/navigation/menu.png" alt="" height="20px"
-                                class=" @((ViewData["sidebar-active"] as string) == "Menu" ? "blue" : "")"> Menu
-                        </a>
-                        <a asp-action="Index" asp-controller="TableSection"
-                            class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "side-dash" : "")">
-                            <img src="~/images/navigation/table.svg" alt=""
-                                class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "blue" : "")">
-                            Tables and Sections
-                        </a>
-                        <a asp-action="Index" asp-controller="Taxes"
-                            class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "side-dash" : "")">
-                            <img src="~/images/navigation/taxes.svg" alt=""
-                                class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "blue" : "")">
-                            Taxes and Fees
-                        </a>
-                        <a asp-action="Index" asp-controller="Orders"
-                            class="@((ViewData["sidebar-active"] as string) == "Orders" ? "side-dash" : "")">
-                            <img src="~/images/navigation/orders.svg" alt=""
-                                class="@((ViewData["sidebar-active"] as string) == "Orders" ? "blue" : "")">
-                            Orders
-                        </a>
 
-                        <a href="#"><img src="~/images/navigation/customer.svg" alt=""> Customers </a>
+                        @if (permissions.Contains("View_Users"))
+                        {
+                            <a asp-action="Index" asp-controller="ManageUsers"
+                                class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")">
+                                <img src="~/images/navigation/user.svg" alt=""
+                                    class=" @((ViewData["sidebar-active"] as string) == "Users" ? "blue" : "")"> Users
+                            </a>
+                        }
+
+                        @if (permissions.Contains("View_Role and Permission"))
+                        {
+                            <a asp-action="Role" asp-controller="RolePermission"
+                                class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash" : "")">
+                                <img src="~/images/navigation/role.svg" alt=""
+                                    class=" @((ViewData["sidebar-active"] as string) == "RolePermission" ? "blue" : "")">
+                                Roles and Permissions
+                            </a>
+                        }
+
+                        @if (permissions.Contains("View_Menu"))
+                        {
+                            <a asp-action="Index" asp-controller="Menu"
+                                class="@((ViewData["sidebar-active"] as string) == "Menu" ? "side-dash" : "")">
+                                <img src="~/images/navigation/menu.png" alt="" height="20px"
+                                    class=" @((ViewData["sidebar-active"] as string) == "Menu" ? "blue" : "")"> Menu
+                            </a>
+                        }
+
+                        @if (permissions.Contains("View_Table and Section"))
+                        {
+                            <a asp-action="Index" asp-controller="TableSection"
+                                class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "side-dash" : "")">
+                                <img src="~/images/navigation/table.svg" alt=""
+                                    class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "blue" : "")">
+                                Table and Section
+                            </a>
+                        }
+
+                        @if (permissions.Contains("View_Taxes and Fees"))
+                        {
+                            <a asp-action="Index" asp-controller="Taxes"
+                                class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "side-dash" : "")">
+                                <img src="~/images/navigation/taxes.svg" alt=""
+                                    class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "blue" : "")">
+                                Taxes and Fees
+                            </a>
+                        }
+
+                        @if (permissions.Contains("View_Orders"))
+                        {
+                            <a asp-action="Index" asp-controller="Orders"
+                                class="@((ViewData["sidebar-active"] as string) == "Orders" ? "side-dash" : "")">
+                                <img src="~/images/navigation/orders.svg" alt=""
+                                    class="@((ViewData["sidebar-active"] as string) == "Orders" ? "blue" : "")">
+                                Orders
+                            </a>
+                        }
+
+                        @if (permissions.Contains("View_Customers"))
+                        {
+                            <a asp-action="Index" asp-controller="Orders"
+                                class="@((ViewData["sidebar-active"] as string) == "Customers" ? "side-dash" : "")">
+                                <img src="~/images/navigation/customer.svg" alt=""
+                                    class="@((ViewData["sidebar-active"] as string) == "Customers" ? "blue" : "")">
+                                Customers
+                            </a>
+                        }
+
                     </div>
                 </div>
                 <!-- Sidebar ends-->
