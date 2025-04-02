@@ -31,8 +31,6 @@ public partial class Customer
 
     public virtual ICollection<FavouriteItem> FavouriteItemItems { get; set; } = new List<FavouriteItem>();
 
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
-
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual User? UpdatedByNavigation { get; set; }

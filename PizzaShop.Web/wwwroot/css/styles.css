@@ -385,6 +385,10 @@ table td,th{
     width: 70px;
 }
 
+.modal-footer button{
+    width: 90px;
+}
+
 
 /* My Profile page */
 .myprofile-icons{

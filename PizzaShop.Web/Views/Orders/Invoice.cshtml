@@ -4,7 +4,6 @@
 @{
     Layout = null;
 
-    decimal taxAmount = 0;
 @functions {
     public static string FormatDateString(string dateString)
     {
@@ -27,13 +26,12 @@
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
-
-        body{
-           font-family: Verdana, Geneva, Tahoma, sans-serif;
-           font-size: 18px;
+        body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 18px;
         }
 
-        tbody tr{
+        tbody tr {
             page-break-inside: avoid;
         }
 
@@ -50,7 +48,8 @@
             display: -webkit-box;
         }
 
-        .customerDetails, .orderDetails{
+        .customerDetails,
+        .orderDetails {
             width: 50%;
         }
 
@@ -59,7 +58,12 @@
             background-color: #0066A8 !important;
         }
 
-        table,td,tr,th,thead,tbody{
+        table,
+        td,
+        tr,
+        th,
+        thead,
+        tbody {
             border: none;
         }
 
@@ -67,16 +71,14 @@
             border-bottom: 1px solid lightblue !important;
         }
 
-        .subTotalTable td{
+        .subTotalTable td {
             border-bottom: none !important;
             padding: 2px;
         }
-
-       
     </style>
 </head>
 
-<body class="p-5">
+<body class="">
     <div class="header m-3">
         <img src="/images/logos/pizzashop_logo.png" alt="" width="60px" class="me-2">
         <h1 class="blue-text fw-semibold">PIZZASHOP</h1>
@@ -179,17 +181,16 @@
                         {
                             <tr>
                                 <td class="text-start">@tax.Name:</td>
-                                <td class="text-end">₹@(tax.IsPercentage == true ? (tax.TaxValue * Model.Subtotal)/100 :
-                                                                tax.TaxValue)</td>
-                    </tr>
-                                        taxAmount += (tax.IsPercentage == true ? (tax.TaxValue * Model.Subtotal) / 100 : tax.TaxValue);
+                                <td class="text-end">₹@tax.TaxValue</td>
+                            </tr>
                         }
-
                     }
 
                     <tr class="border-top">
-                        <td class="text-start blue-text fw-semibold" style="border-top: 1px solid #0066A8;">Total Amount Due:</td>
-                        <td class="text-end blue-text fw-semibold" style="border-top: 1px solid #0066A8;">₹@(taxAmount + Model.Subtotal)</td>
+                        <td class="text-start blue-text fw-semibold" style="border-top: 1px solid #0066A8;">Total Amount
+                            Due:</td>
+                        <td class="text-end blue-text fw-semibold" style="border-top: 1px solid #0066A8;">
+                            ₹@Model.FinalAmount</td>
                     </tr>
 
                 </tbody>

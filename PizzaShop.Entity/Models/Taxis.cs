@@ -29,5 +29,7 @@ public partial class Taxis
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
+    public virtual ICollection<OrderTaxMapping> OrderTaxMappings { get; set; } = new List<OrderTaxMapping>();
+
     public virtual User? UpdatedByNavigation { get; set; }
 }

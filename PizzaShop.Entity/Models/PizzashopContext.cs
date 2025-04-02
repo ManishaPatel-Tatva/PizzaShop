@@ -53,6 +53,8 @@ public partial class PizzaShopContext : DbContext
 
     public virtual DbSet<OrderTableMapping> OrderTableMappings { get; set; }
 
+    public virtual DbSet<OrderTaxMapping> OrderTaxMappings { get; set; }
+
     public virtual DbSet<Payment> Payments { get; set; }
 
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
@@ -284,7 +286,6 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
             entity.Property(e => e.FinalAmount)
                 .HasPrecision(10, 2)
                 .HasColumnName("final_amount");
@@ -298,11 +299,6 @@ public partial class PizzaShopContext : DbContext
                 .HasForeignKey(d => d.CreatedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("invoices_created_by_fkey");
-
-            entity.HasOne(d => d.Customer).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.CustomerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("invoices_customer_id_fkey");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Invoices)
                 .HasForeignKey(d => d.OrderId)
@@ -561,11 +557,13 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
-            entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.Instructions)
                 .HasColumnType("character varying")
                 .HasColumnName("instructions");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.IsDineIn)
+                .HasDefaultValueSql("true")
+                .HasColumnName("is_dine_in");
             entity.Property(e => e.Members)
                 .HasDefaultValueSql("1")
                 .HasColumnName("members");
@@ -614,6 +612,7 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.ItemId).HasColumnName("item_id");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
@@ -655,6 +654,7 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.ModifierId).HasColumnName("modifier_id");
             entity.Property(e => e.OrderItemId).HasColumnName("order_item_id");
+            entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.Quantity)
                 .HasDefaultValueSql("1")
                 .HasColumnName("quantity");
@@ -716,6 +716,28 @@ public partial class PizzaShopContext : DbContext
                 .HasConstraintName("OrderTableMapping_table_id_fkey");
         });
 
+        modelBuilder.Entity<OrderTaxMapping>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("OrderTaxMapping_pkey");
+
+            entity.ToTable("OrderTaxMapping");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.TaxId).HasColumnName("tax_id");
+            entity.Property(e => e.TaxValue).HasColumnName("tax_value");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderTaxMappings)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("OrderTaxMapping_order_id_fkey");
+
+            entity.HasOne(d => d.Tax).WithMany(p => p.OrderTaxMappings)
+                .HasForeignKey(d => d.TaxId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("OrderTaxMapping_tax_id_fkey");
+        });
+
         modelBuilder.Entity<Payment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Payments_pkey");
@@ -748,7 +770,6 @@ public partial class PizzaShopContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Active)
-                .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("active");
             entity.Property(e => e.CreatedAt)
@@ -927,7 +948,6 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.IsAvailable)
-                .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("is_available");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
@@ -987,7 +1007,6 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.IsEnabled).HasColumnName("is_enabled");
             entity.Property(e => e.IsPercentage)
-                .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("is_percentage");
             entity.Property(e => e.Name)
@@ -1045,7 +1064,6 @@ public partial class PizzaShopContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("first_name");
             entity.Property(e => e.IsActive)
-                .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("is_active");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");

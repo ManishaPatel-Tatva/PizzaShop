@@ -24,10 +24,11 @@
             <option value="Last 7 Days">Last 7 Days</option>
             <option value="Last 30 Days">Last 30 Days</option>
             <option value="Current Month">Current Month</option>
-            <option value="Current Month">Custom Date</option>
+            <option value="Custom Date">Custom Date</option>
         </select>
 
-        <a class="btn btn-blue text-nowrap d-flex justify-content-center align-items-center my-2" id="exportCustomerBtn">
+        <a class="btn btn-blue text-nowrap d-flex justify-content-center align-items-center my-2"
+            id="exportCustomerBtn">
             <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
             Export
         </a>
@@ -40,6 +41,139 @@
 <div class="bg-white px-3" id="customerContent">
     <!-- Partial View -->
 </div>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerHistory">
+    Launch static backdrop modal
+</button>
+
+<!-- Modal Custom date Range starts -->
+<div class="modal fade" id="customDateRange" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Select Date Range</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    id="customDateClose"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row mx-0 gap-2">
+                    <div class="form-floating col p-0">
+                        <input type="date" class="form-control" id="fromDate" placeholder="">
+                        <label for="fromDate">From Date</label>
+                    </div>
+
+                    <div class="form-floating col p-0">
+                        <input type="date" class="form-control" id="toDate" placeholder="">
+                        <label for="toDate">To Date</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-blue" id="customDateSubmit">Submit</button>
+                <button type="button" class="btn btn-white" data-bs-dismiss="modal"
+                    id="customDateCancel">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Modal Custom date Range ends -->
+
+<!-- Modal Customer History starts -->
+<div class="modal fade" id="customerHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Select Date Range</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    id="customDateClose"></button>
+            </div>
+
+            <div class="modal-body bg-grey p-3">
+                <!-- Customer Info -->
+                <div class="row d-flex flex-column flex-sm-row">
+                    <div class="col d-flex flex-column">
+                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                            <span>Name</span>
+                            <span class="fw-semibold">Riya</span>
+                        </div>
+                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                            <span>Mobile Number</span>
+                            <span class="fw-semibold">9980455656</span>
+                        </div>
+                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                            <span>Max Order</span>
+                            <span class="fw-semibold">26.22</span>
+                        </div>
+                    </div>
+                    <div class="col d-flex flex-column">
+                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                            <span>Average Bill</span>
+                            <span class="fw-semibold">Riya</span>
+                        </div>
+                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                            <span>Coming Since</span>
+                            <span class="fw-semibold">9980455656</span>
+                        </div>
+                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                            <span>Visits</span>
+                            <span class="fw-semibold">2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer table History -->
+                <div class="table-responsive bg-white px-2">
+                    <table class="table table-striped">
+                    <thead>
+                        <tr class="">
+                            <th scope="col" class="col">Order Date</th>
+                            <th scope="col" class="col">Order Type</th>
+                            <th scope="col" class="col">Payment</th>
+                            <th scope="col" class="col">Items</th>
+                            <th scope="col" class="col">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            
+                        </tr>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            
+                        </tr>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            
+                        </tr>
+                       
+                    </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Modal Customer History ends -->
 
 
 @section Scripts {
@@ -67,14 +201,43 @@
         });
 
         //Applying Filter
-
         $(document).on("change", "#dateRange", function () {
-            CustomerPaginationAjax(1);
+            if ($(this).val() == "Custom Date") {
+                $("#fromDate").val("");
+                $("#toDate").val("");
+                let today = new Date().toISOString().split("T")[0];
+                $("#fromDate, #toDate").attr("max", today);
+                $("#customDateRange").modal("show");
+            }
+            else {
+                CustomerPaginationAjax(1);
+            }
         });
 
-        $(document).on("click", "#searchByDate", function () {
+        //Selecting custom date range
+        $(document).on("click", "#customDateSubmit", function () {
+            $("#customDateRange").modal("hide");
             CustomerPaginationAjax(1);
+        })
+
+        //Close custom date modal
+        $(document).on("click", "#customDateClose, #customDateCancel", function () {
+            $("#customDateRange").modal("hide");
+            $("#dateRange").val($("#dateRange option:first").val());
+            CustomerPaginationAjax(1);
+        })
+
+        // Validate Date
+        $(document).on("change", "#fromDate", function () {
+            let fromDate = $(this).val();
+            $("#toDate").attr("min", fromDate); // Restrict "To Date" to not be before "From Date"
         });
+
+        $(document).on("change", "#toDate", function () {
+            let toDate = $(this).val();
+            $("#fromDate").attr("max", toDate); // Restrict "From Date" to not be after "To Date"
+        });
+
 
 
         function CustomerPaginationAjax(pageNumber) {
@@ -84,7 +247,7 @@
 
             let pageSize = $("#customersPerPage").val() || 5; // Default to 5 if no value selected
             let searchCustomer = $("#searchCustomer").val();
-
+            console.log("pagination ajax");
             $.ajax({
                 url: '@Url.Action("GetCustomersList", "Customers")',
                 data: {
@@ -111,16 +274,6 @@
             });
         }
 
-        // Validate Date
-        $(document).on("change", "#fromDate", function () {
-            let fromDate = $(this).val();
-            $("#toDate").attr("min", fromDate); // Restrict "To Date" to not be before "From Date"
-        });
-
-        $(document).on("change", "#toDate", function () {
-            let toDate = $(this).val();
-            $("#fromDate").attr("max", toDate); // Restrict "From Date" to not be after "To Date"
-        });
     </script>
 
     @* Export Customer Details *@

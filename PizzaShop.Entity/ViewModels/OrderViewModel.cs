@@ -9,4 +9,6 @@ public class OrderViewModel
     public string PaymentMode { get; set; }
     public int Rating { get; set; }
     public decimal TotalAmount { get; set; }
+    public bool IsDineIn { get; set; } = true;
+    public int NoOfItems { get; set; }
 }

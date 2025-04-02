@@ -7,8 +7,6 @@ public partial class Order
 {
     public long Id { get; set; }
 
-    public DateOnly Date { get; set; }
-
     public long CustomerId { get; set; }
 
     public long StatusId { get; set; }
@@ -29,6 +27,8 @@ public partial class Order
 
     public int Members { get; set; }
 
+    public bool? IsDineIn { get; set; }
+
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     public virtual Customer Customer { get; set; } = null!;
@@ -42,6 +42,8 @@ public partial class Order
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual ICollection<OrderTableMapping> OrderTableMappings { get; set; } = new List<OrderTableMapping>();
+
+    public virtual ICollection<OrderTaxMapping> OrderTaxMappings { get; set; } = new List<OrderTaxMapping>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 

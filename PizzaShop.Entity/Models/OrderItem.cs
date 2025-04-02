@@ -25,6 +25,8 @@ public partial class OrderItem
 
     public bool IsDeleted { get; set; }
 
+    public decimal Price { get; set; }
+
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     public virtual Item Item { get; set; } = null!;

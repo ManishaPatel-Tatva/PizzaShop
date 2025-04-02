@@ -11,8 +11,6 @@ public partial class Invoice
 
     public long OrderId { get; set; }
 
-    public long CustomerId { get; set; }
-
     public decimal FinalAmount { get; set; }
 
     public DateTime CreatedAt { get; set; }
@@ -22,8 +20,6 @@ public partial class Invoice
     public bool IsDeleted { get; set; }
 
     public virtual User CreatedByNavigation { get; set; } = null!;
-
-    public virtual Customer Customer { get; set; } = null!;
 
     public virtual Order Order { get; set; } = null!;
 }

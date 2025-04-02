@@ -23,6 +23,8 @@ public partial class OrderItemsModifier
 
     public int Quantity { get; set; }
 
+    public decimal Price { get; set; }
+
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     public virtual Modifier Modifier { get; set; } = null!;
