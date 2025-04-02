@@ -1,0 +1,92 @@
+@using PizzaShop.Entity.ViewModels
+
+@model CustomerPaginationViewModel
+
+<!-- Table -->
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr class="">
+                <th scope="col" class="col ">
+                    Name
+                    <button class="btn p-0 sortBtn" data-column="name" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="name" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
+                <th scope="col" class="col">
+                    Email
+                </th>
+                <th scope="col" class="col-2">
+                    Phone Number
+                </th>
+                <th scope="col" class="col-2">
+                    Date
+                    <button class="btn p-0 sortBtn" data-column="date" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="date" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
+
+                <th scope="col" class="col-1">
+                    Total Order
+                    <button class="btn p-0 sortBtn" data-column="total order" data-order="asc">
+                        <img src="~/images/icons/arrow-up.svg" alt="">
+                    </button>
+                    <button class="btn p-0 sortBtn" data-column="total order" data-order="desc">
+                        <img src="~/images/icons/arrow-down.svg" alt="">
+                    </button>
+                </th>
+
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @foreach (CustomerViewModel customer in Model.Customers)
+            {
+                <tr>
+                    <td scope="row">
+                        @customer.Name
+                    </td>
+                    <td>@customer.Email</td>
+                    <td>@customer.Phone</td>
+                    <td>@customer.Date</td>
+                    <td>@customer.TotalOrder</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Starts -->
+<div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+        <span>Items per page:</span>
+        <select class="form-select w-auto" id="customersPerPage" aria-label="Select items per page">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+        <!-- Previous Page Button -->
+        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+            onclick="CustomerPaginationAjax(@Model.Page.CurrentPage - 1)">
+            <img src="~/images/icons/chevron-left.svg" alt="">
+        </button>
+
+        <!-- Next Page Button -->
+        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+            onclick="CustomerPaginationAjax(@Model.Page.CurrentPage + 1)">
+            <img src="~/images/icons/chevron-right.svg" alt="">
+        </button>
+    </div>
+</div>
+<!-- Pagination Ends -->

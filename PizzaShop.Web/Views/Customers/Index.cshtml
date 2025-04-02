@@ -3,13 +3,13 @@
     Layout = "_Layout";
 }
 
-<!-- Order heading, search and export button -->
+<!-- Customer heading, search and export button -->
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-1 gap-md-5">
     <div>
         <h1 class="blue-text">Customers</h1>
     </div>
 
-    <div class="justify-content-end d-flex flex-column flex-md-row order-export-div ">
+    <div class="justify-content-end d-flex flex-column flex-md-row customer-export-div ">
 
         <div class="input-group me-2 my-2">
             <input type="search" class="form-control" placeholder="Search" name="search" id="searchCustomer">
@@ -20,14 +20,14 @@
 
         <select class="form-select me-2 my-2" id="dateRange">
             <option selected value="All Time">All Time</option>
-            <option selected value="All Time">Today</option>
+            <option value="Today">Today</option>
             <option value="Last 7 Days">Last 7 Days</option>
             <option value="Last 30 Days">Last 30 Days</option>
             <option value="Current Month">Current Month</option>
             <option value="Current Month">Custom Date</option>
         </select>
 
-        <a class="btn btn-blue text-nowrap d-flex align-items-center my-2" id="exportOrderBtn">
+        <a class="btn btn-blue text-nowrap d-flex justify-content-center align-items-center my-2" id="exportCustomerBtn">
             <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
             Export
         </a>
@@ -35,54 +35,26 @@
     </div>
 </div>
 
-<div class="d-flex flex-column flex-md-row justify-content-end align-items-center mb-3 gap-2 dateRange-div">
-
-    <div class="d-flex justify-content-center gap-2">
-        <div class="form-floating ">
-            <input type="date" class="form-control" id="fromDate" placeholder="">
-            <label for="fromDate">From Date</label>
-        </div>
-
-        <div class="form-floating ">
-            <input type="date" class="form-control" id="toDate" placeholder="">
-            <label for="toDate">To Date</label>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-center gap-2">
-        <button class="btn btn-blue text-nowrap" id="searchByDate">
-            Search
-        </button>
-
-        <button class="btn btn-white text-nowrap" id="clearFilterBtn">
-            Clear
-        </button>
-    </div>
-
-
-</div>
 
 <!-- Table -->
-<div class="bg-white px-3" id="orderContent">
+<div class="bg-white px-3" id="customerContent">
     <!-- Partial View -->
 </div>
 
 
 @section Scripts {
-    @* Order Pagination *@
+    @* Customer Pagination *@
     <script>
         $(document).ready(function () {
-            OrderPaginationAjax(1);
-            let today = new Date().toISOString().split("T")[0];
-            $("#fromDate, #toDate").attr("max", today);
+            CustomerPaginationAjax(1);
         });
 
-        $(document).on("change", "#ordersPerPage", function () {
-            OrderPaginationAjax(1); // Reload data with new page size
+        $(document).on("change", "#customersPerPage", function () {
+            CustomerPaginationAjax(1); // Reload data with new page size
         });
 
-        $(document).on("input", "#searchOrder", function () {
-            OrderPaginationAjax(1); // Reload data with new page size
+        $(document).on("input", "#searchCustomer", function () {
+            CustomerPaginationAjax(1); // Reload data with new page size
         });
 
         //sortingColumn
@@ -91,44 +63,31 @@
         $(document).on("click", ".sortBtn", function () {
             sortingColumn = $(this).data("column");
             sortingOrder = $(this).data("order");
-            OrderPaginationAjax(1);
+            CustomerPaginationAjax(1);
         });
 
         //Applying Filter
-        $(document).on("change", "#orderStatus", function () {
-            OrderPaginationAjax(1);
-        });
 
         $(document).on("change", "#dateRange", function () {
-            OrderPaginationAjax(1);
+            CustomerPaginationAjax(1);
         });
 
         $(document).on("click", "#searchByDate", function () {
-            OrderPaginationAjax(1);
+            CustomerPaginationAjax(1);
         });
 
-        $(document).on("click", "#clearFilterBtn", function () {
-            $("#searchOrder").val("");
-            $("#orderStatus").val("All Status");
-            $("#dateRange").val("All Time");
-            $("#fromDate").val("");
-            $("#toDate").val("");
-            OrderPaginationAjax(1);
-        });
 
-        function OrderPaginationAjax(pageNumber) {
-            let orderStatus = $("#orderStatus").val();
+        function CustomerPaginationAjax(pageNumber) {
             let dateRange = $("#dateRange").val();
             let fromDate = $("#fromDate").val();
             let toDate = $("#toDate").val();
 
-            let pageSize = $("#ordersPerPage").val() || 5; // Default to 5 if no value selected
-            let searchOrder = $("#searchOrder").val();
+            let pageSize = $("#customersPerPage").val() || 5; // Default to 5 if no value selected
+            let searchCustomer = $("#searchCustomer").val();
 
             $.ajax({
-                url: '@Url.Action("GetOrdersList", "Orders")',
+                url: '@Url.Action("GetCustomersList", "Customers")',
                 data: {
-                    'status': orderStatus,
                     'dateRange': dateRange,
                     'fromDate': fromDate,
                     'toDate': toDate,
@@ -136,13 +95,13 @@
                     'sort': sortingOrder,
                     'pageSize': pageSize,
                     'pageNumber': pageNumber,
-                    'search': searchOrder
+                    'search': searchCustomer
                 },
                 type: "GET",
                 dataType: "html",
                 success: function (data) {
-                    $("#orderContent").html(data);
-                    $("#ordersPerPage").val(pageSize); // Reapply selected value after reload
+                    $("#customerContent").html(data);
+                    $("#customersPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -164,26 +123,26 @@
         });
     </script>
 
-    @* Export Order Details *@
+    @* Export Customer Details *@
     <script>
 
-        $(document).on("click", "#exportOrderBtn", function () {
+        $(document).on("click", "#exportCustomerBtn", function () {
             console.log("export btn clicked");
-            exportOrderDetails();
+            exportCustomerDetails();
         })
 
-        function exportOrderDetails() {
+        function exportCustomerDetails() {
             console.log("export function called");
-            let orderStatus = $("#orderStatus").val();
+            let customerStatus = $("#customerStatus").val();
             let dateRange = $("#dateRange").val();
             let fromDate = $("#fromDate").val();
             let toDate = $("#toDate").val();
-            let searchOrder = $("#searchOrder").val();
+            let searchOrder = $("#searchCustomer").val();
 
             $.ajax({
-                url: '@Url.Action("ExportOrderDetails", "Orders")',
+                url: '@Url.Action("ExportCustomerDetails", "Customers")',
                 data: {
-                    'status': orderStatus,
+                    'status': customerStatus,
                     'dateRange': dateRange,
                     'fromDate': fromDate,
                     'toDate': toDate,
@@ -195,7 +154,7 @@
                     responseType: 'blob'
                 },
                 success: function (data, status, xhr) {
-                    let filename = "Orders.xlsx";
+                    let filename = "Customers.xlsx";
 
                     let disposition = xhr.getResponseHeader('Content-Disposition');
                     if (disposition && disposition.indexOf('attachment') !== -1) {

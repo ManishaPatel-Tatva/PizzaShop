@@ -24,7 +24,7 @@ public class CustomersController : Controller
 
     [CustomAuthorize("View_Customers")]
     [HttpGet]
-    public async Task<IActionResult> GetOrdersList(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", int pageSize=5, int pageNumber = 1, string search="")
+    public async Task<IActionResult> GetCustomersList(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", int pageSize=5, int pageNumber = 1, string search="")
     {
         CustomerPaginationViewModel model = await _customerService.GetPagedCustomers(dateRange, fromDate, toDate, column, sort, pageSize, pageNumber, search);
         if (model == null)

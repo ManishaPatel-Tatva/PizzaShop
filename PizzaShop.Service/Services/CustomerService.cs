@@ -55,13 +55,13 @@ public class CustomerService : ICustomerService
             {
                 case "today":
                     DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                    model.Customers = model.Customers.Where(x => x.Date.Day == today.Day && x.Date.Month == today.Month && x.Date.Year == today.Year);
+                    model.Customers = model.Customers.Where(c => c.Date.Day == today.Day && c.Date.Month == today.Month && c.Date.Year == today.Year);
                     break;
                 case "last 7 days":
                     model.Customers = model.Customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "last 30 days":
-                    model.Customers = model.Customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
+                    model.Customers = model.Customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "current month":
                     DateOnly startDate = DateOnly.FromDateTime(DateTime.Now);

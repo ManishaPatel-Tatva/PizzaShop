@@ -154,7 +154,7 @@
 
                         @if (permissions.Contains("View_Customers"))
                         {
-                            <a asp-action="Index" asp-controller="Orders"
+                            <a asp-action="Index" asp-controller="Customers"
                                 class="@((ViewData["sidebar-active"] as string) == "Customers" ? "side-dash" : "")">
                                 <img src="~/images/navigation/customer.svg" alt=""
                                     class="@((ViewData["sidebar-active"] as string) == "Customers" ? "blue" : "")">
