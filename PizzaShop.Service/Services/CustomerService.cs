@@ -102,6 +102,8 @@ public class CustomerService : ICustomerService
             }
         }
 
+        totalRecord = model.Customers.Count();
+
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;
     }

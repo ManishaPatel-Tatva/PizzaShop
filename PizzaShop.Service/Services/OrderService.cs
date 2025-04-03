@@ -130,6 +130,8 @@ public class OrderService : IOrderService
             })
         };
 
+        totalRecord = model.Orders.Count();
+
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;
     }

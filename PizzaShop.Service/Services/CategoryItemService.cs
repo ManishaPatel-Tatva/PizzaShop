@@ -64,8 +64,9 @@ public class CategoryItemService : ICategoryItemService
         User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
         long createrId = creater.Id;
 
-        if(createrId == 0)
+        if(createrId == 0){
             return false;
+        }
 
         if(model.CategoryId == 0)
         {
@@ -78,8 +79,6 @@ public class CategoryItemService : ICategoryItemService
         else{
             return false;
         }
-        return false;
-        
     }
 
 

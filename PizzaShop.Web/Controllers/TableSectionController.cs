@@ -102,7 +102,7 @@ public class TableSectionController : Controller
 
     [CustomAuthorize("View_Table and Section")]
     [HttpGet]
-    public async Task<IActionResult> GetTablesList(long sectionId, int pageSize, int pageNumber = 1, string search = "")
+    public async Task<IActionResult> GetTablesList(long sectionId, int pageSize = 5, int pageNumber = 1, string search = "")
     {
         TablesPaginationViewModel model = await _tableSectionService.GetPagedTables(sectionId, pageSize, pageNumber, search);
 

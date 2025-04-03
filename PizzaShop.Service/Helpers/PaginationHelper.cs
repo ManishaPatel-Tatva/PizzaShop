@@ -26,5 +26,6 @@ public static class PaginationHelper
         page.FromRec += 1;
         page.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
         page.CurrentPage = pageNumber;
+        page.PageSize = pageSize;
     }
 }

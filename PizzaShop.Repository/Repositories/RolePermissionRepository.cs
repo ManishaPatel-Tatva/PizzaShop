@@ -45,12 +45,14 @@ public class RolePermissionRepository : IRolePermissionRepository
         {
             foreach(var permission in model)
             {
-                var specificPermission = await _context.RolePermissions.FirstOrDefaultAsync(p => p.PermissionId == permission.PermissionId && p.RoleId == roleId);
-                specificPermission.View = permission.CanView;
-                specificPermission.AddOrEdit = permission.CanEdit;
-                specificPermission.Delete = permission.CanDelete;
-                _context.RolePermissions.Update(specificPermission);
-                await _context.SaveChangesAsync();
+                RolePermission? specificPermission = await _context.RolePermissions.FirstOrDefaultAsync(p => p.PermissionId == permission.PermissionId && p.RoleId == roleId);
+                if (specificPermission != null){
+                    specificPermission.View = permission.CanView;
+                    specificPermission.AddOrEdit = permission.CanEdit;
+                    specificPermission.Delete = permission.CanDelete;
+                    _context.RolePermissions.Update(specificPermission);
+                    await _context.SaveChangesAsync();
+                }
             }
 
             return true;

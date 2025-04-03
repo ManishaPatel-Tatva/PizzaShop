@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using PizzaShop.Web.Filters;
 using PizzaShop.Entity.Models;
+using PizzaShop.Service.Common;
 
 namespace PizzaShop.Web.Controllers
 {
@@ -42,7 +43,7 @@ namespace PizzaShop.Web.Controllers
         }
         
         [CustomAuthorize("View_Users")]
-        public async Task<IActionResult> GetUsersList(int pageSize, int pageNumber = 1, string search="")
+        public async Task<IActionResult> GetUsersList(int pageSize = 5, int pageNumber = 1, string search="")
         {
             UsersListViewModel? model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
             if (model == null)
@@ -74,7 +75,7 @@ namespace PizzaShop.Web.Controllers
             if (!ModelState.IsValid)
             {
                 AddUserViewModel addUserModel = await _userService.GetAddUser();
-                TempData["errorMessage"] = "User Not Added! Please enter valid details";
+                TempData["errorMessage"] = NotificationMessages.CreatedFailed.Replace("{0}","User");
                 ViewData["sidebar-active"] = "Users";
                 return View(addUserModel);
             }
@@ -91,7 +92,7 @@ namespace PizzaShop.Web.Controllers
                 return View(addUserModel);
             }
             
-            TempData["successMessage"] = "User added successfully!";
+            TempData["successMessage"] = NotificationMessages.Created.Replace("{0}","User");
             return RedirectToAction("Index");
         }
 #endregion
@@ -162,7 +163,7 @@ namespace PizzaShop.Web.Controllers
                 return View(editUserModel);
             }
 
-            TempData["successMessage"] = "User updated successfully!";
+            TempData["successMessage"] = NotificationMessages.Updated.Replace("{0}","User");
             return RedirectToAction("Index","ManageUsers");
         }
 #endregion

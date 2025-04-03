@@ -65,11 +65,10 @@
 <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
     <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
         <span>Items per page:</span>
-        <select class="form-select w-auto" id="customersPerPage" aria-label="Select items per page">
-            <option value="5" selected>5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
+        <select class="form-select w-auto" id="itemsPerPage" onchange="PaginationAjax(1)" aria-label="Select tables per page">  
+            <option value="5" selected="@(Model.Page.PageSize == 5 ? true : false)">5</option>
+            <option value="10" selected="@(Model.Page.PageSize == 10 ? true : false)">10</option>
+            <option value="15" selected="@(Model.Page.PageSize == 15 ? true : false)">15</option>
         </select>
     </div>
 
@@ -78,13 +77,13 @@
 
         <!-- Previous Page Button -->
         <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
-            onclick="CustomerPaginationAjax(@Model.Page.CurrentPage - 1)">
+            onclick="PaginationAjax(@Model.Page.CurrentPage - 1)">
             <img src="~/images/icons/chevron-left.svg" alt="">
         </button>
 
         <!-- Next Page Button -->
         <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
-            onclick="CustomerPaginationAjax(@Model.Page.CurrentPage + 1)">
+            onclick="PaginationAjax(@Model.Page.CurrentPage + 1)">
             <img src="~/images/icons/chevron-right.svg" alt="">
         </button>
     </div>

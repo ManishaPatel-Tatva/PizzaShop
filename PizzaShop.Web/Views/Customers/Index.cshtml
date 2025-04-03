@@ -12,7 +12,7 @@
     <div class="justify-content-end d-flex flex-column flex-md-row customer-export-div ">
 
         <div class="input-group me-2 my-2">
-            <input type="search" class="form-control" placeholder="Search" name="search" id="searchCustomer">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchCustomer" oninput="PaginationAjax()">
             <button type="submit" class="input-group-text">
                 <img src="~/images/icons/search.svg" alt="">
             </button>
@@ -93,15 +93,7 @@
     @* Customer Pagination *@
     <script>
         $(document).ready(function () {
-            CustomerPaginationAjax(1);
-        });
-
-        $(document).on("change", "#customersPerPage", function () {
-            CustomerPaginationAjax(1); // Reload data with new page size
-        });
-
-        $(document).on("input", "#searchCustomer", function () {
-            CustomerPaginationAjax(1); // Reload data with new page size
+            PaginationAjax(1);
         });
 
         //sortingColumn
@@ -110,7 +102,7 @@
         $(document).on("click", ".sortBtn", function () {
             sortingColumn = $(this).data("column");
             sortingOrder = $(this).data("order");
-            CustomerPaginationAjax(1);
+            PaginationAjax(1);
         });
 
         //Applying Filter
@@ -123,21 +115,21 @@
                 $("#customDateRange").modal("show");
             }
             else {
-                CustomerPaginationAjax(1);
+                PaginationAjax(1);
             }
         });
 
         //Selecting custom date range
         $(document).on("click", "#customDateSubmit", function () {
             $("#customDateRange").modal("hide");
-            CustomerPaginationAjax(1);
+            PaginationAjax(1);
         })
 
         //Close custom date modal
         $(document).on("click", "#customDateClose, #customDateCancel", function () {
             $("#customDateRange").modal("hide");
             $("#dateRange").val($("#dateRange option:first").val());
-            CustomerPaginationAjax(1);
+            PaginationAjax(1);
         })
 
         // Validate Date
@@ -151,16 +143,13 @@
             $("#fromDate").attr("max", toDate); // Restrict "From Date" to not be after "To Date"
         });
 
-
-
-        function CustomerPaginationAjax(pageNumber) {
+        function PaginationAjax(pageNumber) {
             let dateRange = $("#dateRange").val();
             let fromDate = $("#fromDate").val();
             let toDate = $("#toDate").val();
-
-            let pageSize = $("#customersPerPage").val() || 5; // Default to 5 if no value selected
+            let pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
             let searchCustomer = $("#searchCustomer").val();
-            console.log("pagination ajax");
+
             $.ajax({
                 url: '@Url.Action("GetCustomersList", "Customers")',
                 data: {

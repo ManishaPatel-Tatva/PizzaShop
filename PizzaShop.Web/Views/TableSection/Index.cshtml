@@ -61,7 +61,7 @@
 
         <div class="d-flex justify-content-end">
             <div class="input-group w-25 me-2">
-                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTable">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTable" oninput="PaginationAjax(1)">
                 <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
                 </button>
             </div>
@@ -131,7 +131,7 @@
         $(document).ready(function () {
             currentSectionId = $("#ul-section>li:first").data("id");
             $("#ul-section>li:first>a").addClass("blue");
-            TablesPaginationAjax(1); // Load users on page load
+            PaginationAjax(1); // Load users on page load
         });
 
         $(document).on("click", ".li-section>a", function () {
@@ -141,19 +141,11 @@
             });
             $(this).addClass("blue");
 
-            TablesPaginationAjax(1);
+            PaginationAjax(1);
         });
 
-        $(document).on("change", "#tablesPerPage", function () {
-            TablesPaginationAjax(1); // Reload data with new page size
-        });
-
-        $(document).on("input", "#searchTable", function () {
-            TablesPaginationAjax(1); // Reload after serach query
-        });
-
-        function TablesPaginationAjax(pageNumber) {
-            let pageSize = $("#tablesPerPage").val() || 5; // Default to 5 if no value selected
+        function PaginationAjax(pageNumber) {
+            let pageSize = $("#itemsPerPage").val(); // Default to 5 if no value selected
 
             let searchQuery = $("#searchTable").val();
             if (searchQuery == null) {
@@ -172,7 +164,7 @@
                 dataType: "html",
                 success: function (data) {
                     $("#tableOuter").html(data);
-                    $("#tablesPerPage").val(pageSize); // Reapply selected value after reload
+                    @* $("#tablesPerPage").val(pageSize); // Reapply selected value after reload *@
                 },
                 error: function (data) {
                     alert("No Table Found");

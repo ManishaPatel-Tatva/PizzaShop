@@ -190,7 +190,7 @@
             let searchOrder = $("#searchOrder").val();
 
             $.ajax({
-                url: '@Url.Action("ExportOrderDetails", "Orders")',
+                url: '@Url.Action("ExportExcel", "Orders")',
                 data: {
                     'status': orderStatus,
                     'dateRange': dateRange,

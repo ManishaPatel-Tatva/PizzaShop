@@ -12,7 +12,7 @@
     <div class="justify-content-end d-flex align-items-center">
         <div class="me-2">
             <div class="input-group">
-                <input type="search" class="form-control" placeholder="Search" name="search" id="search">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="search" onchange="PaginationAjax(1)">
                 <button type="submit" class="input-group-text"> 
                     <img src="~/images/icons/search.svg" alt=""> 
                 </button>
@@ -37,27 +37,12 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            PaginationAjax(1, $("#itemsPerPage").val()); // Load users on page load
+            PaginationAjax(1); // Load users on page load
         });
 
-        $(document).on("change", "#itemsPerPage", function () {
-            var selectedPageSize = $(this).val(); // Get selected value
-            PaginationAjax(1, selectedPageSize); // Reload data with new page size
-        });
-
-        $(document).on("input", "#search", function () {
-            var selectedPageSize = $("#itemsPerPage").val();
-            PaginationAjax(1, selectedPageSize); // Reload data with new page size
-        })
-
-        function PaginationAjax(pageNumber, pageSize) {
-            if (!pageNumber) {
-                pageNumber = @((Model?.Page?.CurrentPage ?? 1));
-            }
-            if (!pageSize) {
-                pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
-            }
-
+        function PaginationAjax(pageNumber) {
+            let pageSize = $("#itemsPerPage").val(); 
+            
             let searchQuery = $("#search").val();
             if (searchQuery == null) {
                 searchQuery = ""
@@ -74,7 +59,6 @@
                 dataType: "html",
                 success: function (data) {
                     $("#tableContent").html(data);
-                    $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
                     alert("No Users Found");
