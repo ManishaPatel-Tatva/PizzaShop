@@ -41,9 +41,9 @@ public class OrdersController : Controller
 
     [CustomAuthorize("View_Orders")]
     [HttpGet]
-    public async Task<IActionResult> ExportOrderDetails(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", string search="")
+    public async Task<IActionResult> ExportExcel(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", string search="")
     {
-        byte[] fileData = await _orderService.ExportOrderDetails(status, dateRange, fromDate, toDate, column, sort, search);
+        byte[] fileData = await _orderService.ExportExcel(status, dateRange, fromDate, toDate, column, sort, search);
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
     }
 
@@ -54,7 +54,6 @@ public class OrdersController : Controller
         ViewData["sidebar-active"] = "Orders";
         return View(model);
     }
-
     
     public async Task<IActionResult> Invoice(long orderId)
     {

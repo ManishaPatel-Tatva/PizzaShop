@@ -14,10 +14,10 @@ public interface IGenericRepository<T>
     IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate);
 
     Task<IEnumerable<T>> GetByConditionInclude(
-        Expression<Func<T, bool>> predicate,
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         List<Expression<Func<T, object>>>? includes = null,
-        List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null
-    );
+        List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null);
 
     Task<(IEnumerable<T> items, int totalCount)> GetPagedRecordsAsync
     (
@@ -28,11 +28,6 @@ public interface IGenericRepository<T>
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null
     );
-
-    Task<IEnumerable<T>> GetRecordDetails(
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        List<Expression<Func<T, object>>>? includes = null);
 
     Task<T?> GetByIdAsync(long id);
 

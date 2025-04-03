@@ -46,4 +46,12 @@ public class CustomersController : Controller
         return PartialView("_CustomerHistoryPartialView", model);
     }
 
+    [CustomAuthorize("View_Customers")]
+    [HttpGet]
+    public async Task<IActionResult> ExportExcel(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", string search="")
+    {
+        byte[] fileData = await _customerService.ExportExcel(dateRange, fromDate, toDate, column, sort, search);
+        return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Customers.xlsx");
+    }
+
 }

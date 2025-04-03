@@ -199,21 +199,20 @@
 
         function exportCustomerDetails() {
             console.log("export function called");
-            let customerStatus = $("#customerStatus").val();
             let dateRange = $("#dateRange").val();
             let fromDate = $("#fromDate").val();
             let toDate = $("#toDate").val();
-            let searchOrder = $("#searchCustomer").val();
+            let searchCustomer = $("#searchCustomer").val();
 
             $.ajax({
-                url: '@Url.Action("ExportCustomerDetails", "Customers")',
+                url: '@Url.Action("ExportExcel", "Customers")',
                 data: {
                     'dateRange': dateRange,
                     'fromDate': fromDate,
                     'toDate': toDate,
                     'column': sortingColumn,
                     'sort': sortingOrder,
-                    'search': searchOrder
+                    'search': searchCustomer
                 },
                 xhrFields: {
                     responseType: 'blob'

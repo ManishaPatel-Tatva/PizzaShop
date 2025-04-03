@@ -73,11 +73,24 @@ public class GenericRepository<T> : IGenericRepository<T>
 
 
     public async Task<IEnumerable<T>> GetByConditionInclude(
-        Expression<Func<T, bool>> predicate,
+        Expression<Func<T, bool>>? filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null)
     {
-        IQueryable<T> query = _dbSet.Where(predicate);
+        IQueryable<T> query = _dbSet;
+
+        //Apply Filters
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        //Order By
+        if (orderBy != null)
+        {
+            query = orderBy(query);
+        }
 
         // Apply Includes (First-level navigation properties)
         if (includes != null)
@@ -155,49 +168,10 @@ public class GenericRepository<T> : IGenericRepository<T>
         }
         catch (Exception ex)
         {
-            return (null,0);
+            return (null, 0);
         }
 
     }
-
-    public async Task<IEnumerable<T>> GetRecordDetails(
-        Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        List<Expression<Func<T, object>>>? includes = null)
-    {
-        try
-        {
-            IQueryable<T> query = _dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            return query.ToList();
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
-
-    }
-
-
-
 
     /*----------------------retrieves a single record from the database by its primary key (id)----------------------------------------
     -------------------------------------------------------------------------------------------------------*/
