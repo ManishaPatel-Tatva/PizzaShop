@@ -34,4 +34,16 @@ public class CustomersController : Controller
         return PartialView("_CustomersListPartialView", model);
     }
 
+    [CustomAuthorize("View_Customers")]
+    [HttpGet]
+    public async Task<IActionResult> CustomerHistory(long customerId)
+    {
+        CustomerHistoryViewModel model = await _customerService.CustomerHistory(customerId);
+        if (model == null)
+        {
+            return NotFound(); // This triggers AJAX error
+        }
+        return PartialView("_CustomerHistoryPartialView", model);
+    }
+
 }

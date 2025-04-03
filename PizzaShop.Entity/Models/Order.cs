@@ -13,7 +13,7 @@ public partial class Order
 
     public string? Instructions { get; set; }
 
-    public decimal TotalAmount { get; set; }
+    public decimal SubTotal { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -28,6 +28,8 @@ public partial class Order
     public int Members { get; set; }
 
     public bool? IsDineIn { get; set; }
+
+    public decimal FinalAmount { get; set; }
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 

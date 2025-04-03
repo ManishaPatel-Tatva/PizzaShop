@@ -47,7 +47,7 @@
         <tbody class="table-group-divider">
             @foreach (CustomerViewModel customer in Model.Customers)
             {
-                <tr>
+                <tr class="@(User.IsInRole("Admin")?"customerRow":"")" data-id="@customer.CustomerId">
                     <td scope="row">
                         @customer.Name
                     </td>

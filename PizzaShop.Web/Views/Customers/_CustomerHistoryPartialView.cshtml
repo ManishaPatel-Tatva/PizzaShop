@@ -1,0 +1,69 @@
+@using PizzaShop.Entity.ViewModels
+@model CustomerHistoryViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="staticBackdropLabel">Select Date Range</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="customDateClose"></button>
+</div>
+
+<div class="modal-body bg-grey p-3">
+    <!-- Customer Info -->
+    <div class="row d-flex flex-column flex-sm-row">
+        <div class="col d-flex flex-column">
+            <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                <span>Name</span>
+                <span class="fw-semibold">@Model.CustomerName</span>
+            </div>
+            <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                <span>Mobile Number</span>
+                <span class="fw-semibold">@Model.Phone</span>
+            </div>
+            <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                <span>Max Order</span>
+                <span class="fw-semibold">@Model.MaxOrder</span>
+            </div>
+        </div>
+        <div class="col d-flex flex-column">
+            <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                <span>Average Bill</span>
+                <span class="fw-semibold">@Model.AvgBill</span>
+            </div>
+            <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                <span>Coming Since</span>
+                <span class="fw-semibold">@Model.ComingSince</span>
+            </div>
+            <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
+                <span>Visits</span>
+                <span class="fw-semibold">@Model.Visits</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer table History -->
+    <div class="table-responsive bg-white px-2">
+        <table class="table table-striped">
+            <thead>
+                <tr class="">
+                    <th scope="col" class="col">Order Date</th>
+                    <th scope="col" class="col">Order Type</th>
+                    <th scope="col" class="col">Payment</th>
+                    <th scope="col" class="col">Items</th>
+                    <th scope="col" class="col">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>@order.Date</td>
+                        <td>@order.PaymentMode</td>
+                        <td>@order.NoOfItems</td>
+                        <td>@order.TotalAmount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

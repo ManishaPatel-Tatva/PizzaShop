@@ -42,11 +42,6 @@
     <!-- Partial View -->
 </div>
 
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerHistory">
-    Launch static backdrop modal
-</button>
-
 <!-- Modal Custom date Range starts -->
 <div class="modal fade" id="customDateRange" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -86,90 +81,8 @@
 <div class="modal fade" id="customerHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Select Date Range</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    id="customDateClose"></button>
-            </div>
-
-            <div class="modal-body bg-grey p-3">
-                <!-- Customer Info -->
-                <div class="row d-flex flex-column flex-sm-row">
-                    <div class="col d-flex flex-column">
-                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
-                            <span>Name</span>
-                            <span class="fw-semibold">Riya</span>
-                        </div>
-                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
-                            <span>Mobile Number</span>
-                            <span class="fw-semibold">9980455656</span>
-                        </div>
-                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
-                            <span>Max Order</span>
-                            <span class="fw-semibold">26.22</span>
-                        </div>
-                    </div>
-                    <div class="col d-flex flex-column">
-                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
-                            <span>Average Bill</span>
-                            <span class="fw-semibold">Riya</span>
-                        </div>
-                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
-                            <span>Coming Since</span>
-                            <span class="fw-semibold">9980455656</span>
-                        </div>
-                        <div class="d-flex justify-content-between bg-white p-2 mb-3 shadow-sm">
-                            <span>Visits</span>
-                            <span class="fw-semibold">2</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Customer table History -->
-                <div class="table-responsive bg-white px-2">
-                    <table class="table table-striped">
-                    <thead>
-                        <tr class="">
-                            <th scope="col" class="col">Order Date</th>
-                            <th scope="col" class="col">Order Type</th>
-                            <th scope="col" class="col">Payment</th>
-                            <th scope="col" class="col">Items</th>
-                            <th scope="col" class="col">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            
-                        </tr>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            
-                        </tr>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            
-                        </tr>
-                       
-                    </tbody>
-                    </table>
-                </div>
-
-            </div>
-
+        <div class="modal-content" id="customerHistoryContent">
+            <!-- Customer History Partial View -->
         </div>
     </div>
 </div>
@@ -295,7 +208,6 @@
             $.ajax({
                 url: '@Url.Action("ExportCustomerDetails", "Customers")',
                 data: {
-                    'status': customerStatus,
                     'dateRange': dateRange,
                     'fromDate': fromDate,
                     'toDate': toDate,
@@ -333,6 +245,33 @@
             });
         }
 
+    </script>
+
+    @* Customer History Modal *@
+    <script>
+
+        $(document).on("click", ".customerRow", function () {
+            $("#customerHistory").modal("show");
+            GetCustomerHistory($(this).data("id"));
+        });
+
+        function GetCustomerHistory(id) {
+            $.ajax({
+                url: '@Url.Action("CustomerHistory", "Customers")',
+                type: "GET",
+                data: { customerId: id },
+                dataType: "html",
+                success: function (data) {
+                    console.log("hii");
+                    console.log(data);
+                    $("#customerHistoryContent").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("No Customer history Found");
+                }
+            })
+        }
     </script>
 
 }

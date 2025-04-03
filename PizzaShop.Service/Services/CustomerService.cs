@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -107,30 +108,44 @@ public class CustomerService : ICustomerService
 
     public async Task<CustomerHistoryViewModel> CustomerHistory(long customerId)
     {
-        IEnumerable<Customer>? customer =  _customerRepository.GetByConditionInclude(
+        IEnumerable<Customer>? customer = _customerRepository.GetByConditionInclude(
             c => c.Id == customerId && !c.IsDeleted,
             includes: new List<Expression<Func<Customer, object>>>
             {
                 c => c.Orders
+            },
+            thenIncludes: new List<Func<IQueryable<Customer>, IQueryable<Customer>>>
+            {
+                q => q.Include(c => c.Orders)
+                    .ThenInclude(o => o.Payments)
+                    .ThenInclude(p => p.PaymentMethod),
+                q => q.Include(c => c.Orders)
+                    .ThenInclude(o => o.OrderItems)
             }
         ).Result;
 
         if (customer == null)
             return null;
 
-        CustomerHistoryViewModel model = customer.Select(c => new CustomerHistoryViewModel{
+        CustomerHistoryViewModel? model = customer.Select(c => new CustomerHistoryViewModel{
             CustomerId = customerId,
+            CustomerName = c.Name,
             Phone = c.Phone,
-            MaxOrder = c.Orders.Where(o => o.CustomerId == customerId).Max(o => o.TotalAmount),
-            AvgBill = c.Orders.Where(o => o.CustomerId == customerId).Average(o => o.TotalAmount),
+            MaxOrder = c.Orders.Where(o => o.CustomerId == customerId).Max(o => o.FinalAmount),
+            AvgBill = c.Orders.Where(o => o.CustomerId == customerId).Average(o => o.FinalAmount),
             ComingSince = c.CreatedAt,
-            Visits = c.Orders.Where(o => o.CustomerId == customerId).Count()
-        }).First();
+            Visits = c.Orders.Where(o => o.CustomerId == customerId).Count(),
+            Orders = c.Orders.Where(o => o.CustomerId == customerId)
+                    .Select(o => new OrderViewModel{
+                        Date = DateOnly.FromDateTime(o.CreatedAt),
+                        IsDineIn = o.IsDineIn,
+                        PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).SingleOrDefault(),
+                        NoOfItems = o.OrderItems.Where(oi => oi.OrderId == o.Id).Count(),
+                        TotalAmount = o.FinalAmount
+            }).ToList()
+        }).FirstOrDefault();
         
-
-        return null;
-
-
+        return model;
     }
 
     #endregion

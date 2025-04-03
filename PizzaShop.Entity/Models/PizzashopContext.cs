@@ -286,9 +286,6 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-            entity.Property(e => e.FinalAmount)
-                .HasPrecision(10, 2)
-                .HasColumnName("final_amount");
             entity.Property(e => e.InvoiceNo)
                 .HasColumnType("character varying")
                 .HasColumnName("invoice_no");
@@ -557,6 +554,7 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.CreatedBy).HasColumnName("created_by");
             entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.FinalAmount).HasColumnName("final_amount");
             entity.Property(e => e.Instructions)
                 .HasColumnType("character varying")
                 .HasColumnName("instructions");
@@ -568,7 +566,7 @@ public partial class PizzaShopContext : DbContext
                 .HasDefaultValueSql("1")
                 .HasColumnName("members");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
-            entity.Property(e => e.TotalAmount).HasColumnName("total_amount");
+            entity.Property(e => e.SubTotal).HasColumnName("sub_total");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");

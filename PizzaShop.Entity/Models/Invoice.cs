@@ -11,8 +11,6 @@ public partial class Invoice
 
     public long OrderId { get; set; }
 
-    public decimal FinalAmount { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public long CreatedBy { get; set; }

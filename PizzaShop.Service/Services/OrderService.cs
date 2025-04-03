@@ -107,7 +107,7 @@ public class OrderService : IOrderService
                     orders = sort == "asc" ? orders.OrderBy(o => o.Customer.Name) : orders.OrderByDescending(o => o.Customer.Name);
                     break;
                 case "amount":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.TotalAmount) : orders.OrderByDescending(o => o.TotalAmount);
+                    orders = sort == "asc" ? orders.OrderBy(o => o.FinalAmount) : orders.OrderByDescending(o => o.FinalAmount);
                     break;
                 default:
                     break;
@@ -126,7 +126,7 @@ public class OrderService : IOrderService
                 Status = o.Status.Name,
                 PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
                 Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
-                TotalAmount = o.Invoices.Where(i => i.OrderId == o.Id).Select(i => i.FinalAmount).First(),
+                TotalAmount = o.FinalAmount
             })
         };
 
@@ -201,7 +201,7 @@ public class OrderService : IOrderService
                     orders = sort == "asc" ? orders.OrderBy(o => o.Customer.Name) : orders.OrderByDescending(o => o.Customer.Name);
                     break;
                 case "amount":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.TotalAmount) : orders.OrderByDescending(o => o.TotalAmount);
+                    orders = sort == "asc" ? orders.OrderBy(o => o.FinalAmount) : orders.OrderByDescending(o => o.FinalAmount);
                     break;
                 default:
                     break;
@@ -220,7 +220,7 @@ public class OrderService : IOrderService
                 Status = o.Status.Name,
                 PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
                 Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
-                TotalAmount = o.TotalAmount
+                TotalAmount = o.FinalAmount
             })
         };
 
@@ -444,7 +444,7 @@ public class OrderService : IOrderService
             startCol += 2;
 
             worksheet.Cells[row, startCol, row, startCol + 1].Merge = true;
-            worksheet.Cells[row, startCol].Value = order.TotalAmount;
+            worksheet.Cells[row, startCol].Value = order.FinalAmount;
 
             using (var rowCells = worksheet.Cells[row, 2, row, startCol + 1])
             {
@@ -569,7 +569,7 @@ public class OrderService : IOrderService
                                                 }).ToList()
                             }).ToList(),
 
-                Subtotal = o.TotalAmount,
+                Subtotal = o.SubTotal,
 
                 TaxList = o.OrderTaxMappings.Where(otm => otm.OrderId == o.Id)
                             .Select(otm => new TaxViewModel
@@ -578,7 +578,7 @@ public class OrderService : IOrderService
                                 TaxValue = otm.TaxValue
                             }).ToList(),
 
-                FinalAmount = o.Invoices.Where(i => i.OrderId == o.Id).Select(i => i.FinalAmount).First() ,
+                FinalAmount = o.FinalAmount ,
 
                 PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
 
