@@ -39,7 +39,7 @@ public class UserService : IUserService
         (IEnumerable<User> users, int totalRecord) = await _userRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: u => !u.IsDeleted && 
+            predicate: u => !u.IsDeleted && 
                          (string.IsNullOrEmpty(search.ToLower()) ||  
                             u.Role.Name.ToLower() == search.ToLower() ||
                             u.FirstName.ToLower().Contains(search.ToLower()) || 

@@ -28,10 +28,10 @@ public class OrdersController : Controller
     }
 
     [CustomAuthorize("View_Orders")]
-    [HttpGet]
-    public async Task<IActionResult> GetOrdersList(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", int pageSize=5, int pageNumber = 1, string search="")
+    [HttpPost]
+    public async Task<IActionResult> GetOrdersList(FilterViewModel filter)
     {
-        OrderPaginationViewModel model = await _orderService.GetPagedOrder(status, dateRange, fromDate, toDate, column, sort, pageSize, pageNumber, search);
+        OrderPaginationViewModel model = await _orderService.GetPagedRecord(filter);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error

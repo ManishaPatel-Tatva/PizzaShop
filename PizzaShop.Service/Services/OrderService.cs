@@ -15,13 +15,11 @@ public class OrderService : IOrderService
 {
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
-    private readonly IGenericRepository<Taxis> _taxesRepository;
-
-    public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository, IGenericRepository<Taxis> taxesRepository)
+    
+    public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository)
     {
         _orderRepository = orderRepository;
         _orderStatusRepository = orderStatusRepository;
-        _taxesRepository = taxesRepository;
     }
 
     public async Task<OrderIndexViewModel> GetOrderIndex()
@@ -35,14 +33,16 @@ public class OrderService : IOrderService
     #region Order Pagination
     /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<OrderPaginationViewModel> GetPagedOrder(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, int pageSize, int pageNumber, string search)
+    public async Task<OrderPaginationViewModel> GetPagedRecord(FilterViewModel filter)
     {
+        filter.Search = string.IsNullOrEmpty(filter.Search) ? "" : filter.Search;
+
         (IEnumerable<Order> orders, int totalRecord) = await _orderRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
-            filter: o => !o.IsDeleted &&
-                    (string.IsNullOrEmpty(search.ToLower()) ||
-                    o.Customer.Name.ToLower().Contains(search.ToLower())),
+            filter.PageSize,
+            filter.PageNumber,
+            predicate: o => !o.IsDeleted &&
+                    (string.IsNullOrEmpty(filter.Search.ToLower()) ||
+                    o.Customer.Name.ToLower().Contains(filter.Search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
             includes: new List<Expression<Func<Order, object>>>
             {
@@ -61,21 +61,21 @@ public class OrderService : IOrderService
         );
 
         //For applying status filter
-        if (!string.IsNullOrEmpty(status) && status.ToLower() != "all status")
+        if (!string.IsNullOrEmpty(filter.Status) && filter.Status.ToLower() != "all status")
         {
-            orders = orders.Where(o => o.Status.Name.ToLower() == status.ToLower());
+            orders = orders.Where(o => o.Status.Name.ToLower() == filter.Status.ToLower());
         }
 
         //For applying date range filter
-        if (!string.IsNullOrEmpty(dateRange) && dateRange.ToLower() != "all time" && !fromDate.HasValue && !toDate.HasValue)
+        if (!string.IsNullOrEmpty(filter.DateRange) && filter.DateRange.ToLower() != "all time" && !filter.FromDate.HasValue && !filter.ToDate.HasValue)
         {
-            switch (dateRange.ToLower())
+            switch (filter.DateRange.ToLower())
             {
                 case "last 7 days":
                     orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && DateOnly.FromDateTime(o.CreatedAt) <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "last 30 days":
-                    orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && DateOnly.FromDateTime(o.CreatedAt) <= DateOnly.FromDateTime(DateTime.Now));
+                    orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && DateOnly.FromDateTime(o.CreatedAt) <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "current month":
                     DateOnly startDate = DateOnly.FromDateTime(DateTime.Now);
@@ -87,27 +87,27 @@ public class OrderService : IOrderService
         }
 
         //Filtering Custom Dates
-        if (fromDate.HasValue)
-            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= fromDate.Value);
-        if (toDate.HasValue)
-            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) <= toDate.Value);
+        if (filter.FromDate.HasValue)
+            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= filter.FromDate.Value);
+        if (filter.ToDate.HasValue)
+            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) <= filter.ToDate.Value);
 
         //For sorting the column according to order
-        if (!string.IsNullOrEmpty(column))
+        if (!string.IsNullOrEmpty(filter.Column))
         {
-            switch (column)
+            switch (filter.Column)
             {
                 case "order":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.Id) : orders.OrderByDescending(o => o.Id);
+                    orders = filter.Sort == "asc" ? orders.OrderBy(o => o.Id) : orders.OrderByDescending(o => o.Id);
                     break;
                 case "date":
-                    orders = sort == "asc" ? orders.OrderBy(o => DateOnly.FromDateTime(o.CreatedAt)) : orders.OrderByDescending(o => DateOnly.FromDateTime(o.CreatedAt));
+                    orders = filter.Sort == "asc" ? orders.OrderBy(o => DateOnly.FromDateTime(o.CreatedAt)) : orders.OrderByDescending(o => DateOnly.FromDateTime(o.CreatedAt));
                     break;
                 case "customer":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.Customer.Name) : orders.OrderByDescending(o => o.Customer.Name);
+                    orders = filter.Sort == "asc" ? orders.OrderBy(o => o.Customer.Name) : orders.OrderByDescending(o => o.Customer.Name);
                     break;
                 case "amount":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.FinalAmount) : orders.OrderByDescending(o => o.FinalAmount);
+                    orders = filter.Sort == "asc" ? orders.OrderBy(o => o.FinalAmount) : orders.OrderByDescending(o => o.FinalAmount);
                     break;
                 default:
                     break;
@@ -132,7 +132,7 @@ public class OrderService : IOrderService
 
         totalRecord = model.Orders.Count();
 
-        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;
     }
     #endregion

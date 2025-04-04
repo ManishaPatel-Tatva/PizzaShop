@@ -139,7 +139,7 @@ public class TableSectionService : ITableSectionService
         (IEnumerable<Table> tables, int totalRecord) = await _tableRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: t => !t.IsDeleted &&
+            predicate: t => !t.IsDeleted &&
                     t.SectionId == sectionId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     t.Name.ToLower().Contains(search.ToLower())),

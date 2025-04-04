@@ -257,7 +257,7 @@ public class ModifierService : IModifierService
         (IEnumerable<ModifierMapping> modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: mm => !mm.IsDeleted &&
+            predicate: mm => !mm.IsDeleted &&
                     mm.Modifiergroupid == modifierGroupId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     mm.Modifier.Name.ToLower().Contains(search.ToLower())),
@@ -293,7 +293,7 @@ public class ModifierService : IModifierService
         (IEnumerable<Modifier> modifiers, int totalRecord) = await _modifierRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: m => !m.IsDeleted &&
+            predicate: m => !m.IsDeleted &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     m.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),

@@ -23,7 +23,7 @@ public class TaxesFeesService : ITaxesFeesService
         (IEnumerable<Taxis> taxes, int totalRecord) = await _taxesRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: t => !t.IsDeleted &&
+            predicate: t => !t.IsDeleted &&
                         (string.IsNullOrEmpty(search.ToLower()) ||
                         t.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id)

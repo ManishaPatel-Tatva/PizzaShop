@@ -15,13 +15,13 @@
     <div class="justify-content-end d-flex flex-column flex-md-row order-export-div ">
 
         <div class="input-group me-2 my-2">
-            <input type="search" class="form-control" placeholder="Search" name="search" id="searchOrder">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchOrder" oninput="PaginationAjax(1)">
             <button type="submit" class="input-group-text">
                 <img src="~/images/icons/search.svg" alt="">
             </button>
         </div>
 
-        <select asp-for="@Model.status" class="form-select me-2 my-2" id="orderStatus">
+        <select asp-for="@Model.status" class="form-select me-2 my-2" id="orderStatus" onchange="PaginationAjax(1)">
             <option selected value="All Status">All Status</option>
             @foreach (OrderStatus status in Model.Statuses)
             {
@@ -29,7 +29,7 @@
             }
         </select>
 
-        <select class="form-select me-2 my-2" id="dateRange">
+        <select class="form-select me-2 my-2" id="dateRange" onchange="PaginationAjax(1)">
             <option selected value="All Time">All Time</option>
             <option value="Last 7 Days">Last 7 Days</option>
             <option value="Last 30 Days">Last 30 Days</option>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="d-flex justify-content-center gap-2">
-        <button class="btn btn-blue text-nowrap" id="searchByDate">
+        <button class="btn btn-blue text-nowrap" id="searchByDate" onclick="PaginationAjax(1)">
             Search
         </button>
 
@@ -81,77 +81,50 @@
     @* Order Pagination *@
     <script>
         $(document).ready(function () {
-            OrderPaginationAjax(1);
+            PaginationAjax(1);
             let today = new Date().toISOString().split("T")[0];
             $("#fromDate, #toDate").attr("max", today);
         });
 
-        $(document).on("change", "#ordersPerPage", function () {
-            OrderPaginationAjax(1); // Reload data with new page size
-        });
-
-        $(document).on("input", "#searchOrder", function () {
-            OrderPaginationAjax(1); // Reload data with new page size
-        });
-
-        //sortingColumn
+        //Sorting Column
         let sortingColumn;
         let sortingOrder;
         $(document).on("click", ".sortBtn", function () {
             sortingColumn = $(this).data("column");
             sortingOrder = $(this).data("order");
-            OrderPaginationAjax(1);
+            PaginationAjax(1);
         });
 
-        //Applying Filter
-        $(document).on("change", "#orderStatus", function () {
-            OrderPaginationAjax(1);
-        });
-
-        $(document).on("change", "#dateRange", function () {
-            OrderPaginationAjax(1);
-        });
-
-        $(document).on("click", "#searchByDate", function () {
-            OrderPaginationAjax(1);
-        });
-
+        //Clear Filter
         $(document).on("click", "#clearFilterBtn", function () {
             $("#searchOrder").val("");
             $("#orderStatus").val("All Status");
             $("#dateRange").val("All Time");
             $("#fromDate").val("");
             $("#toDate").val("");
-            OrderPaginationAjax(1);
+            PaginationAjax(1);
         });
 
-        function OrderPaginationAjax(pageNumber) {
-            let orderStatus = $("#orderStatus").val();
-            let dateRange = $("#dateRange").val();
-            let fromDate = $("#fromDate").val();
-            let toDate = $("#toDate").val();
-
-            let pageSize = $("#ordersPerPage").val() || 5; // Default to 5 if no value selected
-            let searchOrder = $("#searchOrder").val();
+        function PaginationAjax(pageNumber) {     
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                PageNumber: pageNumber,
+                Status:  $("#orderStatus").val(),
+                DateRange: $("#dateRange").val(),
+                FromDate: $("#fromDate").val(),
+                ToDate: $("#toDate").val(),
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchOrder").val()
+            };
 
             $.ajax({
                 url: '@Url.Action("GetOrdersList", "Orders")',
-                data: {
-                    'status': orderStatus,
-                    'dateRange': dateRange,
-                    'fromDate': fromDate,
-                    'toDate': toDate,
-                    'column': sortingColumn,
-                    'sort': sortingOrder,
-                    'pageSize': pageSize,
-                    'pageNumber': pageNumber,
-                    'search': searchOrder
-                },
-                type: "GET",
+                data: { filter },
+                type: "POST",
                 dataType: "html",
                 success: function (data) {
                     $("#orderContent").html(data);
-                    $("#ordersPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
                     console.log("There is error.Not successful");

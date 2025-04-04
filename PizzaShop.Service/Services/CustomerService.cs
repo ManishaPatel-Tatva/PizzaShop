@@ -28,7 +28,7 @@ public class CustomerService : ICustomerService
         (IEnumerable<Customer> customers, int totalRecord) = await _customerRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: c => !c.IsDeleted &&
+            predicate: c => !c.IsDeleted &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     c.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),

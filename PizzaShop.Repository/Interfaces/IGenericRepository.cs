@@ -21,7 +21,7 @@ public interface IGenericRepository<T>
     (
         int pageSize,
         int pageNumber,
-        Expression<Func<T, bool>>? filter = null,
+        Expression<Func<T, bool>>? predicate = null,
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null

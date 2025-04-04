@@ -19,10 +19,9 @@ public class CategoryItemService : ICategoryItemService
     private readonly IGenericRepository<Unit> _unitRepository;
     private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
     private readonly IGenericRepository<ItemModifierGroup> _itemModifierGroupRepository;
-    private readonly IGenericRepository<Modifier> _modifierRepository;
-    private readonly IGenericRepository<ModifierMapping> _modifierMapping;
+    
 
-    public CategoryItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository, IGenericRepository<Modifier> modifierRepository, IGenericRepository<ModifierMapping> modifierMapping = null)
+    public CategoryItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository)
     {
         _categoryRepository = categoryRepository;
         _userRepository = userRepository;
@@ -31,9 +30,6 @@ public class CategoryItemService : ICategoryItemService
         _unitRepository = unitRepository;
         _modifierGroupRepository = modifierGroupRepository;
         _itemModifierGroupRepository = itemModifierGroupRepository;
-        _modifierRepository = modifierRepository;
-        _modifierMapping = modifierMapping;
-
     }
 
     #region Category
@@ -160,7 +156,7 @@ public class CategoryItemService : ICategoryItemService
         (IEnumerable<Item> items, int totalRecord) = await _itemRepository.GetPagedRecordsAsync(
             pageSize,
             pageNumber,
-            filter: i => !i.IsDeleted &&
+            predicate: i => !i.IsDeleted &&
                     i.CategoryId == categoryId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     i.Name.ToLower().Contains(search.ToLower())),

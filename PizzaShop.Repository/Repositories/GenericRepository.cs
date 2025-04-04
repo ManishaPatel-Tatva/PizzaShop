@@ -119,14 +119,14 @@ public class GenericRepository<T> : IGenericRepository<T>
     public async Task<(IEnumerable<T> items, int totalCount)> GetPagedRecordsAsync(
         int pageSize,
         int pageNumber,
-        Expression<Func<T, bool>>? filter = null,
+        Expression<Func<T, bool>>? predicate = null,
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null)
     {
         try
         {
-            var items = GetByCondition(filter, orderBy, includes, thenIncludes).Result;
+            var items = GetByCondition(predicate, orderBy, includes, thenIncludes).Result;
 
             int totalCount = items.Count();
 
