@@ -44,14 +44,14 @@ public class JwtService : IJwtService
         foreach (PermissionViewModel permission in permissions.Permissions)
         {
             if (permission.CanView) 
-                claims.Add(new Claim("permission", $"View_{permission.PermissionName}"));
+                claims.Add(new Claim("permission", $"View_{permission.PermissionName.Replace(" ", "_")}"));
             if (permission.CanEdit) 
-                claims.Add(new Claim("permission", $"Edit_{permission.PermissionName}"));
+                claims.Add(new Claim("permission", $"Edit_{permission.PermissionName.Replace(" ", "_")}"));
             if (permission.CanDelete) 
-                claims.Add(new Claim("permission", $"Delete_{permission.PermissionName}"));
+                claims.Add(new Claim("permission", $"Delete_{permission.PermissionName.Replace(" ", "_")}"));
         }
 
-        JwtSecurityToken? token = new JwtSecurityToken(
+        JwtSecurityToken? token = new(
             issuer: "localhost",
             audience: "localhost",
             claims: claims,

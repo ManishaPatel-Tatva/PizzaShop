@@ -43,7 +43,7 @@ public class CategoryItemService : ICategoryItemService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public List<CategoryViewModel> GetCategory()
     {
-        List<CategoryViewModel>? categories = _categoryRepository.GetByCondition(c => c.IsDeleted == false)
+        List<CategoryViewModel>? categories = _categoryRepository.GetByCondition(c => c.IsDeleted == false).Result
         .Select(category => new CategoryViewModel
         {
             CategoryId = category.Id,
@@ -224,7 +224,7 @@ public class CategoryItemService : ICategoryItemService
         model.Description = item.Description;
         model.ItemImageUrl = item.ImageUrl;
 
-        model.ItemModifierGroups = _itemModifierGroupRepository.GetByConditionInclude(
+        model.ItemModifierGroups = _itemModifierGroupRepository.GetByCondition(
             i => i.ItemId == itemId && !i.IsDeleted,
             includes: new List<Expression<Func<ItemModifierGroup, object>>>
             {
@@ -263,7 +263,7 @@ public class CategoryItemService : ICategoryItemService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
     {
-        ItemModifierViewModel itemModifierGroups =  _modifierGroupRepository.GetByConditionInclude(
+        ItemModifierViewModel itemModifierGroups =  _modifierGroupRepository.GetByCondition(
             m => m.Id == modifierGroupId && !m.IsDeleted,
             includes: new List<Expression<Func<ModifierGroup, object>>>
             {
@@ -444,6 +444,7 @@ public class CategoryItemService : ICategoryItemService
     {
         List<long> existingGroupList = _itemModifierGroupRepository
         .GetByCondition(m => m.ItemId == itemId && !m.IsDeleted)
+        .Result
         .Select(mg => mg.ModifierGroupId)
         .ToList();
 

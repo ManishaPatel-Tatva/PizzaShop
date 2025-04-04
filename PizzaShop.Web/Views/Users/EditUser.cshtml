@@ -10,7 +10,7 @@
         <h1 class="blue-text">Edit User</h1>
     </div>
     <div>
-        <a asp-action="Index" asp-controller="ManageUsers" class="btn btn-white">
+        <a asp-action="Index" asp-controller="Users" class="btn btn-white">
             <img src="images/icons/chevron-left-blue.svg" alt="">
             <span>Back</span>
         </a>  
@@ -20,7 +20,7 @@
 <!-- Form -->
 <div class=" bg-white px-3 py-4 shadow mx-0">
 
-    <form asp-action="EditUser" asp-controller="ManageUsers" class="row" method="post" enctype="multipart/form-data">
+    <form asp-action="EditUser" asp-controller="Users" class="row" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="@Model.UserId" value="@Model.UserId" />

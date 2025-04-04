@@ -19,12 +19,12 @@ public class AddressService : IAddressService
 
     public List<City> GetCities(long stateId)
     {
-        return _cityRepository.GetByCondition(c => c.StateId == stateId).ToList();
+        return _cityRepository.GetByCondition(c => c.StateId == stateId).Result.ToList();
     }
 
     public List<State> GetStates(long countryId)
     {
-        return _stateRepository.GetByCondition(s => s.CountryId == countryId).ToList();
+        return _stateRepository.GetByCondition(s => s.CountryId == countryId).Result.ToList();
     }
 
     public List<Country> GetCountries()

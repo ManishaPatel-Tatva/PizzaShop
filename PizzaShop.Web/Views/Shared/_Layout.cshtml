@@ -96,7 +96,7 @@
 
                         @if (permissions.Contains("View_Users"))
                         {
-                            <a asp-action="Index" asp-controller="ManageUsers"
+                            <a asp-action="Index" asp-controller="Users"
                                 class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")">
                                 <img src="~/images/navigation/user.svg" alt=""
                                     class=" @((ViewData["sidebar-active"] as string) == "Users" ? "blue" : "")"> Users

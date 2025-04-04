@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 #region Services
 /*---------------Add services to the container.-----------------------------------------------
 -------------------------------------------------------------------------------------------*/
-
 builder.Services.AddControllersWithViews();
 
 //HttpContext
@@ -68,7 +67,6 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 //Customers
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-
 
 //Session 
 builder.Services.AddSession(options =>

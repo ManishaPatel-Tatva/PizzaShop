@@ -11,13 +11,13 @@ using PizzaShop.Service.Common;
 namespace PizzaShop.Web.Controllers
 {
     [Authorize]
-    public class ManageUsersController : Controller
+    public class UsersController : Controller
     {
         private readonly IUserService _userService;
         private readonly IAddressService _addressService; 
         private readonly IJwtService _jwtService;
 
-        public ManageUsersController(IUserService userService, IJwtService jwtService, IAddressService addressService)
+        public UsersController(IUserService userService, IJwtService jwtService, IAddressService addressService)
         {
             _userService = userService;
             _jwtService = jwtService;
@@ -25,11 +25,10 @@ namespace PizzaShop.Web.Controllers
         }
 
 
-#region Display User
-/*---------------------------Display Users---------------------------------------------
+#region View User
+/*---------------------------View Users---------------------------------------------
 ---------------------------------------------------------------------------------------*/
-
-        [CustomAuthorize("View_Users")]
+        [CustomAuthorize(nameof(PermissionType.View_Users))]
         public IActionResult Index()
         {
             UsersListViewModel model = new()
@@ -42,7 +41,7 @@ namespace PizzaShop.Web.Controllers
             return View(model);       
         }
         
-        [CustomAuthorize("View_Users")]
+        [CustomAuthorize(nameof(PermissionType.View_Users))]
         public async Task<IActionResult> GetUsersList(int pageSize = 5, int pageNumber = 1, string search="")
         {
             UsersListViewModel? model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
@@ -51,7 +50,7 @@ namespace PizzaShop.Web.Controllers
                 return NotFound(); // This triggers AJAX error
             }
 
-            return PartialView("_UsersPartialView", model);
+            return PartialView("_UsersListPartialView", model);
         }
 #endregion
 
@@ -60,7 +59,7 @@ namespace PizzaShop.Web.Controllers
 /*---------------------------Add User---------------------------------------------
 ---------------------------------------------------------------------------------------*/
         
-        [CustomAuthorize("Edit_Users")]
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
         [HttpGet]
         public async Task<IActionResult> AddUser()
         {
@@ -69,6 +68,7 @@ namespace PizzaShop.Web.Controllers
             return View(model);
         }
 
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
         [HttpPost]
         public async Task<IActionResult> AddUser(AddUserViewModel model)
         {
@@ -97,6 +97,64 @@ namespace PizzaShop.Web.Controllers
         }
 #endregion
 
+#region Edit User
+/*---------------------------Edit User---------------------------------------------
+---------------------------------------------------------------------------------------*/
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        [HttpGet]
+        public async Task<IActionResult> EditUser(long userId)
+        {
+            ViewData["sidebar-active"] = "Users";
+            EditUserViewModel model =  await _userService.GetUserAsync(userId);
+            if (model == null)
+            {
+                return NotFound();
+            } 
+            return View(model);
+        }
+
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        [HttpPost]
+        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        {
+            ViewData["sidebar-active"] = "Users";
+            if (!ModelState.IsValid)
+            {
+                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
+                return View(editUserModel);
+            }
+
+            (bool isUpdated, string message) = await _userService.UpdateUser(model);
+
+            if (!isUpdated)
+            {
+                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
+                TempData["errorMessage"] = message;
+                return View(editUserModel);
+            }
+
+            TempData["successMessage"] = NotificationMessages.Updated.Replace("{0}","User");
+            return RedirectToAction("Index","Users");
+        }
+#endregion
+
+#region Delete User
+/*-------------------------------------Delete User-------------------------------------------------------
+-------------------------------------------------------------------------------------------------------*/
+        [CustomAuthorize(nameof(PermissionType.Delete_Users))]
+        [HttpPost]  
+        public async Task<IActionResult> DeleteUser(long id)
+        {
+            bool success = await _userService.DeleteUser(id);
+
+            if(!success)
+            {
+                return Json(new {success = false, message = NotificationMessages.Deleted.Replace("{0}","User")});
+            }
+            return Json(new {success = true, message = NotificationMessages.DeletedFailed.Replace("{0}","User")});
+        }
+
+#endregion 
 
 #region Address
 /*------------------------------------------------------ Country, state and City---------------------------------------------------------------------------------
@@ -123,69 +181,5 @@ namespace PizzaShop.Web.Controllers
     }
 
 #endregion Address
-
-#region Edit User
-/*---------------------------Edit User---------------------------------------------
----------------------------------------------------------------------------------------*/
-        [CustomAuthorize("Edit_Users")]
-        [HttpGet]
-        public async Task<IActionResult> EditUser(long userId)
-        {
-            EditUserViewModel model =  await _userService.GetUserAsync(userId);
-            if (model == null)
-            {
-                ViewData["sidebar-active"] = "Users";
-                return NotFound();
-            } 
-
-            ViewData["sidebar-active"] = "Users";
-            return View(model);
-        }
-
-        [CustomAuthorize("Edit_Users")]
-        [HttpPost]
-        public async Task<IActionResult> EditUser(EditUserViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
-                ViewData["sidebar-active"] = "Users";
-                return View(editUserModel);
-            }
-
-            (bool isUpdated, string message) = await _userService.UpdateUser(model);
-
-            if (!isUpdated)
-            {
-                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
-                TempData["errorMessage"] = message;
-                ViewData["sidebar-active"] = "Users";
-                return View(editUserModel);
-            }
-
-            TempData["successMessage"] = NotificationMessages.Updated.Replace("{0}","User");
-            return RedirectToAction("Index","ManageUsers");
-        }
-#endregion
-
-
-#region Soft Delete User
-/*-------------------------------------Soft Delete User-------------------------------------------------------
--------------------------------------------------------------------------------------------------------*/
-        [CustomAuthorize("Delete_Users")]
-        [HttpPost]
-        public async Task<IActionResult> SoftDeleteUser(long id)
-        {
-            bool success = await _userService.SoftDeleteUser(id);
-
-            if(!success)
-            {
-                return Json(new {success = false, message="User Not deleted"});
-            }
-            return Json(new {success = true, message="User deleted Successfully!"});
-        }
-
-#endregion 
-
     }
 }

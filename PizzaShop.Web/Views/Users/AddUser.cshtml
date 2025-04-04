@@ -12,7 +12,7 @@
         <h1 class="blue-text"> Add New User</h1>
     </div>
     <div>
-        <a asp-action="Index" asp-controller="ManageUsers" class="btn btn-white">
+        <a asp-action="Index" asp-controller="Users" class="btn btn-white">
             <img src="images/icons/chevron-left-blue.svg" alt="">
             <span>Back</span>
         </a>  
@@ -20,7 +20,7 @@
 </div>
 
 <!-- Form -->
-<form asp-action="AddUser" asp-controller="ManageUsers" method="post" class="row bg-white px-3 py-4 mx-0" enctype="multipart/form-data">
+<form asp-action="AddUser" asp-controller="Users" method="post" class="row bg-white px-3 py-4 mx-0" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
 
     <!-- First row -->                       

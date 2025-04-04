@@ -245,7 +245,7 @@ public class UserService : IUserService
 /*----------------------------------------------------------------Soft Delete User--------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-    public async Task<bool> SoftDeleteUser(long id)
+    public async Task<bool> DeleteUser(long id)
     {
         User user = await _userRepository.GetByIdAsync(id);
 

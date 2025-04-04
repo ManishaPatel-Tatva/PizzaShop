@@ -113,7 +113,7 @@ public class CustomerService : ICustomerService
 
     public async Task<CustomerHistoryViewModel> CustomerHistory(long customerId)
     {
-        IEnumerable<Customer>? customer = _customerRepository.GetByConditionInclude(
+        IEnumerable<Customer>? customer = _customerRepository.GetByCondition(
             c => c.Id == customerId && !c.IsDeleted,
             includes: new List<Expression<Func<Customer, object>>>
             {
@@ -160,8 +160,8 @@ public class CustomerService : ICustomerService
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<byte[]> ExportExcel(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, string search)
     {
-        IEnumerable<Customer> customers = await _customerRepository.GetByConditionInclude(
-            filter: c => !c.IsDeleted &&
+        IEnumerable<Customer> customers = await _customerRepository.GetByCondition(
+            predicate: c => !c.IsDeleted &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     c.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),

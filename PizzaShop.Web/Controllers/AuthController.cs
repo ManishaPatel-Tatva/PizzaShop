@@ -21,10 +21,9 @@ public class AuthController : Controller
     public IActionResult Login()
     {
         if (Request.Cookies["emailCookie"] != null)
+        {
             return RedirectToAction("Dashboard", "Profile");
-
-        // if(HttpContext.Session.GetString("authToken") != null)
-        //     return RedirectToAction("Dashboard", "Profile");
+        }
 
         return View();
     }
@@ -32,10 +31,12 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
+        {
             return View(model);
+        } 
 
-        var (token, userName, profileImg, message) = await _authService.LoginAsync(model.Email, model.Password);
+        (string token, string userName, string profileImg, string message) = await _authService.LoginAsync(model.Email, model.Password);
 
         if(token == null)
             TempData["errorMessage"] = message;

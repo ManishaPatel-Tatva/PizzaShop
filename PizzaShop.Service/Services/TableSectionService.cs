@@ -32,6 +32,7 @@ public class TableSectionService : ITableSectionService
     public List<SectionViewModel> GetAllSections()
     {
         List<SectionViewModel> sections = _sectionRepository.GetByCondition(sec => sec.IsDeleted == false)
+        .Result
         .Select(s => new SectionViewModel
         {
             SectionId = s.Id,

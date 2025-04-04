@@ -17,6 +17,6 @@ public interface IUserService
 
     Task<(bool success, string? message)> UpdateUser(EditUserViewModel model);
 
-    Task<bool> SoftDeleteUser(long id);
+    Task<bool> DeleteUser(long id);
 
 }

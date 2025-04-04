@@ -142,8 +142,8 @@ public class OrderService : IOrderService
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<byte[]> ExportExcel(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, string search)
     {
-        IEnumerable<Order> orders = await _orderRepository.GetByConditionInclude(
-            filter: o => !o.IsDeleted &&
+        IEnumerable<Order> orders = await _orderRepository.GetByCondition(
+            predicate: o => !o.IsDeleted &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     o.Customer.Name.ToLower().Contains(search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
@@ -238,8 +238,8 @@ public class OrderService : IOrderService
         try
         {
 
-            IEnumerable<Order>? orderDetail = _orderRepository.GetByConditionInclude(
-                o => o.Id == orderId && !o.IsDeleted,
+            IEnumerable<Order>? orderDetail = _orderRepository.GetByCondition(
+                predicate: o => o.Id == orderId && !o.IsDeleted,
                 includes: new List<Expression<Func<Order, object>>>
                 {
                 o => o.Status,

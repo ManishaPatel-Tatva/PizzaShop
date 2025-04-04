@@ -12,7 +12,7 @@
     <div class="justify-content-end d-flex align-items-center">
         <div class="me-2">
             <div class="input-group">
-                <input type="search" class="form-control" placeholder="Search" name="search" id="search" onchange="PaginationAjax(1)">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchUser" oninput="PaginationAjax(1)">
                 <button type="submit" class="input-group-text"> 
                     <img src="~/images/icons/search.svg" alt=""> 
                 </button>
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div>
-            <a asp-action="AddUser" asp-controller="ManageUsers" class="btn btn-blue text-nowrap">
+            <a asp-action="AddUser" asp-controller="Users" class="btn btn-blue text-nowrap">
                 + Add users
             </a>
         </div>
@@ -30,8 +30,6 @@
 <!-- Table -->
 <div class="bg-white px-3" id="tableContent">
     <!-- Partial View -->
-
-
 </div>
 
 @section Scripts {
@@ -43,13 +41,14 @@
         function PaginationAjax(pageNumber) {
             let pageSize = $("#itemsPerPage").val(); 
             
-            let searchQuery = $("#search").val();
+            let searchQuery = $("#searchUser").val();
             if (searchQuery == null) {
                 searchQuery = ""
             }
+            console.log("search is",searchQuery);
 
             $.ajax({
-                url: "/ManageUsers/GetUsersList",
+                url: "/Users/GetUsersList",
                 data: {
                     'search': searchQuery,
                     'pageSize': pageSize,
@@ -67,7 +66,7 @@
             });
         }
 
-        //for Soft Delete of Users
+        //Delete Users
         let userId;
         $(document).on("click", ".deleteIcon", function () {
             userId = $(this).data("id");
@@ -75,7 +74,7 @@
 
         $(document).on("click", "#SoftDelete", function () {
             $.ajax({
-                url: '@Url.Action("SoftDeleteUser", "ManageUsers")',
+                url: '@Url.Action("DeleteUser", "Users")',
                 type: "POST",
                 data: { id: userId },
                 success: function (response) {

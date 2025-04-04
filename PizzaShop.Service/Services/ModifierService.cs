@@ -32,7 +32,7 @@ public class ModifierService : IModifierService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public List<ModifierGroupViewModel> GetModifierGroups()
     {
-        List<ModifierGroupViewModel> modifierGroups = _modifierGroupRepository.GetByCondition(mg => mg.IsDeleted == false)
+        List<ModifierGroupViewModel> modifierGroups = _modifierGroupRepository.GetByCondition(mg => mg.IsDeleted == false).Result
         .Select(mg => new ModifierGroupViewModel
         {
             ModifierGroupId = mg.Id,
@@ -60,7 +60,7 @@ public class ModifierService : IModifierService
             Name = modifierGroup.Name,
             Description = modifierGroup.Description,
 
-            Modifiers = _modifierMappingRepository.GetByConditionInclude(
+            Modifiers = _modifierMappingRepository.GetByCondition(
                 mm => mm.Modifiergroupid == modifierGroupId && !mm.IsDeleted,
                 includes: new List<Expression<Func<ModifierMapping, object>>>
                 {
@@ -177,6 +177,7 @@ public class ModifierService : IModifierService
     {
         List<long> existingModifiersList = _modifierMappingRepository
         .GetByCondition(mm => mm.Modifiergroupid == modifierGroupId && !mm.IsDeleted)
+        .Result
         .Select(m => m.Modifierid)
         .ToList();
 
@@ -226,7 +227,7 @@ public class ModifierService : IModifierService
         if (!success)
             return false;
 
-        List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == modifierGroupId).ToList();
+        List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == modifierGroupId).Result.ToList();
 
         foreach (ModifierMapping mapping in modifierMappings)
         {
@@ -340,7 +341,7 @@ public class ModifierService : IModifierService
         model.Quantity = modifier.Quantity;
         model.UnitId = modifier.UnitId;
         model.Description = modifier.Description;
-        model.SelectedMgList =  _modifierMappingRepository.GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted).Select(m => m.Modifiergroupid).ToList();
+        model.SelectedMgList =  _modifierMappingRepository.GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted).Result.Select(m => m.Modifiergroupid).ToList();
 
         return model;
     }
@@ -429,6 +430,7 @@ public class ModifierService : IModifierService
     {
         List<long> existingMgList = _modifierMappingRepository
         .GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted)
+        .Result
         .Select(m => m.Modifiergroupid)
         .ToList();
 
