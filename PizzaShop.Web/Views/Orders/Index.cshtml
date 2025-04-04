@@ -15,7 +15,7 @@
     <div class="justify-content-end d-flex flex-column flex-md-row order-export-div ">
 
         <div class="input-group me-2 my-2">
-            <input type="search" class="form-control" placeholder="Search" name="search" id="searchOrder" oninput="PaginationAjax(1)">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery" oninput="PaginationAjax(1)">
             <button type="submit" class="input-group-text">
                 <img src="~/images/icons/search.svg" alt="">
             </button>
@@ -97,7 +97,7 @@
 
         //Clear Filter
         $(document).on("click", "#clearFilterBtn", function () {
-            $("#searchOrder").val("");
+            $("#searchQuery").val("");
             $("#orderStatus").val("All Status");
             $("#dateRange").val("All Time");
             $("#fromDate").val("");
@@ -115,7 +115,7 @@
                 ToDate: $("#toDate").val(),
                 Column: sortingColumn,
                 Sort: sortingOrder,
-                Search: $("#searchOrder").val()
+                Search: $("#searchQuery").val()
             };
 
             $.ajax({
@@ -160,7 +160,7 @@
             let dateRange = $("#dateRange").val();
             let fromDate = $("#fromDate").val();
             let toDate = $("#toDate").val();
-            let searchOrder = $("#searchOrder").val();
+            let searchQuery = $("#searchQuery").val();
 
             $.ajax({
                 url: '@Url.Action("ExportExcel", "Orders")',
@@ -171,7 +171,7 @@
                     'toDate': toDate,
                     'column': sortingColumn,
                     'sort': sortingOrder,
-                    'search': searchOrder
+                    'search': searchQuery
                 },
                 xhrFields: {
                     responseType: 'blob'

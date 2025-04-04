@@ -5,18 +5,12 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IUserService
 {
-    Task<User> GetUserByEmail(string email);
-    
-    Task<UsersListViewModel> GetPagedRecords(int pageSize, int pageNumber, string search);
-
-    Task<AddUserViewModel> GetAddUser();
-
-    Task<(bool success, string? message)> AddUserAsync(AddUserViewModel model, string createrEmail);
-
-    Task<EditUserViewModel> GetUserAsync(long userId);
-
-    Task<(bool success, string? message)> UpdateUser(EditUserViewModel model);
-
-    Task<bool> DeleteUser(long id);
+    Task<AddUserViewModel> Get();
+    Task<User> Get(string email);
+    Task<EditUserViewModel> Get(long userId);
+    Task<UserPaginationViewModel> Get(FilterViewModel filter);
+    Task<ResponseViewModel> Add(AddUserViewModel model, string createrEmail);
+    Task<ResponseViewModel> Update(EditUserViewModel model, string createrEmail);
+    Task<bool> Delete(long id);
 
 }

@@ -5,8 +5,7 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IRolePermissionService
 {
-    IEnumerable<Role> GetAllRoles();
-
-    RolePermissionViewModel GetRolePermissions(long roleId);
-    Task<bool> UpdateRolePermission(long roleId, List<PermissionViewModel> model);
+    IEnumerable<Role> Get();
+    RolePermissionViewModel Get(long roleId);
+    Task<bool> Update(long roleId, List<PermissionViewModel> model);
 }

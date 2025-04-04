@@ -4,8 +4,7 @@ using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using PizzaShop.Service.Helpers;
+using PizzaShop.Service.Common;
 
 namespace PizzaShop.Service.Services;
 
@@ -24,31 +23,51 @@ public class UserService : IUserService
         _emailService = emailService;
     }
 
-    public async Task<User> GetUserByEmail(string email)
+    #region Get
+    /*----------------------------------------------------------------Get User By Email--------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<User> Get(string email)
     {
-        User user = await _userRepository.GetByStringAsync(u => u.Email == email);
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted);
         return user;
     }
 
-#region Display User List
-/*----------------------------------------------------------------Display User List--------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-    public async Task<UsersListViewModel> GetPagedRecords(int pageSize, int pageNumber, string search)
+    /*----------------------------------------------------------------Get Users Pagination List with filters--------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<UserPaginationViewModel> Get(FilterViewModel filter)
     {
+        filter.Search = string.IsNullOrEmpty(filter.Search) ? "" : filter.Search.Replace(" ", "");
+
+        //For sorting the column according to order
+        Func<IQueryable<User>, IOrderedQueryable<User>>? sortingColumn = q => q.OrderBy(u => u.Id);
+        if (!string.IsNullOrEmpty(filter.Column))
+        {
+            switch (filter.Column.ToLower())
+            {
+                case "name":
+                    sortingColumn = filter.Sort == "asc" ? q => q.OrderBy(u => u.FirstName) : q => q.OrderByDescending(u => u.FirstName);
+                    break;
+                case "role":
+                    sortingColumn = filter.Sort == "asc" ? q => q.OrderBy(u => u.Role.Name) : q => q.OrderByDescending(u => u.Role.Name);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         (IEnumerable<User> users, int totalRecord) = await _userRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
-            predicate: u => !u.IsDeleted && 
-                         (string.IsNullOrEmpty(search.ToLower()) ||  
-                            u.Role.Name.ToLower() == search.ToLower() ||
-                            u.FirstName.ToLower().Contains(search.ToLower()) || 
-                            u.LastName.ToLower().Contains(search.ToLower())),
-            orderBy: q => q.OrderBy(u => u.Id), 
+            filter.PageSize,
+            filter.PageNumber,
+            predicate: u => !u.IsDeleted &&
+                         (string.IsNullOrEmpty(filter.Search.ToLower()) ||
+                            u.Role.Name.ToLower() == filter.Search.ToLower() ||
+                            u.FirstName.ToLower().Contains(filter.Search.ToLower()) ||
+                            u.LastName.ToLower().Contains(filter.Search.ToLower())),
+            orderBy: sortingColumn,
             includes: new List<Expression<Func<User, object>>> { u => u.Role }
         );
 
-        UsersListViewModel model = new()
+        UserPaginationViewModel model = new()
         {
             Page = new(),
             Users = users.Select(u => new UserInfoViewModel()
@@ -64,107 +83,21 @@ public class UserService : IUserService
             }).ToList()
         };
 
-        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;
     }
-#endregion Display User List
 
-#region Add User
-/*----------------------------------------------------------------Add User--------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-    //This method is used for getting the countries in 
-    public async Task<AddUserViewModel> GetAddUser()
+    /*---------------------------------------------------------------Get User by Id-------------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<EditUserViewModel> Get(long userId)
     {
-        AddUserViewModel newUser = new()
-        {
-            Countries = _addressService.GetCountries(),
-            Roles = _roleRepository.GetAll().ToList()
-        };
-
-        return newUser;
-    }
-
-    public async Task<(bool success, string? message)> AddUserAsync(AddUserViewModel model, string createrEmail)
-    {
-        model.Email = model.Email.ToLower();
-
-        User existingEmail = await _userRepository.GetByStringAsync(u => u.Email == model.Email && u.IsDeleted == false);
-        if (existingEmail != null)
-        {
-            return(false, "User with same email already existed!");
-        }
-
-        User existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.IsDeleted == false);
-         if (existingUserName != null)
-        {
-            return(false, "User name already existed!");
-        }
-    
-        var creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-
-        string simplePassword = model.Password;
-        model.Password = PasswordHelper.HashPassword(simplePassword);
-
-        User user = new User
-        {
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            Username = model.UserName,
-            RoleId = model.RoleId,
-            Email = model.Email,
-            Password = model.Password,
-            ProfileImg = model.ProfileImageUrl,
-            CountryId = model.CountryId,
-            StateId = model.StateId,
-            CityId = model.CityId,
-            ZipCode = model.ZipCode,
-            Address = model.Address,
-            Phone = model.Phone,
-            CreatedBy = creater.Id
-        };
-
-        // Handle Image Upload
-        if (model.Image != null)
-        {
-            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.Image.CopyToAsync(stream);
-            }
-
-            user.ProfileImg = $"/uploads/{fileName}";
-        }
-
-        bool success = await _userRepository.AddAsync(user);
-
-        if (success)
-        {
-            var body = EmailTemplateHelper.GetNewPasswordEmail(simplePassword);
-            await _emailService.SendEmailAsync(model.Email, "New User", body);
-        }
-
-        return (success,"");
-    }
-    #endregion
-
-#region Edit User
-/*----------------------------------------------------------------Edit User--------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<EditUserViewModel> GetUserAsync(long userId)
-    {
-        User user = await _userRepository.GetByIdAsync(userId);
+        User? user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
+        {
             return null;
+        }
 
-        EditUserViewModel model = new EditUserViewModel
+        EditUserViewModel userVM = new()
         {
             UserId = user.Id,
             FirstName = user.FirstName,
@@ -186,22 +119,146 @@ public class UserService : IUserService
             Cities = _addressService.GetCities(user.StateId)
         };
 
-        return model;
+        return userVM;
     }
 
-    public async Task<(bool success, string? message)> UpdateUser(EditUserViewModel model)
+    /*---------------------------------------------------------------For getting the countries/roles in Add User  --------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<AddUserViewModel> Get()
+    {
+        return new AddUserViewModel
+        {
+            Countries = _addressService.GetCountries(),
+            Roles = _roleRepository.GetAll().ToList()
+        };
+    }
+    #endregion Get
+
+    #region Add
+    /*----------------------------------------------------------------Add User--------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<ResponseViewModel> Add(AddUserViewModel model, string createrEmail)
+    {
+        model.Email = model.Email.ToLower();
+
+        //Checking if email already existed
+        User existingEmail = await _userRepository.GetByStringAsync(u => u.Email.ToLower() == model.Email && u.IsDeleted == false);
+        if (existingEmail != null)
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.AlreadyExisted.Replace("{0}", "Email")
+            };
+        }
+
+        //Checking if User Name already existed
+        User existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.IsDeleted == false);
+        if (existingUserName != null)
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.AlreadyExisted.Replace("{0}", "User Name")
+            };
+        }
+
+        User? creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail && !u.IsDeleted);
+
+        //Hashing the simple password
+        string simplePassword = model.Password;
+        model.Password = PasswordHelper.HashPassword(simplePassword);
+
+        //Setting values into View Model
+        User user = new()
+        {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Username = model.UserName,
+            RoleId = model.RoleId,
+            Email = model.Email,
+            Password = model.Password,
+            ProfileImg = model.ProfileImageUrl,
+            CountryId = model.CountryId,
+            StateId = model.StateId,
+            CityId = model.CityId,
+            ZipCode = model.ZipCode,
+            Address = model.Address,
+            Phone = model.Phone,
+            CreatedBy = creater.Id,
+            UpdatedBy = creater.Id,
+            UpdatedAt = DateTime.Now
+        };
+
+        // Handle Image Upload
+        if (model.Image != null)
+        {
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
+            string filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (FileStream? stream = new(filePath, FileMode.Create))
+            {
+                await model.Image.CopyToAsync(stream);
+            }
+
+            user.ProfileImg = $"/uploads/{fileName}";
+        }
+
+        //Send Email if user added succesfully
+        if (await _userRepository.AddAsync(user))
+        {
+            string? body = EmailTemplateHelper.GetNewPasswordEmail(simplePassword);
+            await _emailService.SendEmailAsync(model.Email, "New User", body);
+            return new ResponseViewModel
+            {
+                Success = true,
+                Message = NotificationMessages.Added.Replace("{0}", "User")
+            };
+        }
+
+        return new ResponseViewModel
+        {
+            Success = false,
+            Message = NotificationMessages.AddedFailed.Replace("{0}", "User")
+        };
+    }
+    #endregion
+
+    #region Update
+    /*----------------------------------------------------------------Update User--------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<ResponseViewModel> Update(EditUserViewModel model, string createrEmail)
     {
         User existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.Email != model.Email && u.IsDeleted == false);
-         if (existingUserName != null)
+        if (existingUserName != null)
         {
-            return(false, "User name already existed!");
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.AlreadyExisted.Replace("{0}", "User Name")
+            };
         }
 
         User user = await _userRepository.GetByIdAsync(model.UserId);
-
         if (user == null)
-            return (false,"User Not found");
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.NotFound.Replace("{0}", "User")
+            };
+        }
 
+        User? creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail && !u.IsDeleted);
+
+        //Updating Values    
         user.FirstName = model.FirstName;
         user.LastName = model.LastName;
         user.Username = model.UserName;
@@ -213,6 +270,8 @@ public class UserService : IUserService
         user.CityId = model.CityId;
         user.Address = model.Address;
         user.ZipCode = model.ZipCode;
+        user.UpdatedBy = creater.Id;
+        user.UpdatedAt = DateTime.Now;
 
         // Handle Image Upload
         if (model.Image != null)
@@ -220,8 +279,9 @@ public class UserService : IUserService
             string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
             if (!Directory.Exists(uploadsFolder))
+            {
                 Directory.CreateDirectory(uploadsFolder);
-
+            }
             string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
             string filePath = Path.Combine(uploadsFolder, fileName);
 
@@ -233,34 +293,37 @@ public class UserService : IUserService
             user.ProfileImg = $"/uploads/{fileName}";
         }
 
-        bool success = await _userRepository.UpdateAsync(user);
+        if (await _userRepository.UpdateAsync(user))
+        {
+            return new ResponseViewModel
+            {
+                Success = true,
+                Message = NotificationMessages.Updated.Replace("{0}", "User")
+            };
+        }
 
-        return (success,"");
-
+        return new ResponseViewModel
+        {
+            Success = false,
+            Message = NotificationMessages.UpdatedFailed.Replace("{0}", "User")
+        };
     }
-
     #endregion
 
-#region Soft Delete
-/*----------------------------------------------------------------Soft Delete User--------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-    public async Task<bool> DeleteUser(long id)
+    #region Delete
+    /*----------------------------------------------------------------Delete User--------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<bool> Delete(long id)
     {
         User user = await _userRepository.GetByIdAsync(id);
-
         if (user == null)
+        {
             return false;
+        }
 
         user.IsDeleted = true;
-
-        bool success = await _userRepository.UpdateAsync(user);
-
-        return success;
-
-
+        return await _userRepository.UpdateAsync(user);
     }
-
     #endregion
 
 }

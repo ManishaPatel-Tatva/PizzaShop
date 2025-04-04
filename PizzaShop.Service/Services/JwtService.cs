@@ -36,7 +36,7 @@ public class JwtService : IJwtService
             new("role", role)   
         };
 
-        User user = await _userService.GetUserByEmail(email);
+        User user = await _userService.Get(email);
 
         RolePermissionViewModel permissions =  _rolePermissionService.GetRolePermissions(user.RoleId);
 

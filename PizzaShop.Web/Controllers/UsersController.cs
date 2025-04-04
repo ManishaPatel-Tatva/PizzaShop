@@ -14,7 +14,7 @@ namespace PizzaShop.Web.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
-        private readonly IAddressService _addressService; 
+        private readonly IAddressService _addressService;
         private readonly IJwtService _jwtService;
 
         public UsersController(IUserService userService, IJwtService jwtService, IAddressService addressService)
@@ -25,161 +25,155 @@ namespace PizzaShop.Web.Controllers
         }
 
 
-#region View User
-/*---------------------------View Users---------------------------------------------
----------------------------------------------------------------------------------------*/
+        #region Get
+        /*---------------------------View Users---------------------------------------------
+        ---------------------------------------------------------------------------------------*/
         [CustomAuthorize(nameof(PermissionType.View_Users))]
         public IActionResult Index()
         {
-            UsersListViewModel model = new()
-            { 
-                Users = Enumerable.Empty<UserInfoViewModel>(),
-                Page = new Pagination() 
-            };
-            
-            ViewData["sidebar-active"] = "Users";
-            return View(model);       
-        }
-        
-        [CustomAuthorize(nameof(PermissionType.View_Users))]
-        public async Task<IActionResult> GetUsersList(int pageSize = 5, int pageNumber = 1, string search="")
-        {
-            UsersListViewModel? model = await _userService.GetPagedRecords(pageSize, pageNumber, search);
-            if (model == null)
+            UserPaginationViewModel model = new()
             {
-                return NotFound(); // This triggers AJAX error
-            }
+                Users = Enumerable.Empty<UserInfoViewModel>(),
+                Page = new Pagination()
+            };
 
-            return PartialView("_UsersListPartialView", model);
-        }
-#endregion
-
-
-#region Add user
-/*---------------------------Add User---------------------------------------------
----------------------------------------------------------------------------------------*/
-        
-        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
-        [HttpGet]
-        public async Task<IActionResult> AddUser()
-        {
-            AddUserViewModel model = await _userService.GetAddUser();
             ViewData["sidebar-active"] = "Users";
             return View(model);
         }
 
-        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
         [HttpPost]
-        public async Task<IActionResult> AddUser(AddUserViewModel model)
+        [CustomAuthorize(nameof(PermissionType.View_Users))]
+        public async Task<IActionResult> GetList(FilterViewModel filter)
         {
+            UserPaginationViewModel? list = await _userService.Get(filter);
+            return PartialView("_UsersListPartialView", list);
+        }
+        #endregion Get
+
+        #region Add
+        /*--------------------------------------------Add User------------------------------------------------------------------------------------
+        ------------------------------------------------------------------------------------------------------------------------------------*/
+        [HttpGet]
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        public async Task<IActionResult> Add()
+        {
+            AddUserViewModel model = await _userService.Get();
+            ViewData["sidebar-active"] = "Users";
+            return View(model);
+        }
+
+        [HttpPost]
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        public async Task<IActionResult> Add(AddUserViewModel model)
+        {
+            ViewData["sidebar-active"] = "Users";
+
             if (!ModelState.IsValid)
             {
-                AddUserViewModel addUserModel = await _userService.GetAddUser();
-                TempData["errorMessage"] = NotificationMessages.CreatedFailed.Replace("{0}","User");
-                ViewData["sidebar-active"] = "Users";
+                AddUserViewModel addUserModel = await _userService.Get();
                 return View(addUserModel);
             }
-                
+
             string? token = Request.Cookies["authToken"];
             string? createrEmail = _jwtService.GetClaimValue(token, "email");
 
-            (bool isAdded, string message) = await _userService.AddUserAsync(model, createrEmail);
-            if (!isAdded)
+            ResponseViewModel response = await _userService.Add(model, createrEmail);
+            if (!response.Success)
             {
-                AddUserViewModel addUserModel = await _userService.GetAddUser();
-                TempData["errorMessage"] = message;
-                ViewData["sidebar-active"] = "Users";
+                AddUserViewModel addUserModel = await _userService.Get();
+                TempData["NotificationMessage"] = response.Message;
+                TempData["NotificationType"] = NotificationType.Error.ToString();
                 return View(addUserModel);
             }
-            
-            TempData["successMessage"] = NotificationMessages.Created.Replace("{0}","User");
+
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Success.ToString();
             return RedirectToAction("Index");
         }
-#endregion
+        #endregion
 
-#region Edit User
-/*---------------------------Edit User---------------------------------------------
----------------------------------------------------------------------------------------*/
-        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        #region Edit
+        /*-----------------------------------------------------------------------------Edit User---------------------------------------------
+        ------------------------------------------------------------------------------------------------------------------------------------*/
         [HttpGet]
-        public async Task<IActionResult> EditUser(long userId)
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        public async Task<IActionResult> Edit(long userId)
         {
             ViewData["sidebar-active"] = "Users";
-            EditUserViewModel model =  await _userService.GetUserAsync(userId);
-            if (model == null)
-            {
-                return NotFound();
-            } 
+            EditUserViewModel model = await _userService.Get(userId);
             return View(model);
         }
 
-        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
         [HttpPost]
-        public async Task<IActionResult> EditUser(EditUserViewModel model)
+        [CustomAuthorize(nameof(PermissionType.Edit_Users))]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
         {
             ViewData["sidebar-active"] = "Users";
             if (!ModelState.IsValid)
             {
-                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
+                EditUserViewModel editUserModel = await _userService.Get(model.UserId);
                 return View(editUserModel);
             }
 
-            (bool isUpdated, string message) = await _userService.UpdateUser(model);
+            string? token = Request.Cookies["authToken"];
+            string? createrEmail = _jwtService.GetClaimValue(token, "email");
 
-            if (!isUpdated)
+            ResponseViewModel response = await _userService.Update(model, createrEmail);
+
+            if (!response.Success)
             {
-                EditUserViewModel editUserModel =  await _userService.GetUserAsync(model.UserId);
-                TempData["errorMessage"] = message;
+                EditUserViewModel editUserModel = await _userService.Get(model.UserId);
+                TempData["NotificationMessage"] = response.Message;
+                TempData["NotificationType"] = NotificationType.Error.ToString();
                 return View(editUserModel);
             }
 
-            TempData["successMessage"] = NotificationMessages.Updated.Replace("{0}","User");
-            return RedirectToAction("Index","Users");
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Success.ToString();
+            return RedirectToAction("Index", "Users");
         }
-#endregion
+        #endregion
 
-#region Delete User
-/*-------------------------------------Delete User-------------------------------------------------------
--------------------------------------------------------------------------------------------------------*/
+        #region Delete User
+        /*-------------------------------------Delete User-------------------------------------------------------
+        -------------------------------------------------------------------------------------------------------*/
         [CustomAuthorize(nameof(PermissionType.Delete_Users))]
-        [HttpPost]  
-        public async Task<IActionResult> DeleteUser(long id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(long id)
         {
-            bool success = await _userService.DeleteUser(id);
-
-            if(!success)
+            if (!await _userService.Delete(id))
             {
-                return Json(new {success = false, message = NotificationMessages.Deleted.Replace("{0}","User")});
+                return Json(new { success = false, message = NotificationMessages.DeletedFailed.Replace("{0}", "User") });
             }
-            return Json(new {success = true, message = NotificationMessages.DeletedFailed.Replace("{0}","User")});
+            return Json(new { success = true, message = NotificationMessages.Deleted.Replace("{0}", "User") });
         }
 
-#endregion 
+        #endregion
 
-#region Address
-/*------------------------------------------------------ Country, state and City---------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [HttpGet]
-    public IActionResult GetCountries()
-    {
-        List<Country>? countries = _addressService.GetCountries();
-        return Json(new SelectList(countries, "Id", "Name"));
-    }
+        #region Address
+        /*------------------------------------------------------ Country, state and City---------------------------------------------------------------------------------
+        ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        [HttpGet]
+        public IActionResult GetCountries()
+        {
+            List<Country>? countries = _addressService.GetCountries();
+            return Json(new SelectList(countries, "Id", "Name"));
+        }
 
-    [HttpGet]
-    public IActionResult GetStates(long countryId)
-    {
-        List<State>? states = _addressService.GetStates(countryId);
-        return Json(new SelectList(states, "Id", "Name"));
-    }
+        [HttpGet]
+        public IActionResult GetStates(long countryId)
+        {
+            List<State>? states = _addressService.GetStates(countryId);
+            return Json(new SelectList(states, "Id", "Name"));
+        }
 
-    [HttpGet]
-    public IActionResult GetCities(long stateId)
-    {
-        List<City>? cities = _addressService.GetCities(stateId);
-        return Json(new SelectList(cities, "Id", "Name"));
-    }
+        [HttpGet]
+        public IActionResult GetCities(long stateId)
+        {
+            List<City>? cities = _addressService.GetCities(stateId);
+            return Json(new SelectList(cities, "Id", "Name"));
+        }
 
-#endregion Address
+        #endregion Address
     }
 }

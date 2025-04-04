@@ -1,8 +1,5 @@
-using System.Drawing;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -57,7 +54,6 @@ public class OrderService : IOrderService
             q => q.Include(op => op.Payments)
             .ThenInclude(p => p.PaymentMethod)
             }
-
         );
 
         //For applying status filter
@@ -196,7 +192,7 @@ public class OrderService : IOrderService
         //For sorting the column according to order
         if (!string.IsNullOrEmpty(column))
         {
-            switch (column)
+            switch (column.ToLower())
             {
                 case "order":
                     orders = sort == "asc" ? orders.OrderBy(o => o.Id) : orders.OrderByDescending(o => o.Id);

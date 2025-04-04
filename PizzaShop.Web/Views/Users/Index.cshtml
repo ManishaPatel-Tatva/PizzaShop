@@ -1,4 +1,5 @@
-@model PizzaShop.Entity.ViewModels.UsersListViewModel;
+@using PizzaShop.Entity.ViewModels
+@model UserPaginationViewModel
 @{
     ViewData["Title"] = "Users";
     Layout = "_Layout";
@@ -12,7 +13,7 @@
     <div class="justify-content-end d-flex align-items-center">
         <div class="me-2">
             <div class="input-group">
-                <input type="search" class="form-control" placeholder="Search" name="search" id="searchUser" oninput="PaginationAjax(1)">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery" oninput="PaginationAjax(1)">
                 <button type="submit" class="input-group-text"> 
                     <img src="~/images/icons/search.svg" alt=""> 
                 </button>
@@ -20,7 +21,7 @@
             </div>
         </div>
         <div>
-            <a asp-action="AddUser" asp-controller="Users" class="btn btn-blue text-nowrap">
+            <a asp-action="Add" asp-controller="Users" class="btn btn-blue text-nowrap">
                 + Add users
             </a>
         </div>
@@ -32,28 +33,57 @@
     <!-- Partial View -->
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Delete Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <img src="~/images/icons/warning.svg" alt="" width="50px">
+                <span>Are you sure you want to delete this user?</span>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button id="confirmDelete" type="button" class="btn btn-blue" data-bs-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             PaginationAjax(1); // Load users on page load
         });
 
+        //Sorting Column
+        let sortingColumn;
+        let sortingOrder;
+        $(document).on("click", ".sortBtn", function () {
+            sortingColumn = $(this).data("column");
+            sortingOrder = $(this).data("order");
+            PaginationAjax(1);
+        });
+
         function PaginationAjax(pageNumber) {
-            let pageSize = $("#itemsPerPage").val(); 
-            
-            let searchQuery = $("#searchUser").val();
-            if (searchQuery == null) {
-                searchQuery = ""
-            }
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                PageNumber: pageNumber,
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchQuery").val()
+            };
+
+            console.log(filter);
 
             $.ajax({
-                url: "/Users/GetUsersList",
-                data: {
-                    'search': searchQuery,
-                    'pageSize': pageSize,
-                    'pageNumber': pageNumber
-                },
-                type: "GET",
+                url: "/Users/GetList",
+                data: { filter },
+                type: "POST",
                 dataType: "html",
                 success: function (data) {
                     $("#tableContent").html(data);
@@ -64,24 +94,24 @@
                 }
             });
         }
+    </script>
 
-        //Delete Users
+    @* Delete Users *@
+    <script>
         let userId;
         $(document).on("click", ".deleteIcon", function () {
             userId = $(this).data("id");
         })
 
-        $(document).on("click", "#SoftDelete", function () {
+        $(document).on("click", "#confirmDelete", function () {
             $.ajax({
-                url: '@Url.Action("DeleteUser", "Users")',
+                url: '@Url.Action("Delete", "Users")',
                 type: "POST",
                 data: { id: userId },
                 success: function (response) {
                     if (response.success) {
-                        toastr.success(response.message)
-                        setTimeout(function(){
-                            location.reload();
-                        },000);
+                        toastr.success(response.message);
+                        PaginationAjax(1);
                     }
                     else{
                         toastr.error(response.message)
@@ -92,6 +122,5 @@
                 }
             })
         })
-
     </script>
 }

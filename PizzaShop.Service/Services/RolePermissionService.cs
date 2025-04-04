@@ -9,11 +9,12 @@ namespace PizzaShop.Service.Services;
 public class RolePermissionService : IRolePermissionService
 {
     private readonly IGenericRepository<Role> _roleRepository;
+    private readonly IGenericRepository<RolePermission> _rolePermissionRepository;
 
 
-    private readonly IRolePermissionRepository _rolePermissionRepository;
+    // private readonly IRolePermissionRepository _rolePermissionRepository;
 
-    public RolePermissionService(IGenericRepository<Role> roleRepository, IRolePermissionRepository rolePermissionRepository)
+    public RolePermissionService(IGenericRepository<Role> roleRepository, IGenericRepository<RolePermission> rolePermissionRepository)
     {
         _roleRepository = roleRepository;
         _rolePermissionRepository = rolePermissionRepository;
@@ -21,19 +22,34 @@ public class RolePermissionService : IRolePermissionService
 
     /*------------------- Role ---------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------*/
-    public IEnumerable<Role> GetAllRoles()
+    public IEnumerable<Role> Get()
     {
         return _roleRepository.GetAll();  
     }
 
     /*--------------------Permission-----------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------*/
-    public RolePermissionViewModel GetRolePermissions(long roleId)
+    // public RolePermissionViewModel Get(long roleId)
+    // {
+    //     return _rolePermissionRepository.GetRolePermissions(roleId);
+    // }
+
+    // public async Task<bool> Update(long roleId, List<PermissionViewModel> model)
+    // {
+    //     return await _rolePermissionRepository.UpdateRolePermission(roleId, model);
+    // }
+
+    public async Task<RolePermissionViewModel> Get(long roleId)
     {
+        Role? selectedRole = await _roleRepository.GetByIdAsync(roleId);
+        var rolePermissions = _rolePermissionRepository.GetByCondition(rp => rp.RoleId == selectedRole.Id);
+        List<PermissionViewModel>? permissionsVM = _rolePermissionRepository.GetByCondition()
+
+        
         return _rolePermissionRepository.GetRolePermissions(roleId);
     }
 
-    public async Task<bool> UpdateRolePermission(long roleId, List<PermissionViewModel> model)
+    public async Task<bool> Update(long roleId, List<PermissionViewModel> model)
     {
         return await _rolePermissionRepository.UpdateRolePermission(roleId, model);
     }

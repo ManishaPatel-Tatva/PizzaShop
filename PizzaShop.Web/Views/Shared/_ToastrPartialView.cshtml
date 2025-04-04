@@ -18,17 +18,30 @@
             'hideMethod': 'fadeOut',
         }
 
-        var successMessage = '@TempData["successMessage"]';
-        var errorMessage = '@TempData["errorMessage"]';
+        var message = '@TempData["NotificationMessage"]' ;
+        var type = '@TempData["NotificationType"]' ;
 
-        if(successMessage && successMessage.trim()!= "")
-        {
-            toastr.success(successMessage);
-        }
+        type = type.toLowerCase();
 
-        if(errorMessage && errorMessage.trim()!= "")
-        {
-            toastr.error(errorMessage);
+
+        if (message.trim() !== "") {
+            switch (type) {
+                case "success":
+                    toastr.success(message);
+                    break;
+                case "error":
+                    toastr.error(message);
+                    break;
+                case "warning":
+                    toastr.warning(message);
+                    break;
+                case "info":
+                    toastr.info(message);
+                    break;
+                default:
+                    toastr.info(message);
+                    break;
+            }
         }
 
     });

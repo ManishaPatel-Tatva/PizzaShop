@@ -3,14 +3,21 @@ namespace PizzaShop.Service.Common;
 public static class NotificationMessages
 {
     //Generic CRUD Success
-    public const string Created = "{0} has been added successfully!";
+    public const string Added = "{0} has been added successfully!";
     public const string Updated = "{0} has been updated successfully!";
     public const string Deleted = "{0} has been deleted successfully!";
 
     //Generic CRUD Failed
-    public const string CreatedFailed = "Failed Adding {0}";
+    public const string AddedFailed = "Failed Adding {0}";
     public const string UpdatedFailed = "Failed Updating {0}";
     public const string DeletedFailed = "Failed Deleting {0}";
+
+    //Custom Messages
+    public const string AlreadyExisted = "{0} already existed!";
+    public const string NotFound = "{0} not found!";
+
+
+
 
     //Login
     public const string LoginSuccess = "You have successfully logged in.";
@@ -26,4 +33,6 @@ public static class NotificationMessages
 
     // Error Messages
     public const string InvalidModelState = "Model State Is Invalid!";
+
+
 }
