@@ -8,7 +8,6 @@ using PizzaShop.Repository.Repositories;
 using PizzaShop.Service.Configuration;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Services;
-using PizzaShop.Web.Middlewares;
 using Rotativa.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +53,7 @@ builder.Services.AddScoped<IRolePermissionRepository, RolePermissionRepository>(
 
 //Menu service
 builder.Services.AddScoped<ICategoryItemService, CategoryItemService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IModifierService, ModifierService>();
 
 //Table and Section
@@ -141,9 +141,6 @@ app.Use(async (context, next) =>
 
     await next();
 });
-
-//For initialising middleware - custom authorization
-app.UseMiddleware<RolePermissionMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

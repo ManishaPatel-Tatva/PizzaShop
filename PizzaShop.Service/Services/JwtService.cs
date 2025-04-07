@@ -27,10 +27,10 @@ public class JwtService : IJwtService
 
     public async Task<string> GenerateToken(string email, string role)
     {
-        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
-        SigningCredentials? credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_secretKey));
+        SigningCredentials? credentials = new(key, SecurityAlgorithms.HmacSha256);
 
-        List<Claim>? claims = new List<Claim>
+        List<Claim>? claims = new()
         {
             new("email", email),
             new("role", role)   
@@ -38,17 +38,23 @@ public class JwtService : IJwtService
 
         User user = await _userService.Get(email);
 
-        RolePermissionViewModel permissions =  _rolePermissionService.GetRolePermissions(user.RoleId);
+        RolePermissionViewModel permissions =  await _rolePermissionService.Get(user.RoleId);
 
         // Add permissions to claims
         foreach (PermissionViewModel permission in permissions.Permissions)
         {
-            if (permission.CanView) 
+            if (permission.CanView)
+            {
                 claims.Add(new Claim("permission", $"View_{permission.PermissionName.Replace(" ", "_")}"));
-            if (permission.CanEdit) 
+            }
+            if (permission.CanEdit)
+            {
                 claims.Add(new Claim("permission", $"Edit_{permission.PermissionName.Replace(" ", "_")}"));
-            if (permission.CanDelete) 
+            }
+            if (permission.CanDelete)
+            {
                 claims.Add(new Claim("permission", $"Delete_{permission.PermissionName.Replace(" ", "_")}"));
+            }
         }
 
         JwtSecurityToken? token = new(

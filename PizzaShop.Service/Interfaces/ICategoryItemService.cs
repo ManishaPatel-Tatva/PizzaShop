@@ -5,16 +5,6 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface ICategoryItemService
 {
-    List<CategoryViewModel> GetCategory();
-
-    Task<CategoryViewModel> GetCategoryById(long categoryId);
-
-    Task<bool> SaveCategory(CategoryViewModel model,string createrEmail);
-    
-    Task<bool> AddCategory(CategoryViewModel model, long createrId);
-    Task<bool> EditCategory(CategoryViewModel model, long createrId);
-
-    Task<bool> SoftDelete(long categoryId);
 
     Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search);
 

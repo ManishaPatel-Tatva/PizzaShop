@@ -9,7 +9,7 @@ public static class EmailTemplateHelper
                         {0}
                     </div>
                 </div>";
-    public static string GetResetPasswordEmail(string resetLink)
+    public static string ResetPassword(string resetLink)
     {
         string body = $@"<p>Pizza shop,</p>
                         <p>Please click <a href='{resetLink}'>here</a> to reset your account password.</p>
@@ -18,7 +18,7 @@ public static class EmailTemplateHelper
         return EmailTemplate.Replace("{0}", body);
     }
 
-    public static string GetNewPasswordEmail(string password)
+    public static string NewPassword(string password)
     {
         string body = $@"<p>Pizza shop,</p>
                         <h3>Your Password is : {password}</h3>

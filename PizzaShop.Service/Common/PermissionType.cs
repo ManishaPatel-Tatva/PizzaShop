@@ -2,7 +2,6 @@ namespace PizzaShop.Service.Common;
 
 public enum PermissionType
 {
-
     View_Users,
     Edit_Users,
     Delete_Users,

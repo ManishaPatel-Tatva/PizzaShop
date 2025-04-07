@@ -26,19 +26,15 @@ public class CustomersController : Controller
     [HttpGet]
     public async Task<IActionResult> GetCustomersList(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", int pageSize=5, int pageNumber = 1, string search="")
     {
-        CustomerPaginationViewModel model = await _customerService.GetPagedCustomers(dateRange, fromDate, toDate, column, sort, pageSize, pageNumber, search);
-        if (model == null)
-        {
-            return NotFound(); // This triggers AJAX error
-        }
+        CustomerPaginationViewModel model = await _customerService.Get(dateRange, fromDate, toDate, column, sort, pageSize, pageNumber, search);
         return PartialView("_CustomersListPartialView", model);
     }
 
     [CustomAuthorize("View_Customers")]
     [HttpGet]
-    public async Task<IActionResult> CustomerHistory(long customerId)
+    public async Task<IActionResult> Get(long customerId)
     {
-        CustomerHistoryViewModel model = await _customerService.CustomerHistory(customerId);
+        CustomerHistoryViewModel model = await _customerService.Get(customerId);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error

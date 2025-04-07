@@ -17,18 +17,22 @@ public static class NotificationMessages
     public const string NotFound = "{0} not found!";
 
 
-
-
     //Login
-    public const string LoginSuccess = "You have successfully logged in.";
-    public const string InvalidCredentials = "Invalid credentials. Please try again.";
-    public const string EmailSendingFailed = "Failed to send the email. Please try again.";
+    public const string Invalid = "Invalid {0}. Please try again.";
+    public const string TryAgain = "Please try again!";
+    public const string LinkExpired = "Link expired! Please try again!";
+    public const string AlreadyUsed = "Link already used to reset password!";
     public const string PasswordChangeFailed = "Failed to change the password. Please try again.";
+    public const string PasswordChanged = "Your password has been changed successfully.";
+    public const string EmailSent = "Email has been sent successfully!";
+    public const string EmailSendingFailed = "Failed to send the email. Please try again.";
+    
+
+
+
    
     //Profile
     public const string ProfileUpdated = "Your profile has been updated successfully!";
-    public const string EmailSentSuccessfully = "Email has been sent successfully!";
-    public const string PasswordChanged = "Your password has been changed successfully.";
 
 
     // Error Messages

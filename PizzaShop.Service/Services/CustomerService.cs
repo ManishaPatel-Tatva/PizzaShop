@@ -23,7 +23,7 @@ public class CustomerService : ICustomerService
     #region Order Pagination
     /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<CustomerPaginationViewModel> GetPagedCustomers(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, int pageSize, int pageNumber, string search)
+    public async Task<CustomerPaginationViewModel> Get(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, int pageSize, int pageNumber, string search)
     {
         (IEnumerable<Customer> customers, int totalRecord) = await _customerRepository.GetPagedRecordsAsync(
             pageSize,
@@ -111,7 +111,7 @@ public class CustomerService : ICustomerService
 
     #region Customer History
 
-    public async Task<CustomerHistoryViewModel> CustomerHistory(long customerId)
+    public async Task<CustomerHistoryViewModel> Get(long customerId)
     {
         IEnumerable<Customer>? customer = _customerRepository.GetByCondition(
             c => c.Id == customerId && !c.IsDeleted,

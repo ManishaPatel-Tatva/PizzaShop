@@ -212,22 +212,23 @@ public class UserService : IUserService
         }
 
         //Send Email if user added succesfully
-        if (await _userRepository.AddAsync(user))
+        if (!await _userRepository.AddAsync(user))
         {
-            string? body = EmailTemplateHelper.GetNewPasswordEmail(simplePassword);
-            await _emailService.SendEmailAsync(model.Email, "New User", body);
             return new ResponseViewModel
             {
-                Success = true,
-                Message = NotificationMessages.Added.Replace("{0}", "User")
+                Success = false,
+                Message = NotificationMessages.AddedFailed.Replace("{0}", "User")
             };
         }
-
+        
+        string? body = EmailTemplateHelper.NewPassword(simplePassword);
+        await _emailService.SendEmailAsync(model.Email, "New User", body);
         return new ResponseViewModel
         {
-            Success = false,
-            Message = NotificationMessages.AddedFailed.Replace("{0}", "User")
+            Success = true,
+            Message = NotificationMessages.Added.Replace("{0}", "User")
         };
+
     }
     #endregion
 

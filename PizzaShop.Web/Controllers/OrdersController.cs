@@ -22,16 +22,16 @@ public class OrdersController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        OrderIndexViewModel model = await _orderService.GetOrderIndex();
+        OrderIndexViewModel model = await _orderService.Get();
         ViewData["sidebar-active"] = "Orders";
         return View(model);
     }
 
     [CustomAuthorize("View_Orders")]
     [HttpPost]
-    public async Task<IActionResult> GetOrdersList(FilterViewModel filter)
+    public async Task<IActionResult> Get(FilterViewModel filter)
     {
-        OrderPaginationViewModel model = await _orderService.GetPagedRecord(filter);
+        OrderPaginationViewModel model = await _orderService.Get(filter);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error
@@ -50,14 +50,14 @@ public class OrdersController : Controller
     [CustomAuthorize("View_Orders")]
     public async Task<IActionResult> OrderDetails(long orderId)
     {
-        OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
+        OrderDetailViewModel model = await _orderService.Get(orderId);
         ViewData["sidebar-active"] = "Orders";
         return View(model);
     }
     
     public async Task<IActionResult> Invoice(long orderId)
     {
-        OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
+        OrderDetailViewModel model = await _orderService.Get(orderId);
          ViewAsPdf? pdf = new("Invoice", model){
             FileName = "Invoice.pdf"
         };
@@ -69,7 +69,7 @@ public class OrdersController : Controller
 
     public async Task<IActionResult> OrderDetailsPdf(long orderId)
     {
-        OrderDetailViewModel model = await _orderService.GetOrderDetail(orderId);
+        OrderDetailViewModel model = await _orderService.Get(orderId);
          ViewAsPdf? pdf = new("OrderDetailsPdf", model){
             FileName = "Invoice.pdf"
         };

@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace PizzaShop.Web.Filters;
 
+[AttributeUsage(AttributeTargets.All)]
 public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
 {
     private readonly string _requiredPermission;
@@ -16,28 +17,45 @@ public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
         _requiredPermission = requiredPermission;
     }
 
+    // public void OnAuthorization(AuthorizationFilterContext context)
+    // {
+    //     IJwtService? jwtService = context.HttpContext.RequestServices.GetService(typeof(IJwtService)) as IJwtService;
+    //     HttpContext httpContext = context.HttpContext;
+
+    //     string? token = httpContext.Request.Cookies["authToken"];
+    //     if (string.IsNullOrEmpty(token))
+    //     {
+    //         context.Result = new UnauthorizedResult();
+    //         return;
+    //     }
+
+    //     ClaimsPrincipal? claims = jwtService?.GetClaimsFromToken(token);
+    //     if (claims == null)
+    //     {
+    //         context.Result = new UnauthorizedResult();
+    //         return;
+    //     }
+
+    //     List<string> permissions = claims.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
+
+    //     if (!permissions.Contains(_requiredPermission))
+    //     {
+    //         context.Result = new ForbidResult();
+    //     }
+    // }
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        IJwtService? jwtService = context.HttpContext.RequestServices.GetService(typeof(IJwtService)) as IJwtService;
-        HttpContext httpContext = context.HttpContext;
+        var user = context.HttpContext.User;
 
-        string? token = httpContext.Request.Cookies["authToken"];
-        if (string.IsNullOrEmpty(token))
+        if (!user.Identity?.IsAuthenticated ?? false)
         {
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        ClaimsPrincipal? claims = jwtService?.GetClaimsFromToken(token);
-        if (claims == null)
-        {
-            context.Result = new UnauthorizedResult();
-            return;
-        }
+        bool hasPermission = user.Claims.Any(c => c.Type == "permission" && c.Value == _requiredPermission);
 
-        List<string> permissions = claims.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
-
-        if (!permissions.Contains(_requiredPermission))
+        if (!hasPermission)
         {
             context.Result = new ForbidResult();
         }

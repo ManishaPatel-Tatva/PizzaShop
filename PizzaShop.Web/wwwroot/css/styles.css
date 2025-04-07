@@ -381,11 +381,7 @@ table td,th{
     border-top-width: 0px;
 }
 
-.btn-modal{
-    width: 70px;
-}
-
-.modal-footer button{
+.modal-footer button, .modal-footer a{
     width: 90px;
 }
 

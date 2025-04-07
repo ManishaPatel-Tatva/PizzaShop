@@ -32,7 +32,7 @@
             <thead>
                 <tr>
                 <th scope="col">
-                    <input class="form-check-input" type="checkbox" value="" id="permissionParentCheckbox">
+                    <input class="form-check-input" type="checkbox" value="" id="parentCheckbox">
                     Permissions
                 </th>
                 <th scope="col">Can View</th>
@@ -46,7 +46,7 @@
                 {
                     <tr>
                         <td>
-                            <input type="checkbox" value="" class="permissionChildCheckbox">
+                            <input type="checkbox" value="" class="childCheckbox">
                             @permission.PermissionName
                         </td>
                         <td>
@@ -126,18 +126,22 @@
             })
 
             $.ajax({
-                url : '@Url.Action("UpdatePermission", "RolePermission")',
+                url : '@Url.Action("Update", "RolePermission")',
                 type : "POST",
-                data: {roleId:roleId, model: data},
-                success:function(response){
-                    if (response.success) {
-                        toastr.success(response.message)
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
+                data: 
+                {
+                    roleId : roleId, 
+                    permissions: data
+                },
+                success:function(response)
+                {
+                    console.log("response",response);
+                    if (response.success) 
+                    {
+                        toastr.success(response.message);
                     }
                     else{
-                        toastr.error(response.message)
+                        toastr.error(response.message);
                     }
                 },
                 error:function(){
@@ -150,23 +154,23 @@
     @* Intermediate Checkbox For Items Script*@
     <script>
 
-        $(document).on("change", "#permissionParentCheckbox", function () {
-            $(".permissionChildCheckbox").each(function () {
-                $(this).prop("checked", $("#permissionParentCheckbox").prop("checked"));
+        $(document).on("change", "#parentCheckbox", function () {
+            $(".childCheckbox").each(function () {
+                $(this).prop("checked", $("#parentCheckbox").prop("checked"));
             });
         });
 
-        $(document).on("change", ".permissionChildCheckbox", function () {
-            let totalchildCheckBox = $(".permissionChildCheckbox").length;
-            let checkedchildCheckBox = $(".permissionChildCheckbox:checked").length;
+        $(document).on("change", ".childCheckbox", function () {
+            let totalchildCheckBox = $(".childCheckbox").length;
+            let checkedchildCheckBox = $(".childCheckbox:checked").length;
             if (checkedchildCheckBox === totalchildCheckBox) {
-                $("#permissionParentCheckbox").prop("indeterminate", false).prop("checked", true);
+                $("#parentCheckbox").prop("indeterminate", false).prop("checked", true);
             }
             else if (checkedchildCheckBox === 0) {
-                $("#permissionParentCheckbox").prop("indeterminate", false).prop("checked", false);
+                $("#parentCheckbox").prop("indeterminate", false).prop("checked", false);
             }
             else {
-                $("#permissionParentCheckbox").prop("indeterminate", true);
+                $("#parentCheckbox").prop("indeterminate", true);
             }
         });
 

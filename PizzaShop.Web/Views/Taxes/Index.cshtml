@@ -11,15 +11,15 @@
     <div class="justify-content-end d-flex align-items-center">
         <div class="me-2">
             <div class="input-group">
-                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTax">
-                <button type="submit" class="input-group-text"> 
-                    <img src="~/images/icons/search.svg" alt=""> 
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery" oninput="PaginationAjax(1)">
+                <button type="submit" class="input-group-text">
+                    <img src="~/images/icons/search.svg" alt="">
                 </button>
             </div>
         </div>
         <div>
-            <a asp-action="SaveTax" asp-controller="Taxes" class="btn btn-blue text-nowrap" id="addTaxBtn"
-            data-bs-toggle="modal" data-bs-target="#addTaxModal">
+            <a asp-action="Save" asp-controller="Taxes" class="btn btn-blue text-nowrap" id="addTaxBtn"
+                data-bs-toggle="modal" data-bs-target="#addTaxModal">
                 + Add Tax
             </a>
         </div>
@@ -53,26 +53,18 @@
     @* Tax Pagination *@
     <script>
         $(document).ready(function () {
-            TaxPaginationAjax(1);
+            PaginationAjax(1);
         });
 
-         $(document).on("change", "#taxesPerPage", function () {
-            TaxPaginationAjax(1); // Reload data with new page size
-        });
-
-        $(document).on("input", "#searchTax", function () {
-            TaxPaginationAjax(1); // Reload data with new page size
-        });
-
-        function TaxPaginationAjax(pageNumber) {
-            if (!pageNumber) {
-                pageNumber = @((Model?.ItemsPageVM?.Page?.CurrentPage ?? 1));
-            }
-            let pageSize = $("#taxesPerPage").val() || 5; // Default to 5 if no value selected
-            let searchTax = $("#searchTax").val();
+        function PaginationAjax(pageNumber) {
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                PageNumber: pageNumber,
+                Search: $("#searchQuery").val()
+            };
 
             $.ajax({
-                url: '@Url.Action("GetAllTaxes", "Taxes")',
+                url: '@Url.Action("Get", "Taxes")',
                 data: {
                     'pageSize': pageSize,
                     'pageNumber': pageNumber,
@@ -106,7 +98,7 @@
 
         function GetTax(id) {
             $.ajax({
-                url: '@Url.Action("GetTaxModal", "Taxes")',
+                url: '@Url.Action("Get", "Taxes")',
                 type: "GET",
                 data: { taxId: id },
                 dataType: "html",
@@ -131,12 +123,16 @@
                 url: $(this).attr("action"),
                 type: $(this).attr("method"),
                 data: $(this).serialize(),
-                success: function (data) {
-                    $("#addTaxModal").hide;
-                    toastr.success("Tax Added successfully!");
-                    setTimeout(function () {
-                        location.reload();
-                    }, 3000);
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $("#addTaxModal").modal("hide");
+                        toastr.success(response.message);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -155,13 +151,12 @@
 
         $(document).on("click", "#confirmDeleteTax", function () {
             $.ajax({
-                url: '@Url.Action("DeleteTax", "Taxes")',
+                url: '@Url.Action("Delete", "Taxes")',
                 type: "POST",
-                data: { taxId : deleteTaxId },
+                data: { taxId: deleteTaxId },
                 success: function (response) {
                     if (response.success) {
                         toastr.success(response.message);
-                        GetAllTaxes();
                     }
                     else {
                         toastr.error(response.message)
@@ -173,5 +168,5 @@
             });
         });
     </script>
-   
+
 }

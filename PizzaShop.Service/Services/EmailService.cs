@@ -21,7 +21,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    public async Task<bool> SendEmailAsync(string toEmail, string subject, string body)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress( _emailSettings.FromEmail, _emailSettings.FromEmail));
@@ -38,9 +38,11 @@ public class EmailService : IEmailService
             await smtp.DisconnectAsync(true);
 
             _logger.LogInformation($"Email sent successfully to {toEmail}");
+            return true;
         }
         catch(Exception e){
              _logger.LogError($"Error sending email: {e.Message}");
+             return false;
         }
     }
 }

@@ -2,7 +2,7 @@
 @model CategoryViewModel
 
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="mgModalToggleLabel"> @(Model.CategoryId == 0 ? "Add New " : "Update") Category
+    <h1 class="modal-title fs-5" id="mgModalToggleLabel"> @(Model.Id == 0 ? "Add New " : "Update") Category
     </h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
@@ -12,18 +12,18 @@
     <div class="modal-body">
         <div class="form addCategoryform">
 
-            <input asp-for="CategoryId" type="text" class="form-control" id="categoryId" hidden>
+            <input asp-for="Id" type="text" class="form-control" id="categoryId" hidden>
 
             <div class="form-floating mb-3">
-                <input asp-for="CategoryName" type="text" class="form-control" placeholder="" id="categoryName">
+                <input asp-for="Name" type="text" class="form-control" placeholder="" id="categoryName">
                 <label for="categoryName">Name*</label>
-                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-floating mb-3">
-                <textarea asp-for="CategoryDesc" class="form-control" rows="1" placeholder="categoryDesc"></textarea>
+                <textarea asp-for="Desc" class="form-control" rows="1" placeholder="categoryDesc"></textarea>
                 <label for="categoryDesc">Description*</label>
-                <span asp-validation-for="CategoryDesc" class="text-danger"></span>
+                <span asp-validation-for="Desc" class="text-danger"></span>
             </div>
 
         </div>

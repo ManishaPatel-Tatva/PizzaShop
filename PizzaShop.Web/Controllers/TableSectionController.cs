@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
 
@@ -21,8 +22,8 @@ public class TableSectionController : Controller
 
     /*--------------------------------------------------------Table and Section Index---------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("View_Table and Section")]
     [HttpGet]
+    [CustomAuthorize(nameof(PermissionType.View_Tables_and_Sections))]
     public IActionResult Index()
     {
         List<SectionViewModel> sectionList = _tableSectionService.GetAllSections();
@@ -36,8 +37,8 @@ public class TableSectionController : Controller
     #region Display Section
     /*-------------------------------------------------------- Get Section---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Edit_Table and Section")]
     [HttpGet]
+    [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
     public async Task<IActionResult> GetSectionModal(long sectionId)
     {
         SectionViewModel model = await _tableSectionService.GetSection(sectionId);
@@ -46,8 +47,8 @@ public class TableSectionController : Controller
     #endregion Display Section
 
     #region Add/Update Section
-    [CustomAuthorize("Edit_Table and Section")]
     [HttpPost]
+    [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
     public async Task<IActionResult> SaveSection(SectionViewModel model)
     {
         if (!ModelState.IsValid)
@@ -71,8 +72,8 @@ public class TableSectionController : Controller
     #endregion Add/Update Section
 
     #region Delete Section
-    [CustomAuthorize("Delete_Table and Section")]
     [HttpGet]
+    [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> DeleteSection(long sectionId)
     {
         bool success = await _tableSectionService.DeleteSection(sectionId);
@@ -92,16 +93,16 @@ public class TableSectionController : Controller
     #region Display Tables
     /*-------------------------------------------------------- Get Section---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Edit_Table and Section")]
     [HttpGet]
+    [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
     public async Task<IActionResult> GetTableModal(long tableId)
     {
         TableViewModel model = await _tableSectionService.GetTable(tableId);
         return PartialView("_TablePartialView", model);
     }
 
-    [CustomAuthorize("View_Table and Section")]
     [HttpGet]
+    [CustomAuthorize(nameof(PermissionType.View_Tables_and_Sections))]
     public async Task<IActionResult> GetTablesList(long sectionId, int pageSize = 5, int pageNumber = 1, string search = "")
     {
         TablesPaginationViewModel model = await _tableSectionService.GetPagedTables(sectionId, pageSize, pageNumber, search);
@@ -117,8 +118,8 @@ public class TableSectionController : Controller
     #endregion Display Tables
 
     #region Add/Update Table
-    [CustomAuthorize("View_Table and Section")]
     [HttpPost]
+    [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
     public async Task<IActionResult> SaveTable(TableViewModel model)
     {
         if (!ModelState.IsValid)
@@ -153,7 +154,7 @@ public class TableSectionController : Controller
     #region Delete Table
     /*--------------------------------------------------------Delete One Table--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Delete_Table and Section")]
+    [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> DeleteTable(long tableId)
     {
         bool success = await _tableSectionService.DeleteTable(tableId);
@@ -167,7 +168,7 @@ public class TableSectionController : Controller
 
     /*--------------------------------------------------------Delete Multiple Tables--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Delete_Table and Section")]
+    [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> MassDeleteTable(List<long> modifierIdList)
     {
         bool success = await _tableSectionService.MassDeleteTables(modifierIdList);

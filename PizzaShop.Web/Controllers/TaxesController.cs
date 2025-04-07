@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
 
@@ -20,67 +21,65 @@ public class TaxesController : Controller
 
     /*---------------------------Display Users---------------------------------------------
     ---------------------------------------------------------------------------------------*/
-    [CustomAuthorize("View_Taxes and Fees")]
+    [CustomAuthorize(nameof(PermissionType.View_Taxes_and_Fees))]
     public IActionResult Index()
     {
         ViewData["sidebar-active"] = "Taxes";
         return View();
     }
 
-    [CustomAuthorize("View_Taxes and Fees")]
     [HttpPost]
-    public async Task<IActionResult> GetAllTaxes(int pageSize, int pageNumber = 1, string search="")
+    [CustomAuthorize(nameof(PermissionType.View_Taxes_and_Fees))]
+    public async Task<IActionResult> Get(FilterViewModel filter)
     {
-        TaxPaginationViewModel model = await _taxService.GetPagedTaxes(pageSize, pageNumber, search);
-        if (model == null)
-        {
-            return NotFound(); // This triggers AJAX error
-        }
-        return PartialView("_TaxListPartialView", model);
+        TaxPaginationViewModel model = await _taxService.Get(filter);
+        return PartialView("_ListPartialView", model);
     }
 
     /*-------------------------------------------------------- Get Tax ---------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Edit_Taxes and Fees")]
     [HttpGet]
-    public async Task<IActionResult> GetTaxModal(long taxId)
+    [CustomAuthorize(nameof(PermissionType.Edit_Taxes_and_Fees))]
+    public async Task<IActionResult> Get(long taxId)
     {
-        TaxViewModel model = await _taxService.GetTax(taxId);
+        TaxViewModel model = await _taxService.Get(taxId);
         return PartialView("_TaxPartialView", model);
     }
 
-    [CustomAuthorize("Edit_Taxes and Fees")]
     [HttpPost]
-    public async Task<IActionResult> SaveTax(TaxViewModel model)
+    [CustomAuthorize(nameof(PermissionType.Edit_Taxes_and_Fees))]
+    public async Task<IActionResult> Save(TaxViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            TaxViewModel updatedModel = await _taxService.GetTax(model.TaxId);
+            TaxViewModel updatedModel = await _taxService.Get(model.TaxId);
             return PartialView("_TaxPartialView", updatedModel);
         }
 
         string token = Request.Cookies["authToken"];
         string createrEmail = _jwtService.GetClaimValue(token, "email");
 
-        bool success = await _taxService.SaveTax(model, createrEmail);
-        if (!success)
+        ResponseViewModel response = await _taxService.Save(model, createrEmail);
+        if (!response.Success)
         {
-            TaxViewModel updatedModel = await _taxService.GetTax(model.TaxId);
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Error.ToString();
+            TaxViewModel updatedModel = await _taxService.Get(model.TaxId);
             return PartialView("_TaxGroupPartialView", updatedModel);
         }
-        return Json(new { success = true, message = "Tax Added Successful!" });
+        return Json(response);
     }
    
     /*--------------------------------------------------------Delete One Tax--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Delete_Taxes and Fees")]
     [HttpPost]
-    public async Task<IActionResult> DeleteTax(long taxId)
+    [CustomAuthorize(nameof(PermissionType.Delete_Taxes_and_Fees))]
+    public async Task<IActionResult> Delete(long taxId)
     {
         string token = Request.Cookies["authToken"];
         string createrEmail = _jwtService.GetClaimValue(token, "email");
 
-        bool success = await _taxService.DeleteTax(taxId, createrEmail);
+        bool success = await _taxService.Delete(taxId, createrEmail);
 
         if (!success)
         {

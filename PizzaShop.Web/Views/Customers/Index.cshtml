@@ -245,7 +245,7 @@
 
         function GetCustomerHistory(id) {
             $.ajax({
-                url: '@Url.Action("CustomerHistory", "Customers")',
+                url: '@Url.Action("Get", "Customers")',
                 type: "GET",
                 data: { customerId: id },
                 dataType: "html",

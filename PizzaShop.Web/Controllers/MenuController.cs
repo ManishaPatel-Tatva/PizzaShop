@@ -11,14 +11,17 @@ namespace PizzaShop.Web.Controllers;
 public class MenuController : Controller
 {
     private readonly IJwtService _jwtService;
+    private readonly ICategoryService _categoryService;
     private readonly ICategoryItemService _categoryItemService;
     private readonly IModifierService _modifierService;
 
-    public MenuController(ICategoryItemService categoryItemService, IJwtService jwtService, IModifierService modifierService)
+    public MenuController(ICategoryItemService categoryItemService, IJwtService jwtService, IModifierService modifierService, ICategoryService categoryService)
     {
         _categoryItemService = categoryItemService;
         _jwtService = jwtService;
         _modifierService = modifierService;
+        _categoryService = categoryService;
+
     }
 
     /*--------------------------------------------------------Menu Index---------------------------------------------------------------------------------------------------
@@ -27,7 +30,7 @@ public class MenuController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        List<CategoryViewModel>? categoriesList = _categoryItemService.GetCategory();
+        List<CategoryViewModel>? categoriesList = _categoryService.Get();
 
         MenuViewModel model = new()
         {
@@ -41,64 +44,46 @@ public class MenuController : Controller
         ViewData["sidebar-active"] = "Menu";
         return View(model);
     }
-
-
-    #region Category   
-
-    #region Add Category
+    #region Category
     /*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
     [HttpPost]
-    public async Task<IActionResult> SaveCategory(CategoryViewModel model)
+    public async Task<IActionResult> SaveCategory(CategoryViewModel category)
     {
         string? token = Request.Cookies["authToken"];
         string? createrEmail = _jwtService.GetClaimValue(token, "email");
 
-        bool success = await _categoryItemService.SaveCategory(model, createrEmail);
-        if (!success)
+        ResponseViewModel response = await _categoryService.Save(category, createrEmail);
+        if (!response.Success)
         {
-            return PartialView("_CategoryPartialView", model);
+            return PartialView("_CategoryPartialView", category);
         }
-
-        if (model.CategoryId == 0)
-        {
-            return Json(new { success = true, message = "Category Added Successful!" });
-        }
-        else
-        {
-            return Json(new { success = true, message = "Category Updated Successful!" });
-        }
-
+        return Json(response);
     }
-    #endregion Add Category
-
-    #region Edit Category
-    /*-------------------------------------------------------- Edit Category---------------------------------------------------------------------------------------------------
+    
+    /*-------------------------------------------------------- Update Category---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetCategoryModal(long categoryId)
     {
-        CategoryViewModel model = await _categoryItemService.GetCategoryById(categoryId);
-        return PartialView("_CategoryPartialView", model);
+        CategoryViewModel category = await _categoryService.Get(categoryId);
+        return PartialView("_CategoryPartialView", category);
     }
 
-    #endregion Edit Category
-
-    #region Delete Category
     /*--------------------------------------------------------Menu Index--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Delete_Menu")]
     [HttpGet]
-    public async Task<IActionResult> SoftDelete(long categoryId)
+    public async Task<IActionResult> Delete(long categoryId)
     {
-        bool success = await _categoryItemService.SoftDelete(categoryId);
+        string? token = Request.Cookies["authToken"];
+        string? createrEmail = _jwtService.GetClaimValue(token, "email");
+        bool success = await _categoryService.Delete(categoryId, createrEmail);
         return RedirectToAction("Index", "Menu");
     }
-
-    #endregion Delete Category
-
+    
     #endregion Category
 
     #region Items

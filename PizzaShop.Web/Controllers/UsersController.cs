@@ -28,17 +28,12 @@ namespace PizzaShop.Web.Controllers
         #region Get
         /*---------------------------View Users---------------------------------------------
         ---------------------------------------------------------------------------------------*/
+        [HttpGet]
         [CustomAuthorize(nameof(PermissionType.View_Users))]
         public IActionResult Index()
         {
-            UserPaginationViewModel model = new()
-            {
-                Users = Enumerable.Empty<UserInfoViewModel>(),
-                Page = new Pagination()
-            };
-
             ViewData["sidebar-active"] = "Users";
-            return View(model);
+            return View();
         }
 
         [HttpPost]
@@ -46,7 +41,7 @@ namespace PizzaShop.Web.Controllers
         public async Task<IActionResult> GetList(FilterViewModel filter)
         {
             UserPaginationViewModel? list = await _userService.Get(filter);
-            return PartialView("_UsersListPartialView", list);
+            return PartialView("_ListPartialView", list);
         }
         #endregion Get
 
@@ -122,9 +117,9 @@ namespace PizzaShop.Web.Controllers
 
             if (!response.Success)
             {
-                EditUserViewModel editUserModel = await _userService.Get(model.UserId);
                 TempData["NotificationMessage"] = response.Message;
                 TempData["NotificationType"] = NotificationType.Error.ToString();
+                EditUserViewModel editUserModel = await _userService.Get(model.UserId);
                 return View(editUserModel);
             }
 
@@ -134,11 +129,11 @@ namespace PizzaShop.Web.Controllers
         }
         #endregion
 
-        #region Delete User
+        #region Delete
         /*-------------------------------------Delete User-------------------------------------------------------
         -------------------------------------------------------------------------------------------------------*/
-        [CustomAuthorize(nameof(PermissionType.Delete_Users))]
         [HttpPost]
+        [CustomAuthorize(nameof(PermissionType.Delete_Users))]
         public async Task<IActionResult> Delete(long id)
         {
             if (!await _userService.Delete(id))

@@ -19,7 +19,7 @@ public class OrderService : IOrderService
         _orderStatusRepository = orderStatusRepository;
     }
 
-    public async Task<OrderIndexViewModel> GetOrderIndex()
+    public async Task<OrderIndexViewModel> Get()
     {
         OrderIndexViewModel model = new()
         {
@@ -30,7 +30,7 @@ public class OrderService : IOrderService
     #region Order Pagination
     /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<OrderPaginationViewModel> GetPagedRecord(FilterViewModel filter)
+    public async Task<OrderPaginationViewModel> Get(FilterViewModel filter)
     {
         filter.Search = string.IsNullOrEmpty(filter.Search) ? "" : filter.Search;
 
@@ -229,7 +229,7 @@ public class OrderService : IOrderService
     #region Order Details
     /*----------------------------------------------------Order Details----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<OrderDetailViewModel> GetOrderDetail(long orderId)
+    public async Task<OrderDetailViewModel> Get(long orderId)
     {
         try
         {

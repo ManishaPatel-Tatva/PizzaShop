@@ -2,7 +2,8 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Entity.Models;
-using PizzaShop.Service.Helpers;
+using PizzaShop.Service.Common;
+using PizzaShop.Entity.ViewModels;
 
 namespace PizzaShop.Service.Services;
 
@@ -11,7 +12,6 @@ public class AuthService : IAuthService
     private readonly IGenericRepository<User> _userRepository;
     private readonly IGenericRepository<Role> _roleRepository;
     private readonly IGenericRepository<ResetPasswordToken> _resetPasswordRepository;
-
     private readonly IEmailService _emailService;
     private readonly IJwtService _jwtService;
 
@@ -27,86 +27,157 @@ public class AuthService : IAuthService
     #region Login
     /*--------------------------------Login-------------------------------------------------------------
     -----------------------------------------------------------------------------------------------*/
-
-    public async Task<(string? token, string userName, string imageUrl, string? message)> LoginAsync(string email, string password)
+    public async Task<(LoginResultViewModel loginResult, ResponseViewModel response)> LoginAsync(string email, string password)
     {
-        var user = await _userRepository.GetByStringAsync(u => u.Email == email);       //Get User from email
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == email);       //Get User from email
 
         if (user == null)
-            return (null,null,null, "User Doesn't Exist");
+        {
+            return (new LoginResultViewModel { }, new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.NotFound.Replace("{0}", "User")
+            });
+        }
 
         if (!PasswordHelper.VerifyPassword(password, user.Password))
-            return (null,null,null, "Invalid Credentials!");
+        {
+            return (new LoginResultViewModel{}, new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.Invalid.Replace("{0}", "Credentials")
+            });
+        }
 
-        var role = await _roleRepository.GetByStringAsync(u => u.Id == user.RoleId);
-        var token = await _jwtService.GenerateToken(email, role.Name);
-        return (token, user.Username, user.ProfileImg, null);
+        Role? role = await _roleRepository.GetByStringAsync(u => u.Id == user.RoleId);
+        string? token = await _jwtService.GenerateToken(email, role.Name);
+
+        LoginResultViewModel loginResult = new()
+        {
+            Token = token,
+            UserName = user.Username,
+            ImageUrl = user.ProfileImg
+        };
+
+        ResponseViewModel response = new()
+        {
+            Success = true,
+        };
+
+        return (loginResult, response);
     }
+    #endregion
 
-#endregion
-
-#region ForgotPassword
-/*--------------------------------Forgot Password-------------------------------------------------------------
------------------------------------------------------------------------------------------------*/
-    public async Task<(bool success, string? message)> ForgotPasswordAsync(string email, string resetToken, string resetLink)
+    #region ForgotPassword
+    /*--------------------------------Forgot Password-------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------*/
+    public async Task<ResponseViewModel> ForgotPasswordAsync(string email, string resetToken, string resetLink)
     {
-        var user = await _userRepository.GetByStringAsync(u => u.Email == email);
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted);
 
-        if (user == null) 
-            return (false,"User Doesn't Exist");
+        if (user == null)
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.NotFound.Replace("{0}", "User")
+            };
+        }
 
         //Stores the reset password token in table  
-        ResetPasswordToken token = new ResetPasswordToken
+        ResetPasswordToken token = new()
         {
             Email = email,
             Token = resetToken
         };
 
-        var success =  await _resetPasswordRepository.AddAsync(token);
-
-        if(success)
+        if (!await _resetPasswordRepository.AddAsync(token))
         {
-            var body = EmailTemplateHelper.GetResetPasswordEmail(resetLink);
-            await _emailService.SendEmailAsync(email, "Reset Password", body);
-            return(success, "Email Sent Successfully!");
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.TryAgain
+            };
         }
-        
-        return (success, "Invalid!");
+
+        //Sending email to user for resetting password
+        string body = EmailTemplateHelper.ResetPassword(resetLink);
+        if (!await _emailService.SendEmailAsync(email, "Reset Password", body))
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.EmailSendingFailed
+            };
+        }
+
+        return new ResponseViewModel
+        {
+            Success = false,
+            Message = NotificationMessages.EmailSent
+        };
     }
 
-#endregion
+    #endregion
 
-#region ResetPassword
-/*--------------------------------Reset Password-------------------------------------------------------------
------------------------------------------------------------------------------------------------*/
-    public async Task<(bool success, string? message)> ResetPasswordAsync(string token, string newPassword)
+    #region ResetPassword
+    /*--------------------------------Reset Password-------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------*/
+    public async Task<ResponseViewModel> ResetPasswordAsync(string token, string newPassword)
     {
-        var resetToken = await _resetPasswordRepository.GetByStringAsync(u => u.Token == token);
-        if (resetToken == null) 
-            return (false, "Invalid URL");
+        ResetPasswordToken? resetToken = await _resetPasswordRepository.GetByStringAsync(t => t.Token == token);
+        if (resetToken == null)
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.Invalid.Replace("{0}", "Token")
+            };
+        }
 
-        var difference = resetToken.Expirytime.Subtract(DateTime.Now).Ticks;
-        if(difference <= 0)
-            return (false, "Link Expired");    
+        //Check token expiry
+        if (resetToken.Expirytime.Subtract(DateTime.Now).Ticks <= 0)
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.LinkExpired
+            };
+        }
 
+        //Check if token is already used
         if (resetToken.IsUsed)
-            return (false, " You already used this link to reset password");
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.AlreadyUsed
+            };
+        }
 
-        var user = await _userRepository.GetByStringAsync(u => u.Email == resetToken.Email); 
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == resetToken.Email);
 
         user.Password = PasswordHelper.HashPassword(newPassword);
-        var success = await _userRepository.UpdateAsync(user);
 
-        if(success)
+        if (!await _userRepository.UpdateAsync(user))
         {
-            resetToken.IsUsed = true;
-            _resetPasswordRepository.UpdateAsync(resetToken);
-            return(true, "Password Changed Successfully!");
+            return new ResponseViewModel
+            {
+                Success = false,
+                Message = NotificationMessages.PasswordChangeFailed
+            };
         }
+
+        resetToken.IsUsed = true;
+        await _resetPasswordRepository.UpdateAsync(resetToken);
         
-        return (success, "Reset Password Failed!");
+        return new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.PasswordChanged
+        };
     }
 
-#endregion
+    #endregion
 }
 

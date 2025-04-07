@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -13,10 +14,9 @@ public class AuthController : Controller
         _authService = authService;
     }
 
+#region Login
 /*---------------------------------------------------------Login-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------*/
-#region Login
-
     [HttpGet]
     public IActionResult Login()
     {
@@ -36,42 +36,49 @@ public class AuthController : Controller
             return View(model);
         } 
 
-        (string token, string userName, string profileImg, string message) = await _authService.LoginAsync(model.Email, model.Password);
+        (LoginResultViewModel loginResult, ResponseViewModel response) = await _authService.LoginAsync(model.Email, model.Password);
 
-        if(token == null)
-            TempData["errorMessage"] = message;
+        if (!response.Success)
+        {
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Error.ToString();
+            return View(model);
+        }
 
-        if (token != null)
+        if (loginResult.Token != null)
         {
             CookieOptions options = new()
             {
                 Expires = DateTime.Now.AddDays(1),
                 HttpOnly = true,
-                IsEssential = true
+                IsEssential = true,
+                Secure = true
             };
 
             // HttpContext.Session.SetString("authToken", token);
 
-            Response.Cookies.Append("authToken", token, options);
-            Response.Cookies.Append("userName", userName, options);
-            Response.Cookies.Append("profileImg", profileImg, options);
+            Response.Cookies.Append("authToken", loginResult.Token, options);
+            Response.Cookies.Append("userName", loginResult.UserName, options);
+            Response.Cookies.Append("profileImg", loginResult.ImageUrl, options);
 
             if (model.RememberMe)
+            {
                 Response.Cookies.Append("emailCookie", model.Email, options);
+            }
 
             return RedirectToAction("Dashboard", "Profile");
         }
 
-        ModelState.AddModelError("", "Invalid email or password.");
+        TempData["NotificationMessage"] = response.Message;
+        TempData["NotificationType"] = NotificationType.Error.ToString();
         return View(model);
     }
 
 #endregion
 
+#region Forgot Password
 /*-------------------------------------------------------Forgot Password-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------*/
-#region Forgot Password
-
     [HttpGet]
     public IActionResult ForgotPassword()
     {
@@ -88,29 +95,31 @@ public class AuthController : Controller
         var resetToken = Guid.NewGuid().ToString();
         var resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme);
 
-        var (success, message) = await _authService.ForgotPasswordAsync(model.Email, resetToken, resetLink);
-        if(success)
+        ResponseViewModel response = await _authService.ForgotPasswordAsync(model.Email, resetToken, resetLink);
+        if(!response.Success)
         {
-            TempData["successMessage"] = message;
-            return RedirectToAction("Login","Auth");
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Error.ToString();
+            return View(model);
         }
 
-        TempData["errorMessage"] = message;
-        ModelState.AddModelError("", "Email not found.");
-        return View(model);
+        TempData["NotificationMessage"] = response.Message;
+        TempData["NotificationType"] = NotificationType.Success.ToString();
+        return RedirectToAction("Login","Auth");
     }
 
 #endregion
 
+#region Reset Password
 /*-------------------------------------------------------Reset Password-----------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------*/
-#region Reset Password
-
     [HttpGet]
     public IActionResult ResetPassword(string token)
     {
         if (string.IsNullOrEmpty(token))
+        {
             return RedirectToAction("Login", "Auth");
+        }
 
         ViewBag.Token = token; 
         return View();
@@ -120,18 +129,21 @@ public class AuthController : Controller
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
         if (!ModelState.IsValid)
-            return View(model);
-
-        var (success, message) = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
-        if (success)
         {
-            TempData["successMessage"] = message;
-            return RedirectToAction("Login","Auth");
+            return View(model);
+        }
+
+        ResponseViewModel response = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
+        if (!response.Success)
+        {
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Error.ToString();
+            return View(model);
         } 
 
-        TempData["errorMessage"] = message;
-        ModelState.AddModelError("", "Failed to reset password.");
-        return View(model);
+        TempData["NotificationMessage"] = response.Message;
+        TempData["NotificationType"] = NotificationType.Success.ToString();
+        return RedirectToAction("Login","Auth");
     }
 
 #endregion

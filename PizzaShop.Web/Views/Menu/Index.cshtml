@@ -41,7 +41,8 @@
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
         <div class="tab-pane fade show active" id="pills-items" role="tabpanel" aria-labelledby="pills-home-tab"
             tabindex="0">
-            <div class="row">
+            <div class="row" id="itemTab">
+                <!-- Item Tab Partial View -->
 
                 <!----------------------------------------------------- Category starts ------------------------------------------------------->
                 <div class="category col-12 col-md-3 pt-2 bg-dark-grey">
@@ -60,18 +61,18 @@
 
                             @foreach (var category in Model.Categories)
                             {
-                                <li class="d-flex justify-content-between li-category" data-id="@category.CategoryId">
+                                <li class="d-flex justify-content-between li-category" data-id="@category.Id">
                                     <a class="d-flex align-items-center">
                                         <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
-                                        <span class="categoryName">@category.CategoryName</span>
+                                        <span class="categoryName">@category.Name</span>
                                     </a>
                                     <div class="EditDeleteCategory">
                                         <button class="btn p-0 pe-1 editCategoryBtn" data-bs-toggle="modal"
-                                            data-bs-target="#addCategoryModal" data-id="@category.CategoryId">
+                                            data-bs-target="#addCategoryModal" data-id="@category.Id">
                                             <img src="~/images/icons/edit.svg" alt="" />
                                         </button>
                                         <button class="btn p-0 pe-1 iconDeleteCategory" data-bs-toggle="modal"
-                                            data-bs-target="#deleteCategory" data-id="@category.CategoryId">
+                                            data-bs-target="#deleteCategory" data-id="@category.Id">
                                             <img src="~/images/icons/delete.svg" alt="">
                                         </button>
                                     </div>
@@ -120,7 +121,7 @@
         ----------------------------------------------------------------------------------------------------------------------------------------------------->
         <div class="tab-pane fade" id="pills-modifiers" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
             <div class="row" id="modifierTab">
-                <!-- Partial View -->
+                <!-- Modifier Tab Partial View -->
             </div>
         </div>
 
@@ -167,10 +168,6 @@
     </div>
 </div>
 <!-- Modal Delete Category ends-->
-
-
-
-
 
 @section Scripts {
 

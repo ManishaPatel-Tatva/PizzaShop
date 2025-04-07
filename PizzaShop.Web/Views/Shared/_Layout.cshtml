@@ -1,4 +1,5 @@
-﻿@{
+﻿@using PizzaShop.Service.Common
+@{
     string? userName = Context.Request.Cookies["userName"];
     string? profileImg = Context.Request.Cookies["profileImg"];
     List<string> permissions = User.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
@@ -94,7 +95,7 @@
                             Dashboard
                         </a>
 
-                        @if (permissions.Contains("View_Users"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Users)))
                         {
                             <a asp-action="Index" asp-controller="Users"
                                 class=" @((ViewData["sidebar-active"] as string) == "Users" ? "side-dash" : "")">
@@ -103,7 +104,7 @@
                             </a>
                         }
 
-                        @if (permissions.Contains("View_Role and Permission"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Roles_and_Permissions)))
                         {
                             <a asp-action="Role" asp-controller="RolePermission"
                                 class="@((ViewData["sidebar-active"] as string) == "RolePermission" ? "side-dash" : "")">
@@ -113,7 +114,7 @@
                             </a>
                         }
 
-                        @if (permissions.Contains("View_Menu"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Menu)))
                         {
                             <a asp-action="Index" asp-controller="Menu"
                                 class="@((ViewData["sidebar-active"] as string) == "Menu" ? "side-dash" : "")">
@@ -122,7 +123,7 @@
                             </a>
                         }
 
-                        @if (permissions.Contains("View_Table and Section"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Tables_and_Sections)))
                         {
                             <a asp-action="Index" asp-controller="TableSection"
                                 class="@((ViewData["sidebar-active"] as string) == "TableSection" ? "side-dash" : "")">
@@ -132,7 +133,7 @@
                             </a>
                         }
 
-                        @if (permissions.Contains("View_Taxes and Fees"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Taxes_and_Fees)))
                         {
                             <a asp-action="Index" asp-controller="Taxes"
                                 class="@((ViewData["sidebar-active"] as string) == "Taxes" ? "side-dash" : "")">
@@ -142,7 +143,7 @@
                             </a>
                         }
 
-                        @if (permissions.Contains("View_Orders"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Orders)))
                         {
                             <a asp-action="Index" asp-controller="Orders"
                                 class="@((ViewData["sidebar-active"] as string) == "Orders" ? "side-dash" : "")">
@@ -152,7 +153,7 @@
                             </a>
                         }
 
-                        @if (permissions.Contains("View_Customers"))
+                        @if (permissions.Contains(nameof(PermissionType.View_Customers)))
                         {
                             <a asp-action="Index" asp-controller="Customers"
                                 class="@((ViewData["sidebar-active"] as string) == "Customers" ? "side-dash" : "")">
