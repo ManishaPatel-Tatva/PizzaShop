@@ -29,7 +29,7 @@ public partial class Item
 
     public string? ShortCode { get; set; }
 
-    public string ImageUrl { get; set; } = null!;
+    public string? ImageUrl { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

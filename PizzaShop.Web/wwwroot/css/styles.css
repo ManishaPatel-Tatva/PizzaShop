@@ -28,6 +28,10 @@ a{
     background-color: lightblue;
 }
 
+.bg-sky-blue{
+    background-color: #39a7ed;
+}
+
 .blue-text{
     color: #0066A8 !important;
 }
@@ -38,6 +42,10 @@ a{
 
 .light-grey-text{
     color: #929292
+}
+
+.text-light-blue{
+    color: #00c0ff;
 }
 
 .clr-yellow{
@@ -232,8 +240,9 @@ td{
 }
 
 /* Menu */
+
 .nav-pills .nav-link.active{
-    color: #0066A8;
+    color: #0066A8 !important;
     background-color: white;
     border-bottom: 2px solid #0066A8;
     border-radius: 0px;
@@ -244,7 +253,7 @@ td{
 }
 
 .nav-link{
-    color: black;
+    color: grey;
 }
 .tab-text{
     font-weight: 600;
@@ -475,40 +484,40 @@ table td,th{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
-
+/* Order App */
+.below-nav-orderApp{
+    padding-top: 67px;
 }
 
-
-
-/* Medium devices (landscape tablets, 768px and up) */
-
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-
+/* KOT */
+.kot-nav{
+    flex-wrap: nowrap;
+    overflow-x: auto;
 }
 
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-
+.kot-card{
+    height: 300px;
+    width: 400px;
+    border: 2px dashed lightgray;
 }
 
+.kot-card-header{
+    height: 65px;
+}
 
+.kot-card-footer{
+    height: 50px;
+}
+
+.kot-card-header{
+    background-color: #e3e3e3;
+}
+
+.kot-card-footer{
+    background-color: #f7f5f4;
+}
+
+.kot-card-body{
+    height: 185px;
+    overflow-y: auto;
+}

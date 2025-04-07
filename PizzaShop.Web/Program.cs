@@ -67,6 +67,10 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 //Customers
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
+//KOT
+builder.Services.AddScoped<IKotService, KotService>();
+
+
 //Session 
 builder.Services.AddSession(options =>
 {

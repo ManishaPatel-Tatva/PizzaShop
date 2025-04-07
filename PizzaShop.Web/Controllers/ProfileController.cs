@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
 
@@ -29,6 +30,11 @@ public class ProfileController : Controller
     [HttpGet]
     public IActionResult Dashboard()
     {
+        if(User.IsInRole("Chef"))
+        {
+            return RedirectToAction("Index","Kot");
+        }
+
         ViewData["sidebar-active"] = "Dashboard";
         return View();
     }

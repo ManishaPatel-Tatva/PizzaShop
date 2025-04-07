@@ -19,7 +19,7 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public string ProfileImg { get; set; } = null!;
+    public string? ProfileImg { get; set; }
 
     public long Phone { get; set; }
 

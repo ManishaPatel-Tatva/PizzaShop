@@ -31,50 +31,63 @@
                     </button>
                     <div class="pizzashop-text d-flex align-items-center pe-3 py-2">
                         <img class="pe-1" src="~/images/logos/pizzashop_logo.png" alt="pizza shop logo" width="60x">
-                        <span>PIZZASHOP</span>
+                        <span class="d-none d-sm-block">PIZZASHOP</span>
                     </div>
 
                 </div>
 
-                <div class="btn-group">
-                    <a type="button" class="btn " data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src=@(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png")
-                            class="rounded-circle" alt="profile" height="35px" width="35px">
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-lg-end">
-                        <li class="mb-2 ms-3 d-flex align-items-center">
-                            <img class="me-2 rounded-circle" src=@(profileImg != null ? profileImg :
-                                                                                             "~/images/Default_pfp.svg.png") alt="" height="30px" width="30px">
-                            <span>@userName</span>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" asp-action="MyProfile"
-                                asp-controller="Profile">
-                                <img class="me-2 myprofile-icons" src="~/images/icons/person-circle.svg" alt=""
-                                    height="24px">
-                                <span>My Profile</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" asp-action="ChangePassword"
-                                asp-controller="Profile">
-                                <img class="me-2 myprofile-icons" src="~/images/icons/change-password.svg" alt=""
-                                    height="20px">
-                                <span>Change Password</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" data-bs-toggle="modal"
-                                data-bs-target="#LogoutModal">
-                                <img class="me-2 myprofile-icons" src="~/images/icons/logout.svg" alt="" height="20px">
-                                <span>Logout</span>
-                            </a>
-                        </li>
-                    </ul>
+                <div class="d-flex justify-content-center align-items-center">
+                    @if (User.IsInRole("Account Manager"))
+                    {
+                        <a asp-action="Index" asp-controller="Kot">
+                            <img src="~/images/icons/phone.svg" alt="" width="30px">
+                        </a>
+                    }
+
+
+                    <div class="btn-group">
+                        <a type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src=@(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png")
+                                class="rounded-circle" alt="profile" height="40px" width="40px">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-lg-end">
+                            <li class="mb-2 ms-3 d-flex align-items-center">
+                                <img class="me-2 rounded-circle" src=@(profileImg != null ? profileImg :
+                                                                                                     "~/images/Default_pfp.svg.png") alt="" height="30px" width="30px">
+                                <span>@userName</span>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-action="MyProfile"
+                                    asp-controller="Profile">
+                                    <img class="me-2 myprofile-icons" src="~/images/icons/person-circle.svg" alt=""
+                                        height="24px">
+                                    <span>My Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-action="ChangePassword"
+                                    asp-controller="Profile">
+                                    <img class="me-2 myprofile-icons" src="~/images/icons/change-password.svg" alt=""
+                                        height="20px">
+                                    <span>Change Password</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" data-bs-toggle="modal"
+                                    data-bs-target="#LogoutModal">
+                                    <img class="me-2 myprofile-icons" src="~/images/icons/logout.svg" alt=""
+                                        height="20px">
+                                    <span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+
+
 
             </div>
         </nav>
@@ -208,11 +221,6 @@
         </div>
     </div>
 
-
-
-
-    @* <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> *@
-    @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
