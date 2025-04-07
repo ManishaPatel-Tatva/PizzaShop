@@ -309,7 +309,7 @@
 
         $("#confirmDelete").click(function () {
             $.ajax({
-                url: '@Url.Action("SoftDelete", "Menu")',
+                url: '@Url.Action("DeleteCategory", "Menu")',
                 type: "GET",
                 data: { categoryId: deleteCategoryId },
                 success: function (response) {

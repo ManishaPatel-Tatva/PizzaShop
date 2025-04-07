@@ -76,7 +76,7 @@ public class MenuController : Controller
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Delete_Menu")]
     [HttpGet]
-    public async Task<IActionResult> Delete(long categoryId)
+    public async Task<IActionResult> DeleteCategory(long categoryId)
     {
         string? token = Request.Cookies["authToken"];
         string? createrEmail = _jwtService.GetClaimValue(token, "email");

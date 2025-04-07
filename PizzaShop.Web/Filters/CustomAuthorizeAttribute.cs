@@ -17,35 +17,9 @@ public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
         _requiredPermission = requiredPermission;
     }
 
-    // public void OnAuthorization(AuthorizationFilterContext context)
-    // {
-    //     IJwtService? jwtService = context.HttpContext.RequestServices.GetService(typeof(IJwtService)) as IJwtService;
-    //     HttpContext httpContext = context.HttpContext;
-
-    //     string? token = httpContext.Request.Cookies["authToken"];
-    //     if (string.IsNullOrEmpty(token))
-    //     {
-    //         context.Result = new UnauthorizedResult();
-    //         return;
-    //     }
-
-    //     ClaimsPrincipal? claims = jwtService?.GetClaimsFromToken(token);
-    //     if (claims == null)
-    //     {
-    //         context.Result = new UnauthorizedResult();
-    //         return;
-    //     }
-
-    //     List<string> permissions = claims.Claims.Where(c => c.Type == "permission").Select(c => c.Value).ToList();
-
-    //     if (!permissions.Contains(_requiredPermission))
-    //     {
-    //         context.Result = new ForbidResult();
-    //     }
-    // }
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var user = context.HttpContext.User;
+        ClaimsPrincipal? user = context.HttpContext.User;
 
         if (!user.Identity?.IsAuthenticated ?? false)
         {

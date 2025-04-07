@@ -22,7 +22,10 @@ public class CategoryService : ICategoryService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public List<CategoryViewModel> Get()
     {
-        IEnumerable<Category>? categories = _categoryRepository.GetByCondition(c => c.IsDeleted == false).Result;
+        IEnumerable<Category>? categories = _categoryRepository.GetByCondition(
+            predicate: c => !c.IsDeleted,
+            orderBy: q => q.OrderBy(c => c.Name)
+            ).Result;
 
         List<CategoryViewModel>? list = categories.Select(category => new CategoryViewModel
         {
