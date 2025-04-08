@@ -156,23 +156,21 @@
 
         function exportOrderDetails() {
             console.log("export function called");
-            let orderStatus = $("#orderStatus").val();
-            let dateRange = $("#dateRange").val();
-            let fromDate = $("#fromDate").val();
-            let toDate = $("#toDate").val();
-            let searchQuery = $("#searchQuery").val();
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                PageNumber: pageNumber,
+                Status:  $("#orderStatus").val(),
+                DateRange: $("#dateRange").val(),
+                FromDate: $("#fromDate").val(),
+                ToDate: $("#toDate").val(),
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchQuery").val()
+            };
 
             $.ajax({
                 url: '@Url.Action("ExportExcel", "Orders")',
-                data: {
-                    'status': orderStatus,
-                    'dateRange': dateRange,
-                    'fromDate': fromDate,
-                    'toDate': toDate,
-                    'column': sortingColumn,
-                    'sort': sortingOrder,
-                    'search': searchQuery
-                },
+                data: { filter },
                 xhrFields: {
                     responseType: 'blob'
                 },

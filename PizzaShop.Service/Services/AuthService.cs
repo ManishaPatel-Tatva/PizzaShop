@@ -71,7 +71,7 @@ public class AuthService : IAuthService
     #region ForgotPassword
     /*--------------------------------Forgot Password-------------------------------------------------------------
     -----------------------------------------------------------------------------------------------*/
-    public async Task<ResponseViewModel> ForgotPasswordAsync(string email, string resetToken, string resetLink)
+    public async Task<ResponseViewModel> ForgotPassword(string email, string resetToken, string resetLink)
     {
         User? user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted);
 
@@ -102,7 +102,7 @@ public class AuthService : IAuthService
 
         //Sending email to user for resetting password
         string body = EmailTemplateHelper.ResetPassword(resetLink);
-        if (!await _emailService.SendEmailAsync(email, "Reset Password", body))
+        if (!await _emailService.SendEmail(email, "Reset Password", body))
         {
             return new ResponseViewModel
             {
@@ -123,7 +123,7 @@ public class AuthService : IAuthService
     #region ResetPassword
     /*--------------------------------Reset Password-------------------------------------------------------------
     -----------------------------------------------------------------------------------------------*/
-    public async Task<ResponseViewModel> ResetPasswordAsync(string token, string newPassword)
+    public async Task<ResponseViewModel> ResetPassword(string token, string newPassword)
     {
         ResetPasswordToken? resetToken = await _resetPasswordRepository.GetByStringAsync(t => t.Token == token);
         if (resetToken == null)

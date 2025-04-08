@@ -1,8 +1,5 @@
-using System.Drawing;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -14,23 +11,20 @@ namespace PizzaShop.Service.Services;
 public class CustomerService : ICustomerService
 {
     private readonly IGenericRepository<Customer> _customerRepository;
-
     public CustomerService(IGenericRepository<Customer> customerRepository)
     {
         _customerRepository = customerRepository;
     }
 
-    #region Order Pagination
-    /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
+    #region Get Pagination
+    /*----------------------------------------------------Customer Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<CustomerPaginationViewModel> Get(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, int pageSize, int pageNumber, string search)
+    public async Task<CustomerPaginationViewModel> Get(FilterViewModel filter)
     {
-        (IEnumerable<Customer> customers, int totalRecord) = await _customerRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
+        IEnumerable<Customer>? list = await _customerRepository.GetByCondition(
             predicate: c => !c.IsDeleted &&
-                    (string.IsNullOrEmpty(search.ToLower()) ||
-                    c.Name.ToLower().Contains(search.ToLower())),
+                    (string.IsNullOrEmpty(filter.Search) ||
+                    c.Name.ToLower().Contains(filter.Search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
             includes: new List<Expression<Func<Customer, object>>>
             {
@@ -38,45 +32,42 @@ public class CustomerService : ICustomerService
             }
         );
 
-        CustomerPaginationViewModel model = new()
+        IEnumerable<CustomerViewModel>? customers = list.Select(c => new CustomerViewModel()
         {
-            Customers = customers.Select(c => new CustomerViewModel()
-            {
-                CustomerId = c.Id,
-                Name = c.Name,
-                Phone = c.Phone,
-                Email = c.Email,
-                Date = DateOnly.FromDateTime(c.Orders.Where(o => o.CustomerId == c.Id).Select(o => o.CreatedAt).LastOrDefault()),
-                TotalOrder = c.Orders.Where(o => o.CustomerId == c.Id).Count()
-            }),
-            Page = new()
-        };
+            CustomerId = c.Id,
+            Name = c.Name,
+            Phone = c.Phone,
+            Email = c.Email,
+            Date = DateOnly.FromDateTime(c.Orders.Where(o => o.CustomerId == c.Id).Select(o => o.CreatedAt).LastOrDefault()),
+            TotalOrder = c.Orders.Where(o => o.CustomerId == c.Id).Count()
+        });
+
 
         //For applying date range filter
-        if (!string.IsNullOrEmpty(dateRange) && dateRange.ToLower() != "all time")
+        if (!string.IsNullOrEmpty(filter.DateRange) && filter.DateRange.ToLower() != "all time")
         {
-            switch (dateRange.ToLower())
+            switch (filter.DateRange.ToLower())
             {
                 case "today":
                     DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                    model.Customers = model.Customers.Where(c => c.Date.Day == today.Day && c.Date.Month == today.Month && c.Date.Year == today.Year);
+                    customers = customers.Where(c => c.Date.Day == today.Day && c.Date.Month == today.Month && c.Date.Year == today.Year);
                     break;
                 case "last 7 days":
-                    model.Customers = model.Customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
+                    customers = customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "last 30 days":
-                    model.Customers = model.Customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
+                    customers = customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "current month":
                     DateOnly startDate = DateOnly.FromDateTime(DateTime.Now);
-                    model.Customers = model.Customers.Where(x => x.Date.Month == startDate.Month && x.Date.Year == startDate.Year);
+                    customers = customers.Where(x => x.Date.Month == startDate.Month && x.Date.Year == startDate.Year);
                     break;
                 case "custom date":
                     //Filtering Custom Dates
-                    if (fromDate.HasValue)
-                        model.Customers = model.Customers.Where(c => c.Date >= fromDate.Value);
-                    if (toDate.HasValue)
-                        model.Customers = model.Customers.Where(c => c.Date <= toDate.Value);
+                    if (filter.FromDate.HasValue)
+                        customers = customers.Where(c => c.Date >= filter.FromDate.Value);
+                    if (filter.ToDate.HasValue)
+                        customers = customers.Where(c => c.Date <= filter.ToDate.Value);
                     break;
                 default:
                     break;
@@ -84,27 +75,38 @@ public class CustomerService : ICustomerService
         }
 
         //For sorting the column according to order
-        if (!string.IsNullOrEmpty(column))
+        if (!string.IsNullOrEmpty(filter.Column))
         {
-            switch (column)
+            switch (filter.Column)
             {
                 case "name":
-                    model.Customers = sort == "asc" ? model.Customers.OrderBy(c => c.Name) : model.Customers.OrderByDescending(c => c.Name);
+                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.Name) : customers.OrderByDescending(c => c.Name);
                     break;
                 case "date":
-                    model.Customers = sort == "asc" ? model.Customers.OrderBy(c => c.Date) : model.Customers.OrderByDescending(c => c.Date);
+                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.Date) : customers.OrderByDescending(c => c.Date);
                     break;
                 case "total order":
-                    model.Customers = sort == "asc" ? model.Customers.OrderBy(c => c.TotalOrder) : model.Customers.OrderByDescending(c => c.TotalOrder);
+                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.TotalOrder) : customers.OrderByDescending(c => c.TotalOrder);
                     break;
                 default:
                     break;
             }
         }
 
-        totalRecord = model.Customers.Count();
+        //Pagination
+        int totalRecord = customers.Count();
+        customers = customers
+            .Skip((filter.PageNumber - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToList();
 
-        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        CustomerPaginationViewModel model = new()
+        {
+            Customers = customers,
+            Page = new()
+        }; 
+
+        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;
     }
     #endregion
@@ -113,7 +115,7 @@ public class CustomerService : ICustomerService
 
     public async Task<CustomerHistoryViewModel> Get(long customerId)
     {
-        IEnumerable<Customer>? customer = _customerRepository.GetByCondition(
+        IEnumerable<Customer>? customer = await _customerRepository.GetByCondition(
             c => c.Id == customerId && !c.IsDeleted,
             includes: new List<Expression<Func<Customer, object>>>
             {
@@ -127,12 +129,15 @@ public class CustomerService : ICustomerService
                 q => q.Include(c => c.Orders)
                     .ThenInclude(o => o.OrderItems)
             }
-        ).Result;
+        );
 
         if (customer == null)
+        {
             return null;
+        }
 
-        CustomerHistoryViewModel? model = customer.Select(c => new CustomerHistoryViewModel{
+        CustomerHistoryViewModel? model = customer.Select(c => new CustomerHistoryViewModel
+        {
             CustomerId = customerId,
             CustomerName = c.Name,
             Phone = c.Phone,
@@ -141,29 +146,30 @@ public class CustomerService : ICustomerService
             ComingSince = c.CreatedAt,
             Visits = c.Orders.Where(o => o.CustomerId == customerId).Count(),
             Orders = c.Orders.Where(o => o.CustomerId == customerId)
-                    .Select(o => new OrderViewModel{
+                    .Select(o => new OrderViewModel
+                    {
                         Date = DateOnly.FromDateTime(o.CreatedAt),
                         IsDineIn = o.IsDineIn,
                         PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).SingleOrDefault(),
                         NoOfItems = o.OrderItems.Where(oi => oi.OrderId == o.Id).Count(),
                         TotalAmount = o.FinalAmount
-            }).ToList()
+                    }).ToList()
         }).FirstOrDefault();
-        
+
         return model;
     }
 
     #endregion
 
     #region Export Excel
-        /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<byte[]> ExportExcel(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, string search)
+    /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<byte[]> ExportExcel(FilterViewModel filter)
     {
-        IEnumerable<Customer> customers = await _customerRepository.GetByCondition(
+        IEnumerable<Customer>? list = await _customerRepository.GetByCondition(
             predicate: c => !c.IsDeleted &&
-                    (string.IsNullOrEmpty(search.ToLower()) ||
-                    c.Name.ToLower().Contains(search.ToLower())),
+                    (string.IsNullOrEmpty(filter.Search) ||
+                    c.Name.ToLower().Contains(filter.Search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
             includes: new List<Expression<Func<Customer, object>>>
             {
@@ -171,42 +177,43 @@ public class CustomerService : ICustomerService
             }
         );
 
-        IEnumerable<CustomerViewModel> customersList = customers.Select(c => new CustomerViewModel()
-            {
-                CustomerId = c.Id,
-                Name = c.Name,
-                Phone = c.Phone,
-                Email = c.Email,
-                Date = DateOnly.FromDateTime(c.Orders.Where(o => o.CustomerId == c.Id).Select(o => o.CreatedAt).LastOrDefault()),
-                TotalOrder = c.Orders.Where(o => o.CustomerId == c.Id).Count()
-            });
-        
+        IEnumerable<CustomerViewModel>? customers = list.Select(c => new CustomerViewModel()
+        {
+            CustomerId = c.Id,
+            Name = c.Name,
+            Phone = c.Phone,
+            Email = c.Email,
+            Date = DateOnly.FromDateTime(c.Orders.Where(o => o.CustomerId == c.Id).Select(o => o.CreatedAt).LastOrDefault()),
+            TotalOrder = c.Orders.Where(o => o.CustomerId == c.Id).Count()
+        });
+
+
 
         //For applying date range filter
-        if (!string.IsNullOrEmpty(dateRange) && dateRange.ToLower() != "all time")
+        if (!string.IsNullOrEmpty(filter.DateRange) && filter.DateRange.ToLower() != "all time")
         {
-            switch (dateRange.ToLower())
+            switch (filter.DateRange.ToLower())
             {
                 case "today":
                     DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                    customersList = customersList.Where(c => c.Date.Day == today.Day && c.Date.Month == today.Month && c.Date.Year == today.Year);
+                    customers = customers.Where(c => c.Date.Day == today.Day && c.Date.Month == today.Month && c.Date.Year == today.Year);
                     break;
                 case "last 7 days":
-                    customersList = customersList.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
+                    customers = customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "last 30 days":
-                    customersList = customersList.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
+                    customers = customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
                     break;
                 case "current month":
                     DateOnly startDate = DateOnly.FromDateTime(DateTime.Now);
-                    customersList = customersList.Where(x => x.Date.Month == startDate.Month && x.Date.Year == startDate.Year);
+                    customers = customers.Where(x => x.Date.Month == startDate.Month && x.Date.Year == startDate.Year);
                     break;
                 case "custom date":
                     //Filtering Custom Dates
-                    if (fromDate.HasValue)
-                        customersList = customersList.Where(c => c.Date >= fromDate.Value);
-                    if (toDate.HasValue)
-                        customersList = customersList.Where(c => c.Date <= toDate.Value);
+                    if (filter.FromDate.HasValue)
+                        customers = customers.Where(c => c.Date >= filter.FromDate.Value);
+                    if (filter.ToDate.HasValue)
+                        customers = customers.Where(c => c.Date <= filter.ToDate.Value);
                     break;
                 default:
                     break;
@@ -214,25 +221,25 @@ public class CustomerService : ICustomerService
         }
 
         //For sorting the column according to order
-        if (!string.IsNullOrEmpty(column))
+        if (!string.IsNullOrEmpty(filter.Column))
         {
-            switch (column)
+            switch (filter.Column)
             {
                 case "name":
-                    customersList = sort == "asc" ? customersList.OrderBy(c => c.Name) : customersList.OrderByDescending(c => c.Name);
+                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.Name) : customers.OrderByDescending(c => c.Name);
                     break;
                 case "date":
-                    customersList = sort == "asc" ? customersList.OrderBy(c => c.Date) : customersList.OrderByDescending(c => c.Date);
+                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.Date) : customers.OrderByDescending(c => c.Date);
                     break;
                 case "total order":
-                    customersList = sort == "asc" ? customersList.OrderBy(c => c.TotalOrder) : customersList.OrderByDescending(c => c.TotalOrder);
+                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.TotalOrder) : customers.OrderByDescending(c => c.TotalOrder);
                     break;
                 default:
                     break;
             }
         }
 
-        return ExcelTemplateHelper.Customers(customersList,  dateRange, search);
+        return ExcelTemplateHelper.Customers(customers, filter.DateRange, filter.Search);
 
     }
 

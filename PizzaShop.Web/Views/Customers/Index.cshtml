@@ -12,7 +12,8 @@
     <div class="justify-content-end d-flex flex-column flex-md-row customer-export-div ">
 
         <div class="input-group me-2 my-2">
-            <input type="search" class="form-control" placeholder="Search" name="search" id="searchCustomer" oninput="PaginationAjax()">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery"
+                oninput="PaginationAjax()">
             <button type="submit" class="input-group-text">
                 <img src="~/images/icons/search.svg" alt="">
             </button>
@@ -144,29 +145,26 @@
         });
 
         function PaginationAjax(pageNumber) {
-            let dateRange = $("#dateRange").val();
-            let fromDate = $("#fromDate").val();
-            let toDate = $("#toDate").val();
-            let pageSize = $("#itemsPerPage").val() || 5; // Default to 5 if no value selected
-            let searchCustomer = $("#searchCustomer").val();
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                PageNumber: pageNumber,
+                DateRange: $("#dateRange").val(),
+                FromDate: $("#fromDate").val(),
+                ToDate: $("#toDate").val(),
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchQuery").val()
+            };
+
+            console.log(filter);
 
             $.ajax({
-                url: '@Url.Action("GetCustomersList", "Customers")',
-                data: {
-                    'dateRange': dateRange,
-                    'fromDate': fromDate,
-                    'toDate': toDate,
-                    'column': sortingColumn,
-                    'sort': sortingOrder,
-                    'pageSize': pageSize,
-                    'pageNumber': pageNumber,
-                    'search': searchCustomer
-                },
-                type: "GET",
+                url: '@Url.Action("Get", "Customers")',
+                data: { filter },
+                type: "POST",
                 dataType: "html",
                 success: function (data) {
                     $("#customerContent").html(data);
-                    $("#customersPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -183,34 +181,30 @@
 
         $(document).on("click", "#exportCustomerBtn", function () {
             console.log("export btn clicked");
-            exportCustomerDetails();
+            exportExcel();
         })
 
-        function exportCustomerDetails() {
-            console.log("export function called");
-            let dateRange = $("#dateRange").val();
-            let fromDate = $("#fromDate").val();
-            let toDate = $("#toDate").val();
-            let searchCustomer = $("#searchCustomer").val();
+        function exportExcel() {
+            let filter = {
+                DateRange: $("#dateRange").val(),
+                FromDate: $("#fromDate").val(),
+                ToDate: $("#toDate").val(),
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchQuery").val()
+            };
 
             $.ajax({
                 url: '@Url.Action("ExportExcel", "Customers")',
-                data: {
-                    'dateRange': dateRange,
-                    'fromDate': fromDate,
-                    'toDate': toDate,
-                    'column': sortingColumn,
-                    'sort': sortingOrder,
-                    'search': searchCustomer
-                },
-                xhrFields: {
-                    responseType: 'blob'
-                },
-                success: function (data, status, xhr) {
+                data: { filter },
+                xhrFields: { responseType: 'blob'},
+                success: function (data, status, xhr) 
+                {
                     let filename = "Customers.xlsx";
 
                     let disposition = xhr.getResponseHeader('Content-Disposition');
-                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                    if (disposition && disposition.indexOf('attachment') !== -1) 
+                    {
                         let matches = /filename="([^"]+)"/.exec(disposition);
                         if (matches !== null && matches[1]) filename = matches[1];
                     }
@@ -245,7 +239,7 @@
 
         function GetCustomerHistory(id) {
             $.ajax({
-                url: '@Url.Action("Get", "Customers")',
+                url: '@Url.Action("GetCustomerHistory", "Customers")',
                 type: "GET",
                 data: { customerId: id },
                 dataType: "html",

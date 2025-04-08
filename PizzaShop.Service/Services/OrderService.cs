@@ -27,20 +27,41 @@ public class OrderService : IOrderService
         };
         return model;
     }
-    #region Order Pagination
-    /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
+    #region Get
+    /*----------------------------------------------------Order List----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<OrderPaginationViewModel> Get(FilterViewModel filter)
+    public async Task<IEnumerable<Order>> List(FilterViewModel filter)
     {
         filter.Search = string.IsNullOrEmpty(filter.Search) ? "" : filter.Search;
 
-        (IEnumerable<Order> orders, int totalRecord) = await _orderRepository.GetPagedRecordsAsync(
-            filter.PageSize,
-            filter.PageNumber,
+        //For sorting the column according to order
+        Func<IQueryable<Order>, IOrderedQueryable<Order>>? orderBy = q => q.OrderBy(o => o.Id);
+        if (!string.IsNullOrEmpty(filter.Column))
+        {
+            switch (filter.Column)
+            {
+                case "order":
+                    orderBy = filter.Sort == "asc" ? q => q.OrderBy(o => o.Id) : q => q.OrderByDescending(o => o.Id);
+                    break;
+                case "date":
+                    orderBy = filter.Sort == "asc" ? q => q.OrderBy(o => DateOnly.FromDateTime(o.CreatedAt)) : q => q.OrderByDescending(o => DateOnly.FromDateTime(o.CreatedAt));
+                    break;
+                case "customer":
+                    orderBy = filter.Sort == "asc" ? q => q.OrderBy(o => o.Customer.Name) : q => q.OrderByDescending(o => o.Customer.Name);
+                    break;
+                case "amount":
+                    orderBy = filter.Sort == "asc" ? q => q.OrderBy(o => o.FinalAmount) : q => q.OrderByDescending(o => o.FinalAmount);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        IEnumerable<Order> orders = await _orderRepository.GetByCondition(
             predicate: o => !o.IsDeleted &&
                     (string.IsNullOrEmpty(filter.Search.ToLower()) ||
                     o.Customer.Name.ToLower().Contains(filter.Search.ToLower())),
-            orderBy: q => q.OrderBy(u => u.Id),
+            orderBy: orderBy,
             includes: new List<Expression<Func<Order, object>>>
             {
             o => o.Customer,
@@ -84,31 +105,24 @@ public class OrderService : IOrderService
 
         //Filtering Custom Dates
         if (filter.FromDate.HasValue)
-            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= filter.FromDate.Value);
-        if (filter.ToDate.HasValue)
-            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) <= filter.ToDate.Value);
-
-        //For sorting the column according to order
-        if (!string.IsNullOrEmpty(filter.Column))
         {
-            switch (filter.Column)
-            {
-                case "order":
-                    orders = filter.Sort == "asc" ? orders.OrderBy(o => o.Id) : orders.OrderByDescending(o => o.Id);
-                    break;
-                case "date":
-                    orders = filter.Sort == "asc" ? orders.OrderBy(o => DateOnly.FromDateTime(o.CreatedAt)) : orders.OrderByDescending(o => DateOnly.FromDateTime(o.CreatedAt));
-                    break;
-                case "customer":
-                    orders = filter.Sort == "asc" ? orders.OrderBy(o => o.Customer.Name) : orders.OrderByDescending(o => o.Customer.Name);
-                    break;
-                case "amount":
-                    orders = filter.Sort == "asc" ? orders.OrderBy(o => o.FinalAmount) : orders.OrderByDescending(o => o.FinalAmount);
-                    break;
-                default:
-                    break;
-            }
+            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= filter.FromDate.Value);
         }
+        if (filter.ToDate.HasValue)
+        {
+            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) <= filter.ToDate.Value);
+        }
+
+        return orders;
+    }
+
+    /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<OrderPaginationViewModel> Get(FilterViewModel filter)
+    {
+        IEnumerable<Order>? orders = await List(filter);
+
+        (orders , int totalRecord) = await _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
 
         //Setting the filtered and sorted values in View Model
         OrderPaginationViewModel model = new()
@@ -126,103 +140,32 @@ public class OrderService : IOrderService
             })
         };
 
-        totalRecord = model.Orders.Count();
-
         model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;
     }
+   
     #endregion
 
     #region Export Excel
     /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<byte[]> ExportExcel(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column, string sort, string search)
+    public async Task<byte[]> ExportExcel(FilterViewModel filter)
     {
-        IEnumerable<Order> orders = await _orderRepository.GetByCondition(
-            predicate: o => !o.IsDeleted &&
-                    (string.IsNullOrEmpty(search.ToLower()) ||
-                    o.Customer.Name.ToLower().Contains(search.ToLower())),
-            orderBy: q => q.OrderBy(u => u.Id),
-            includes: new List<Expression<Func<Order, object>>>
-            {
-                o => o.Customer,
-                o => o.Payments,
-                o => o.Status,
-                o => o.CustomersReviews
-            },
-            thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
-            {
-                q => q.Include(o => o.Payments)
-                    .ThenInclude(p => p.PaymentMethod)
-            }
-        );
+        
+        IEnumerable<Order>? orders = await List(filter);
 
-        //For applying status filter
-        if (!string.IsNullOrEmpty(status) && status.ToLower() != "all status")
+        IEnumerable<OrderViewModel>? orderList = orders.Select(o => new OrderViewModel()
         {
-            orders = orders.Where(o => o.Status.Name.ToLower() == status.ToLower());
-        }
+            OrderId = o.Id,
+            Date = DateOnly.FromDateTime(o.CreatedAt),
+            CustomerName = o.Customer.Name,
+            Status = o.Status.Name,
+            PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
+            Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
+            TotalAmount = o.FinalAmount
+        });
 
-        //For applying date range filter
-        if (!string.IsNullOrEmpty(dateRange) && dateRange.ToLower() != "all time" && !fromDate.HasValue && !toDate.HasValue)
-        {
-            switch (dateRange.ToLower())
-            {
-                case "last 7 days":
-                    orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && DateOnly.FromDateTime(o.CreatedAt) <= DateOnly.FromDateTime(DateTime.Now));
-                    break;
-                case "last 30 days":
-                    orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && DateOnly.FromDateTime(o.CreatedAt) <= DateOnly.FromDateTime(DateTime.Now));
-                    break;
-                case "current month":
-                    DateOnly startDate = DateOnly.FromDateTime(DateTime.Now);
-                    orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt).Month == startDate.Month && DateOnly.FromDateTime(o.CreatedAt).Year == startDate.Year);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        //Filtering Custom Dates
-        if (fromDate.HasValue)
-            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) >= fromDate.Value);
-        if (toDate.HasValue)
-            orders = orders.Where(o => DateOnly.FromDateTime(o.CreatedAt) <= toDate.Value);
-
-        //For sorting the column according to order
-        if (!string.IsNullOrEmpty(column))
-        {
-            switch (column.ToLower())
-            {
-                case "order":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.Id) : orders.OrderByDescending(o => o.Id);
-                    break;
-                case "date":
-                    orders = sort == "asc" ? orders.OrderBy(o => DateOnly.FromDateTime(o.CreatedAt)) : orders.OrderByDescending(o => DateOnly.FromDateTime(o.CreatedAt));
-                    break;
-                case "customer":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.Customer.Name) : orders.OrderByDescending(o => o.Customer.Name);
-                    break;
-                case "amount":
-                    orders = sort == "asc" ? orders.OrderBy(o => o.FinalAmount) : orders.OrderByDescending(o => o.FinalAmount);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        List<OrderViewModel> orderList = orders.Select(o => new OrderViewModel()
-            {
-                OrderId = o.Id,
-                Date = DateOnly.FromDateTime(o.CreatedAt),
-                CustomerName = o.Customer.Name,
-                Status = o.Status.Name,
-                PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
-                Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
-                TotalAmount = o.FinalAmount
-            }).ToList();
-
-        return ExcelTemplateHelper.Orders(orderList, status, dateRange, search);
+        return ExcelTemplateHelper.Orders(orderList, filter.Status, filter.DateRange, filter.Search);
     }
     #endregion
 
@@ -233,8 +176,7 @@ public class OrderService : IOrderService
     {
         try
         {
-
-            IEnumerable<Order>? orderDetail = _orderRepository.GetByCondition(
+            IEnumerable<Order>? orderDetail = await _orderRepository.GetByCondition(
                 predicate: o => o.Id == orderId && !o.IsDeleted,
                 includes: new List<Expression<Func<Order, object>>>
                 {
@@ -261,9 +203,9 @@ public class OrderService : IOrderService
                 q => q.Include(o => o.OrderTaxMappings)
                     .ThenInclude(otm => otm.Tax)
                 }
-            ).Result;
+            );
 
-            var model = orderDetail
+            OrderDetailViewModel? orderDetailVM = orderDetail
             .Select(o => new OrderDetailViewModel
             {
                 OrderId = o.Id,
@@ -342,7 +284,7 @@ public class OrderService : IOrderService
             }).FirstOrDefault();
 
 
-            return model;
+            return orderDetailVM;
 
         }
         catch (Exception ex)

@@ -4,7 +4,7 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IProfileService
 {
-    public Task<MyProfileViewModel> GetMyProfileAsync(string email);
-    public Task<bool> UpdateProfileAsync(MyProfileViewModel model);
-    public Task<bool> ChangePasswordAsync(ChangePasswordViewModel model);
+    public Task<ProfileViewModel> Get(string email);
+    public Task<bool> Update(ProfileViewModel model);
+    public Task<ResponseViewModel> ChangePassword(ChangePasswordViewModel model);
 }

@@ -18,8 +18,8 @@ public class OrdersController : Controller
         _orderService = orderService;
     }
 
-    [CustomAuthorize("View_Orders")]
     [HttpGet]
+    [CustomAuthorize("View_Orders")]
     public async Task<IActionResult> Index()
     {
         OrderIndexViewModel model = await _orderService.Get();
@@ -27,23 +27,19 @@ public class OrdersController : Controller
         return View(model);
     }
 
-    [CustomAuthorize("View_Orders")]
     [HttpPost]
+    [CustomAuthorize("View_Orders")]
     public async Task<IActionResult> Get(FilterViewModel filter)
     {
         OrderPaginationViewModel model = await _orderService.Get(filter);
-        if (model == null)
-        {
-            return NotFound(); // This triggers AJAX error
-        }
-        return PartialView("_OrdersListPartialView", model);
+        return PartialView("_ListPartialView", model);
     }
 
-    [CustomAuthorize("View_Orders")]
     [HttpGet]
-    public async Task<IActionResult> ExportExcel(string status, string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", string search="")
+    [CustomAuthorize("View_Orders")]
+    public async Task<IActionResult> ExportExcel(FilterViewModel filter)
     {
-        byte[] fileData = await _orderService.ExportExcel(status, dateRange, fromDate, toDate, column, sort, search);
+        byte[] fileData = await _orderService.ExportExcel(filter);
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
     }
 
@@ -58,26 +54,19 @@ public class OrdersController : Controller
     public async Task<IActionResult> Invoice(long orderId)
     {
         OrderDetailViewModel model = await _orderService.Get(orderId);
-         ViewAsPdf? pdf = new("Invoice", model){
+        ViewAsPdf? pdf = new ( "Invoice" , model )
+        {
             FileName = "Invoice.pdf"
-        };
-        
+        };    
         return pdf;
-
-        return View(model);
     }
 
-    public async Task<IActionResult> OrderDetailsPdf(long orderId)
+    public async Task<IActionResult> ExportPdf(long orderId)
     {
         OrderDetailViewModel model = await _orderService.Get(orderId);
          ViewAsPdf? pdf = new("OrderDetailsPdf", model){
             FileName = "Invoice.pdf"
         };
-        
         return pdf;
-
-        return View(model);
     }
-
-
 }

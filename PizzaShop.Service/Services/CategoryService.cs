@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -20,12 +21,12 @@ public class CategoryService : ICategoryService
     #region Get
     /*-----------------------------------------------------------Get Categories List---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public List<CategoryViewModel> Get()
+    public async Task<List<CategoryViewModel>> Get()
     {
-        IEnumerable<Category>? categories = _categoryRepository.GetByCondition(
+        IEnumerable<Category>? categories = await _categoryRepository.GetByCondition(
             predicate: c => !c.IsDeleted,
             orderBy: q => q.OrderBy(c => c.Name)
-            ).Result;
+            );
 
         List<CategoryViewModel>? list = categories.Select(category => new CategoryViewModel
         {
@@ -153,5 +154,6 @@ public class CategoryService : ICategoryService
 
         return await _categoryRepository.UpdateAsync(category);
     }
+
     #endregion
 }

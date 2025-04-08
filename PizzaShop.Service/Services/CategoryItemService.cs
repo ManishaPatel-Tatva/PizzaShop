@@ -39,9 +39,7 @@ public class CategoryItemService : ICategoryItemService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search)
     {
-        (IEnumerable<Item> items, int totalRecord) = await _itemRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
+        IEnumerable<Item> items = await _itemRepository.GetByCondition(
             predicate: i => !i.IsDeleted &&
                     i.CategoryId == categoryId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
@@ -50,18 +48,22 @@ public class CategoryItemService : ICategoryItemService
             includes: new List<Expression<Func<Item, object>>> { u => u.FoodType }
         );
 
-        ItemsPaginationViewModel model = new() { Page = new() };
+        (items, int totalRecord) = await _itemRepository.GetPagedRecords(pageSize, pageNumber, items);
 
-        model.Items = items.Select(i => new ItemInfoViewModel()
+        ItemsPaginationViewModel model = new()
         {
-            ItemId = i.Id,
-            ItemImageUrl = i.ImageUrl,
-            ItemName = i.Name,
-            ItemType = i.FoodType.ImageUrl,
-            Rate = i.Rate,
-            Quantity = i.Quantity,
-            Available = i.Available
-        }).ToList();
+            Page = new(),
+            Items = items.Select(i => new ItemInfoViewModel()
+            {
+                ItemId = i.Id,
+                ItemImageUrl = i.ImageUrl,
+                ItemName = i.Name,
+                ItemType = i.FoodType.ImageUrl,
+                Rate = i.Rate,
+                Quantity = i.Quantity,
+                Available = i.Available
+            }).ToList()
+        };
 
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;

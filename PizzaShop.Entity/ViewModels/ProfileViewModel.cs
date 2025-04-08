@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using PizzaShop.Entity.Models;
 
 namespace PizzaShop.Entity.ViewModels{
-    public class MyProfileViewModel
+    public class ProfileViewModel
     {
         [Required(ErrorMessage = "First Name is required")]
         [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]

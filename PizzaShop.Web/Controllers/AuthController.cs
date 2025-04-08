@@ -95,7 +95,7 @@ public class AuthController : Controller
         var resetToken = Guid.NewGuid().ToString();
         var resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme);
 
-        ResponseViewModel response = await _authService.ForgotPasswordAsync(model.Email, resetToken, resetLink);
+        ResponseViewModel response = await _authService.ForgotPassword(model.Email, resetToken, resetLink);
         if(!response.Success)
         {
             TempData["NotificationMessage"] = response.Message;
@@ -133,7 +133,7 @@ public class AuthController : Controller
             return View(model);
         }
 
-        ResponseViewModel response = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
+        ResponseViewModel response = await _authService.ResetPassword(model.Token, model.NewPassword);
         if (!response.Success)
         {
             TempData["NotificationMessage"] = response.Message;

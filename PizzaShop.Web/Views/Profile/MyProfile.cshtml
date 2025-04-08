@@ -1,7 +1,7 @@
-@model PizzaShop.Entity.ViewModels.MyProfileViewModel;
+@model PizzaShop.Entity.ViewModels.ProfileViewModel;
 @{
     ViewData["Title"] = "My Profile";
-    Layout = "_Layout";
+    Layout =  User.IsInRole("Chef") ? "_OrderAppLayout" : "_Layout";
 }
 
 <!-- User heading, search and add button -->

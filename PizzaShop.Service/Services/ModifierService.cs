@@ -254,9 +254,8 @@ public class ModifierService : IModifierService
 
     public async Task<ModifiersPaginationViewModel> GetPagedModifiers(long modifierGroupId, int pageSize, int pageNumber, string search)
     {
-        (IEnumerable<ModifierMapping> modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
+        IEnumerable<ModifierMapping> modifierMapping = await _modifierMappingRepository.GetByCondition(
+           
             predicate: mm => !mm.IsDeleted &&
                     mm.Modifiergroupid == modifierGroupId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
@@ -273,16 +272,20 @@ public class ModifierService : IModifierService
             }
         );
 
-        ModifiersPaginationViewModel model = new() { Page = new() };
+        (modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecords(pageSize,pageNumber,modifierMapping);
 
-        model.Modifiers = modifierMapping.Select(m => new ModifierViewModel()
+        ModifiersPaginationViewModel model = new()
         {
-            ModifierId = m.Modifierid,
-            ModifierName = m.Modifier.Name,
-            UnitName = m.Modifier.Unit.Name,
-            Rate = m.Modifier.Rate,
-            Quantity = m.Modifier.Quantity,
-        }).ToList();
+            Page = new(),
+            Modifiers = modifierMapping.Select(m => new ModifierViewModel()
+            {
+                ModifierId = m.Modifierid,
+                ModifierName = m.Modifier.Name,
+                UnitName = m.Modifier.Unit.Name,
+                Rate = m.Modifier.Rate,
+                Quantity = m.Modifier.Quantity,
+            }).ToList()
+        };
 
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;
@@ -290,9 +293,7 @@ public class ModifierService : IModifierService
 
     public async Task<ModifiersPaginationViewModel> GetAllModifiers(int pageSize, int pageNumber, string search)
     {
-        (IEnumerable<Modifier> modifiers, int totalRecord) = await _modifierRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
+        IEnumerable<Modifier> modifiers = await _modifierRepository.GetByCondition(
             predicate: m => !m.IsDeleted &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     m.Name.ToLower().Contains(search.ToLower())),
@@ -302,6 +303,8 @@ public class ModifierService : IModifierService
                 m => m.Unit
             }
         );
+
+        (modifiers, int totalRecord) = await _modifierRepository.GetPagedRecords(pageSize, pageNumber, modifiers);
 
         ModifiersPaginationViewModel model = new() { Page = new() };
 

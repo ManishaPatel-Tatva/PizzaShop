@@ -11,20 +11,19 @@ public interface IGenericRepository<T>
 
     IEnumerable<T> GetAll();
 
-    Task<IEnumerable<T>> GetByCondition(
-        Expression<Func<T, bool>>? predicate = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-        List<Expression<Func<T, object>>>? includes = null,
-        List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null);
-
-    Task<(IEnumerable<T> items, int totalCount)> GetPagedRecordsAsync
+    Task<IEnumerable<T>> GetByCondition
     (
-        int pageSize,
-        int pageNumber,
         Expression<Func<T, bool>>? predicate = null,
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null
+    );
+
+    Task<(IEnumerable<T> items, int totalCount)> GetPagedRecords
+    (
+        int pageSize,
+        int pageNumber,
+        IEnumerable<T>? items = null
     );
 
     Task<T?> GetByIdAsync(long id);

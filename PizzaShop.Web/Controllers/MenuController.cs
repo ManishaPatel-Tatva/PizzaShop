@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
@@ -28,9 +29,9 @@ public class MenuController : Controller
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("View_Menu")]
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        List<CategoryViewModel>? categoriesList = _categoryService.Get();
+        List<CategoryViewModel>? categoriesList = await _categoryService.Get();
 
         MenuViewModel model = new()
         {

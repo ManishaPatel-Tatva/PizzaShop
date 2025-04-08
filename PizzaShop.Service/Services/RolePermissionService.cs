@@ -32,27 +32,17 @@ public class RolePermissionService : IRolePermissionService
 
     /*--------------------Permission-----------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------*/
-    // public RolePermissionViewModel Get(long roleId)
-    // {
-    //     return _rolePermissionRepository.GetRolePermissions(roleId);
-    // }
-
-    // public async Task<bool> Update(long roleId, List<PermissionViewModel> model)
-    // {
-    //     return await _rolePermissionRepository.UpdateRolePermission(roleId, model);
-    // }
-
     public async Task<RolePermissionViewModel> Get(long roleId)
     {
         Role? selectedRole = await _roleRepository.GetByIdAsync(roleId);
-        IEnumerable<RolePermission>? permissions = _rolePermissionRepository.GetByCondition(
+        IEnumerable<RolePermission>? permissions = await _rolePermissionRepository.GetByCondition(
             rp => rp.RoleId == selectedRole.Id,
             orderBy: q => q.OrderBy(rp => rp.Permission.Id),
             includes: new List<Expression<Func<RolePermission, object>>>
             {
                 rp => rp.Permission
             }
-        ).Result;
+        );
 
         RolePermissionViewModel rolePermissions = new()
         {

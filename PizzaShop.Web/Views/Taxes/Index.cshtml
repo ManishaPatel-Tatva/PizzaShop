@@ -65,16 +65,11 @@
 
             $.ajax({
                 url: '@Url.Action("Get", "Taxes")',
-                data: {
-                    'pageSize': pageSize,
-                    'pageNumber': pageNumber,
-                    'search': searchTax
-                },
+                data: { filter },
                 type: "POST",
                 dataType: "html",
                 success: function (data) {
                     $("#taxContent").html(data);
-                    $("#taxesPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
                     console.log("There is error.Not successful");

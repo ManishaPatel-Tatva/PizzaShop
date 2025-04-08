@@ -24,8 +24,8 @@ public class RolePermissionController : Controller
     /*---------------------------------------------------------Roles-----------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------*/
 
-    [CustomAuthorize(nameof(PermissionType.View_Roles_and_Permissions))]
     [HttpGet]
+    [CustomAuthorize(nameof(PermissionType.View_Roles_and_Permissions))]
     public IActionResult Role()
     {
         var roles = _rolePermissionService.Get();

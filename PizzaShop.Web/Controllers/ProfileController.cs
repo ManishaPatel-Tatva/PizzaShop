@@ -16,82 +16,76 @@ public class ProfileController : Controller
     private readonly IJwtService _jwtService;
     private readonly IAddressService _addressService;
 
-    public ProfileController(IProfileService profileService, IJwtService jwtService,IAddressService addressService)
+    public ProfileController(IProfileService profileService, IJwtService jwtService, IAddressService addressService)
     {
         _profileService = profileService;
         _jwtService = jwtService;
         _addressService = addressService;
     }
 
-#region Dashboard
-/*--------------------------------------------------------Dashboard---------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Dashboard
+    /*--------------------------------------------------------Dashboard---------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("View_Orders")]
     [HttpGet]
     public IActionResult Dashboard()
     {
-        if(User.IsInRole("Chef"))
+        if (User.IsInRole("Chef"))
         {
-            return RedirectToAction("Index","Kot");
+            return RedirectToAction("Index", "Kot");
         }
 
         ViewData["sidebar-active"] = "Dashboard";
         return View();
     }
-#endregion Dashboard
+    #endregion Dashboard
 
 
-#region My Profile
-/*------------------------------------------------------ View My Profile and Update Profile---------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region My Profile
+    /*------------------------------------------------------ View My Profile and Update Profile---------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public async Task<IActionResult> MyProfile()
     {
         string token = Request.Cookies["authToken"];
         string email = _jwtService.GetClaimValue(token, "email");
 
-        MyProfileViewModel model = await _profileService.GetMyProfileAsync(email);
-        if (model == null) 
-            return NotFound();
-
-        return View(model);
+        ProfileViewModel profile = await _profileService.Get(email);
+        return View(profile);
     }
 
     [HttpPost]
-    public async Task<IActionResult> MyProfile(MyProfileViewModel model)
+    public async Task<IActionResult> MyProfile(ProfileViewModel model)
     {
+        string profileToken = Request.Cookies["authToken"];
+        string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
+        ProfileViewModel profileModel = await _profileService.Get(profileEmail);
+
         if (!ModelState.IsValid)
         {
-            string profileToken = Request.Cookies["authToken"];
-            string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
-            MyProfileViewModel profileModel = await _profileService.GetMyProfileAsync(profileEmail);
-            TempData["errorMessage"] = "Profile Not Updated! Please enter valid details";
             return View(profileModel);
         }
 
-        bool isUpdated = await _profileService.UpdateProfileAsync(model);
-
-        if (!isUpdated) 
+        if (await _profileService.Update(model))
         {
-            string profileToken = Request.Cookies["authToken"];
-            string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
-            MyProfileViewModel profileModel = await _profileService.GetMyProfileAsync(profileEmail);
-            TempData["errorMessage"] = "Profile Not Updated! Please enter valid details";
+            TempData["NotificationMessage"] = NotificationMessages.Updated.Replace("{0}", "Profile");
+            TempData["NotificationType"] = NotificationType.Success.ToString();
+        }
+        else
+        {
+            TempData["NotificationMessage"] = NotificationMessages.UpdatedFailed.Replace("{0}", "Profile");
+            TempData["NotificationType"] = NotificationType.Error.ToString();
             return View(profileModel);
         }
-       
-        
 
-
-        TempData["successMessage"] = "Profile Updated Successfully!";
         return RedirectToAction("Dashboard");
     }
 
-#endregion My Profile
+    #endregion My Profile
 
-#region Address
-/*------------------------------------------------------ Country, state and City---------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Address
+    /*------------------------------------------------------ Country, state and City---------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public IActionResult GetCountries()
     {
@@ -113,44 +107,49 @@ public class ProfileController : Controller
         return Json(new SelectList(cities, "Id", "Name"));
     }
 
-#endregion Address
+    #endregion Address
 
 
-#region Change Password       
-/*---------------------------------------------------------------Change Password---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Change Password       
+    /*---------------------------------------------------------------Change Password---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     public IActionResult ChangePassword()
     {
-        string token = Request.Cookies["authToken"];
-        string email = _jwtService.GetClaimValue(token, "email");      
-        ViewBag.email = email;                                      //For sending email value from token to View for accessing in ViewModel
         return View();
     }
 
     [HttpPost]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
     {
-        if (!ModelState.IsValid) 
-            return View(model);
-
-        bool isPasswordChanged = await _profileService.ChangePasswordAsync(model);
-
-        if (!isPasswordChanged)
+        if (!ModelState.IsValid)
         {
-            TempData["errorToastr"] = "You entered old password incorrect!";
             return View(model);
         }
-            
-        TempData["successMessage"] = "Password Changed Successfully!";
-        return RedirectToAction("Logout");
+
+        string token = Request.Cookies["authToken"];
+        model.Email = _jwtService.GetClaimValue(token, "email");
+
+        ResponseViewModel response = await _profileService.ChangePassword(model);
+
+        TempData["NotificationMessage"] = response.Message;
+        if (response.Success)
+        {
+            TempData["NotificationType"] = NotificationType.Success.ToString();
+            return RedirectToAction("Logout");
+        }
+        else
+        {
+            TempData["NotificationType"] = NotificationType.Error.ToString();
+            return View(model);
+        }
     }
-#endregion
+    #endregion
 
 
-#region Logout
-/*---------------------------------------------------------------Logout---------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    #region Logout
+    /*---------------------------------------------------------------Logout---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public IActionResult Logout()
     {
         // Delete the "Remember Me" cookie
@@ -161,10 +160,10 @@ public class ProfileController : Controller
             Response.Cookies.Delete("profileImg");
             Response.Cookies.Delete("userName");
         }
-        return RedirectToAction("Login","Auth");
+        return RedirectToAction("Login", "Auth");
     }
 
-#endregion
+    #endregion
 
 }
 

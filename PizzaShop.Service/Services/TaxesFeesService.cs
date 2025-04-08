@@ -23,14 +23,14 @@ public class TaxesFeesService : ITaxesFeesService
     {
         filter.Search = string.IsNullOrEmpty(filter.Search) ? "" : filter.Search.Replace(" ", "");
 
-        (IEnumerable<Taxis> taxes, int totalRecord) = await _taxesRepository.GetPagedRecordsAsync(
-            filter.PageSize,
-            filter.PageNumber,
+        IEnumerable<Taxis> list = await _taxesRepository.GetByCondition(
             predicate: t => !t.IsDeleted &&
                         (string.IsNullOrEmpty(filter.Search.ToLower()) ||
                         t.Name.ToLower().Contains(filter.Search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id)
         );
+
+        (IEnumerable<Taxis> taxes, int totalRecord) = await _taxesRepository.GetPagedRecords(filter.PageSize,filter.PageNumber,list);
 
         TaxPaginationViewModel model = new()
         {

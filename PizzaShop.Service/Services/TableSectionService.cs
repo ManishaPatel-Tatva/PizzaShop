@@ -136,9 +136,7 @@ public class TableSectionService : ITableSectionService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<TablesPaginationViewModel> GetPagedTables(long sectionId, int pageSize, int pageNumber, string search)
     {
-        (IEnumerable<Table> tables, int totalRecord) = await _tableRepository.GetPagedRecordsAsync(
-            pageSize,
-            pageNumber,
+        IEnumerable<Table> tables = await _tableRepository.GetByCondition(
             predicate: t => !t.IsDeleted &&
                     t.SectionId == sectionId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
@@ -147,15 +145,19 @@ public class TableSectionService : ITableSectionService
             includes: new List<Expression<Func<Table, object>>> { u => u.Section, u=> u.Status }
         );
 
-        TablesPaginationViewModel model = new() { Page = new() };
+        (tables, int totalRecord) = await _tableRepository.GetPagedRecords(pageSize, pageNumber, tables);
 
-        model.Tables = tables.Select(t => new TableViewModel()
+        TablesPaginationViewModel model = new()
         {
-            TableId = t.Id,
-            Name = t.Name,
-            Capacity = t.Capacity,
-            StatusName = t.Status.Name,
-        }).ToList();
+            Page = new(),
+            Tables = tables.Select(t => new TableViewModel()
+            {
+                TableId = t.Id,
+                Name = t.Name,
+                Capacity = t.Capacity,
+                StatusName = t.Status.Name,
+            }).ToList()
+        };
 
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;

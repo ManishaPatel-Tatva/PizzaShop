@@ -14,39 +14,35 @@ public class CustomersController : Controller
         _customerService = customerService;
     }
 
-    [CustomAuthorize("View_Customers")]
     [HttpGet]
+    [CustomAuthorize("View_Customers")]
     public IActionResult Index()
     {
         ViewData["sidebar-active"] = "Customers";
         return View();
     }
 
+    [HttpPost]
     [CustomAuthorize("View_Customers")]
-    [HttpGet]
-    public async Task<IActionResult> GetCustomersList(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", int pageSize=5, int pageNumber = 1, string search="")
+    public async Task<IActionResult> Get(FilterViewModel filter)
     {
-        CustomerPaginationViewModel model = await _customerService.Get(dateRange, fromDate, toDate, column, sort, pageSize, pageNumber, search);
-        return PartialView("_CustomersListPartialView", model);
+        CustomerPaginationViewModel customers = await _customerService.Get(filter);
+        return PartialView("_ListPartialView", customers);
     }
 
-    [CustomAuthorize("View_Customers")]
     [HttpGet]
-    public async Task<IActionResult> Get(long customerId)
+    [CustomAuthorize("View_Customers")]
+    public async Task<IActionResult> GetCustomerHistory(long customerId)
     {
-        CustomerHistoryViewModel model = await _customerService.Get(customerId);
-        if (model == null)
-        {
-            return NotFound(); // This triggers AJAX error
-        }
-        return PartialView("_CustomerHistoryPartialView", model);
+        CustomerHistoryViewModel customer = await _customerService.Get(customerId);
+        return PartialView("_CustomerHistoryPartialView", customer);
     }
 
+    [HttpPost]
     [CustomAuthorize("View_Customers")]
-    [HttpGet]
-    public async Task<IActionResult> ExportExcel(string dateRange, DateOnly? fromDate, DateOnly? toDate, string column="", string sort="", string search="")
+    public async Task<IActionResult> ExportExcel(FilterViewModel filter)
     {
-        byte[] fileData = await _customerService.ExportExcel(dateRange, fromDate, toDate, column, sort, search);
+        byte[] fileData = await _customerService.ExportExcel(filter);
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Customers.xlsx");
     }
 

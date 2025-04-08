@@ -21,7 +21,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task<bool> SendEmailAsync(string toEmail, string subject, string body)
+    public async Task<bool> SendEmail(string toEmail, string subject, string body)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress( _emailSettings.FromEmail, _emailSettings.FromEmail));

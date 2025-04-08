@@ -5,9 +5,7 @@ namespace PizzaShop.Entity.ViewModels
 {
     public class ChangePasswordViewModel
     {
-        [EmailAddress]
         public string? Email { get; set; }
-
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Old Password is required")] 
         [DataType(DataType.Password)]

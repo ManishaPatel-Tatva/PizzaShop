@@ -11,7 +11,7 @@ namespace PizzaShop.Service.Helpers;
 public class ExcelTemplateHelper
 {
     #region Orders
-    public static byte[] Orders(List<OrderViewModel> orders,string status, string dateRange, string search)
+    public static byte[] Orders(IEnumerable<OrderViewModel> orders,string status, string dateRange, string search)
     {
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         using var package = new ExcelPackage();

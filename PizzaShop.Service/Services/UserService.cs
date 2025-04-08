@@ -39,33 +39,33 @@ public class UserService : IUserService
         filter.Search = string.IsNullOrEmpty(filter.Search) ? "" : filter.Search.Replace(" ", "");
 
         //For sorting the column according to order
-        Func<IQueryable<User>, IOrderedQueryable<User>>? sortingColumn = q => q.OrderBy(u => u.Id);
+        Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = q => q.OrderBy(u => u.Id);
         if (!string.IsNullOrEmpty(filter.Column))
         {
             switch (filter.Column.ToLower())
             {
                 case "name":
-                    sortingColumn = filter.Sort == "asc" ? q => q.OrderBy(u => u.FirstName) : q => q.OrderByDescending(u => u.FirstName);
+                    orderBy = filter.Sort == "asc" ? q => q.OrderBy(u => u.FirstName) : q => q.OrderByDescending(u => u.FirstName);
                     break;
                 case "role":
-                    sortingColumn = filter.Sort == "asc" ? q => q.OrderBy(u => u.Role.Name) : q => q.OrderByDescending(u => u.Role.Name);
+                    orderBy = filter.Sort == "asc" ? q => q.OrderBy(u => u.Role.Name) : q => q.OrderByDescending(u => u.Role.Name);
                     break;
                 default:
                     break;
             }
         }
 
-        (IEnumerable<User> users, int totalRecord) = await _userRepository.GetPagedRecordsAsync(
-            filter.PageSize,
-            filter.PageNumber,
+        IEnumerable<User> users = await _userRepository.GetByCondition(
             predicate: u => !u.IsDeleted &&
                          (string.IsNullOrEmpty(filter.Search.ToLower()) ||
                             u.Role.Name.ToLower() == filter.Search.ToLower() ||
                             u.FirstName.ToLower().Contains(filter.Search.ToLower()) ||
                             u.LastName.ToLower().Contains(filter.Search.ToLower())),
-            orderBy: sortingColumn,
+            orderBy: orderBy,
             includes: new List<Expression<Func<User, object>>> { u => u.Role }
         );
+
+        (users, int totalRecord) = await _userRepository.GetPagedRecords( filter.PageSize, filter.PageNumber, users);
 
         UserPaginationViewModel model = new()
         {
@@ -220,9 +220,9 @@ public class UserService : IUserService
                 Message = NotificationMessages.AddedFailed.Replace("{0}", "User")
             };
         }
-        
+
         string? body = EmailTemplateHelper.NewPassword(simplePassword);
-        await _emailService.SendEmailAsync(model.Email, "New User", body);
+        await _emailService.SendEmail(model.Email, "New User", body);
         return new ResponseViewModel
         {
             Success = true,
