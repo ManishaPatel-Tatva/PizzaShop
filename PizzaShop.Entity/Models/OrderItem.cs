@@ -27,7 +27,7 @@ public partial class OrderItem
 
     public decimal Price { get; set; }
 
-    public bool? IsPrepared { get; set; }
+    public int ReadyQuantity { get; set; }
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 

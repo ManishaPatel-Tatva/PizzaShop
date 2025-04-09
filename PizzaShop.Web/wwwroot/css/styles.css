@@ -521,3 +521,14 @@ table td,th{
     height: 185px;
     overflow-y: auto;
 }
+
+/* KOT */
+.item-quantity{
+    width: fit-content;
+    border: 1px solid #0066A8;
+}
+
+.item-quantity input{
+    width: 30px;
+    border: none;
+}

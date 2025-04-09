@@ -7,4 +7,5 @@ public class OrderItemViewModel
     public decimal Price { get; set; }
     public decimal TotalAmount { get; set; }
     public List<ModifierViewModel> ModifiersList { get; set; } = new List<ModifierViewModel>();
+    public string Instruction { get; set; } = "";
 }

@@ -11,4 +11,5 @@ public class FilterViewModel
     public string Column { get; set; } = "";
     public string Sort { get; set; } = "";
     public string Search { get; set; } = "";
+    public bool IsReady { get; set; }
 }

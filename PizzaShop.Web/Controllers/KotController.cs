@@ -18,4 +18,15 @@ public class KotController : Controller
         List<CategoryViewModel> list = await _kotService.Get();
         return View(list);
     }
+
+    public async Task<IActionResult> GetCards(long categoryId, bool isReady, int pageNumber = 1, int pageSize = 4)
+    {
+        KotViewModel kot = await _kotService.Get(categoryId, pageSize, pageNumber, isReady);
+        return PartialView("_CardsPartialView", kot);
+    }
+    public async Task<IActionResult> GetOrderItems(long orderId)
+    {
+        return PartialView("_OrderItemPartialView");
+    }
+
 }

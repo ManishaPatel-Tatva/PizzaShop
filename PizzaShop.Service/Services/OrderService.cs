@@ -12,13 +12,17 @@ public class OrderService : IOrderService
 {
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
-    
+
     public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository)
     {
         _orderRepository = orderRepository;
         _orderStatusRepository = orderStatusRepository;
     }
 
+
+    #region Get
+    /*----------------------------------------------------Get Order Status----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderIndexViewModel> Get()
     {
         OrderIndexViewModel model = new()
@@ -27,7 +31,7 @@ public class OrderService : IOrderService
         };
         return model;
     }
-    #region Get
+
     /*----------------------------------------------------Order List----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<IEnumerable<Order>> List(FilterViewModel filter)
@@ -122,7 +126,7 @@ public class OrderService : IOrderService
     {
         IEnumerable<Order>? orders = await List(filter);
 
-        (orders , int totalRecord) = await _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
+        (orders, int totalRecord) = await _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
 
         //Setting the filtered and sorted values in View Model
         OrderPaginationViewModel model = new()
@@ -143,7 +147,7 @@ public class OrderService : IOrderService
         model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;
     }
-   
+
     #endregion
 
     #region Export Excel
@@ -151,7 +155,7 @@ public class OrderService : IOrderService
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<byte[]> ExportExcel(FilterViewModel filter)
     {
-        
+
         IEnumerable<Order>? orders = await List(filter);
 
         IEnumerable<OrderViewModel>? orderList = orders.Select(o => new OrderViewModel()
@@ -167,6 +171,7 @@ public class OrderService : IOrderService
 
         return ExcelTemplateHelper.Orders(orderList, filter.Status, filter.DateRange, filter.Search);
     }
+
     #endregion
 
     #region Order Details
@@ -180,28 +185,28 @@ public class OrderService : IOrderService
                 predicate: o => o.Id == orderId && !o.IsDeleted,
                 includes: new List<Expression<Func<Order, object>>>
                 {
-                o => o.Status,
-                o => o.Invoices,
-                o => o.Customer,
-                o => o.OrderTableMappings,
-                o => o.OrderTaxMappings,
-                o => o.OrderItems,
-                o => o.Payments
+                    o => o.Status,
+                    o => o.Invoices,
+                    o => o.Customer,
+                    o => o.OrderTableMappings,
+                    o => o.OrderTaxMappings,
+                    o => o.OrderItems,
+                    o => o.Payments
                 },
                 thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
                 {
-                q => q.Include(o => o.OrderTableMappings)
-                    .ThenInclude(otm => otm.Table)
-                    .ThenInclude(t => t.Section),
-                q => q.Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Item),
-                q => q.Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.OrderItemsModifiers)
-                    .ThenInclude(m => m.Modifier),
-                q => q.Include(o => o.Payments)
-                    .ThenInclude(p => p.PaymentMethod),
-                q => q.Include(o => o.OrderTaxMappings)
-                    .ThenInclude(otm => otm.Tax)
+                    q => q.Include(o => o.OrderTableMappings)
+                        .ThenInclude(otm => otm.Table)
+                        .ThenInclude(t => t.Section),
+                    q => q.Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.Item),
+                    q => q.Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.OrderItemsModifiers)
+                        .ThenInclude(m => m.Modifier),
+                    q => q.Include(o => o.Payments)
+                        .ThenInclude(p => p.PaymentMethod),
+                    q => q.Include(o => o.OrderTaxMappings)
+                        .ThenInclude(otm => otm.Tax)
                 }
             );
 
@@ -277,7 +282,7 @@ public class OrderService : IOrderService
                                 TaxValue = otm.TaxValue
                             }).ToList(),
 
-                FinalAmount = o.FinalAmount ,
+                FinalAmount = o.FinalAmount,
 
                 PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
 
@@ -292,6 +297,7 @@ public class OrderService : IOrderService
             return null;
         }
     }
+
     #endregion
 
 
