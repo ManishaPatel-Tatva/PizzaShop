@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -10,33 +11,20 @@ namespace PizzaShop.Service.Services;
 
 public class KotService : IKotService
 {
-    private readonly IGenericRepository<Category> _categoryRepository;
+
     private readonly IGenericRepository<Order> _orderRepository;
+    private readonly IGenericRepository<OrderItem> _orderItemRepository;
 
-    public KotService(IGenericRepository<Category> categoryRepository, IGenericRepository<Order> orderRepository)
+
+    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository)
     {
-        _categoryRepository = categoryRepository;
         _orderRepository = orderRepository;
-
+        _orderItemRepository = orderItemRepository;
     }
 
     #region Get
     /*----------------------------------------------------Get Category List----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<List<CategoryViewModel>> Get()
-    {
-        IEnumerable<Category>? categories = await _categoryRepository.GetByCondition(
-            predicate: c => !c.IsDeleted,
-            orderBy: q => q.OrderBy(c => c.Id));
-
-        List<CategoryViewModel> list = categories.Select(c => new CategoryViewModel
-        {
-            Id = c.Id,
-            Name = c.Name
-        }).ToList();
-
-        return list;
-    }
 
     public async Task<KotViewModel> Get(long categoryId, int pageSize, int pageNumber, bool isReady)
     {
@@ -84,9 +72,10 @@ public class KotService : IKotService
                                 .ToList(),
                     Time = o.CreatedAt,
                     Items = o.OrderItems
-                            .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && ((isReady &&  oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)) )
+                            .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
                             .Select(oi => new OrderItemViewModel
                             {
+                                ItemId = oi.ItemId,
                                 ItemName = oi.Item.Name,
                                 Quantity = isReady ? oi.ReadyQuantity : oi.Quantity - oi.ReadyQuantity,
                                 ModifiersList = oi.OrderItemsModifiers
@@ -109,6 +98,74 @@ public class KotService : IKotService
         catch (Exception ex)
         {
             return null;
+        }
+
+    }
+
+    #endregion
+
+    #region Update
+
+    public async Task<ResponseViewModel> Update(KotCardViewModel kot)
+    {
+        try
+        {
+            if (kot.Items.All(i => i.IsSelected == false))
+            {
+                return new ResponseViewModel
+                {
+                    Success = false,
+                    Message = NotificationMessages.AtleastOne.Replace("{0}", "Item")
+                };
+            }
+
+            foreach (OrderItemViewModel? item in kot.Items)
+            {
+                if (item.IsSelected)
+                {
+                    OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == kot.OrderId && oi.ItemId == item.ItemId && !oi.IsDeleted);
+                    if (orderItem == null)
+                    {
+                        return new ResponseViewModel
+                        {
+                            Success = false,
+                            Message = NotificationMessages.NotFound.Replace("{0}", "Item")
+                        };
+                    }
+
+                    if (kot.IsReady)
+                    {
+                        orderItem.ReadyQuantity -= item.Quantity;
+                    }
+                    else
+                    {
+                        orderItem.ReadyQuantity += item.Quantity;
+                    }
+
+                    if (!await _orderItemRepository.UpdateAsync(orderItem))
+                    {
+                        return new ResponseViewModel
+                        {
+                            Success = false,
+                            Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Item Status")
+                        };
+                    }
+                }
+            }
+
+            return new ResponseViewModel
+            {
+                Success = true,
+                Message = NotificationMessages.Updated.Replace("{0}", "Item Status")
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ResponseViewModel{
+                Success = false,
+                Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Item Status"),
+                ExMessage = ex.Message
+            };
         }
 
 

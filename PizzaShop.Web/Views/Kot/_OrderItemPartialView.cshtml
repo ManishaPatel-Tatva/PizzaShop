@@ -1,51 +1,65 @@
+@using PizzaShop.Entity.ViewModels
+@model KotCardViewModel
+
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="exampleModalLabel">Order ID: #223</h1>
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Order ID: #@Model.OrderId</h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
 
+<form asp-action="Update" asp-controller="Kot" method="post" id="saveKotForm">
+<div class="modal-body">
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col" class="col text-start">Item</th>
+                    <th scope="col" class="col text-start">
+                        <input class="form-check-input me-2 " type="checkbox" value="" id="parentCheckbox"> 
+                        Item
+                    </th>
                     <th scope="col" class="col text-end">Quantity</th>
                 </tr>
             </thead>
             <tbody>
+                <input asp-for="OrderId" hidden>
+                <input asp-for="IsReady" hidden>
 
-
-                <tr>
-                    <td class="text-start">
-                        Grilled Burger
-                        <ul class="mb-0">
-                            <li>Tomato</li>
-                            <li>Tomato</li>
-                            <li>Tomato</li>
-                            <li>Tomato</li>
-                            <li>Tomato</li>
-                            <li>Tomato</li>
-                        </ul>
-
-                    </td>
-                    <td class="align-text-top ">
-                        <div class="item-quantity d-flex align-items-center gap-0 ms-auto rounded-2">
-                            <button class="btn fs-4 py-0"> 
-                                <span class="">-</span> </button>
-                            <input type="text" value="3" class="text-center">
-                            <button class="btn fs-4 py-0"> + </button>
-                        </div>
-
-                    </td>
-
-                </tr>
-
+                @for (int i=0; i< Model.Items.Count ; i++)
+                {
+                    <tr>
+                        <td class="text-start">
+                            <input asp-for="Items[i].ItemId" hidden>
+                            <input asp-for="Items[i].IsSelected" type="checkbox" class="form-check-input me-2 childCheckbox">
+                            @Model.Items[i].ItemName
+                            <ul class="mb-0">
+                                @foreach(var modifier in Model.Items[i].ModifiersList)
+                                {
+                                    <li>@modifier.ModifierName</li>
+                                }
+                            </ul>
+                        </td>
+                        <td class="align-text-top ">
+                            <div class="item-quantity d-flex align-items-center gap-0 ms-auto rounded-2 p-1 px-sm-3 ">
+                                <button type="button" class="btn fs-4 p-0" onclick='changeQuantity("@Model.Items[i].ItemId",-1)'>
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="text" asp-for="@Model.Items[i].Quantity" class="item-quantity-@Model.Items[i].ItemId text-center" max="@Model.Items[i].Quantity" hidden>
+                                <input type="text" value="@Model.Items[i].Quantity" class="item-quantity-@Model.Items[i].ItemId text-center bg-white" max="@Model.Items[i].Quantity" disabled>
+                                <button type="button" class="btn fs-4 p-0" onclick='changeQuantity("@Model.Items[i].ItemId", 1)'>
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-blue text-nowrap w-auto">Mark as Prepared</button>
-    <button type="button" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
+    <button type="submit" class="btn btn-blue text-nowrap w-auto">
+        @(Model.IsReady ? "Mark as In Progess" : "Mark as Prepared")
+    </button>
+    <button type="reset" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
 </div>
+</form>

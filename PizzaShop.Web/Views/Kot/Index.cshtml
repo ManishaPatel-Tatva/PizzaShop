@@ -53,22 +53,22 @@
     @* Document Ready *@
     <script>
         $(document).ready(function () {
-            CardsAjax();
+            CardsAjax(1);
         });
 
         let categoryId = 0;
         $(document).on("click", ".nav-item", function () {
             categoryId = $(this).data("id");
-            console.log(categoryId);
-            CardsAjax();
+            CardsAjax(1);
         })
     </script>
 
-    @* ready, In progress Button *@
+    @* Ready, In progress Button *@
     <script>
         let isReady = false;
-        $(document).on("click",".status-btn",function(){
+        $(document).on("click", ".status-btn", function () {
             isReady = $(this).data("ready");
+            console.log(isReady);
             CardsAjax(1);
         })
     </script>
@@ -78,10 +78,10 @@
         function CardsAjax(pageNumber) {
             $.ajax({
                 url: '@Url.Action("GetCards", "Kot")',
-                data: { 
-                    categoryId: categoryId ,
-                    isReady : isReady,
-                    pageNumber : pageNumber
+                data: {
+                    categoryId: categoryId,
+                    isReady: isReady,
+                    pageNumber: pageNumber
                 },
                 type: "GET",
                 dataType: "html",
@@ -99,7 +99,7 @@
     @* Formate the time *@
     <script>
         $(document).ready(function () {
-            setInterval(updateTimeDifference, 1000);
+            setInterval(updateTimeDifference, -1000);
             updateTimeDifference();
         });
 
@@ -128,19 +128,17 @@
 
     @* Order Details Modal *@
     <script>
-        $(document).on("click", ".kot-card", function () {
-            $("#orderItemsModal").modal("show");
-            GetOrderItems($(this).data("id"));
-        });
-
-        function GetOrderItems(id) {
+        function GetOrderItems(kotcard, isReady) {
             $.ajax({
                 url: '@Url.Action("GetOrderItems", "Kot")',
                 type: "GET",
-                data: { orderId: id },
+                data: {
+                    kotCard: JSON.stringify(kotcard),
+                    isReady: isReady
+                },
                 dataType: "html",
                 success: function (data) {
-                    console.log(data);
+                    $("#orderItemsModal").modal("show");
                     $("#OrderItemContent").html(data);
                 },
                 error: function () {
@@ -149,9 +147,52 @@
                 }
             })
         }
+    </script>
 
-        
+    @* Inc/Dec Quantity of Item *@
+    <script>
+        $(document).on("click", ".incItem", function () {
+            let itemQuantity = (".itemQuantity").val()
+                (".itemQuantity").val()
+        })
 
+        function changeQuantity(itemId, num) {
+            console.log(itemId, num);
+            let quantity = Number($(".item-quantity-" + itemId).val());
+            let max = Number($(".item-quantity-" + itemId).prop("max"));
+            console.log(quantity, max);
+            if (quantity + num > 0 && quantity + num <= max) {
+                console.log(quantity + num);
+                $(".item-quantity-" + itemId).val(quantity + num);
+            }
+        }
+    </script>
+
+    @* Order Details Modal Form Submit *@
+    <script>
+        $(document).on("submit", "#saveKotForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    console.log("response after submission is",response);
+                    if (response.success) {
+                        $("#orderItemsModal").modal("hide");
+                        toastr.success(response.message);
+                        CardsAjax(1);
+                    }
+                    else{
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
     </script>
 
 }

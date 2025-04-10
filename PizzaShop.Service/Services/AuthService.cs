@@ -164,7 +164,7 @@ public class AuthService : IAuthService
             return new ResponseViewModel
             {
                 Success = false,
-                Message = NotificationMessages.PasswordChangeFailed
+                Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Password")
             };
         }
 
@@ -174,7 +174,7 @@ public class AuthService : IAuthService
         return new ResponseViewModel
         {
             Success = true,
-            Message = NotificationMessages.PasswordChanged
+            Message = NotificationMessages.Updated.Replace("{0}", "Password")
         };
     }
 

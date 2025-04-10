@@ -8,35 +8,24 @@ public static class NotificationMessages
     public const string Deleted = "{0} has been deleted successfully!";
 
     //Generic CRUD Failed
-    public const string AddedFailed = "Failed Adding {0}";
-    public const string UpdatedFailed = "Failed Updating {0}";
-    public const string DeletedFailed = "Failed Deleting {0}";
+    public const string AddedFailed = "Failed Adding {0}!" + TryAgain;
+    public const string UpdatedFailed = "Failed Updating {0}!"+ TryAgain;
+    public const string DeletedFailed = "Failed Deleting {0}!"+ TryAgain;
 
-    //Custom Messages
-    public const string AlreadyExisted = "{0} already existed!";
-    public const string NotFound = "{0} not found!";
-
+    //Generic Messages
+    public const string TryAgain = "Please try again!";
+    public const string AlreadyExisted = "{0} already existed!" + TryAgain;
+    public const string NotFound = "{0} not found!" + TryAgain;
+    public const string Invalid = "Invalid {0}!" + TryAgain ;
+    public const string AtleastOne = "Select atleast one {0}!" + TryAgain;
 
     //Login
-    public const string Invalid = "Invalid {0}. Please try again.";
-    public const string TryAgain = "Please try again!";
-    public const string LinkExpired = "Link expired! Please try again!";
+    public const string LinkExpired = "Link expired!" + TryAgain;
     public const string AlreadyUsed = "Link already used to reset password!";
-    public const string PasswordChangeFailed = "Failed to change the password. Please try again.";
-    public const string PasswordChanged = "Your password has been changed successfully.";
+
+    //Email
     public const string EmailSent = "Email has been sent successfully!";
-    public const string EmailSendingFailed = "Failed to send the email. Please try again.";
-    
-
-
-
-   
-    //Profile
-    public const string ProfileUpdated = "Your profile has been updated successfully!";
-
-
-    // Error Messages
-    public const string InvalidModelState = "Model State Is Invalid!";
+    public const string EmailSendingFailed = "Failed to send the email." + TryAgain;
 
 
 }

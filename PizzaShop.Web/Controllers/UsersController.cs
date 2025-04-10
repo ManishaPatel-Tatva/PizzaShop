@@ -106,8 +106,8 @@ namespace PizzaShop.Web.Controllers
             ViewData["sidebar-active"] = "Users";
             if (!ModelState.IsValid)
             {
-                EditUserViewModel editUserModel = await _userService.Get(model.UserId);
-                return View(editUserModel);
+                EditUserViewModel user = await _userService.Get(model.UserId);
+                return View(user);
             }
 
             string? token = Request.Cookies["authToken"];
@@ -115,17 +115,18 @@ namespace PizzaShop.Web.Controllers
 
             ResponseViewModel response = await _userService.Update(model, createrEmail);
 
-            if (!response.Success)
-            {
-                TempData["NotificationMessage"] = response.Message;
-                TempData["NotificationType"] = NotificationType.Error.ToString();
-                EditUserViewModel editUserModel = await _userService.Get(model.UserId);
-                return View(editUserModel);
-            }
-
             TempData["NotificationMessage"] = response.Message;
-            TempData["NotificationType"] = NotificationType.Success.ToString();
-            return RedirectToAction("Index", "Users");
+            if (response.Success)
+            {
+                TempData["NotificationType"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index", "Users");
+            }
+            else
+            {   
+                TempData["NotificationType"] = NotificationType.Error.ToString();
+                EditUserViewModel user = await _userService.Get(model.UserId);
+                return View(user);
+            }
         }
         #endregion
 
