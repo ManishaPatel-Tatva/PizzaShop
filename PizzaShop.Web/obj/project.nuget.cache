@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "oUsopVuwNUaFKCLkTErAOil5J7GOBy49LYgjgdDYgioIsDxT6pP+t1g3VS1N6UZ5QaPWxGWc6aj1YptI2u6l6w==",
+  "dgSpecHash": "N8vBrHfDGihwJlBQEWz40RGF95/jknkaR9+5Q41J0kqrCeMLs+30XEiWVa1lbgaL+M5mQDNtsQxM75NlH1smfA==",
   "success": true,
   "projectFilePath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Web\\PizzaShop.Web.csproj",
   "expectedPackageFiles": [
@@ -21,6 +21,7 @@
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\7.0.20\\microsoft.aspnetcore.authentication.jwtbearer.7.0.20.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http\\2.3.0\\microsoft.aspnetcore.http.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.3.0\\microsoft.aspnetcore.http.abstractions.2.3.0.nupkg.sha512",
+    "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http.extensions\\2.3.0\\microsoft.aspnetcore.http.extensions.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.3.0\\microsoft.aspnetcore.http.features.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.webutilities\\2.3.0\\microsoft.aspnetcore.webutilities.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.dotnet.platformabstractions\\1.1.0\\microsoft.dotnet.platformabstractions.1.1.0.nupkg.sha512",

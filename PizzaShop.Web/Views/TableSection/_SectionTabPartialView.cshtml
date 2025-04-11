@@ -1,0 +1,87 @@
+@using PizzaShop.Entity.ViewModels
+@model List<SectionViewModel>
+
+<div class="row">
+
+    <!----------------------------------------------------- Section starts ------------------------------------------------------->
+    <div class="section col-12 col-md-3 pt-2 bg-dark-grey">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fs-5 fw-bold blue-text">Section</span>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn p-0" id="addSectionBtn" data-bs-toggle="modal"
+                data-bs-target="#addSectionModal">
+                <img src="~/images/icons/plus-square.svg" alt="" width="25px">
+            </button>
+        </div>
+
+        <div class="section-list pe-1">
+            <ul class="pe-1" id="ul-section">
+
+                @foreach (SectionViewModel sec in Model)
+                {
+                    <li class="d-flex justify-content-between li-section" data-id="@sec.Id">
+                        <a class="d-flex align-items-center">
+                            <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
+                            <span class="sectionName">@sec.Name</span>
+                        </a>
+                        <div class="EditDeleteSection">
+                            <button class="btn p-0 pe-1 editSectionBtn" data-bs-toggle="modal"
+                                data-bs-target="#addSectionModal" data-id="@sec.Id">
+                                <img src="~/images/icons/edit.svg" alt="" />
+                            </button>
+                            <button class="btn p-0 pe-1 deleteSectionBtn" data-bs-toggle="modal"
+                                data-bs-target="#deleteSectionModal" data-id="@sec.Id">
+                                <img src="~/images/icons/delete.svg" alt="">
+                            </button>
+                        </div>
+                    </li>
+                }
+
+            </ul>
+        </div>
+    </div>
+    <!----------------------------------------------------- Section ends  ------------------------------------------------------->
+
+    <!----------------------------------------------------- Table starts ------------------------------------------------------>
+    <div class="col pt-2 bg-white" id="tables-Content">
+        <div class="fs-5 fw-bold blue-text">
+            Tables
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <div class="input-group w-25 me-2">
+                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTable"
+                    oninput="PaginationAjax(1)">
+                <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
+                </button>
+            </div>
+            <button class="btn border me-2" id="tableMassDeleteIcon" data-bs-toggle="modal"
+                data-bs-target="#massDeleteTableModal">
+                <img src="~/images/icons/delete.svg" alt="">
+            </button>
+            <button class="btn btn-blue me-2 newTableBtn" id="addTableBtn" data-bs-toggle="modal"
+                data-bs-target="#addTableModal">
+                + New Table
+            </button>
+        </div>
+
+        <div id="tableOuter">
+            <!-- Tables Partial View -->
+        </div>
+
+    </div>
+    <!----------------------------------------------------- Table ends ------------------------------------------------------->
+
+</div>
+
+
+@* Showing section edit/delete icon on hovering *@
+<script>
+    $(".li-section").mouseover(function () {
+        $(this).children("div.EditDeleteSection").css("visibility", "visible");
+    });
+    $(".li-section").mouseout(function () {
+        $(this).children("div.EditDeleteSection").css("visibility", "hidden");
+    });
+</script>

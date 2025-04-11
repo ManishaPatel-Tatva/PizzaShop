@@ -52,10 +52,7 @@ public class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> SaveCategory(CategoryViewModel category)
     {
-        string? token = Request.Cookies["authToken"];
-        string? createrEmail = _jwtService.GetClaimValue(token, "email");
-
-        ResponseViewModel response = await _categoryService.Save(category, createrEmail);
+        ResponseViewModel response = await _categoryService.Save(category);
         if (!response.Success)
         {
             return PartialView("_CategoryPartialView", category);
@@ -79,10 +76,8 @@ public class MenuController : Controller
     [HttpGet]
     public async Task<IActionResult> DeleteCategory(long categoryId)
     {
-        string? token = Request.Cookies["authToken"];
-        string? createrEmail = _jwtService.GetClaimValue(token, "email");
-        bool success = await _categoryService.Delete(categoryId, createrEmail);
-        return RedirectToAction("Index", "Menu");
+        ResponseViewModel response = await _categoryService.Delete(categoryId);
+        return Json(response);
     }
     
     #endregion Category

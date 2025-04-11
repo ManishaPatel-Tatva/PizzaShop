@@ -8,7 +8,7 @@
         <thead>
             <tr>
                 <th scope="col" class="col">
-                    <input class="form-check-input me-2 " type="checkbox" value="" id="tableParentCheckbox"> 
+                    <input class="form-check-input me-2 " type="checkbox" value="" id="tableParentCheckbox">
                     Name
                 </th>
                 <th scope="col" class="col">Capacity</th>
@@ -22,20 +22,24 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" value="" id="" class="me-2 tableChildCheckbox" data-id="@table.TableId">
+                        <input type="checkbox" value="" id="" class="me-2 tableChildCheckbox" data-id="@table.Id">
                         @table.Name
                     </td>
                     <td>@table.Capacity</td>
-                    <td>@table.StatusName</td>
+                    <td>
+                        <span class="@table.StatusName.ToLower() py-1 px-3 rounded-5">
+                            @table.StatusName
+                        </span>
+                    </td>
                     <td>
                         <div class="d-flex flex-row">
                             <button type="button" class="editTableBtn btn ps-0 me-2" data-bs-toggle="modal"
-                                data-bs-target="#addTableModal" data-id="@table.TableId">
+                                data-bs-target="#addTableModal" data-id="@table.Id">
                                 <img src="~/images/icons/edit.svg" alt="" />
                             </button>
 
                             <button type="button" class="deleteTableBtn btn" data-bs-toggle="modal"
-                                data-bs-target="#deleteTableModal" data-id="@table.TableId">
+                                data-bs-target="#deleteTableModal" data-id="@table.Id">
                                 <img src="~/images/icons/delete.svg" alt="">
                             </button>
                         </div>
@@ -47,35 +51,42 @@
 </div>
 <!-- Table ends -->
 
-<!-- Pagination Starts -->
-<div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
-    <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
-        <span>Items per page:</span>
-        <select class="form-select w-auto" onchange="PaginationAjax(1)" id="itemsPerPage" aria-label="Select tables per page">  
-            <option value="5" selected="@(Model.Page.PageSize == 5 ? true : false)">5</option>
-            <option value="10" selected="@(Model.Page.PageSize == 10 ? true : false)">10</option>
-            <option value="15" selected="@(Model.Page.PageSize == 15 ? true : false)">15</option>
-        </select>
+@if (Model.Tables.Count() == 0)
+{
+    <div class="d-flex justify-content-center fs-5">No Record Found!</div>
+}
+else
+{
+    <!-- Pagination Starts -->
+    <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+        <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+            <span>Items per page:</span>
+            <select class="form-select w-auto" onchange="PaginationAjax(1)" id="itemsPerPage"
+                aria-label="Select tables per page">
+                <option value="5" selected="@(Model.Page.PageSize == 5 ? true : false)">5</option>
+                <option value="10" selected="@(Model.Page.PageSize == 10 ? true : false)">10</option>
+                <option value="15" selected="@(Model.Page.PageSize == 15 ? true : false)">15</option>
+            </select>
+        </div>
+
+        <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+            <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+            <!-- Previous Page Button -->
+            <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+                onclick="PaginationAjax(@Model.Page.CurrentPage - 1)">
+                <img src="~/images/icons/chevron-left.svg" alt="">
+            </button>
+
+            <!-- Next Page Button -->
+            <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+                onclick="PaginationAjax(@Model.Page.CurrentPage + 1)">
+                <img src="~/images/icons/chevron-right.svg" alt="">
+            </button>
+        </div>
     </div>
-
-    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
-        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
-
-        <!-- Previous Page Button -->
-        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
-            onclick="PaginationAjax(@Model.Page.CurrentPage - 1)">
-            <img src="~/images/icons/chevron-left.svg" alt="">
-        </button>
-
-        <!-- Next Page Button -->
-        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
-            onclick="PaginationAjax(@Model.Page.CurrentPage + 1)">
-            <img src="~/images/icons/chevron-right.svg" alt="">
-        </button>
-    </div>
-</div>
-<!-- Pagination Ends -->
-
+    <!-- Pagination Ends -->
+}
 
 <!-- Modal Add/Update Table starts -->
 <div class="modal fade" id="addTableModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -111,7 +122,7 @@
 <!-- Modal Delete Table starts-->
 
 <!-- Modal Mass Delete Table starts-->
-<div class="modal fade" id="massDeleteTable" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+<div class="modal fade" id="massDeleteTableModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

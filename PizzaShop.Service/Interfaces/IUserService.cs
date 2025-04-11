@@ -9,8 +9,9 @@ public interface IUserService
     Task<User> Get(string email);
     Task<EditUserViewModel> Get(long userId);
     Task<UserPaginationViewModel> Get(FilterViewModel filter);
-    Task<ResponseViewModel> Add(AddUserViewModel model, string createrEmail);
-    Task<ResponseViewModel> Update(EditUserViewModel model, string createrEmail);
-    Task<bool> Delete(long id);
+    Task<ResponseViewModel> Add(AddUserViewModel user);
+    Task<ResponseViewModel> Update(EditUserViewModel user);
+    Task<ResponseViewModel> Delete(long id);
+    Task<long> LoggedInUser();
 
 }

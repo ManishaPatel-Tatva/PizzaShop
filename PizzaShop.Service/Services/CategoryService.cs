@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -10,12 +9,12 @@ namespace PizzaShop.Service.Services;
 public class CategoryService : ICategoryService
 {
     private readonly IGenericRepository<Category> _categoryRepository;
-    private readonly IGenericRepository<User> _userRepository;
+    private readonly IUserService _userService;
 
-    public CategoryService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository)
+    public CategoryService(IGenericRepository<Category> categoryRepository, IUserService userService)
     {
         _categoryRepository = categoryRepository;
-        _userRepository = userRepository;
+        _userService = userService;
     }
 
     #region Get
@@ -47,9 +46,9 @@ public class CategoryService : ICategoryService
             return new CategoryViewModel();
         }
 
-        Category category = await _categoryRepository.GetByIdAsync(categoryId);
+        Category? category = await _categoryRepository.GetByIdAsync(categoryId);
 
-        CategoryViewModel categoryVM = new CategoryViewModel
+        CategoryViewModel categoryVM = new()
         {
             Id = category.Id,
             Name = category.Name,
@@ -63,12 +62,12 @@ public class CategoryService : ICategoryService
     #region  Save
     /*-------------------------------------------------------------Save Category---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<ResponseViewModel> Save(CategoryViewModel categoryVM, string createrEmail)
+    public async Task<ResponseViewModel> Save(CategoryViewModel categoryVM)
     {
-        User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        long createrId = creater.Id;
+        long createrId = await _userService.LoggedInUser();
+        ResponseViewModel response = new();
 
-        Category category = new();
+        Category? category = new();
 
         if (categoryVM.Id == 0)
         {
@@ -80,10 +79,8 @@ public class CategoryService : ICategoryService
         }
         else
         {
-            return new ResponseViewModel
-            {
-                Success = false
-            };
+            response.Success = false;
+            response.Message = NotificationMessages.NotFound.Replace("{0}", "Category");
         }
 
         category.Name = categoryVM.Name;
@@ -95,64 +92,58 @@ public class CategoryService : ICategoryService
         {
             if (await _categoryRepository.AddAsync(category))
             {
-                return new ResponseViewModel
-                {
-                    Success = true,
-                    Message = NotificationMessages.Added.Replace("{0}", "Category")
-                };
+                response.Success = true;
+                response.Message = NotificationMessages.Added.Replace("{0}", "Category");
             }
             else
             {
-                return new ResponseViewModel
-                {
-                    Success = false,
-                    Message = NotificationMessages.AddedFailed.Replace("{0}", "Category")
-                };
-            }
-        }
-        else if (categoryVM.Id > 0)
-        {
-            if (await _categoryRepository.UpdateAsync(category))
-            {
-                return new ResponseViewModel
-                {
-                    Success = true,
-                    Message = NotificationMessages.Updated.Replace("{0}", "Category")
-                };
-            }
-            else
-            {
-                return new ResponseViewModel
-                {
-                    Success = false,
-                    Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Category")
-                };
+                response.Success = false;
+                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Category");
             }
         }
         else
         {
-            return new ResponseViewModel
+            if (await _categoryRepository.UpdateAsync(category))
             {
-                Success = false,
-                Message = NotificationMessages.TryAgain
-            }; ;
+                response.Success = true;
+                response.Message = NotificationMessages.Updated.Replace("{0}", "Category");
+            }
+            else
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Category");
+            }
         }
+
+        return response;
     }
     #endregion Save
 
     #region Delete
     /*----------------------------------------------------------------Delete Category---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> Delete(long categoryId, string createrEmail)
+    public async Task<ResponseViewModel> Delete(long categoryId)
     {
-        User? creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
         Category? category = await _categoryRepository.GetByIdAsync(categoryId);
 
         category.IsDeleted = true;
-        category.UpdatedBy = creater.Id;
+        category.UpdatedBy = await _userService.LoggedInUser();
         category.UpdatedAt = DateTime.Now;
 
-        return await _categoryRepository.UpdateAsync(category);
+        ResponseViewModel response = new();
+
+        if (await _categoryRepository.UpdateAsync(category))
+        {
+            response.Success = true;
+            response.Message = NotificationMessages.Deleted.Replace("{0}", "Category");
+        }
+        else
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.DeletedFailed.Replace("{0}", "Category");
+        }
+
+        return response;
     }
 
     #endregion

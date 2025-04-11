@@ -451,6 +451,45 @@ table td,th{
     border-color: #0066A8;
 }
 
+/* Table and Section */
+.available {
+    color: white;
+    background-color: green;
+}
+
+.occupied {
+    color: white;
+    background-color: grey;
+}
+
+.table-available {
+    border: 1px solid #a1a1a1;
+    background-color: #f3f3f3;
+}
+
+.table-selected {
+    border: 2px solid #2f87009e;
+    background-color: #f5f5f5bf;
+}
+
+.table-assigned {
+    border: 1px solid #289d00;
+    background-color: #F2FAEC;
+}
+
+.table-assigned h4 {
+    color: #248f00 !important;
+}
+
+.table-occupied {
+    border: 1px solid #0093a9;
+    background-color: #E0F2FF;
+}
+
+.table-occupied h4 {
+    color: #0081b5 !important;
+}
+
 /* Order Details */
 .dateRange-div button{
     min-width: 80px;

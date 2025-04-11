@@ -3,7 +3,7 @@
 
 <div class="modal-header">
     <h1 class="modal-title fs-5" id="secModalToggleLabel">
-        @(Model.TableId == 0 ? "Add New " : "Update") Table
+        @(Model.Id == 0 ? "Add New " : "Update") Table
     </h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
@@ -11,7 +11,7 @@
     <div class="modal-body">
         <div class="form addTable-form row">
 
-            <input asp-for="TableId" type="text" class="form-control" id="tableId" hidden>
+            <input asp-for="Id" type="text" class="form-control" id="tableId" hidden>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
                 <input asp-for="Name" type="text" class="form-control" placeholder="" id="tableName">

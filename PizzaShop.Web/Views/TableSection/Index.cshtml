@@ -11,77 +11,8 @@
     <h1 class="blue-text">Sections/Table</h1>
 </div>
 
-<div class="row">
-
-    <!----------------------------------------------------- Section starts ------------------------------------------------------->
-    <div class="section col-12 col-md-3 pt-2 bg-dark-grey">
-
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fs-5 fw-bold blue-text">Section</span>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn p-0" id="addSectionBtn" data-bs-toggle="modal"
-                data-bs-target="#addSectionModal">
-                <img src="~/images/icons/plus-square.svg" alt="" width="25px">
-            </button>
-        </div>
-
-        <div class="section-list pe-1">
-            <ul class="pe-1" id="ul-section">
-
-                @foreach (SectionViewModel sec in Model)
-                {
-                    <li class="d-flex justify-content-between li-section" data-id="@sec.SectionId">
-                        <a class="d-flex align-items-center">
-                            <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
-                            <span class="sectionName">@sec.Name</span>
-                        </a>
-                        <div class="EditDeleteSection">
-                            <button class="btn p-0 pe-1 editSectionBtn" data-bs-toggle="modal"
-                                data-bs-target="#addSectionModal" data-id="@sec.SectionId">
-                                <img src="~/images/icons/edit.svg" alt="" />
-                            </button>
-                            <button class="btn p-0 pe-1 deleteSectionBtn" data-bs-toggle="modal"
-                                data-bs-target="#deleteSectionModal" data-id="@sec.SectionId">
-                                <img src="~/images/icons/delete.svg" alt="">
-                            </button>
-                        </div>
-                    </li>
-                }
-
-            </ul>
-        </div>
-    </div>
-    <!----------------------------------------------------- Section ends  ------------------------------------------------------->
-
-    <!----------------------------------------------------- Table starts ------------------------------------------------------>
-    <div class="col pt-2 bg-white" id="tables-Content">
-        <div class="fs-5 fw-bold blue-text">
-            Tables
-        </div>
-
-        <div class="d-flex justify-content-end">
-            <div class="input-group w-25 me-2">
-                <input type="search" class="form-control" placeholder="Search" name="search" id="searchTable" oninput="PaginationAjax(1)">
-                <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
-                </button>
-            </div>
-            <button class="btn border me-2" id="tableMassDeleteIcon" data-bs-toggle="modal"
-                data-bs-target="#massDeleteTableModal">
-                <img src="~/images/icons/delete.svg" alt="">
-            </button>
-            <button class="btn btn-blue me-2 newTableBtn" id="addTableBtn" data-bs-toggle="modal"
-                data-bs-target="#addTableModal">
-                + New Table
-            </button>
-        </div>
-
-        <div id="tableOuter">
-            <!-- Tables Partial View -->
-        </div>
-
-    </div>
-    <!----------------------------------------------------- Table ends ------------------------------------------------------->
-
+<div id="sectionOuter">
+    <!-- Table/Section Partial View -->
 </div>
 
 <!--------------------------------------Modals------------------------------------------------------------------------------------------
@@ -123,15 +54,40 @@
 
 @section Scripts {
 
-    @* Table List Pagination Partial View Ajax *@
+    @* Document Ready *@
+    <script>
+        $(document).ready(function () {
+            getSectionTab();
+        });
+    </script>
+
+    @* Get Section Tab *@
     <script>
         let currentSectionId;
-
-        $(document).ready(function () {
+        function intializeTable() {
             currentSectionId = $("#ul-section>li:first").data("id");
             $("#ul-section>li:first>a").addClass("blue");
             PaginationAjax(1); // Load users on page load
-        });
+        }
+
+        function getSectionTab() {
+            $.ajax({
+                url: '@Url.Action("GetSectionTab", "TableSection")',
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#sectionOuter").html(data);
+                    intializeTable();
+                },
+                error: function () {
+                    console.log("There is error in fetching modifier tab.Not successful");
+                }
+            });
+        }
+    </script>
+
+    @* Table List Pagination Partial View Ajax *@
+    <script>
 
         $(document).on("click", ".li-section>a", function () {
             currentSectionId = $(this).parent().data("id");
@@ -163,8 +119,7 @@
                 dataType: "html",
                 success: function (data) {
                     $("#tableOuter").html(data);
-                    @* $("#tablesPerPage").val(pageSize); // Reapply selected value after reload *@
-                },
+                    },
                 error: function (data) {
                     alert("No Table Found");
                     $("#tableOuter").html('An error has occurred');
@@ -172,16 +127,6 @@
             });
 
         }
-    </script>
-
-    @* Showing section edit/delete icon on hovering *@
-    <script>
-        $(".li-section").mouseover(function () {
-            $(this).children("div.EditDeleteSection").css("visibility", "visible");
-        });
-        $(".li-section").mouseout(function () {
-            $(this).children("div.EditDeleteSection").css("visibility", "hidden");
-        });
     </script>
 
     @* Add/Update Section Modal *@
@@ -220,12 +165,15 @@
                 url: $(this).attr("action"),
                 type: $(this).attr("method"),
                 data: $(this).serialize(),
-                success: function (data) {
-                    $("#addEditItem").hide;
-                    toastr.success("Section Added successfully!");
-                    setTimeout(function () {
-                        location.reload();
-                    }, 3000);
+                success: function (response) {
+                    if (response.success) {
+                        $("#addSectionModal").modal("hide");
+                        toastr.success(response.message);
+                        getSectionTab();
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -247,7 +195,13 @@
                 type: "GET",
                 data: { sectionId: deleteSectionId },
                 success: function (response) {
-                    location.reload()
+                    if (response.success) {
+                        toastr.success(response.message);
+                        getSectionTab();
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
                 },
                 error: function () {
                     console.log("error input deleting user");
@@ -296,18 +250,14 @@
                 type: $(this).attr("method"),
                 data: $(this).serialize(),
                 success: function (response) {
-                    $("#addTableModal").hide;
-                    if(response.success)
-                    {
+                    $("#addTableModal").modal("hide");
+                    if (response.success) {
                         toastr.success(response.message);
+                        PaginationAjax(1);
                     }
-                    else{
+                    else {
                         toastr.error(response.message);
                     }
-                   
-                    setTimeout(function () {
-                        location.reload();
-                    }, 3000);
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -319,19 +269,25 @@
     @* Delete Table *@
     <script>
         let deleteTableId;
-        $(document).on("click",".deleteTableBtn", function () {
+        $(document).on("click", ".deleteTableBtn", function () {
             deleteTableId = $(this).data("id");
-            console.log("deleteTableId is",deleteTableId);
+            console.log("deleteTableId is", deleteTableId);
         });
 
-        $(document).on("click","#confirmDeleteTable", function () {
-            console.log("confirm deleteTableId is",deleteTableId);
+        $(document).on("click", "#confirmDeleteTable", function () {
+            console.log("confirm deleteTableId is", deleteTableId);
             $.ajax({
                 url: '@Url.Action("DeleteTable", "TableSection")',
                 type: "GET",
                 data: { tableId: deleteTableId },
                 success: function (response) {
-                    location.reload()
+                    if (response.success) {
+                        toastr.success(response.message);
+                        PaginationAjax(1);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
                 },
                 error: function () {
                     console.log("error input deleting table");
@@ -340,7 +296,73 @@
         });
     </script>
 
+    @* Intermediate Checkbox For Table Mass delete functionality*@
+    <script>
 
+        $(document).ready(function () {
+            $("#tableMassDeleteIcon").prop("disabled", true);
+        });
 
+        function toggleMasterDeleteBtn() {
+            if ($(".tableChildCheckbox:checked").length > 0) {
+                $("#tableMassDeleteIcon").prop("disabled", false);
+            }
+            else {
+                $("#tableMassDeleteIcon").prop("disabled", true);
+            }
+        }
 
+        $(document).on("change", "#tableParentCheckbox", function () {
+            $(".tableChildCheckbox").each(function () {
+                $(this).prop("checked", $("#tableParentCheckbox").prop("checked"));
+            });
+            toggleMasterDeleteBtn();
+        });
+
+        $(document).on("change", ".tableChildCheckbox", function () {
+            let totalChildCheckBox = $(".tableChildCheckbox").length;
+            let checkedChildCheckBox = $(".tableChildCheckbox:checked").length;
+            if (checkedChildCheckBox === totalChildCheckBox) {
+                $("#tableParentCheckbox").prop("indeterminate", false).prop("checked", true);
+            }
+            else if (checkedChildCheckBox === 0) {
+                $("#tableParentCheckbox").prop("indeterminate", false).prop("checked", false);
+            }
+            else {
+                $("#tableParentCheckbox").prop("indeterminate", true);
+            }
+            toggleMasterDeleteBtn();
+        });
+
+        //For mass delete of tables
+        let tableList = [];
+        $(document).on("click", "#tableMassDeleteIcon", function () {
+            $(".tableChildCheckbox:checked").each(function () {
+                tableList.push($(this).data("id"));
+            });
+        });
+
+        $(document).on("click", "#confirmMassDeleteTable", function () {
+            $.ajax({
+                url: '@Url.Action("MassDeleteTables", "Menu")',
+                type: "POST",
+                data: { tablesList: tableList },
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message)
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
+                },
+                error: function () {
+                    console.log("Table not deleted!");
+                }
+            });
+        });
+
+    </script>
 }

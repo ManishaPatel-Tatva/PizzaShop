@@ -69,21 +69,21 @@ namespace PizzaShop.Web.Controllers
                 return View(addUserModel);
             }
 
-            string? token = Request.Cookies["authToken"];
-            string? createrEmail = _jwtService.GetClaimValue(token, "email");
-
-            ResponseViewModel response = await _userService.Add(model, createrEmail);
-            if (!response.Success)
+            ResponseViewModel response = await _userService.Add(model);
+            TempData["NotificationMessage"] = response.Message;
+            if (response.Success)
+            {
+                TempData["NotificationType"] = NotificationType.Success.ToString();
+                return RedirectToAction("Index");
+            }
+            else
             {
                 AddUserViewModel addUserModel = await _userService.Get();
-                TempData["NotificationMessage"] = response.Message;
                 TempData["NotificationType"] = NotificationType.Error.ToString();
                 return View(addUserModel);
             }
 
-            TempData["NotificationMessage"] = response.Message;
-            TempData["NotificationType"] = NotificationType.Success.ToString();
-            return RedirectToAction("Index");
+
         }
         #endregion
 
@@ -110,10 +110,7 @@ namespace PizzaShop.Web.Controllers
                 return View(user);
             }
 
-            string? token = Request.Cookies["authToken"];
-            string? createrEmail = _jwtService.GetClaimValue(token, "email");
-
-            ResponseViewModel response = await _userService.Update(model, createrEmail);
+            ResponseViewModel response = await _userService.Update(model);
 
             TempData["NotificationMessage"] = response.Message;
             if (response.Success)
@@ -122,7 +119,7 @@ namespace PizzaShop.Web.Controllers
                 return RedirectToAction("Index", "Users");
             }
             else
-            {   
+            {
                 TempData["NotificationType"] = NotificationType.Error.ToString();
                 EditUserViewModel user = await _userService.Get(model.UserId);
                 return View(user);
@@ -137,11 +134,8 @@ namespace PizzaShop.Web.Controllers
         [CustomAuthorize(nameof(PermissionType.Delete_Users))]
         public async Task<IActionResult> Delete(long id)
         {
-            if (!await _userService.Delete(id))
-            {
-                return Json(new { success = false, message = NotificationMessages.DeletedFailed.Replace("{0}", "User") });
-            }
-            return Json(new { success = true, message = NotificationMessages.Deleted.Replace("{0}", "User") });
+            ResponseViewModel response = await _userService.Delete(id);
+            return Json(response);
         }
 
         #endregion

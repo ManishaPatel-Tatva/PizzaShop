@@ -7,7 +7,7 @@
         <thead>
             <tr>
                 <th scope="col" class="col">
-                    <input class="form-check-input me-2 " type="checkbox" value="" id="modifierParentCheckbox"> 
+                    <input class="form-check-input me-2 " type="checkbox" value="" id="modifierParentCheckbox">
                     Name
                 </th>
                 <th scope="col" class="col">Unit</th>
@@ -22,7 +22,8 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" value="" id="" class="me-2 modifierChildCheckbox" data-id="@modifier.ModifierId">
+                        <input type="checkbox" value="" id="" class="me-2 modifierChildCheckbox"
+                            data-id="@modifier.ModifierId">
                         @modifier.ModifierName
                     </td>
                     <td>@modifier.UnitName</td>
@@ -50,36 +51,43 @@
 </div>
 <!-- Table ends -->
 
-<!-- Pagination Starts -->
-<div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
-    <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
-        <span>Items per page:</span>
-        <select class="form-select w-auto" id="modifiersPerPage" aria-label="Select modifiers per page">
-            <option value="5" selected>5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-        </select>
+
+@if (Model.Modifiers.Count() == 0)
+{
+    <div class="d-flex justify-content-center fs-5">No Record Found!</div>
+}
+else
+{
+    <!-- Pagination Starts -->
+    <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+        <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+            <span>Items per page:</span>
+            <select class="form-select w-auto" id="modifiersPerPage" aria-label="Select modifiers per page">
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+
+        <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+            <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+            <!-- Previous Page Button -->
+            <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+                onclick="ModifiersPaginationAjax(@Model.Page.CurrentPage - 1)">
+                <img src="~/images/icons/chevron-left.svg" alt="">
+            </button>
+
+            <!-- Next Page Button -->
+            <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+                onclick="ModifiersPaginationAjax(@Model.Page.CurrentPage + 1)">
+                <img src="~/images/icons/chevron-right.svg" alt="">
+            </button>
+        </div>
     </div>
-
-    <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
-        <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
-
-        <!-- Previous Page Button -->
-        <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
-            onclick="ModifiersPaginationAjax(@Model.Page.CurrentPage - 1)">
-            <img src="~/images/icons/chevron-left.svg" alt="">
-        </button>
-
-        <!-- Next Page Button -->
-        <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
-            onclick="ModifiersPaginationAjax(@Model.Page.CurrentPage + 1)">
-            <img src="~/images/icons/chevron-right.svg" alt="">
-        </button>
-    </div>
-</div>
-<!-- Pagination Ends -->
-
+    <!-- Pagination Ends -->
+}
 
 
 <!-- Modal Add/Update Modifier starts -->
@@ -107,7 +115,8 @@
                 <span>Are you sure you want to delete this modifier?</span>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-                <button id="confirmDeleteModifier" type="button" class="btn btn-blue" data-bs-dismiss="modal">Yes</button>
+                <button id="confirmDeleteModifier" type="button" class="btn btn-blue"
+                    data-bs-dismiss="modal">Yes</button>
                 <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
             </div>
         </div>

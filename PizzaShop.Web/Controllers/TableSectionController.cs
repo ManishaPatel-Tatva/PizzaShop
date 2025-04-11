@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
@@ -11,13 +10,13 @@ namespace PizzaShop.Web.Controllers;
 [Authorize]
 public class TableSectionController : Controller
 {
-    private readonly IJwtService _jwtService;
-    private readonly ITableSectionService _tableSectionService;
+    private readonly ISectionService _sectionService;
+    private readonly ITableService _tableService;
 
-    public TableSectionController(ITableSectionService tableSectionService, IJwtService jwtService)
+    public TableSectionController(ISectionService sectionService, ITableService tableService)
     {
-        _tableSectionService = tableSectionService;
-        _jwtService = jwtService;
+        _sectionService = sectionService;
+        _tableService = tableService;
     }
 
     /*--------------------------------------------------------Table and Section Index---------------------------------------------------------------------------------------------------
@@ -26,161 +25,105 @@ public class TableSectionController : Controller
     [CustomAuthorize(nameof(PermissionType.View_Tables_and_Sections))]
     public IActionResult Index()
     {
-        List<SectionViewModel> sectionList = _tableSectionService.GetAllSections();
-
         ViewData["sidebar-active"] = "TableSection";
-        return View(sectionList);
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetSectionTab()
+    {
+        List<SectionViewModel> sections = await _sectionService.Get();
+        return PartialView("_SectionTabPartialView", sections);
     }
 
     #region Section
-
-    #region Display Section
     /*-------------------------------------------------------- Get Section---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
     [HttpGet]
     [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
     public async Task<IActionResult> GetSectionModal(long sectionId)
     {
-        SectionViewModel model = await _tableSectionService.GetSection(sectionId);
+        SectionViewModel model = await _sectionService.Get(sectionId);
         return PartialView("_SectionPartialView", model);
     }
-    #endregion Display Section
 
-    #region Add/Update Section
     [HttpPost]
     [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
-    public async Task<IActionResult> SaveSection(SectionViewModel model)
+    public async Task<IActionResult> SaveSection(SectionViewModel sectionVM)
     {
         if (!ModelState.IsValid)
         {
-            SectionViewModel updatedModel = await _tableSectionService.GetSection(model.SectionId);
+            SectionViewModel updatedModel = await _sectionService.Get(sectionVM.Id);
             return PartialView("_SectionPartialView", updatedModel);
         }
 
-        string token = Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
-
-        bool success = await _tableSectionService.SaveSection(model, createrEmail);
-        if (!success)
-        {
-            SectionViewModel updatedModel = await _tableSectionService.GetSection(model.SectionId);
-            return PartialView("_SectionPartialView", updatedModel);
-        }
-        return Json(new { success = true, message = "Section Added Successful!" });
-
+        ResponseViewModel response = await _sectionService.Save(sectionVM);
+        return Json(response);
     }
-    #endregion Add/Update Section
 
-    #region Delete Section
     [HttpGet]
     [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> DeleteSection(long sectionId)
     {
-        bool success = await _tableSectionService.DeleteSection(sectionId);
-        if (!success)
-        {
-            return Json(new { success = false, message = "Table Not deleted!" });
-        }
-        return Json(new { success = true, message = "Table deleted Successfully!" });
+        ResponseViewModel response = await _sectionService.Delete(sectionId);
+        return Json(response);
     }
-
-    #endregion Delete Section
 
     #endregion Section
 
     #region Table
-
-    #region Display Tables
-    /*-------------------------------------------------------- Get Section---------------------------------------------------------------------------------------------------
+    /*-------------------------------------------------------- Get Table---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
     public async Task<IActionResult> GetTableModal(long tableId)
     {
-        TableViewModel model = await _tableSectionService.GetTable(tableId);
+        TableViewModel model = await _tableService.Get(tableId);
         return PartialView("_TablePartialView", model);
     }
 
     [HttpGet]
     [CustomAuthorize(nameof(PermissionType.View_Tables_and_Sections))]
-    public async Task<IActionResult> GetTablesList(long sectionId, int pageSize = 5, int pageNumber = 1, string search = "")
+    public async Task<IActionResult> GetTablesList(long sectionId, FilterViewModel filter)
     {
-        TablesPaginationViewModel model = await _tableSectionService.GetPagedTables(sectionId, pageSize, pageNumber, search);
-
-        if (model == null)
-        {
-            return NotFound(); // This triggers AJAX error
-        }
-
-        return PartialView("_TableListPartialView", model);
+        TablesPaginationViewModel tables = await _tableService.Get(sectionId, filter);
+        return PartialView("_TableListPartialView", tables);
     }
 
-    #endregion Display Tables
-
-    #region Add/Update Table
+    /*-------------------------------------------------------- Save Table---------------------------------------------------------------------------------------------------
+      ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [HttpPost]
     [CustomAuthorize(nameof(PermissionType.Edit_Tables_and_Sections))]
-    public async Task<IActionResult> SaveTable(TableViewModel model)
+    public async Task<IActionResult> SaveTable(TableViewModel tableVM)
     {
         if (!ModelState.IsValid)
         {
-           TableViewModel updatedModel = await _tableSectionService.GetTable(model.TableId);
-            return PartialView("_TablePartialView", updatedModel);
+            TableViewModel updatedTable = await _tableService.Get(tableVM.Id);
+            return PartialView("_TablePartialView", updatedTable);
         }
 
-        string token = Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
-
-        bool success = await _tableSectionService.SaveTable(model, createrEmail);
-        if (!success)
-        {
-            TableViewModel updatedModel = await _tableSectionService.GetTable(model.TableId);
-            return PartialView("_TablePartialView", updatedModel);
-        }
-
-        if(model.TableId == 0)
-        {
-            return Json(new { success = true, message = "Table Added Successfully!" });
-        }
-        else
-        {
-            return Json(new { success = true, message = "Table Updated Successfully!" });
-
-        }
-
+        ResponseViewModel response = await _tableService.Save(tableVM);
+        return Json(response);
     }
-    #endregion Add/Update Table
 
-    #region Delete Table
     /*--------------------------------------------------------Delete One Table--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> DeleteTable(long tableId)
     {
-        bool success = await _tableSectionService.DeleteTable(tableId);
-
-        if (!success)
-        {
-            return Json(new { success = false, message = "Table Not deleted!" });
-        }
-        return Json(new { success = true, message = "Table deleted Successfully!" });
+        ResponseViewModel response = await _tableService.Delete(tableId);
+        return Json(response);
     }
 
     /*--------------------------------------------------------Delete Multiple Tables--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
-    public async Task<IActionResult> MassDeleteTable(List<long> modifierIdList)
+    public async Task<IActionResult> MassDeleteTable(List<long> tableIdList)
     {
-        bool success = await _tableSectionService.MassDeleteTables(modifierIdList);
-
-        if (!success)
-        {
-            return Json(new { success = false, message = "Items Not deleted" });
-        }
-        return Json(new { success = true, message = "All selected Items deleted Successfully!" });
+        ResponseViewModel response = await _tableService.Delete(tableIdList);
+        return Json(response);
     }
-
-    #endregion Delete Table
 
     #endregion Table
 

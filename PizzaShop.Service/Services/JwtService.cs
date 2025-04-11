@@ -1,11 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -15,14 +15,14 @@ public class JwtService : IJwtService
     private readonly string _secretKey;
     private readonly int _tokenDuration;
     private readonly IRolePermissionService _rolePermissionService ;
-    private readonly IUserService _userService ;
+    private readonly IGenericRepository<User> _userRepository ;
 
-    public JwtService(IConfiguration configuration, IRolePermissionService rolePermissionService, IUserService userService)
+    public JwtService(IConfiguration configuration, IRolePermissionService rolePermissionService, IGenericRepository<User> userRepository)
     {
         _secretKey = configuration["JwtConfig:Key"];
         _tokenDuration = int.Parse(configuration["JwtConfig:Duration"] ?? "24"); // Default: 24 hours
         _rolePermissionService = rolePermissionService;
-        _userService = userService;
+        _userRepository = userRepository;
     }
 
     public async Task<string> GenerateToken(string email, string role)
@@ -36,7 +36,7 @@ public class JwtService : IJwtService
             new("role", role)   
         };
 
-        User user = await _userService.Get(email);
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == email);
 
         RolePermissionViewModel permissions =  await _rolePermissionService.Get(user.RoleId);
 

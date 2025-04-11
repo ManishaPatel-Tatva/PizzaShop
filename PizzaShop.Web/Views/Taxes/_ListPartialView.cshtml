@@ -54,6 +54,12 @@
     </table>
 </div>
 
+@if (Model.Taxes.Count() == 0)
+{
+    <div class="d-flex justify-content-center fs-5">No Record Found!</div>
+}
+else
+{
 <!-- Pagination Starts -->
 <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
     <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
@@ -103,3 +109,4 @@
         </div>
     </div>
 </div>
+}

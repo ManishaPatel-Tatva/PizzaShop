@@ -1,8 +1,5 @@
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -141,8 +138,6 @@ public class CategoryItemService : ICategoryItemService
         return model;
     }
 
-
-
     /*-----------------------------------------------------------Get Modifier on Selection---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
@@ -176,7 +171,6 @@ public class CategoryItemService : ICategoryItemService
 
         return itemModifierGroups;
     }
-
 
     #endregion Get Add/Edit Item 
 
@@ -400,12 +394,7 @@ public class CategoryItemService : ICategoryItemService
         }
         return true;
     }
-
     #endregion Soft Delete
-
-
-
-
 
     #endregion Items
 }

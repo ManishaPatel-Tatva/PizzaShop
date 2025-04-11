@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "OjGxRupCzdOSIwJZBpC/+MZV3+MVauAff044ytpqzlOXjijCGwoXZqA9PhFqb75ixUVJCwldm/Ftng/rcgcQog==",
+  "dgSpecHash": "ljti1SnK9xkSS+BwrU7qcVmeG3B7iEWvTaZIrB+ywiNyJTy6eFhExKXd9euCcCJUvOI1VT0yfKaNjyxN061NtQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\pci47\\Desktop\\PizzashopMVC\\PizzaShop.Service\\PizzaShop.Service.csproj",
   "expectedPackageFiles": [
@@ -19,6 +19,7 @@
     "C:\\Users\\pci47\\.nuget\\packages\\mailkit\\4.10.0\\mailkit.4.10.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http\\2.3.0\\microsoft.aspnetcore.http.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.3.0\\microsoft.aspnetcore.http.abstractions.2.3.0.nupkg.sha512",
+    "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http.extensions\\2.3.0\\microsoft.aspnetcore.http.extensions.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.3.0\\microsoft.aspnetcore.http.features.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.aspnetcore.webutilities\\2.3.0\\microsoft.aspnetcore.webutilities.2.3.0.nupkg.sha512",
     "C:\\Users\\pci47\\.nuget\\packages\\microsoft.dotnet.platformabstractions\\1.1.0\\microsoft.dotnet.platformabstractions.1.1.0.nupkg.sha512",

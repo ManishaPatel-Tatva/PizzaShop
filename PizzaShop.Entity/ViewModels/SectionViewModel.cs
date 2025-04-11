@@ -4,7 +4,7 @@ namespace PizzaShop.Entity.ViewModels;
 
 public class SectionViewModel
 {
-    public long SectionId { get; set; }
+    public long Id { get; set; }
 
     [Required(ErrorMessage = "Name is required")]
     [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]

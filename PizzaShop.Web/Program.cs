@@ -56,7 +56,8 @@ builder.Services.AddScoped<ICategoryItemService, CategoryItemService>();
 builder.Services.AddScoped<IModifierService, ModifierService>();
 
 //Table and Section
-builder.Services.AddScoped<ITableSectionService, TableSectionService>();
+builder.Services.AddScoped<ITableService, TableService>();
+builder.Services.AddScoped<ISectionService, SectionService>();
 
 // Taxes and Fees
 builder.Services.AddScoped<ITaxesFeesService, TaxesFeesService>();

@@ -55,7 +55,7 @@ public class AuthController : Controller
                 Secure = true
             };
 
-            // HttpContext.Session.SetString("authToken", token);
+            HttpContext.Session.SetString("email", model.Email);
 
             Response.Cookies.Append("authToken", loginResult.Token, options);
             Response.Cookies.Append("userName", loginResult.UserName, options);

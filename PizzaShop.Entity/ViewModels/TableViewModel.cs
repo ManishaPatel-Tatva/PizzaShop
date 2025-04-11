@@ -6,7 +6,7 @@ namespace PizzaShop.Entity.ViewModels;
 
 public class TableViewModel
 {
-    public long TableId { get; set; }
+    public long Id { get; set; }
 
     [Required(ErrorMessage = "Category Name is required")]
     [StringLength(50, ErrorMessage = "Category Name cannot exceed 50 characters")]
