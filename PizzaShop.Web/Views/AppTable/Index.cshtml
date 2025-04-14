@@ -1,0 +1,128 @@
+@using PizzaShop.Entity.ViewModels
+
+@{
+    ViewData["Title"] = "Tables";
+    Layout = "_OrderAppLayout";
+}
+
+<!--Heading-->
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
+
+    <div class="blue-text p-2 fs-2 fw-semibold text-nowrap">Table View</div>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+        <div class="d-flex gap-2 ">
+            <div class="text-nowrap">
+                <i class="bi bi-circle-fill text-grey"></i>
+                <span>Available</span>
+            </div>
+            <div class="text-nowrap">
+                <i class="bi bi-circle text-green fw-bold"></i>
+                <span>Selected</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2 ">
+            <div class="text-nowrap">
+                <i class="bi bi-circle-fill text-green"></i>
+                <span>Assigned</span>
+            </div>
+            <div class="text-nowrap">
+                <i class="bi bi-circle-fill text-blue"></i>
+                <span>Running</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accordian -->
+<div class="accordion mt-2" id="accordionExample">
+    <div class="accordion-item">
+        <div class="accordion-header d-flex flex-wrap flex-sm-nowrap">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+                <h4 class="ps-5 pt-1 blue-text mb-0 text-nowrap"> Ground Floor </h4>
+            </button>
+            <div class="d-flex justify-content-between align-items-center flex-wrap flex-sm-nowrap">
+                <div class="d-flex justify-content-center ms-4 gap-3">
+                    <div class="text-nowrap">
+                        <i class="bi bi-circle-fill text-grey pe-1"></i>
+                        <span>3</span>
+                    </div>
+                    <div class="text-nowrap">
+                        <i class="bi bi-circle-fill text-green pe-1"></i>
+                        <span>1</span>
+                    </div>
+                    <div class="text-nowrap">
+                        <i class="bi bi-circle-fill text-blue pe-1"></i>
+                        <span>1</span>
+                    </div>
+                </div>
+                <div class="btn btn-white text-nowrap ms-4 me-2 my-1 m-auto ">
+                    <i class="bi bi-plus"></i>
+                    <span class="">Waiting Token</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <strong>This is the first item's accordion body.</strong> 
+
+                <div class="row">
+                    <div class="col-2 border rounded-2 table-occupied ">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="blue-text">T1</h5>
+                            <div>₹142.80</div>
+                        </div>
+                        <div class="d-flex">
+                            <div>
+                                <img src="/images/icons/people.svg" alt="">
+                                <div>11</div>
+                            </div>
+                            <div>
+                                <img src="/images/icons/clock.svg" alt="">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <h4 class="ps-5 pt-1 blue-text mb-0"> First Floor </h4>
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <h4 class="ps-5 pt-1 blue-text mb-0"> Second Floor </h4>
+            </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse
+                plugin adds the appropriate classes that we use to style each element. These classes control the overall
+                appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with
+                custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go
+                within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+        </div>
+    </div>
+</div>

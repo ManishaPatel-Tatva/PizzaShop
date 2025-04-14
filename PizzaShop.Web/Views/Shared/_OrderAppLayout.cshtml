@@ -39,27 +39,34 @@
                     <div class="d-flex justify-content-center align-items-center gap-2">
                         @if (User.IsInRole("Account Manager") || User.IsInRole("Chef"))
                         {
-                            <a href=""
-                                class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1 bg-sky-blue">
+                            <a asp-action="Index" asp-controller="Kot"
+                                class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1 @((ViewData["app-active"] as string) == "Kot" ? "bg-sky-blue" : "")">
                                 <img src="/images/icons/clipboard-fill.svg" alt="">
                                 <span class="text-white d-none d-sm-block">KOT</span>
                             </a>
                         }
                         @if (User.IsInRole("Account Manager"))
                         {
-                            <a href="" class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1">
+                            <a
+                                class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1 @((ViewData["app-active"] as string) == "Waiting List" ? "bg-sky-blue" : "")">
                                 <img src="/images/icons/clock-fill.svg" alt="">
                                 <span class="text-white d-none d-sm-block text-nowrap ">
                                     Waiting List
                                 </span>
                             </a>
-                            <a href="" class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1">
+                            <a asp-action="Index" asp-controller="AppTable"
+                                class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1 @((ViewData["app-active"] as string) == "Tables" ? "bg-sky-blue" : "")">
                                 <img src="/images/icons/square-fill-white.svg" alt="">
-                                <span class="text-white d-none d-sm-block">Tables</span>
+                                <span class="text-white d-none d-sm-block">
+                                    Tables
+                                </span>
                             </a>
-                            <a href="" class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1">
+                            <a class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1"
+                                @((ViewData["app-active"] as string) == "Menu" ? "bg-sky-blue" : "")>
                                 <img src="/images/icons/food-white.svg" alt="" width="16px">
-                                <span class="text-white d-none d-sm-block">Menu</span>
+                                <span class="text-white d-none d-sm-block">
+                                    Menu
+                                </span>
                             </a>
                         }
                     </div>

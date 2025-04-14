@@ -24,6 +24,7 @@ public class KotController : Controller
     public async Task<IActionResult> Index()
     {
         List<CategoryViewModel> list = await _categoryService.Get();
+        ViewData["app-active"] = "Kot";
         return View(list);
     }
 

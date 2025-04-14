@@ -52,6 +52,28 @@ a{
     color: #f7bc51;
 }
 
+.text-light-grey{
+    color: #d2cec6;
+}
+
+.text-green{
+    color: #7fc83c;
+}
+
+.text-blue{
+    color: #77b4e0;
+}
+
+.btn-blue{
+    color: white;
+    background-color: #0066A8;
+}
+
+.btn-white{
+    color: #0066A8 !important;
+    border: 1px solid #0066A8 !important;
+}
+
 /* Login Page */
 .hero-img{
     height: 100%;
@@ -182,10 +204,6 @@ nav{
 
 
 /* Users */
-.btn-blue{
-    color: white;
-    background-color: #0066A8;
-}
 
 .users input{
     padding: 7px;
@@ -217,10 +235,6 @@ td{
 }
 
 /* Add new user */
-.btn-white{
-    color: #0066A8;
-    border: 1px solid #0066A8;
-}
 
 .form-floating>label {
     z-index: 5;
@@ -357,8 +371,6 @@ table td,th{
         column-gap: 10px;
     }
 }
-
-
 
 @media (max-width: 1000px) {
     #sidebar{
@@ -561,7 +573,7 @@ table td,th{
     overflow-y: auto;
 }
 
-/* KOT */
+/* KOT Item list Modal*/
 .item-quantity{
     width: fit-content;
     border: 1px solid #0066A8;
@@ -570,4 +582,31 @@ table td,th{
 .item-quantity input{
     width: 30px;
     border: none;
+}
+
+/* Tables in Order App */
+.accordion {
+    --bs-accordion-active-bg: none;
+    --bs-accordion-btn-focus-box-shadow: none;
+    --bs-accordion-border-color: none;
+}
+
+.accordion-button::after {
+    background-size: unset;
+    position: absolute;
+    padding: 15px;
+    left: 18px;
+    top: 18px;
+    border: 2px solid rgb(139, 139, 139);
+    border-radius: 50%;
+    filter: brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(152%) hue-rotate(230deg) brightness(100%) contrast(103%);
+}
+
+.accordion-button::after {
+    transform: rotate(-90deg);
+}
+
+.accordion-button:not(.collapsed)::after {
+    transform: rotate(0deg);
+    filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);;
 }
