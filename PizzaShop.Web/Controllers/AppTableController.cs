@@ -10,10 +10,12 @@ namespace PizzaShop.Web.Controllers;
 public class AppTableController : Controller
 {
     private readonly IAppTableService _appTableService;
+    private readonly ISectionService _sectionService;
 
-    public AppTableController(IAppTableService appTableService)
+    public AppTableController(IAppTableService appTableService, ISectionService sectionService)
     {
         _appTableService = appTableService;
+        _sectionService = sectionService;
     }
 
     public async Task<ActionResult> Index()
@@ -28,4 +30,16 @@ public class AppTableController : Controller
         List<SectionViewModel> sections = await _appTableService.Get();
         return PartialView("_SectionListPartialView", sections);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> WaitingTokenModal()
+    {
+        WaitingTokenViewModel model = new()
+        {
+            Sections = await _sectionService.Get()
+        };
+        return PartialView("_WaitingTokenPartialView", model);
+    }
+
+
 }

@@ -37,6 +37,18 @@
     <!-- Partial View -->
 </div>
 
+
+<!-- Modal Waiting Token starts -->
+<div class="modal fade" id="waitingTokenModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="waitingTokenContent">
+            <!-- Waiting Token Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Waiting Token Items ends -->
+
 @section Scripts {
 
     @* Section Ajax *@
@@ -95,5 +107,49 @@
         }
     </script>
 
+    @* Waiting Token Modal *@
+    <script>
+        function waitingToken() {
+            $.ajax({
+                url: '@Url.Action("WaitingTokenModal", "AppTable")',
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#waitingTokenModal").modal("show");
+                    $("#waitingTokenContent").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("Not Found");
+                }
+            });
+        }
+    </script>
 
+    @* Waiting Token Modal Form Submit *@
+    <script>
+        $(document).on("submit", "#saveWTForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    console.log("response after submission is", response);
+                    if (response.success) {
+                        $("#orderItemsModal").modal("hide");
+                        toastr.success(response.message);
+                        CardsAjax(1);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
 }

@@ -1,0 +1,53 @@
+@using PizzaShop.Entity.Models
+@using PizzaShop.Entity.ViewModels
+@model WaitingTokenViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5">Waiting Token Details</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<form asp-action="Update" asp-controller="AppTabe" method="post" id="saveWTForm">
+    <div class="modal-body row">
+
+        <div class="form-floating mb-3">
+            <input asp-for="Email" type="text" class="form-control" placeholder="" id="email">
+            <label asp-for="Email">Email*</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Name" type="text" class="form-control" placeholder="" id="customerName">
+            <label asp-for="Name">Name*</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Phone" type="text" class="form-control" placeholder="" id="Phone">
+            <label asp-for="Phone">Phone*</label>
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="col-6 form-floating mb-3">
+            <input asp-for="Members" type="number" class="form-control" placeholder="" id="customerName">
+            <label asp-for="Members">No of Persons*</label>
+            <span asp-validation-for="Members" class="text-danger"></span>
+        </div>
+
+        <div class="col-6 form-floating mb-3">
+            <select asp-for="SectionId" class="form-select" aria-label="" id="sections">
+                @foreach (SectionViewModel? sec in Model.Sections)
+                {
+                    <option value="@sec.Id"> @sec.Name</option>
+                }
+            </select>
+            <label asp-for="SectionId">Section*</label>
+            <span asp-validation-for="SectionId" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue">Save</button>
+        <button type="reset" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>

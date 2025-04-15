@@ -16,7 +16,27 @@ public class CustomerService : ICustomerService
         _customerRepository = customerRepository;
     }
 
-    #region Get Pagination
+    #region Get
+    /*----------------------------------------------------Get Customer by Email----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<CustomerViewModel> Get(string email)
+    {
+        Customer? customer = await _customerRepository.GetByStringAsync(c => c.Email == email && !c.IsDeleted);
+        if (customer == null)
+        {
+            return new CustomerViewModel();
+        }
+        else
+        {
+            return new CustomerViewModel
+            {
+                CustomerId = customer.Id,
+                Name = customer.Name,
+                Phone = customer.Phone
+            };
+        }
+    }
+
     /*----------------------------------------------------Customer Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<CustomerPaginationViewModel> Get(FilterViewModel filter)
@@ -104,7 +124,7 @@ public class CustomerService : ICustomerService
         {
             Customers = customers,
             Page = new()
-        }; 
+        };
 
         model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;

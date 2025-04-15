@@ -46,4 +46,10 @@ public class CustomersController : Controller
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Customers.xlsx");
     }
 
+    public async Task<IActionResult> GetByEmail(string email)
+    {
+        CustomerViewModel customer = await _customerService.Get(email);
+        return Json(customer);
+    }
+
 }
