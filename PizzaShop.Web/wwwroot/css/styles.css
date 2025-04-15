@@ -8,6 +8,7 @@ a{
     filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);
 }
 
+/* Background-color */
 .bg-blue{
     background-color: #D8EFF7 !important;
 }
@@ -32,6 +33,7 @@ a{
     background-color: #39a7ed;
 }
 
+/* Color */
 .blue-text{
     color: #0066A8 !important;
 }
@@ -64,6 +66,7 @@ a{
     color: #77b4e0;
 }
 
+/* Button */
 .btn-blue{
     color: white;
     background-color: #0066A8;
@@ -72,6 +75,11 @@ a{
 .btn-white{
     color: #0066A8 !important;
     border: 1px solid #0066A8 !important;
+}
+
+/* Width */
+.w-55{
+    width: 55%;
 }
 
 /* Login Page */
@@ -594,9 +602,7 @@ table td,th{
 .accordion-button::after {
     background-size: unset;
     position: absolute;
-    padding: 15px;
-    left: 18px;
-    top: 18px;
+    padding: 16px;
     border: 2px solid rgb(139, 139, 139);
     border-radius: 50%;
     filter: brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(152%) hue-rotate(230deg) brightness(100%) contrast(103%);
@@ -609,4 +615,8 @@ table td,th{
 .accordion-button:not(.collapsed)::after {
     transform: rotate(0deg);
     filter: brightness(0) saturate(100%) invert(23%) sepia(81%) saturate(1892%) hue-rotate(184deg) brightness(99%) contrast(101%);;
+}
+
+.table-card{
+    width: 280px;
 }

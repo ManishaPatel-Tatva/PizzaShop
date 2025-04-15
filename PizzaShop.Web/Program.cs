@@ -68,8 +68,9 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 //Customers
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
-//KOT
+//OrderApp - KOT, Tables
 builder.Services.AddScoped<IKotService, KotService>();
+builder.Services.AddScoped<IAppTableService, AppTableService>();
 
 
 //Session 
