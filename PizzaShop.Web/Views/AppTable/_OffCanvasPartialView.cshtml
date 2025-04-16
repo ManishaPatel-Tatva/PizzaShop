@@ -1,0 +1,96 @@
+@using PizzaShop.Entity.ViewModels
+@model AssignTableViewModel
+
+<div class="offcanvas-header">
+    <h5 class="offcanvas-title blue-text" id="offcanvasRightLabel">Waiting List</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body py-0">
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">No. of Persons</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1"
+                                value="option1">
+                            <label class="form-check-label" for="exampleRadios1"></label>
+                        </div>
+                    </th>
+                    <td>#109</td>
+                    <td>Sarah</td>
+                    <td>5</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pt-3">
+        <h5 class="blue-text pb-2">Customer Details</h5>
+
+        <form asp-action="SaveWaitingToken" asp-controller="AppTable" method="post" id="saveWTForm">
+            <div class="modal-body row">
+
+                <div class="form-floating mb-3">
+                    <input asp-for="CustomerDetail.Email" type="text" class="form-control" placeholder=""
+                        id="customerEmail">
+                    <label asp-for="CustomerDetail.Email">Email*</label>
+                    <span asp-validation-for="CustomerDetail.Email" class="text-danger"></span>
+                </div>
+
+                <input asp-for="CustomerDetail.CustomerId" id="customerId" hidden>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="CustomerDetail.Name" type="text" class="form-control" placeholder=""
+                        id="customerName">
+                    <label asp-for="CustomerDetail.Name">Name*</label>
+                    <span asp-validation-for="CustomerDetail.Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="CustomerDetail.Phone" type="text" class="form-control" placeholder=""
+                        id="customerPhone">
+                    <label asp-for="CustomerDetail.Phone">Phone*</label>
+                    <span asp-validation-for="CustomerDetail.Phone" class="text-danger"></span>
+                </div>
+
+                <div class="col-6 form-floating mb-3">
+                    <input asp-for="CustomerDetail.Members" type="number" class="form-control" placeholder=""
+                        id="noOfPersons">
+                    <label asp-for="CustomerDetail.Members">No of Persons*</label>
+                    <span asp-validation-for="CustomerDetail.Members" class="text-danger"></span>
+                </div>
+
+                <input asp-for="CustomerDetail.SectionId" hidden>
+
+                <div class="col-6 form-floating mb-3">
+                    <select asp-for="CustomerDetail.SectionId" class="form-select" aria-label="" id="sections" disabled>
+                        @foreach (SectionViewModel? sec in Model.CustomerDetail.Sections)
+                        {
+                            <option value="@sec.Id"> @sec.Name</option>
+                        }
+                    </select>
+                    <label asp-for="CustomerDetail.SectionId">Section*</label>
+                    <span asp-validation-for="CustomerDetail.SectionId" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="modal-footer gap-2">
+                <button type="submit" class="btn btn-blue">Assign</button>
+                <button type="reset" class="btn btn-white">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+
+
+</div>

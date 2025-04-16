@@ -48,6 +48,15 @@ public class AppTableController : Controller
         return Json(response);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> OffCanvas()
+    {
+        AssignTableViewModel waitingToken = new();
+        waitingToken.CustomerDetail.Sections = await _sectionService.Get();
+
+        return PartialView("_OffCanvasPartialView", waitingToken);
+    }
+
 
 
 

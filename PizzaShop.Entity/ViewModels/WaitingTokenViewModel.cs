@@ -27,4 +27,7 @@ public class WaitingTokenViewModel
 
     public long SectionId { get; set; }
     public List<SectionViewModel> Sections { get; set; } = new List<SectionViewModel>();
+
+    public DateTime CreatedAt { get; set; }
+
 }

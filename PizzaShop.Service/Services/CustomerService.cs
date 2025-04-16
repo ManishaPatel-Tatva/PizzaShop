@@ -61,7 +61,7 @@ public class CustomerService : ICustomerService
             Name = c.Name,
             Phone = c.Phone,
             Email = c.Email,
-            Date = DateOnly.FromDateTime(c.Orders.Where(o => o.CustomerId == c.Id).Select(o => o.CreatedAt).LastOrDefault()),
+            Date = DateOnly.FromDateTime(c.CreatedAt),
             TotalOrder = c.Orders.Where(o => o.CustomerId == c.Id).Count()
         });
 

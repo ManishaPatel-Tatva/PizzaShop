@@ -33,10 +33,13 @@
 </div>
 
 <!-- Accordian -->
-<div class="accordion mt-2" id="accordion-section">
-    <!-- Partial View -->
-</div>
+<div class="accordion mt-2" id="accordion-section"> <!-- Partial View --> </div>
 
+<!-- Offcanvas starts -->
+<div class="offcanvas offcanvas-end" data-bs-backdrop="static" data-bs-scroll="true" tabindex="-1" id="offcanvasRight">
+    <!-- Partial View-->
+</div>
+<!-- Offcanvas ends -->
 
 <!-- Modal Waiting Token starts -->
 <div class="modal fade" id="waitingTokenModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -47,7 +50,7 @@
         </div>
     </div>
 </div>
-<!-- Waiting Token Items ends -->
+<!-- Modal Waiting Token Items ends -->
 
 @section Scripts {
 
@@ -154,16 +157,16 @@
 
     @* Get Customer Details in waiting token *@
     <script>
-        $(document).on("blur","#customerEmail",function(){
-            
+        $(document).on("blur", "#customerEmail", function () {
+
             $.ajax({
                 url: '@Url.Action("GetByEmail", "Customers")',
-                data: {email : $(this).val()},
+                data: { email: $(this).val() },
                 type: "GET",
                 success: function (response) {
                     console.log(response);
                     console.log(response.name);
-                    
+
                     $("#customerId").val(response.id);
                     $("#customerName").val(response.name);
                     $("#customerPhone").val(response.phone);
@@ -175,4 +178,60 @@
             });
         });
     </script>
+
+    @* Select and assign table*@
+    <script>
+        let currentSection;
+        let tableList[];
+
+        
+    </script>
+
+    @* Assign Table Offcanvas *@
+    <script>
+        let sectionId;
+
+        function rightOffcanvas() {
+            $.ajax({
+                url: '@Url.Action("OffCanvas", "AppTable")',
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#offcanvasRight").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("Not Found");
+                }
+            });
+        }
+    </script>
+
+    @* Assign Table Offcanvas Form Submit *@
+    <script>
+        $(document).on("submit", "#saveWTForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    console.log("response after submission is", response);
+                    if (response.success) {
+                        $("#waitingTokenModal").modal("hide");
+                        toastr.success(response.message);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
+
 }

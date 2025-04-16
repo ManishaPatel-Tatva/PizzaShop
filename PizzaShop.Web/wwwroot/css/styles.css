@@ -68,8 +68,8 @@ a{
 
 /* Button */
 .btn-blue{
-    color: white;
-    background-color: #0066A8;
+    color: white !important;
+    background-color: #0066A8 !important;
 }
 
 .btn-white{
