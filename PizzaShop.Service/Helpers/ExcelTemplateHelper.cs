@@ -453,7 +453,7 @@ public class ExcelTemplateHelper
         {
             int startCol = 2;
 
-            worksheet.Cells[row, startCol].Value = c.CustomerId;
+            worksheet.Cells[row, startCol].Value = c.Id;
             startCol += 1;
 
             worksheet.Cells[row, startCol, row, startCol + 2].Merge = true;

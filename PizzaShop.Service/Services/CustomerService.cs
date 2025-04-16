@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -11,9 +12,11 @@ namespace PizzaShop.Service.Services;
 public class CustomerService : ICustomerService
 {
     private readonly IGenericRepository<Customer> _customerRepository;
-    public CustomerService(IGenericRepository<Customer> customerRepository)
+    private readonly IUserService _userService;
+    public CustomerService(IGenericRepository<Customer> customerRepository, IUserService userService)
     {
         _customerRepository = customerRepository;
+        _userService = userService;
     }
 
     #region Get
@@ -30,7 +33,7 @@ public class CustomerService : ICustomerService
         {
             return new CustomerViewModel
             {
-                CustomerId = customer.Id,
+                Id = customer.Id,
                 Name = customer.Name,
                 Phone = customer.Phone
             };
@@ -54,7 +57,7 @@ public class CustomerService : ICustomerService
 
         IEnumerable<CustomerViewModel>? customers = list.Select(c => new CustomerViewModel()
         {
-            CustomerId = c.Id,
+            Id = c.Id,
             Name = c.Name,
             Phone = c.Phone,
             Email = c.Email,
@@ -199,7 +202,7 @@ public class CustomerService : ICustomerService
 
         IEnumerable<CustomerViewModel>? customers = list.Select(c => new CustomerViewModel()
         {
-            CustomerId = c.Id,
+            Id = c.Id,
             Name = c.Name,
             Phone = c.Phone,
             Email = c.Email,
@@ -262,7 +265,70 @@ public class CustomerService : ICustomerService
         return ExcelTemplateHelper.Customers(customers, filter.DateRange, filter.Search);
 
     }
+    #endregion
 
+    #region Save
+
+    public async Task<ResponseViewModel> Save(CustomerViewModel customerVM)
+    {
+        long createrId = await _userService.LoggedInUser();
+        Customer? customer = new();
+        ResponseViewModel response = new();
+
+        if(customerVM.Id == 0)
+        {
+            customer.CreatedBy = createrId;
+        }
+        else if(customerVM.Id > 0)
+        {
+            customer = await _customerRepository.GetByIdAsync(customerVM.Id);
+        }
+        else
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.Invalid.Replace("{0}","Customer");
+            return response;
+        }
+
+        customer.Name = customerVM.Name;
+        customer.Email = customerVM.Email.ToLower();
+        customer.Phone = customerVM.Phone;
+        customer.UpdatedBy = createrId;
+        customer.UpdatedAt = DateTime.Now;
+
+        response.EntityId = customerVM.Id;
+
+        if (customerVM.Id == 0)
+        {
+            response.EntityId = await _customerRepository.AddAsyncReturnId(customer);
+            if (response.EntityId > 0)
+            {
+                
+                response.Success = true;
+                response.Message = NotificationMessages.Added.Replace("{0}", "Customer");
+            }
+            else
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Customer");
+            }
+        }
+        else
+        {
+            if (await _customerRepository.UpdateAsync(customer))
+            {
+                response.Success = true;
+                response.Message = NotificationMessages.Updated.Replace("{0}", "Customer");
+            }
+            else
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Customer");
+            }
+        }
+
+        return response;
+    }
 
     #endregion
 
