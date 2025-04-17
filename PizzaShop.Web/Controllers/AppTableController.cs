@@ -31,23 +31,7 @@ public class AppTableController : Controller
         return PartialView("_SectionListPartialView", sections);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> WaitingTokenModal()
-    {
-        WaitingTokenViewModel model = new()
-        {
-            Sections = await _sectionService.Get()
-        };
-        return PartialView("_WaitingTokenPartialView", model);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> SaveWaitingToken(WaitingTokenViewModel tokenVM)
-    {
-       ResponseViewModel response = await _appTableService.Save(tokenVM);
-        return Json(response);
-    }
-
+    
     [HttpGet]
     public async Task<IActionResult> OffCanvas()
     {

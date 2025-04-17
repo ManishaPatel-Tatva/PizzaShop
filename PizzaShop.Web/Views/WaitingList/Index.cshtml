@@ -1,0 +1,171 @@
+@using PizzaShop.Entity.ViewModels
+@model List<SectionViewModel>
+
+@{
+    ViewData["Title"] = "Waiting List";
+    Layout = "_OrderAppLayout";
+}
+
+<!--Heading-->
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
+    <div class="blue-text p-2 fs-2 fw-semibold text-nowrap">Waiting List</div>
+    <div>
+        <button class="btn btn-white text-nowrap">
+            <i class="bi bi-plus"></i>
+            <span class="" onclick="waitingToken(0)">Waiting Token</span>
+        </button>
+    </div>
+</div>
+
+<!-- Section heading tab starts-->
+<div class="row bg-white px-3 pt-2 mx-0 mb-3 d-flex flex-row shadow rounded-1">
+    <ul class="nav nav-pills d-flex gap-2 kot-nav" id="pills-tab" role="tablist">
+        <li class="nav-item me-2" role="presentation" data-id="0">
+            <button class="nav-link active p-2" id="tab-1" data-bs-toggle="pill" type="button" role="tab"
+                aria-controls="pills-home" aria-selected="true">
+                <div class="d-flex align-items-center gap-1">
+                    <span class="fs-5 tab-text text-nowrap">All</span>
+                    <span class="num-circle">1</span>
+                </div>
+            </button>
+        </li>
+        @foreach (SectionViewModel? sec in Model)
+        {
+            <li class="nav-item" role="presentation" data-id="@sec.Id">
+                <button class="nav-link p-2" id="tab-2" data-bs-toggle="pill" type="button" role="tab"
+                    aria-controls="pills-profile" aria-selected="false">
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="fs-5 tab-text text-nowrap">@sec.Name</span>
+                        <span class="num-circle">1</span>
+                    </div>
+                </button>
+            </li>
+        }
+    </ul>
+</div>
+<!-- Section heading tab ends-->
+
+<!-- Table -->
+<div class="bg-white" id="waitingListContent"><!--  Partial View --></div>
+
+<!-- Modal Waiting Token starts -->
+<div class="modal fade" id="waitingTokenModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="waitingTokenContent">
+            <!-- Waiting Token Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Waiting Token Items ends -->
+
+@section Scripts{
+
+    @* Waiting List Ajax *@
+    <script>
+
+        let sectionId = 0;
+
+        $(document).ready(function(){
+            GetWaitingList();
+        })
+
+        $(document).on("click",".nav-item",function(){
+            sectionId = $(this).data("id");
+            console.log("section id is",sectionId);
+            GetWaitingList();
+        })
+
+        function GetWaitingList(){
+            $.ajax({
+                url: '@Url.Action("GetWaitingList","WaitingList")',
+                type: "GET",
+                data: {
+                    sectionId : sectionId
+                },
+                dataType: "html",
+                success: function(data){
+                    $("#waitingListContent").html(data);
+                },
+                error: function(data){
+                    alert("Not Found");
+                    $("#waitingListContent").html("List Not found");
+                }
+            })
+        }
+    </script>
+
+    @* Waiting Token Modal *@
+    <script>
+        function waitingToken(tokenId) {
+            $.ajax({
+                url: '@Url.Action("WaitingTokenModal", "WaitingList")',
+                type: "GET",
+                data: {
+                    tokenId : tokenId
+                },
+                dataType: "html",
+                success: function (data) {
+                    $("#waitingTokenModal").modal("show");
+                    $("#waitingTokenContent").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("Not Found");
+                }
+            });
+        }
+    </script>
+
+    @* Waiting Token Modal Form Submit *@
+    <script>
+        $(document).on("submit", "#saveWTForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    console.log("response after submission is", response);
+                    if (response.success) {
+                        $("#waitingTokenModal").modal("hide");
+                        toastr.success(response.message);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
+
+    @* Get Customer Details in waiting token *@
+    <script>
+        $(document).on("blur", "#customerEmail", function () {
+
+            $.ajax({
+                url: '@Url.Action("GetByEmail", "Customers")',
+                data: { email: $(this).val() },
+                type: "GET",
+                success: function (response) {
+                    console.log(response);
+                    console.log(response.name);
+
+                    $("#customerId").val(response.id);
+                    $("#customerName").val(response.name);
+                    $("#customerPhone").val(response.phone);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    alert("Not Found");
+                }
+            });
+        });
+    </script>
+
+
+}

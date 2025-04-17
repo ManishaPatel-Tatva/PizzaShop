@@ -45,7 +45,7 @@
                 <!-- Item Tab Partial View -->
 
                 <!----------------------------------------------------- Category starts ------------------------------------------------------->
-                <div class="category col-12 col-md-3 pt-2 bg-dark-grey">
+                <div class="category col-12 col-md-3 pt-2 bg-light-grey">
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="fs-5 fw-bold blue-text">Category</span>
@@ -196,6 +196,7 @@
             $(".li-category").each(function () {
                 $(this).children().removeClass("blue");
             });
+            
             $(this).addClass("blue");
 
             ItemsPaginationAjax(1);

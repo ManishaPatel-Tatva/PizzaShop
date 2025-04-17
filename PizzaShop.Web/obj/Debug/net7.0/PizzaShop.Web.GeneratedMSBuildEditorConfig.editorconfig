@@ -16,6 +16,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\pci47\Desktop\PizzashopMVC\PizzaShop.Web
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/AppMenu/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwTWVudVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/AppTable/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwVGFibGVcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -26,10 +30,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/AppTable/_SectionListPartialView.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwVGFibGVcX1NlY3Rpb25MaXN0UGFydGlhbFZpZXcuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/AppTable/_WaitingTokenPartialView.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwVGFibGVcX1dhaXRpbmdUb2tlblBhcnRpYWxWaWV3LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/Auth/ForgotPassword.cshtml]
@@ -226,6 +226,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/Users/_ListPartialView.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcX0xpc3RQYXJ0aWFsVmlldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/_ListPartialVIew.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcX0xpc3RQYXJ0aWFsVklldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/_WaitingTokenPartialView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcX1dhaXRpbmdUb2tlblBhcnRpYWxWaWV3LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/_ViewImports.cshtml]

@@ -21,7 +21,10 @@ public class SectionService : ISectionService
     #region Get
     public async Task<List<SectionViewModel>> Get()
     {
-        IEnumerable<Section>? list = await _sectionRepository.GetByCondition(s => !s.IsDeleted);
+        IEnumerable<Section>? list = await _sectionRepository.GetByCondition(
+            predicate: s => !s.IsDeleted,
+            orderBy: q => q.OrderBy(s => s.Id)
+            );
 
         List<SectionViewModel> sections = list.Select(s => new SectionViewModel
         {
@@ -34,19 +37,17 @@ public class SectionService : ISectionService
 
     public async Task<SectionViewModel> Get(long sectionId)
     {
+        SectionViewModel sectionVM = new();
+        
         if (sectionId == 0)
         {
-            return new SectionViewModel();
+            return sectionVM;
         }
 
-        Section section = await _sectionRepository.GetByIdAsync(sectionId);
-
-        SectionViewModel sectionVM = new()
-        {
-            Id = section.Id,
-            Name = section.Name,
-            Description = section.Description
-        };
+        Section? section = await _sectionRepository.GetByIdAsync(sectionId);
+        sectionVM.Id = section.Id;
+        sectionVM.Name = section.Name;
+        sectionVM.Description = section.Description;
 
         return sectionVM;
     }
@@ -57,7 +58,7 @@ public class SectionService : ISectionService
     {
         long createrId = await _userService.LoggedInUser();
 
-        Section section = new();
+        Section? section = new();
         ResponseViewModel response = new();
 
         if (sectionVM.Id == 0)

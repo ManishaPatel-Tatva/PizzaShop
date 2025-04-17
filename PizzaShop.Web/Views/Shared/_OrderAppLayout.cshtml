@@ -47,7 +47,7 @@
                         }
                         @if (User.IsInRole("Account Manager"))
                         {
-                            <a
+                            <a asp-action="Index" asp-controller="WaitingList"
                                 class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1 @((ViewData["app-active"] as string) == "Waiting List" ? "bg-sky-blue" : "")">
                                 <img src="/images/icons/clock-fill.svg" alt="">
                                 <span class="text-white d-none d-sm-block text-nowrap ">
@@ -61,9 +61,9 @@
                                     Tables
                                 </span>
                             </a>
-                            <a class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1"
-                                @((ViewData["app-active"] as string) == "Menu" ? "bg-sky-blue" : "")>
-                                <img src="/images/icons/food-white.svg" alt="" width="16px">
+                            <a asp-action="Index" asp-controller="AppMenu"
+                                class="d-flex justify-content-center align-items-center border rounded-5 p-2 gap-1 @((ViewData["app-active"] as string) == "Menu" ? "bg-sky-blue" : "")">
+                                <img src="/images/icons/food-white.svg" alt="" width="18px">
                                 <span class="text-white d-none d-sm-block">
                                     Menu
                                 </span>

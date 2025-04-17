@@ -157,12 +157,9 @@
         })
 
         function changeQuantity(itemId, num) {
-            console.log(itemId, num);
             let quantity = Number($(".item-quantity-" + itemId).val());
             let max = Number($(".item-quantity-" + itemId).prop("max"));
-            console.log(quantity, max);
             if (quantity + num > 0 && quantity + num <= max) {
-                console.log(quantity + num);
                 $(".item-quantity-" + itemId).val(quantity + num);
             }
         }

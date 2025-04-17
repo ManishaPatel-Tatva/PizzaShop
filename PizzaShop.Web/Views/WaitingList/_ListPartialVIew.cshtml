@@ -1,0 +1,52 @@
+@using PizzaShop.Entity.ViewModels
+@model List<WaitingTokenViewModel>
+
+<!-- Table -->
+<div class="table-responsive p-2">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col" class="col">#Token No</th>
+                <th scope="col" class="col">Created At</th>
+                <th scope="col" class="col">Waiting Time</th>
+                <th scope="col" class="col">Name</th>
+                <th scope="col" class="col">No .of Persons</th>
+                <th scope="col" class="col">Phone Number</th>
+                <th scope="col" class="col">Email</th>
+                <th scope="col" class="col">Action</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @foreach (WaitingTokenViewModel? token in Model)
+            {
+                <tr>
+                    <td>#@token.Id</td>
+                    <td>@token.CreatedAt</td>
+                    <td>0 hrs 1 min</td>
+                    <td>@token.Name</td>
+                    <td>@token.Members</td>
+                    <td>@token.Phone</td>
+                    <td>@token.Email</td>
+                    <td class="text-center">
+                        <div class="d-flex flex-row">
+                            <button type="button" class="editTokenBtn btn ps-0" data-bs-toggle="modal"
+                                data-bs-target="#editTableModal" data-id="@token.Id" onclick="waitingToken(@token.Id)">
+                                <img src="~/images/icons/edit.svg" alt="" />
+                            </button>
+
+                            <button type="button" class="deleteTokenBtn btn ps-0" data-bs-toggle="modal"
+                                data-bs-target="#deleteTokenModal" data-id="">
+                                <img src="~/images/icons/delete.svg" alt="">
+                            </button>
+
+                            <button type="button" class="assignTableBtn btn ps-0" data-bs-toggle="modal"
+                                data-bs-target="#deleteTableModal" data-id="">
+                                <img src="~/images/icons/person-check.svg" alt="" width="18px">
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

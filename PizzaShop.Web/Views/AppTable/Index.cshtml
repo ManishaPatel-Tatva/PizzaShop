@@ -112,10 +112,13 @@
 
     @* Waiting Token Modal *@
     <script>
-        function waitingToken() {
+        function waitingToken(tokenId) {
             $.ajax({
-                url: '@Url.Action("WaitingTokenModal", "AppTable")',
+                url: '@Url.Action("WaitingTokenModal", "WaitingList")',
                 type: "GET",
+                data: {
+                    tokenId : tokenId
+                },
                 dataType: "html",
                 success: function (data) {
                     $("#waitingTokenModal").modal("show");
@@ -182,8 +185,12 @@
     @* Select and assign table*@
     <script>
         let currentSection;
-        let tableList[];
+        let tableList = [];
 
+        $(document).on("click", ".table-card", function(){
+            $(this).addClass
+        })
+        
         
     </script>
 

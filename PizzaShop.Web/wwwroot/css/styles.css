@@ -17,8 +17,12 @@ a{
     background-color: #F2F2F2 !important;
 }
 
-.bg-dark-grey{
+.bg-light-grey{
     background-color: #f9f9f9;
+}
+
+.bg-dark-grey{
+    background-color: #a1a9b3;
 }
 
 .bg-cream{
@@ -619,4 +623,13 @@ table td,th{
 
 .table-card{
     width: 280px;
+}
+
+/* Waiting List */
+.num-circle{
+    background-color: #a1a9b3;
+    color: white;
+    font-weight: 600;
+    border-radius: 50%;
+    padding: 5px 12px;
 }
