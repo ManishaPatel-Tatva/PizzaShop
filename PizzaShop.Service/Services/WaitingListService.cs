@@ -24,11 +24,11 @@ public class WaitingListService : IWaitingListService
 
     #region Get
 
-    public async Task<WaitingToken> Get(long tokenId)
-    {
+    // public async Task<WaitingToken> Get(long tokenId)
+    // {
 
-        if (tokenId == 0)
-    }
+    //     if (tokenId == 0)
+    // }
 
 
     public async Task<List<WaitingTokenViewModel>> List(long sectionId)

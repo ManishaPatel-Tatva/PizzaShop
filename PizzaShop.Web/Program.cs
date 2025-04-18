@@ -8,6 +8,7 @@ using PizzaShop.Repository.Repositories;
 using PizzaShop.Service.Configuration;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Services;
+using PizzaShop.Web.Middleware;
 using Rotativa.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -154,6 +155,7 @@ app.UseRouting();
 app.UseSession();
 
 app.UseAuthentication();
+app.UseMiddleware<RolePermissionMiddleware>();
 app.UseAuthorization();
 
 // Rotativa
