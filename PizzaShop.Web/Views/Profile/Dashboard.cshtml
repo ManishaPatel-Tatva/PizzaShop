@@ -9,3 +9,296 @@
         <h1 class="blue-text">Dashboard</h1>
     </div>
 </div>
+ 
+<div class="row gx-4 ">
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="bg-white shadow rounded p-2 h-100">
+            <div class="d-flex justify-content-end ">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(93, 214, 93);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(93, 214, 93);">
+                        <img src="~/images/icons/total-sales.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-start">
+                <h2 class="text-left"> &#x20b9; 1600</h2>
+            </div>
+            <div class="d-flex justify-content-start">
+                <span>Total Sales</span>
+            </div>
+        </div>
+ 
+    </div>
+ 
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="bg-white shadow rounded p-2 h-100">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(255, 118, 255);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(255, 118, 255);">
+                        <img src="~/images/icons/total-orders.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-start">
+                <h2 class="text-left"> 1</h2>
+            </div>
+            <div class="d-flex justify-content-start">
+                <span>Total Orders</span>
+            </div>
+        </div>
+ 
+    </div>
+ 
+    <div class="col-12 mt-2 col-sm-6 col-lg-3 ">
+        <div class="bg-white shadow rounded p-2 h-100">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(180, 180, 180);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(180, 180, 180);">
+                        <img src="~/images/icons/total-orders.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-start">
+                <h2 class="text-left"> &#x20b9; 1630</h2>
+            </div>
+            <div class="d-flex justify-content-start">
+                <span>Avg Order Value</span>
+            </div>
+        </div>
+ 
+    </div>
+ 
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="bg-white shadow rounded p-2 h-100">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(255, 118, 64);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(255, 118, 64);">
+                        <img src="~/images/icons/waiting-time.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-start">
+                <h2 class="text-left"> 6.96 mins</h2>
+            </div>
+            <div class="d-flex justify-content-start">
+                <span>Avg Waiting Time</span>
+            </div>
+        </div>
+ 
+    </div>
+</div>
+ 
+<div class="row gx-4 mt-4">
+    <div class="col mt-2">
+        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
+            <h4>Revenue</h4>
+            <div class="chart">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col mt-2">
+        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
+            <h4>Customer Growth</h4>
+            <div class="chart">
+                <canvas id="customerGrowthChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row d-flex mt-4">
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
+            <h4>Top Selling Items</h4>
+            <div class="d-flex justify-content-start align-items-center">
+                <span>#1</span>
+                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
+                <div class="d-flex flex-column">
+                    <span>Grilled Burger</span>
+                    <div class="d-flex">
+                         1 Order
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-start align-items-center">
+                <span>#2</span>
+                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
+                <div class="d-flex flex-column">
+                    <span>Grilled Burger</span>
+                    <div class="d-flex">
+                         1 Order
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="d-flex flex-column bg-white shadow rounded p-2">
+            <h4>Least Selling Items</h4>
+            <div class="d-flex justify-content-start align-items-center">
+                <span>#1</span>
+                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
+                <div class="d-flex flex-column">
+                    <span>Grilled Burger</span>
+                    <div class="d-flex">
+                         1 Order
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-start align-items-center">
+                <span>#2</span>
+                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
+                <div class="d-flex flex-column">
+                    <span>Grilled Burger</span>
+                    <div class="d-flex">
+                         1 Order
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="bg-white shadow rounded p-2  h-100 d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid orange;">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: orange;">
+                        <img src="~/images/icons/waiting-list.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">5</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Waiting List Count</span>
+                </div>
+            </div>
+ 
+        </div>
+    </div>
+    <div class="col-12 mt-2 col-sm-6 col-lg-3">
+        <div class="bg-white shadow rounded p-2  h-100 d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid orange;">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: orange;">
+                        <img src="~/images/icons/waiting-list.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">5</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Waiting List Count</span>
+                </div>
+            </div>
+ 
+        </div>
+    </div>
+</div>
+ 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById("myChart").getContext("2d");
+ 
+        new Chart(ctx, {
+            type: "line", // Line chart type
+            data: {
+                labels: Array.from({ length: 31 }, (_, i) => i + 1), // Generate numbers from 1 to 31
+                datasets: [{
+                    label: "Revenue (₹)",
+                    data: Array.from({ length: 31 }, () => Math.floor(Math.random() * 10000) + 5000), // Random data for each day
+                    backgroundColor: "rgba(75, 192, 192, 0.2)", // Light fill color
+                    borderColor: "rgba(75, 192, 192, 1)", // Line color
+                    borderWidth: 2,
+                    fill: true, // Fill area under line
+                    tension: 0.3 // Smooth curve effect
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                        }
+                    }
+                }
+            }
+        });
+ 
+        var ctx2 = document.getElementById("customerGrowthChart").getContext("2d");
+ 
+        new Chart(ctx2, {
+            type: "line",
+            data: {
+                labels: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                ],
+                datasets: [{
+                    label: "Customer Growth",
+                    data: [100, 250, 400, 550, 700, 850, 1000, 1300, 1600, 1900, 2200, 2500],
+                    backgroundColor: "rgba(54, 162, 235, 0.2)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Months"
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            drawTicks: false,
+                            drawBorder: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+ 
+</script>
+ 

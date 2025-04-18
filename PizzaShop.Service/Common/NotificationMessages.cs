@@ -18,6 +18,10 @@ public static class NotificationMessages
     public const string NotFound = "{0} not found!" + TryAgain;
     public const string Invalid = "Invalid {0}!" + TryAgain ;
     public const string AtleastOne = "Select atleast one {0}!" + TryAgain;
+    public const string Successfully = "{0} Sucessfully!";
+    public const string Failed = "{0} Failed!";
+
+
 
     //Login
     public const string LinkExpired = "Link expired!" + TryAgain;

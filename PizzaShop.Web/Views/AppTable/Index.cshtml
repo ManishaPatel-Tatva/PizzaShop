@@ -117,7 +117,7 @@
                 url: '@Url.Action("WaitingTokenModal", "WaitingList")',
                 type: "GET",
                 data: {
-                    tokenId : tokenId
+                    tokenId: tokenId
                 },
                 dataType: "html",
                 success: function (data) {
@@ -167,9 +167,6 @@
                 data: { email: $(this).val() },
                 type: "GET",
                 success: function (response) {
-                    console.log(response);
-                    console.log(response.name);
-
                     $("#customerId").val(response.id);
                     $("#customerName").val(response.name);
                     $("#customerPhone").val(response.phone);
@@ -182,26 +179,24 @@
         });
     </script>
 
-    @* Select and assign table*@
-    <script>
-        let currentSection;
-        let tableList = [];
-
-        $(document).on("click", ".table-card", function(){
-            $(this).addClass
-        })
-        
-        
-    </script>
-
     @* Assign Table Offcanvas *@
     <script>
-        let sectionId;
 
-        function rightOffcanvas() {
+        function setData(response) {
+            $("#customerId").val(response.id);
+            $("#customerName").val(response.name);
+            $("#customerPhone").val(response.phone);
+            $("#customerEmail").val(response.email);
+            $("#noOfPersons").val(response.members);
+        }
+
+        function rightOffcanvas(sectionId) {
             $.ajax({
                 url: '@Url.Action("OffCanvas", "AppTable")',
                 type: "GET",
+                data: {
+                    sectionId: sectionId
+                },
                 dataType: "html",
                 success: function (data) {
                     $("#offcanvasRight").html(data);
@@ -214,10 +209,47 @@
         }
     </script>
 
+    <script>
+
+        let tableList = [];
+        let currentSection = 0;
+
+        function selectTable(tag) {
+            let tableId = $(tag).data("id");
+            let sectionId = $(tag).data("sectionid");
+            let capacity = $(tag).data("capacity");
+
+            if (sectionId != currentSection) {
+                tableList = [];
+                currentSection = sectionId;
+                $(".table-card").removeClass("table-selected");
+                $(".btn-assign").prop("disabled", true);
+            }
+
+            $(tag).toggleClass("table-selected");
+
+            if (!tableList.some(t => t.Id == tableId)) {
+                tableList.push({ Id: tableId, Capacity: capacity });
+            }
+            else {
+                tableList = tableList.filter(t => t.Id != tableId);
+            }
+
+            if (tableList.length > 0) {
+                $("#btn-assign-" + sectionId).prop("disabled", false);
+            }
+            else {
+                $("#btn-assign-" + sectionId).prop("disabled", true);
+            }
+        }
+    </script>
+
     @* Assign Table Offcanvas Form Submit *@
     <script>
-        $(document).on("submit", "#saveWTForm", function (e) {
+        $(document).on("submit", "#assignTableForm", function (e) {
             e.preventDefault();
+
+            $("#tableList").val(JSON.stringify(tableList));
 
             $.ajax({
                 url: $(this).attr("action"),
@@ -226,7 +258,7 @@
                 success: function (response) {
                     console.log("response after submission is", response);
                     if (response.success) {
-                        $("#waitingTokenModal").modal("hide");
+                        $("#offcanvasRight").offcanvas("hide");
                         toastr.success(response.message);
                     }
                     else {
@@ -239,6 +271,5 @@
             });
         });
     </script>
-
 
 }

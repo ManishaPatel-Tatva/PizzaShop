@@ -6,4 +6,5 @@ public interface IWaitingListService
 {
     Task<List<WaitingTokenViewModel>> List(long sectionId);
     Task<ResponseViewModel> Save(WaitingTokenViewModel wtokenVM);
+    Task<ResponseViewModel> Delete(long tokenId);
 }

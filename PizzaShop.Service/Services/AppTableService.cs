@@ -11,16 +11,16 @@ namespace PizzaShop.Service.Services;
 public class AppTableService : IAppTableService
 {
     private readonly IGenericRepository<Section> _sectionRepository;
-    private readonly IGenericRepository<WaitingToken> _waitingTokenRepository;
+    private readonly IGenericRepository<OrderTableMapping> _orderTableRepository;
+    private readonly IWaitingListService _waitingService;
     private readonly IUserService _userService;
-    private readonly ICustomerService _customerService;
 
-    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IUserService userService, ICustomerService customerService)
+    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService)
     {
         _sectionRepository = sectionRepository;
-        _waitingTokenRepository = waitingTokenRepository;
+        _orderTableRepository = orderTableRepository;
+        _waitingService = waitingService;
         _userService = userService;
-        _customerService = customerService;
     }
 
     #region  Get
@@ -71,6 +71,43 @@ public class AppTableService : IAppTableService
     }
 
     #endregion Get
+
+    #region  Add
+
+    public async Task<ResponseViewModel> Add(AssignTableViewModel assignTableVM)
+    {
+        ResponseViewModel response = await _waitingService.Save(assignTableVM.CustomerDetail);
+        if(!response.Success)
+        {
+            return response;
+        }
+
+        foreach(TableViewModel? table in assignTableVM.Tables)
+        {
+            OrderTableMapping mapping = new()
+            {
+                TableId = table.Id,
+                CustomerId = assignTableVM.CustomerDetail.CustomerId,
+                CreatedBy = await _userService.LoggedInUser()
+            };
+
+            if(!await _orderTableRepository.AddAsync(mapping))
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
+            }
+        }
+
+        response.Success = true;
+        response.Message = NotificationMessages.Successfully.Replace("{0}", "Table Assigned");
+
+        // Is assigned true 
+        await _waitingService.Delete(response.EntityId);
+
+        return response;
+    }
+
+    #endregion Add
 
     
 

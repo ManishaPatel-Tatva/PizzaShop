@@ -114,9 +114,12 @@ public class WaitingListService : IWaitingListService
             token.UpdatedBy = createrId;
             token.UpdatedAt = DateTime.Now;
 
+            response.EntityId = token.Id;
+
             if (wtokenVM.Id == 0)
             {
-                if (await _waitingTokenRepository.AddAsync(token))
+                response.EntityId = await _waitingTokenRepository.AddAsyncReturnId(token);
+                if (response.EntityId > 0)
                 {
                     response.Success = true;
                     response.Message = NotificationMessages.Added.Replace("{0}", "Waiting Token");
@@ -154,7 +157,37 @@ public class WaitingListService : IWaitingListService
         }
     }
 
-
     #endregion Save
+
+    #region  Delete
+
+    public async Task<ResponseViewModel> Delete(long tokenId)
+    {
+        WaitingToken? token = await _waitingTokenRepository.GetByIdAsync(tokenId);
+        ResponseViewModel response = new();
+
+        if (token == null)
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.NotFound.Replace("{0}", "Waiting Token");
+        }
+
+        token.IsDeleted = true;
+        if (await _waitingTokenRepository.UpdateAsync(token))
+        {
+            response.Success = true;
+            response.Message = NotificationMessages.Deleted.Replace("{0}", "Waiting Token");
+        }
+        else
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.DeletedFailed.Replace("{0}", "Waiting Token");
+        }
+
+        return response;
+
+    }
+
+    #endregion Delete
 
 }

@@ -303,7 +303,6 @@ public class CustomerService : ICustomerService
             response.EntityId = await _customerRepository.AddAsyncReturnId(customer);
             if (response.EntityId > 0)
             {
-                
                 response.Success = true;
                 response.Message = NotificationMessages.Added.Replace("{0}", "Customer");
             }
