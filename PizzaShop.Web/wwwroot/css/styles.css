@@ -81,6 +81,10 @@ a{
     border: 1px solid #0066A8 !important;
 }
 
+.sortBtn[data-order="desc"]{
+    margin-left: -10px;
+}
+
 /* Width */
 .w-55{
     width: 55%;

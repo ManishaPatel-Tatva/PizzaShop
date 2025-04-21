@@ -301,29 +301,13 @@ public class CustomerService : ICustomerService
         if (customerVM.Id == 0)
         {
             response.EntityId = await _customerRepository.AddAsyncReturnId(customer);
-            if (response.EntityId > 0)
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Added.Replace("{0}", "Customer");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Customer");
-            }
+            response.Success = response.EntityId > 0;
+            response.Message = response.EntityId > 0 ? NotificationMessages.Added.Replace("{0}", "Customer") : NotificationMessages.AddedFailed.Replace("{0}", "Customer");
         }
         else
         {
-            if (await _customerRepository.UpdateAsync(customer))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Updated.Replace("{0}", "Customer");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Customer");
-            }
+            response.Success = await _customerRepository.UpdateAsync(customer);
+            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Customer") : NotificationMessages.UpdatedFailed.Replace("{0}", "Customer");
         }
 
         return response;

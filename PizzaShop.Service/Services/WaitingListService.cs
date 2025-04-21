@@ -10,26 +10,81 @@ namespace PizzaShop.Service.Services;
 public class WaitingListService : IWaitingListService
 {
     private readonly IGenericRepository<WaitingToken> _waitingTokenRepository;
+    private readonly IGenericRepository<Section> _sectionRepository;
+    private readonly ISectionService _sectionService;
     private readonly IUserService _userService;
     private readonly ICustomerService _customerService;
-    private readonly ISectionService _sectionService;
+    private readonly ITableService _tableService;
 
-    public WaitingListService(IGenericRepository<WaitingToken> waitingTokenRepository, IUserService userService, ICustomerService customerService, ISectionService sectionService)
+    public WaitingListService(IGenericRepository<WaitingToken> waitingTokenRepository, IUserService userService, ICustomerService customerService, IGenericRepository<Section> sectionRepository, ITableService tableService, ISectionService sectionService)
     {
         _waitingTokenRepository = waitingTokenRepository;
         _userService = userService;
         _customerService = customerService;
+        _sectionRepository = sectionRepository;
+        _tableService = tableService;
         _sectionService = sectionService;
+
     }
 
     #region Get
+    public async Task<List<SectionViewModel>> Get()
+    {
+        IEnumerable<Section>? list = await _sectionRepository.GetByCondition(
+            predicate: s => !s.IsDeleted,
 
-    // public async Task<WaitingToken> Get(long tokenId)
-    // {
+            orderBy: q => q.OrderBy(s => s.Id),
+            includes: new List<Expression<Func<Section, object>>>
+            {
+                s => s.WaitingTokens
+            }
+        );
 
-    //     if (tokenId == 0)
-    // }
+        List<SectionViewModel> sections = list.Select(s => new SectionViewModel
+        {
+            Id = s.Id,
+            Name = s.Name,
+            TokenCount = s.WaitingTokens.Where(wt => wt.SectionId == s.Id && !wt.IsAssigned && !wt.IsDeleted).Count()
+        }).ToList();
 
+        return sections;
+    }
+
+    public async Task<WaitingTokenViewModel> Get(long tokenId)
+    {
+        WaitingTokenViewModel? tokenVM = new()
+        {
+            Sections = await _sectionService.Get()
+        };
+
+        if (tokenId == 0)
+        {
+            return tokenVM;
+        }
+
+        WaitingToken? token = _waitingTokenRepository.GetByCondition(
+            predicate: t => t.Id == tokenId && !t.IsDeleted,
+            includes: new List<Expression<Func<WaitingToken, object>>>
+            {
+                t => t.Customer
+            }
+        ).Result.FirstOrDefault();
+
+        if (token == null)
+        {
+            return tokenVM;
+        }
+
+        tokenVM.Id = tokenId;
+        tokenVM.CustomerId = token.CustomerId;
+        tokenVM.Name = token.Customer.Name;
+        tokenVM.Email = token.Customer.Email;
+        tokenVM.Phone = token.Customer.Phone;
+        tokenVM.Members = token.Members;
+        tokenVM.SectionId = token.SectionId;
+
+        return tokenVM;
+    }
 
     public async Task<List<WaitingTokenViewModel>> List(long sectionId)
     {
@@ -37,6 +92,7 @@ public class WaitingListService : IWaitingListService
         {
             IEnumerable<WaitingToken>? list = await _waitingTokenRepository.GetByCondition(
                 predicate: wt => !wt.IsDeleted
+                            && !wt.IsAssigned
                             && (sectionId == 0 || wt.SectionId == sectionId),
                 orderBy: q => q.OrderBy(w => w.Id),
                 includes: new List<Expression<Func<WaitingToken, object>>>
@@ -49,6 +105,7 @@ public class WaitingListService : IWaitingListService
             {
                 Id = w.Id,
                 CreatedAt = w.CreatedAt,
+                CustomerId = w.CustomerId,
                 Name = w.Customer.Name,
                 Members = w.Members,
                 Phone = w.Customer.Phone,
@@ -95,6 +152,14 @@ public class WaitingListService : IWaitingListService
 
             if (wtokenVM.Id == 0)
             {
+                //Check if waiting token already existing for that customer
+                WaitingToken? existingToken = await _waitingTokenRepository.GetByStringAsync(wt => wt.CustomerId == wtokenVM.CustomerId && !wt.IsDeleted);
+                if (existingToken != null)
+                {
+                    response.Success = false;
+                    response.Message = NotificationMessages.AlreadyExisted.Replace("{0}", "Waiting Token");
+                    return response;
+                }
                 token.CreatedBy = createrId;
             }
             else if (wtokenVM.Id > 0)
@@ -119,29 +184,13 @@ public class WaitingListService : IWaitingListService
             if (wtokenVM.Id == 0)
             {
                 response.EntityId = await _waitingTokenRepository.AddAsyncReturnId(token);
-                if (response.EntityId > 0)
-                {
-                    response.Success = true;
-                    response.Message = NotificationMessages.Added.Replace("{0}", "Waiting Token");
-                }
-                else
-                {
-                    response.Success = false;
-                    response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Waiting Token");
-                }
+                response.Success = response.EntityId > 0;
+                response.Message = response.Success ? NotificationMessages.Added.Replace("{0}", "Waiting Token") : NotificationMessages.AddedFailed.Replace("{0}", "Waiting Token");
             }
             else
             {
-                if (await _waitingTokenRepository.UpdateAsync(token))
-                {
-                    response.Success = true;
-                    response.Message = NotificationMessages.Updated.Replace("{0}", "Waiting Token");
-                }
-                else
-                {
-                    response.Success = false;
-                    response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Waiting Token");
-                }
+                response.Success = await _waitingTokenRepository.UpdateAsync(token);
+                response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Waiting Token") : NotificationMessages.UpdatedFailed.Replace("{0}", "Waiting Token");
             }
 
             return response;
@@ -155,6 +204,19 @@ public class WaitingListService : IWaitingListService
                 ExMessage = ex.Message
             };
         }
+    }
+
+    public async Task<bool> AssignTable(long tokenId)
+    {
+        WaitingToken? token = await _waitingTokenRepository.GetByIdAsync(tokenId);
+
+        if (token == null)
+        {
+            return false;
+        }
+
+        token.IsAssigned = true;
+        return await _waitingTokenRepository.UpdateAsync(token);
     }
 
     #endregion Save
@@ -173,19 +235,9 @@ public class WaitingListService : IWaitingListService
         }
 
         token.IsDeleted = true;
-        if (await _waitingTokenRepository.UpdateAsync(token))
-        {
-            response.Success = true;
-            response.Message = NotificationMessages.Deleted.Replace("{0}", "Waiting Token");
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.DeletedFailed.Replace("{0}", "Waiting Token");
-        }
-
+        response.Success = await _waitingTokenRepository.UpdateAsync(token);
+        response.Message = response.Success ? NotificationMessages.Deleted.Replace("{0}", "Waiting Token") : NotificationMessages.DeletedFailed.Replace("{0}", "Waiting Token");
         return response;
-
     }
 
     #endregion Delete

@@ -139,9 +139,17 @@ public class GenericRepository<T> : IGenericRepository<T>
 
     /*----------------------retrieves a single record from the database by its primary key (id)----------------------------------------
     -------------------------------------------------------------------------------------------------------*/
+    public async Task<T?> GetByIdAsync(long id)
+    {
+        try{
+            return await _dbSet.FindAsync(id);
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
+    } 
 
-
-    public async Task<T?> GetByIdAsync(long id) => await _dbSet.FindAsync(id);
 
     /*----------------------fetches a single record from the database based on a given condition----------------------------------------
     -------------------------------------------------------------------------------------------------------*/

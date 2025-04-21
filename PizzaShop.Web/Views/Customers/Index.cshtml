@@ -196,6 +196,7 @@
 
             $.ajax({
                 url: '@Url.Action("ExportExcel", "Customers")',
+                type: "POST",
                 data: { filter },
                 xhrFields: { responseType: 'blob'},
                 success: function (data, status, xhr) 

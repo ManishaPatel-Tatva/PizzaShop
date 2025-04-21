@@ -13,4 +13,5 @@ public class SectionViewModel
     [Required(ErrorMessage = "Description is required")]
     public string? Description { get; set; } = null!;
     public List<TableCardViewModel>? Tables { get; set; } = new List<TableCardViewModel>();
+    public int TokenCount { get; set; } = 0;
 }

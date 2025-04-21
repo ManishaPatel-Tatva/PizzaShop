@@ -14,13 +14,15 @@ public class AppTableService : IAppTableService
     private readonly IGenericRepository<OrderTableMapping> _orderTableRepository;
     private readonly IWaitingListService _waitingService;
     private readonly IUserService _userService;
+    private readonly ITableService _tableService;
 
-    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService)
+    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService, ITableService tableService)
     {
         _sectionRepository = sectionRepository;
         _orderTableRepository = orderTableRepository;
         _waitingService = waitingService;
         _userService = userService;
+        _tableService = tableService;
     }
 
     #region  Get
@@ -50,10 +52,8 @@ public class AppTableService : IAppTableService
                     Id = t.Id,
                     TableName = t.Name,
                     TableStatus = t.Status.Name,
-                    OrderAmount = t.OrderTableMappings
-                                .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
-                                .Select(otm => otm.Order.FinalAmount)
-                                .FirstOrDefault(),
+                    OrderAmount = t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Any(otm => otm.OrderId == null)  ?  0 :
+                                t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Select(otm => otm.Order.FinalAmount).FirstOrDefault(),
                     OrderTime = t.OrderTableMappings
                                 .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
                                 .Select(otm => otm.CreatedAt)
@@ -76,34 +76,42 @@ public class AppTableService : IAppTableService
 
     public async Task<ResponseViewModel> Add(AssignTableViewModel assignTableVM)
     {
-        ResponseViewModel response = await _waitingService.Save(assignTableVM.CustomerDetail);
+        //Add Waiting Token
+        ResponseViewModel response = await _waitingService.Save(assignTableVM.WaitingToken);
         if(!response.Success)
         {
             return response;
         }
 
+        //Assign Table
         foreach(TableViewModel? table in assignTableVM.Tables)
         {
             OrderTableMapping mapping = new()
             {
                 TableId = table.Id,
-                CustomerId = assignTableVM.CustomerDetail.CustomerId,
+                CustomerId = assignTableVM.WaitingToken.CustomerId,
                 CreatedBy = await _userService.LoggedInUser()
             };
 
-            if(!await _orderTableRepository.AddAsync(mapping))
+            //Change table Status from available to assigned
+            response.Success = await _tableService.AssignTable(table.Id);
+            if(!response.Success)
             {
-                response.Success = false;
                 response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
+                return response;
+            }
+
+            //Order Table Mappping
+            response.Success = await _orderTableRepository.AddAsync(mapping);
+            if(!response.Success)
+            {
+                response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
+                return response;
             }
         }
 
-        response.Success = true;
-        response.Message = NotificationMessages.Successfully.Replace("{0}", "Table Assigned");
-
-        // Is assigned true 
-        await _waitingService.Delete(response.EntityId);
-
+        response.Success = await _waitingService.AssignTable(response.EntityId);
+        response.Message = response.Success ? NotificationMessages.Successfully.Replace("{0}", "Table Assigned") : NotificationMessages.Failed.Replace("{0}", "Table assignment");
         return response;
     }
 

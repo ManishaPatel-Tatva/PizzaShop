@@ -27,8 +27,8 @@
                     </td>
                     <td>@table.Capacity</td>
                     <td>
-                        <span class="@table.StatusName.ToLower() py-1 px-3 rounded-5">
-                            @table.StatusName
+                        <span class="@(table.StatusName.ToLower() == "available" ? "available" : "occupied") py-1 px-3 rounded-5">
+                            @(table.StatusName.ToLower() == "available" ? "Available" : "Occupied")
                         </span>
                     </td>
                     <td>

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
 
@@ -13,12 +14,12 @@ public class MenuController : Controller
 {
     private readonly IJwtService _jwtService;
     private readonly ICategoryService _categoryService;
-    private readonly ICategoryItemService _categoryItemService;
+    private readonly IItemService _ItemService;
     private readonly IModifierService _modifierService;
 
-    public MenuController(ICategoryItemService categoryItemService, IJwtService jwtService, IModifierService modifierService, ICategoryService categoryService)
+    public MenuController(IItemService ItemService, IJwtService jwtService, IModifierService modifierService, ICategoryService categoryService)
     {
-        _categoryItemService = categoryItemService;
+        _ItemService = ItemService;
         _jwtService = jwtService;
         _modifierService = modifierService;
         _categoryService = categoryService;
@@ -46,7 +47,17 @@ public class MenuController : Controller
         return View(model);
     }
     #region Category
-    /*--------------------------------------------------------AddCategory--------------------------------------------------------------------------------------------------------
+     /*-------------------------------------------------------- Get Category---------------------------------------------------------------------------------------------------
+   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    [CustomAuthorize("Edit_Menu")]
+    [HttpGet]
+    public async Task<IActionResult> GetCategoryModal(long categoryId)
+    {
+        CategoryViewModel category = await _categoryService.Get(categoryId);
+        return PartialView("_CategoryPartialView", category);
+    }
+
+    /*--------------------------------------------------------Add/Edit Category--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
     [HttpPost]
@@ -55,19 +66,11 @@ public class MenuController : Controller
         ResponseViewModel response = await _categoryService.Save(category);
         if (!response.Success)
         {
+            TempData["NotificationMessage"] = response.Message;
+            TempData["NotificationType"] = NotificationType.Error.ToString();
             return PartialView("_CategoryPartialView", category);
         }
         return Json(response);
-    }
-    
-    /*-------------------------------------------------------- Update Category---------------------------------------------------------------------------------------------------
-   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("Edit_Menu")]
-    [HttpGet]
-    public async Task<IActionResult> GetCategoryModal(long categoryId)
-    {
-        CategoryViewModel category = await _categoryService.Get(categoryId);
-        return PartialView("_CategoryPartialView", category);
     }
 
     /*--------------------------------------------------------Menu Index--------------------------------------------------------------------------------------------------------
@@ -83,44 +86,37 @@ public class MenuController : Controller
     #endregion Category
 
     #region Items
-
-    #region  Display Item
     /*--------------------------------------------------------Display Items--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("View_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search = "")
     {
-        ItemsPaginationViewModel? model = await _categoryItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
+        ItemsPaginationViewModel? model = await _ItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
         if (model == null)
         {
             return NotFound(); // This triggers AJAX error
         }
         return PartialView("_ItemsPartialView", model);
     }
-    #endregion Display Item
 
-    #region Get Add/Update
     /*--------------------------------------------------------Get Add/Update Items--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
     [HttpGet]
     public async Task<IActionResult> GetItemModal(long itemId)
     {
-        AddItemViewModel model = await _categoryItemService.GetEditItem(itemId);
+        AddItemViewModel model = await _ItemService.GetEditItem(itemId);
         return PartialView("_UpdateItemPartialView", model);
     }
 
     [CustomAuthorize("Edit_Menu")]
     public async Task<IActionResult> SelectModifierGroup(long modifierGroupId)
     {
-        ItemModifierViewModel model = await _categoryItemService.GetModifierOnSelection(modifierGroupId);
+        ItemModifierViewModel model = await _ItemService.GetModifierOnSelection(modifierGroupId);
         return PartialView("_ItemModifierPartialView", model);
     }
 
-    #endregion Get Add/Update
-
-    #region Update Item
     /*--------------------------------------------------------Add/Update Item--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
@@ -129,7 +125,7 @@ public class MenuController : Controller
     {
         if (!ModelState.IsValid)
         {
-            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+            AddItemViewModel updatedModel = await _ItemService.GetEditItem(model.ItemId);
             return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
@@ -141,11 +137,11 @@ public class MenuController : Controller
         string token = Request.Cookies["authToken"];
         string createrEmail = _jwtService.GetClaimValue(token, "email");
 
-        bool success = await _categoryItemService.AddUpdateItem(model, createrEmail);
+        bool success = await _ItemService.AddUpdateItem(model, createrEmail);
 
         if (!success)
         {
-            AddItemViewModel updatedModel = await _categoryItemService.GetEditItem(model.ItemId);
+            AddItemViewModel updatedModel = await _ItemService.GetEditItem(model.ItemId);
             return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
@@ -158,15 +154,13 @@ public class MenuController : Controller
             return Json(new { success = true, message = "Item Updated Successfully!" });
         }
     }
-    #endregion Update Item
 
-    #region Delete Item
     /*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Delete_Menu")]
     public async Task<IActionResult> SoftDeleteItem(long id)
     {
-        bool success = await _categoryItemService.SoftDeleteItem(id);
+        bool success = await _ItemService.SoftDeleteItem(id);
 
         if (!success)
         {
@@ -180,7 +174,7 @@ public class MenuController : Controller
     [CustomAuthorize("Delete_Menu")]
     public async Task<IActionResult> MassDeleteItems(List<long> itemsList)
     {
-        bool success = await _categoryItemService.MassDeleteItems(itemsList);
+        bool success = await _ItemService.MassDeleteItems(itemsList);
 
         if (!success)
         {
@@ -189,13 +183,9 @@ public class MenuController : Controller
         return Json(new { success = true, message = "All selected Items deleted Successfully!" });
     }
 
-    #endregion Delete Item
-
     #endregion Items
 
     #region Modifier Group
-
-    #region Modifier Tab
     /*-------------------------------------------------------- Read Modifier Group---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("View_Menu")]
@@ -209,9 +199,7 @@ public class MenuController : Controller
 
         return PartialView("_ModifierTabPartialView", model);
     }
-    #endregion Get Modifier Tab
 
-    #region Display Modifier Group
     /*-------------------------------------------------------- Get Modifier Group---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
@@ -221,9 +209,6 @@ public class MenuController : Controller
         ModifierGroupViewModel model = await _modifierService.GetModifierGroup(modifierGroupId);
         return PartialView("_ModifierGroupPartialView", model);
     }
-    #endregion Display Modifier Group
-
-    #region Add/Update Modifier Group
 
     [CustomAuthorize("Edit_Menu")]
     [HttpPost]
@@ -260,9 +245,7 @@ public class MenuController : Controller
         }
 
     }
-    #endregion Add/Update Modifier Group
 
-    #region Delete Modifier Group
     [CustomAuthorize("Delete_Menu")]
     [HttpPost]
     public async Task<IActionResult> DeleteModifierGroup(long modifierGroupId)
@@ -277,13 +260,9 @@ public class MenuController : Controller
         }
         return Json(new { success = true, message = "Modifier Group deleted Successfully!" });
     }
-    #endregion Delete Modifier Group
-
-    #endregion Modifier Group
+    #endregion
 
     #region Modifier
-
-    #region Display Modifiers
     /*-------------------------------------------------------- Get Modifier ---------------------------------------------------------------------------------------------------
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
@@ -322,10 +301,6 @@ public class MenuController : Controller
         return PartialView("_ExistingModifierPartialView", model);
     }
 
-    #endregion Display Modifiers
-
-    #region Add/Update Modifier
-
     [CustomAuthorize("Edit_Menu")]
     [HttpPost]
     public async Task<IActionResult> SaveModifier(ModifierViewModel model, string selectedMG)
@@ -353,9 +328,7 @@ public class MenuController : Controller
         return Json(new { success = true, message = "Modifier Added Successful!" });
 
     }
-    #endregion Add/Update Modifier
 
-    #region Delete Modifier
     /*--------------------------------------------------------Delete One Modifier--------------------------------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Delete_Menu")]
@@ -391,8 +364,6 @@ public class MenuController : Controller
         }
         return Json(new { success = true, message = "All selected Items deleted Successfully!" });
     }
-
-    #endregion Delete Modifier
 
     #endregion Modifier
 

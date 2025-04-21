@@ -42,49 +42,50 @@
         <form asp-action="AssignTable" asp-controller="AppTable" method="post" id="assignTableForm">
             <div class="modal-body row">
 
-                <input asp-for="CustomerDetail.SectionId" hidden>
-                <input asp-for="CustomerDetail.CustomerId" id="customerId" hidden >
+                <input asp-for="WaitingToken.Id" id="waitingTokenId" hidden>
+                <input asp-for="WaitingToken.SectionId" hidden>
+                <input asp-for="WaitingToken.CustomerId" id="customerId" hidden >
                 <input id="tableList" name="tableList" hidden>
 
                 <div class="form-floating mb-3">
-                    <input asp-for="CustomerDetail.Email" type="text" class="form-control" placeholder=""
-                        id="customerEmail">
-                    <label asp-for="CustomerDetail.Email">Email*</label>
-                    <span asp-validation-for="CustomerDetail.Email" class="text-danger"></span>
+                    <input asp-for="WaitingToken.Email" type="text" class="form-control" placeholder=""
+                        id="customerEmail" onblur="GetWaitingToken(this)">
+                    <label asp-for="WaitingToken.Email">Email*</label>
+                    <span asp-validation-for="WaitingToken.Email" class="text-danger"></span>
                 </div>
 
-                <input asp-for="CustomerDetail.CustomerId" id="customerId" hidden>
+                <input asp-for="WaitingToken.CustomerId" id="customerId" hidden>
 
                 <div class="form-floating mb-3">
-                    <input asp-for="CustomerDetail.Name" type="text" class="form-control" placeholder=""
+                    <input asp-for="WaitingToken.Name" type="text" class="form-control" placeholder=""
                         id="customerName">
-                    <label asp-for="CustomerDetail.Name">Name*</label>
-                    <span asp-validation-for="CustomerDetail.Name" class="text-danger"></span>
+                    <label asp-for="WaitingToken.Name">Name*</label>
+                    <span asp-validation-for="WaitingToken.Name" class="text-danger"></span>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input asp-for="CustomerDetail.Phone" type="text" class="form-control" placeholder=""
+                    <input asp-for="WaitingToken.Phone" type="text" class="form-control" placeholder=""
                         id="customerPhone">
-                    <label asp-for="CustomerDetail.Phone">Phone*</label>
-                    <span asp-validation-for="CustomerDetail.Phone" class="text-danger"></span>
+                    <label asp-for="WaitingToken.Phone">Phone*</label>
+                    <span asp-validation-for="WaitingToken.Phone" class="text-danger"></span>
                 </div>
 
                 <div class="col-6 form-floating mb-3">
-                    <input asp-for="CustomerDetail.Members" type="number" class="form-control" placeholder=""
+                    <input asp-for="WaitingToken.Members" type="number" class="form-control" placeholder=""
                         id="noOfPersons">
-                    <label asp-for="CustomerDetail.Members">No of Persons*</label>
-                    <span asp-validation-for="CustomerDetail.Members" class="text-danger"></span>
+                    <label asp-for="WaitingToken.Members">No of Persons*</label>
+                    <span asp-validation-for="WaitingToken.Members" class="text-danger"></span>
                 </div>
 
                 <div class="col-6 form-floating mb-3">
-                    <select asp-for="CustomerDetail.SectionId" class="form-select" aria-label="" id="sections" disabled>
-                        @foreach (SectionViewModel? sec in Model.CustomerDetail.Sections)
+                    <select asp-for="WaitingToken.SectionId" class="form-select" aria-label="" id="sections" disabled>
+                        @foreach (SectionViewModel? sec in Model.WaitingToken.Sections)
                         {
                             <option value="@sec.Id"> @sec.Name</option>
                         }
                     </select>
-                    <label asp-for="CustomerDetail.SectionId">Section*</label>
-                    <span asp-validation-for="CustomerDetail.SectionId" class="text-danger"></span>
+                    <label asp-for="WaitingToken.SectionId">Section*</label>
+                    <span asp-validation-for="WaitingToken.SectionId" class="text-danger"></span>
                 </div>
 
             </div>

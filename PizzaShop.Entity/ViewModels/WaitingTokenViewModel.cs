@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using PizzaShop.Entity.Models;
 
 namespace PizzaShop.Entity.ViewModels;
 

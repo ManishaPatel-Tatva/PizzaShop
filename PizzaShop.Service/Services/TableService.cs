@@ -122,33 +122,31 @@ public class TableService : ITableService
 
         if (tableVM.Id == 0)
         {
-            if (await _tableRepository.AddAsync(table))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Added.Replace("{0}", "Section");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Section");
-            }
+            response.Success = await _tableRepository.AddAsync(table);
+            response.Message = response.Success ? NotificationMessages.Added.Replace("{0}", "Section") : NotificationMessages.AddedFailed.Replace("{0}", "Section");
         }
         else
         {
-            if (await _tableRepository.UpdateAsync(table))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Updated.Replace("{0}", "Section");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Section");
-            }
+            response.Success = await _tableRepository.UpdateAsync(table);
+            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Section") : NotificationMessages.UpdatedFailed.Replace("{0}", "Section");
         }
 
         return response;
 
+    }
+
+    public async Task<bool> AssignTable(long tableId)
+    {
+        Table? table = await _tableRepository.GetByIdAsync(tableId);
+        
+        if (table == null)
+        {
+            return false;
+        }
+
+        table.StatusId = _tableStatusRepository.GetByStringAsync(s => s.Name == "Assigned").Result.Id;
+
+        return await _tableRepository.UpdateAsync(table);
     }
 
     #endregion Save
@@ -171,16 +169,8 @@ public class TableService : ITableService
         table.UpdatedBy = await _userService.LoggedInUser();
         table.UpdatedAt = DateTime.Now;
 
-        if (await _tableRepository.UpdateAsync(table))
-        {
-            response.Success = true;
-            response.Message = NotificationMessages.Deleted.Replace("{0}", "Table");
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.DeletedFailed.Replace("{0}", "Table");
-        }
+        response.Success = await _tableRepository.UpdateAsync(table);
+        response.Message = response.Success ? NotificationMessages.Deleted.Replace("{0}", "Table") : NotificationMessages.DeletedFailed.Replace("{0}", "Table");
         return response;
     }
 
@@ -189,7 +179,6 @@ public class TableService : ITableService
         ResponseViewModel response = new();
         foreach (long id in tableIdList)
         {
-
             response = await Delete(id);
             if (!response.Success)
             {

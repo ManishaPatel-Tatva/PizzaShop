@@ -158,7 +158,6 @@
             console.log("export function called");
             let filter = {
                 PageSize: $("#itemsPerPage").val(),
-                PageNumber: pageNumber,
                 Status:  $("#orderStatus").val(),
                 DateRange: $("#dateRange").val(),
                 FromDate: $("#fromDate").val(),
@@ -170,6 +169,7 @@
 
             $.ajax({
                 url: '@Url.Action("ExportExcel", "Orders")',
+                type: "POST",
                 data: { filter },
                 xhrFields: {
                     responseType: 'blob'

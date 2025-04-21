@@ -53,7 +53,7 @@ builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 
 //Menu service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ICategoryItemService, CategoryItemService>();
+builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IModifierService, ModifierService>();
 
 //Table and Section

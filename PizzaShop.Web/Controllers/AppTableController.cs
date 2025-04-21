@@ -37,14 +37,14 @@ public class AppTableController : Controller
     [HttpGet]
     public async Task<IActionResult> OffCanvas(long sectionId)
     {
-        AssignTableViewModel waitingToken = new()
+        AssignTableViewModel assignTable = new()
         {
             WaitingList = await _waitingListService.List(sectionId)
         };
-        waitingToken.CustomerDetail.Sections = await _sectionService.Get();
-        waitingToken.CustomerDetail.SectionId = sectionId;
+        assignTable.WaitingToken.Sections = await _sectionService.Get();
+        assignTable.WaitingToken.SectionId = sectionId;
 
-        return PartialView("_OffCanvasPartialView", waitingToken);
+        return PartialView("_OffCanvasPartialView", assignTable);
     }
 
     [HttpPost]
@@ -58,8 +58,5 @@ public class AppTableController : Controller
         ResponseViewModel response = await _appTableService.Add(token);
         return Json(response);
     }
-
-
-
 
 }

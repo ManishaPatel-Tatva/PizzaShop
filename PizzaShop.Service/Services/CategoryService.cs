@@ -24,7 +24,7 @@ public class CategoryService : ICategoryService
     {
         IEnumerable<Category>? categories = await _categoryRepository.GetByCondition(
             predicate: c => !c.IsDeleted,
-            orderBy: q => q.OrderBy(c => c.Name)
+            orderBy: q => q.OrderBy(c => c.Id)
             );
 
         List<CategoryViewModel>? list = categories.Select(category => new CategoryViewModel
@@ -66,6 +66,14 @@ public class CategoryService : ICategoryService
     {
         long createrId = await _userService.LoggedInUser();
         ResponseViewModel response = new();
+
+        Category? existingCategory = await _categoryRepository.GetByStringAsync(c => c.Name.ToLower() == categoryVM.Name.ToLower() && !c.IsDeleted);
+        if (existingCategory != null)
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.AlreadyExisted.Replace("{0}","Category");
+            return response;
+        }
 
         Category? category = new();
 
