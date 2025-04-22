@@ -22,25 +22,28 @@
                 <tr>
                     <td>#@token.Id</td>
                     <td>@token.CreatedAt</td>
-                    <td>0 hrs 1 min</td>
+                    <td>
+                        <span class="order-time" data-time="@token.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")">
+                            <span class="time-difference"></span>
+                        </span>
+                    </td>
                     <td>@token.Name</td>
                     <td>@token.Members</td>
                     <td>@token.Phone</td>
                     <td>@token.Email</td>
                     <td class="text-center">
                         <div class="d-flex flex-row">
-                            <button type="button" class="editTokenBtn btn ps-0" data-bs-toggle="modal"
-                                data-bs-target="#editTableModal" data-id="@token.Id" onclick="waitingToken(@token.Id)">
+                            <button type="button" class="editBtn btn ps-0" data-id="@token.Id" onclick="waitingToken(@token.Id)">
                                 <img src="~/images/icons/edit.svg" alt="" />
                             </button>
 
-                            <button type="button" class="deleteTokenBtn btn ps-0" data-bs-toggle="modal"
-                                data-bs-target="#deleteTokenModal" data-id="">
+                            <button type="button" class="deleteBtn btn ps-0" data-bs-toggle="modal"
+                                data-bs-target="#deleteTokenModal" data-id="@token.Id">
                                 <img src="~/images/icons/delete.svg" alt="">
                             </button>
 
                             <button type="button" class="assignTableBtn btn ps-0" data-bs-toggle="modal"
-                                data-bs-target="#deleteTableModal" data-id="">
+                                data-bs-target="#assignTableModal" data-id="@token.Id" onclick="assignTable(@token.Id)">
                                 <img src="~/images/icons/person-check.svg" alt="" width="18px">
                             </button>
                         </div>

@@ -232,8 +232,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/_AssignTablePartialView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcX0Fzc2lnblRhYmxlUGFydGlhbFZpZXcuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/_ListPartialVIew.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcX0xpc3RQYXJ0aWFsVklldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/_SectionListPartialView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV2FpdGluZ0xpc3RcX1NlY3Rpb25MaXN0UGFydGlhbFZpZXcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/pci47/Desktop/PizzashopMVC/PizzaShop.Web/Views/WaitingList/_WaitingTokenPartialView.cshtml]

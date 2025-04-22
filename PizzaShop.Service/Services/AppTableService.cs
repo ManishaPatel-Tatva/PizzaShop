@@ -15,14 +15,16 @@ public class AppTableService : IAppTableService
     private readonly IWaitingListService _waitingService;
     private readonly IUserService _userService;
     private readonly ITableService _tableService;
+    private readonly ISectionService _sectionService;
 
-    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService, ITableService tableService)
+    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService, ITableService tableService, ISectionService sectionService)
     {
         _sectionRepository = sectionRepository;
         _orderTableRepository = orderTableRepository;
         _waitingService = waitingService;
         _userService = userService;
         _tableService = tableService;
+        _sectionService = sectionService;
     }
 
     #region  Get
@@ -70,6 +72,21 @@ public class AppTableService : IAppTableService
         }
     }
 
+    public async Task<AssignTableViewModel> Get(long tokenId)
+    {
+        AssignTableViewModel assignTableVM = new();
+
+        WaitingTokenViewModel token = await _waitingService.Get(tokenId);
+
+        assignTableVM.WaitingToken.Id = tokenId;
+        assignTableVM.WaitingToken.Sections = await _sectionService.Get();
+        assignTableVM.WaitingToken.SectionId = token.SectionId;
+        assignTableVM.WaitingToken.CustomerId = token.CustomerId; 
+        assignTableVM.Tables = _tableService.List(assignTableVM.WaitingToken.SectionId).Result.Where(t => t.StatusName == "Available").ToList();
+
+        return assignTableVM;
+    }
+
     #endregion Get
 
     #region  Add
@@ -82,6 +99,17 @@ public class AppTableService : IAppTableService
         {
             return response;
         }
+
+        //For newly added customer
+        assignTableVM.WaitingToken.CustomerId = response.EntityId;
+
+        //Assign Table
+        return await AssignTable(assignTableVM);
+    }
+
+    public async Task<ResponseViewModel> AssignTable(AssignTableViewModel assignTableVM)
+    {
+        ResponseViewModel response = new();
 
         //Assign Table
         foreach(TableViewModel? table in assignTableVM.Tables)
@@ -110,7 +138,8 @@ public class AppTableService : IAppTableService
             }
         }
 
-        response.Success = await _waitingService.AssignTable(response.EntityId);
+        // Change assign status in Waiting Token
+        response.Success = await _waitingService.AssignTable(assignTableVM.WaitingToken.Id);
         response.Message = response.Success ? NotificationMessages.Successfully.Replace("{0}", "Table Assigned") : NotificationMessages.Failed.Replace("{0}", "Table assignment");
         return response;
     }

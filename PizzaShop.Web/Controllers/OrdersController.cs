@@ -35,7 +35,7 @@ public class OrdersController : Controller
         return PartialView("_ListPartialView", model);
     }
 
-    [HttpGet]
+    [HttpPost]
     [CustomAuthorize("View_Orders")]
     public async Task<IActionResult> ExportExcel(FilterViewModel filter)
     {

@@ -261,6 +261,7 @@
                     if (response.success) {
                         $("#offcanvasRight").offcanvas("hide");
                         toastr.success(response.message);
+                        SectionAjax();
                     }
                     else {
                         toastr.error(response.message);

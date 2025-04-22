@@ -49,7 +49,7 @@
 
                 <div class="form-floating mb-3">
                     <input asp-for="WaitingToken.Email" type="text" class="form-control" placeholder=""
-                        id="customerEmail" onblur="GetWaitingToken(this)">
+                        id="customerEmail" onblur="GetCustomerDetail(this)">
                     <label asp-for="WaitingToken.Email">Email*</label>
                     <span asp-validation-for="WaitingToken.Email" class="text-danger"></span>
                 </div>

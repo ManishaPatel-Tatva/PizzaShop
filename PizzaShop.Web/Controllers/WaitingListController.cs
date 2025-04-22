@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
@@ -8,17 +7,25 @@ namespace PizzaShop.Web.Controllers;
 public class WaitingListController : Controller
 {
     private readonly IWaitingListService _waitingListService;
+    private readonly IAppTableService _appTableService;
 
-    public WaitingListController(IWaitingListService waitingListService)
+    public WaitingListController(IWaitingListService waitingListService, IAppTableService appTableService = null)
     {
         _waitingListService = waitingListService;
+        _appTableService = appTableService;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
+    {
+        ViewData["app-active"] = "Waiting List";
+        return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetSectionTab()
     {
         List<SectionViewModel> sections = await _waitingListService.Get();
-        ViewData["app-active"] = "Waiting List";
-        return View(sections);
+        return PartialView("_SectionListPartialView", sections);
     }
 
     [HttpGet]
@@ -35,6 +42,22 @@ public class WaitingListController : Controller
         return PartialView("_WaitingTokenPartialView", token);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> AssignTableModal(long tokenId)
+    {
+        AssignTableViewModel assignTableVM = await _appTableService.Get(tokenId);
+        return PartialView("_AssignTablePartialView", assignTableVM);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> AssignTable(AssignTableViewModel assignTableVM)
+    {   
+        assignTableVM.Tables = assignTableVM.Tables.Where(t => t.IsSelected).ToList();
+        ResponseViewModel response = await _appTableService.AssignTable(assignTableVM);
+        return Json(response);
+    }
+
     [HttpPost]
     public async Task<IActionResult> SaveWaitingToken(WaitingTokenViewModel tokenVM)
     {
@@ -42,6 +65,7 @@ public class WaitingListController : Controller
         return Json(response);
     }
 
+    [HttpGet]
     public async Task<IActionResult> DeleteWaitingToken(long tokenId)
     {
         ResponseViewModel response = await _waitingListService.Delete(tokenId);

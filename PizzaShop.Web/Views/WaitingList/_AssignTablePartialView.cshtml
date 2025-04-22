@@ -1,0 +1,53 @@
+@using PizzaShop.Entity.Models
+@using PizzaShop.Entity.ViewModels
+@model AssignTableViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5">Waiting Token Details</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<form asp-action="AssignTable" asp-controller="WaitingList" method="post" id="assignTableForm">
+    <div class="modal-body row">
+
+        <input asp-for="WaitingToken.Id" hidden>
+        <input asp-for="WaitingToken.CustomerId" hidden>
+
+        <div class="col-6 form-floating mb-3">
+            <select asp-for="WaitingToken.SectionId" class="form-select" aria-label="" id="sections" disabled>
+                @foreach (SectionViewModel? sec in Model.WaitingToken.Sections)
+                {
+                    <option value="@sec.Id"> @sec.Name</option>
+                }
+            </select>
+            <label asp-for="WaitingToken.SectionId">Section*</label>
+        </div>
+
+        <div class="col-6 form-floating mb-3">
+            <div class="dropdown h-100">
+                <a class="btn dropdown-toggle border d-flex align-items-center justify-content-between h-100 w-100"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Table*
+                </a>
+                <ul class="dropdown-menu w-100">
+                    @for (int i = 0; i < Model.Tables.Count; i++)
+                    {
+                        <input asp-for="Tables[i].Id" hidden>
+                        if (Model.Tables[i].StatusName == "Available")
+                        {
+                            <li class="d-flex px-2 pb-1">
+                                <input asp-for="Tables[i].IsSelected" type="checkbox" class="me-2 mgCheckbox" data-id="@Model.Tables[i].Id">
+                                <span class="">@Model.Tables[i].Name</span>
+                            </li>
+                        } 
+                    }
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue">Assign</button>
+        <button type="reset" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>

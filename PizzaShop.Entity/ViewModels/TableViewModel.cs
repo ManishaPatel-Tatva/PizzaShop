@@ -20,4 +20,5 @@ public class TableViewModel
     public string? StatusName { get; set; } = "";
     public List<TableStatus>? StatusList { get; set; } = new List<TableStatus>();
     public List<Section>? SectionList { get; set; } = new List<Section>();
+    public bool IsSelected { get; set; } = false;
 }

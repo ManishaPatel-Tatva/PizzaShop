@@ -10,13 +10,14 @@
 <form asp-action="SaveWaitingToken" asp-controller="WaitingList" method="post" id="saveWTForm">
     <div class="modal-body row">
 
+        <input asp-for="Id" hidden>
+        <input asp-for="CustomerId" id="customerId" hidden>
+
         <div class="form-floating mb-3">
             <input asp-for="Email" type="text" class="form-control" placeholder="" id="customerEmail" onblur="GetCustomerDetail(this)">
             <label asp-for="Email">Email*</label>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-
-        <input asp-for="CustomerId" id="customerId" hidden>
 
         <div class="form-floating mb-3">
             <input asp-for="Name" type="text" class="form-control" placeholder="" id="customerName">

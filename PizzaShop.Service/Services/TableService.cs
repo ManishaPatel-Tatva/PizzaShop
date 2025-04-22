@@ -59,6 +59,30 @@ public class TableService : ITableService
         return tablesVM;
     }
 
+
+    /*-----------------------------------------------------------------Display Tables---------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<List<TableViewModel>> List(long sectionId)
+    {
+        IEnumerable<Table> list = await _tableRepository.GetByCondition(
+            predicate: t => !t.IsDeleted &&
+                    t.SectionId == sectionId,
+            orderBy: q => q.OrderBy(t => t.Id),
+            includes: new List<Expression<Func<Table, object>>> { u => u.Status }
+        );
+
+        List<TableViewModel> tables = list.Select(t => new TableViewModel()
+        {
+            Id = t.Id,
+            Name = t.Name,
+            Capacity = t.Capacity,
+            StatusName = t.Status.Name,
+        }).ToList();
+
+        return tables;
+    }
+
+
     /*-----------------------------------------------------------Get Table By Id---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<TableViewModel> Get(long tableId)
@@ -138,7 +162,7 @@ public class TableService : ITableService
     public async Task<bool> AssignTable(long tableId)
     {
         Table? table = await _tableRepository.GetByIdAsync(tableId);
-        
+
         if (table == null)
         {
             return false;

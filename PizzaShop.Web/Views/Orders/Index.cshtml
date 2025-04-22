@@ -36,10 +36,10 @@
             <option value="Current Month">Current Month</option>
         </select>
 
-        <a class="btn btn-blue text-nowrap d-flex justify-content-center align-items-center my-2" id="exportOrderBtn">
+        <a class="btn btn-blue text-nowrap d-flex justify-content-center align-items-center my-2" id="exportOrderBtn" onclick="exportOrderDetails()">
             <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
             Export
-        </a>
+        </a >
 
     </div>
 </div>
@@ -149,10 +149,9 @@
     @* Export Order Details *@
     <script>
 
-        $(document).on("click", "#exportOrderBtn", function () {
-            console.log("export btn clicked");
+        @* $(document).on("click", "#exportOrderBtn", function () {
             exportOrderDetails();
-        })
+        }) *@
 
         function exportOrderDetails() {
             console.log("export function called");

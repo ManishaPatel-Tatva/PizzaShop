@@ -1,0 +1,30 @@
+@using PizzaShop.Entity.ViewModels
+@model List<SectionViewModel>
+
+<!-- Section heading tab starts-->
+<div class="row bg-white px-3 pt-2 mx-0 mb-3 d-flex flex-row shadow rounded-1">
+    <ul class="nav nav-pills d-flex gap-2 kot-nav" id="pills-tab" role="tablist">
+        <li class="nav-item me-2" role="presentation" data-id="0">
+            <button class="nav-link active p-2" id="tab-1" data-bs-toggle="pill" type="button" role="tab"
+                aria-controls="pills-home" aria-selected="true">
+                <div class="d-flex align-items-center gap-1">
+                    <span class="fs-5 tab-text text-nowrap">All</span>
+                    <span class="num-circle">@(Model.Sum(s => s.TokenCount))</span>
+                </div>
+            </button>
+        </li>
+        @foreach (SectionViewModel? sec in Model)
+        {
+            <li class="nav-item" role="presentation" data-id="@sec.Id">
+                <button class="nav-link p-2" id="tab-2" data-bs-toggle="pill" type="button" role="tab"
+                    aria-controls="pills-profile" aria-selected="false">
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="fs-5 tab-text text-nowrap">@sec.Name</span>
+                        <span class="num-circle">@sec.TokenCount</span>
+                    </div>
+                </button>
+            </li>
+        }
+    </ul>
+</div>
+<!-- Section heading tab ends-->
