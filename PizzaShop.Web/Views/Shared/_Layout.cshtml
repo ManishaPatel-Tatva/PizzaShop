@@ -52,7 +52,8 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg-end">
                             <li class="mb-2 ms-3 d-flex align-items-center">
-                                <img class="me-2 rounded-circle" src=@(profileImg != null ? profileImg : "~/images/Default_pfp.svg.png") alt="" height="30px" width="30px">
+                                <img class="me-2 rounded-circle" src=@(profileImg != null ? profileImg :
+                                                                                                     "~/images/Default_pfp.svg.png") alt="" height="30px" width="30px">
                                 <span>@userName</span>
                             </li>
                             <li>
@@ -187,35 +188,33 @@
                     </div>
 
                 </div>
-                <!-- User Content ends -->
-
-                <!-- Logout Modal starts here -->
-                <div class="modal fade" id="LogoutModal" data-bs-backdrop="LogoutModal" data-bs-keyboard="false"
-                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="LogoutLabel">Logout</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
-                                <img src="~/images/icons/warning.svg" alt="" width="50px">
-                                <span>Are you sure you want to logout?</span>
-                            </div>
-                            <div class="modal-footer d-flex justify-content-center">
-                                <a asp-action="Logout" asp-controller="Profile" type="button"
-                                    class="btn btn-blue">Yes</a>
-                                <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Logout Modal ends here  -->
+                <!-- Main Content ends -->
             </div>
-            <!-- Main content ends -->
+        </div>
+
+    </div>
+
+    <!-- Logout Modal starts here -->
+    <div class="modal fade" id="LogoutModal" data-bs-backdrop="LogoutModal" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="LogoutLabel">Logout</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                    <img src="~/images/icons/warning.svg" alt="" width="50px">
+                    <span>Are you sure you want to logout?</span>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <a asp-action="Logout" asp-controller="Profile" type="button" class="btn btn-blue">Yes</a>
+                    <button type="button" class="btn btn-white" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
         </div>
     </div>
+    <!-- Logout Modal ends here  -->
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

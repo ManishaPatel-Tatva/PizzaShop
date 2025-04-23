@@ -9,5 +9,4 @@ public class ItemInfoViewModel
     public decimal Rate { get; set; }
     public int Quantity { get; set; }
     public bool Available { get; set; }
-
 }

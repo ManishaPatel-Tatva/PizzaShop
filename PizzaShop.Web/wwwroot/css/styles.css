@@ -285,6 +285,7 @@ td{
 .nav-link{
     color: grey;
 }
+
 .tab-text{
     font-weight: 600;
 }
@@ -637,3 +638,87 @@ table td,th{
     border-radius: 50%;
     padding: 5px 12px;
 }
+
+/* Order App Menu */
+.menu-sidebar{
+    height: 100%;
+    width: 200px;
+    background-color: white;
+}
+
+.menu-main-content{
+    width: calc(100% - 200px);
+}
+
+.app-categories .nav-link.active{
+    color: white !important;
+    border: none !important;
+    border-top-right-radius: 75px;
+    border-bottom-right-radius: 75px;
+    background-color: #0066A8;
+}
+
+.menu-main-content .search-group{
+    height: 45px;
+    width: 350px;
+}
+
+/* Sidebar media query */
+@media (max-width : 767px) {
+
+    .menu-sidebar{
+        height: 90px;
+        width: 100%;
+        background-color: white;
+    }
+
+    .app-categories .nav-link.active{
+        color: white !important;
+        border: none !important;
+        border-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        background-color: #0066A8;
+    }
+
+    .menu-main-content{
+        width: 100%;
+    }
+
+    .menu-main-content .search-group{
+        height: 45px;
+        width: 300px;
+    }
+
+}
+
+.menu-card{
+    height: 75px;
+    width: 260px;
+}
+
+.badge-corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-top-right-radius: 7px;
+}
+ 
+.vegan-badge {
+    border-top: 30px solid #f88d1a;
+}
+ 
+.vegetarian-badge {
+    border-top: 30px solid #00a651;
+}
+ 
+.non-vegetarian-badge {
+    border-top: 30px solid #f14338;
+}
+ 
+
+
+

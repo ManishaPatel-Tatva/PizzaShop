@@ -119,15 +119,25 @@
         </nav>
         <!-- Navbar ends -->
 
-        <div class="container-fluid bg-grey below-nav-orderApp h-100">
+        <div class="container-fluid px-0 bg-grey below-nav-orderApp h-100">
             <div class="h-100">
 
                 <!-- Main content starts-->
-                <div class=" px-2 px-md-3 px-lg-4 py-2">
-                    <main role="main" class="">
+                @if ((ViewData["app-active"] as string) == "Menu")
+                {
+                    <div class="d-flex flex-column flex-md-row h-100">
                         @RenderBody()
-                    </main>
-                </div>
+                    </div>
+                }
+                else
+                {
+                    <div class=" px-2 px-md-3 px-lg-4 py-2">
+                        <main role="main" class="">
+                            @RenderBody()
+                        </main>
+                    </div>
+                }
+
                 <!-- Main Content ends -->
 
                 <!-- Logout Modal starts here -->

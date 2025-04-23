@@ -11,7 +11,7 @@ using PizzaShop.Service.Services;
 using PizzaShop.Web.Middleware;
 using Rotativa.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 #region Services
 /*---------------Add services to the container.-----------------------------------------------
@@ -22,7 +22,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
 //Database Connection
-var conn = builder.Configuration.GetConnectionString("PizzaShopDbConnection");
+string? conn = builder.Configuration.GetConnectionString("PizzaShopDbConnection");
 builder.Services.AddDbContext<PizzaShopContext>(q => q.UseNpgsql(conn));
 
 //Repository
@@ -38,8 +38,6 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 //Profile Service
 builder.Services.AddScoped<IProfileService,ProfileService>();
-
-//Address Service
 builder.Services.AddScoped<IAddressService, AddressService>();
 
 //Auth Service
@@ -48,7 +46,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 //User Service
 builder.Services.AddScoped<IUserService, UserService>();
 
-//Role and Permission Service and Repository
+//Role and Permission Service
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 
 //Menu service
@@ -69,10 +67,11 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 //Customers
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
-//OrderApp - KOT, Tables, Waiting List
+//OrderApp - KOT, Tables, Waiting List, Menu
 builder.Services.AddScoped<IKotService, KotService>();
 builder.Services.AddScoped<IAppTableService, AppTableService>();
 builder.Services.AddScoped<IWaitingListService, WaitingListService>();
+builder.Services.AddScoped<IAppMenuService, AppMenuService>();
 
 //Session 
 builder.Services.AddSession(options =>

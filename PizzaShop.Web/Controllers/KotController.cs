@@ -18,7 +18,6 @@ public class KotController : Controller
     {
         _kotService = kotService;
         _categoryService = categoryService;
-
     }
 
     public async Task<IActionResult> Index()
@@ -33,10 +32,9 @@ public class KotController : Controller
         KotViewModel kot = await _kotService.Get(categoryId, pageSize, pageNumber, isReady);
         return PartialView("_CardsPartialView", kot);
     }
-
     
     [HttpGet]
-    public async Task<IActionResult> GetOrderItems(string kotCard, bool isReady)
+    public IActionResult GetOrderItems(string kotCard, bool isReady)
     {
         KotCardViewModel kot = new();
         if(!string.IsNullOrEmpty(kotCard)) 
