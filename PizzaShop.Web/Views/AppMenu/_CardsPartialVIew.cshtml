@@ -1,0 +1,31 @@
+@using PizzaShop.Entity.ViewModels
+@model List<ItemInfoViewModel>
+
+@if (Model.Count > 0)
+{
+    @foreach (ItemInfoViewModel item in Model)
+    {
+        <!-- Card starts -->
+        <div
+            class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm rounded-3 menu-card position-relative" onclick="ItemDetail(@item.Id)">
+            <div class="badge-corner @item.Type.ToLower()-badge "></div>
+            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
+                <img src="@item.ImageUrl" class="object-fit-cover" height="65px" width="65px">
+            </div>
+            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
+                <div>@item.Name</div>
+                <div class="d-flex justify-content-between">
+                    <div>₹@item.Rate</div>
+                    <div onclick="event.stopPropagation(), FavItem(@item.Id)">
+                        <i class="bi @(item.IsFavourite == true ? "bi-heart-fill blue" : "bi-heart")"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card ends -->
+    }
+}
+else
+{
+    <h5>No Record Found</h5>
+}

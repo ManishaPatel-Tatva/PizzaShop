@@ -21,12 +21,12 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" value="" id="" class="me-2 itemChildCheckbox" data-id="@item.ItemId">
-                        <img src="@item.ItemImageUrl" alt="" class="me-2 rounded-circle" width="30px" height="30px">
-                        @item.ItemName
+                        <input type="checkbox" value="" id="" class="me-2 itemChildCheckbox" data-id="@item.Id">
+                        <img src="@item.ImageUrl" alt="" class="me-2 rounded-circle" width="30px" height="30px">
+                        @item.Name
                     </td>
                     <td>
-                        <img src="@item.ItemType" alt="" width="23px">
+                        <img src="@item.Type" alt="" width="23px">
                     </td>
                     <td>@item.Rate</td>
                     <td>@item.Quantity</td>
@@ -39,12 +39,12 @@
                     <td>
                         <div class="d-flex flex-row">
                             <button href="edit-user.html" class="editItemBtn btn ps-0 me-2" data-bs-toggle="modal"
-                                data-bs-target="#addEditItem" data-id="@item.ItemId">
+                                data-bs-target="#addEditItem" data-id="@item.Id">
                                 <img src="~/images/icons/edit.svg" alt="" />
                             </button>
 
                             <button type="button" class="deleteItemIcon btn" data-bs-toggle="modal"
-                                data-bs-target="#deleteItemModal" data-id="@item.ItemId">
+                                data-bs-target="#deleteItemModal" data-id="@item.Id">
                                 <img src="~/images/icons/delete.svg" alt="">
                             </button>
                         </div>

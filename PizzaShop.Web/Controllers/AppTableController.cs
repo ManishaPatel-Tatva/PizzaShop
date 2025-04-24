@@ -21,7 +21,7 @@ public class AppTableController : Controller
         _waitingListService = waitingListService;
     }
 
-    public async Task<ActionResult> Index()
+    public ActionResult Index()
     {
         ViewData["app-active"] = "Tables";
         return View();

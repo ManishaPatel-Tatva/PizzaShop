@@ -326,6 +326,7 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnType("character varying")
                 .HasColumnName("image_url");
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.IsFavourite).HasColumnName("is_favourite");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");

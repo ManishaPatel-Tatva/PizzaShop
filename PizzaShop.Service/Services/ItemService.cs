@@ -51,10 +51,10 @@ public class ItemService : IItemService
             Page = new(),
             Items = items.Select(i => new ItemInfoViewModel()
             {
-                ItemId = i.Id,
-                ItemImageUrl = i.ImageUrl,
-                ItemName = i.Name,
-                ItemType = i.FoodType.ImageUrl,
+                Id = i.Id,
+                ImageUrl = i.ImageUrl,
+                Name = i.Name,
+                Type = i.FoodType.ImageUrl,
                 Rate = i.Rate,
                 Quantity = i.Quantity,
                 Available = i.Available

@@ -93,10 +93,6 @@ public class MenuController : Controller
     public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search = "")
     {
         ItemsPaginationViewModel? model = await _ItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
-        if (model == null)
-        {
-            return NotFound(); // This triggers AJAX error
-        }
         return PartialView("_ItemsPartialView", model);
     }
 

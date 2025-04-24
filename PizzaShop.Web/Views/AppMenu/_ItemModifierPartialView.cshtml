@@ -1,0 +1,48 @@
+@using PizzaShop.Entity.ViewModels
+@model AddItemViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="staticBackdropLabel">@Model.Name</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body item-modifier-modal">
+
+    @if (Model.ItemModifierGroups.Count() > 0)
+    {
+        @foreach (var mg in Model.ItemModifierGroups)
+        {
+            <div class="mb-4">
+                <div class="text-grey mb-2">
+                    <span class="fs-5 fw-semibold">@mg.ModifierGroupName</span>
+                    <span>(You can choose Minimum - @mg.MinAllowed & Maximum - @mg.MaxAllowed options)</span>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3">
+                    @foreach (var modifier in mg.ModifierList)
+                    {
+                        <!-- Card starts -->
+                        <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative">
+                            <div class="badge-corner vegan-badge "></div>
+
+                            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
+                                <div>@modifier.ModifierName</div>
+                                <div>₹@modifier.Rate</div>
+                            </div>
+                        </div>
+                        <!-- Card ends -->
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div>No Modifier Found</div>
+    }
+
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-blue">Add</button>
+    <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
+</div>

@@ -1,5 +1,5 @@
 @using PizzaShop.Entity.ViewModels
-@model List<CategoryViewModel>
+@model AppMenuViewModel
 
 @{
     ViewData["Title"] = "Menu";
@@ -13,25 +13,29 @@
         <div class="fs-5 fw-semibold m-2 ps-2 text-center text-md-start">Category</div>
         <ul class="nav nav-pills app-categories d-flex flex-row flex-md-column flex-nowrap overflow-auto" id="pills-tab"
             role="tablist">
-            <li class="nav-item mb-2 my-md-0" role="presentation" data-id="-1">
-                <button class="nav-link p-2 active w-100 text-start p-2" id="tab-0" data-bs-toggle="pill" type="button"
-                    role="tab" aria-controls="pills-home" aria-selected="true">
+
+            <li class="nav-item mb-2 my-md-0" role="presentation">
+                <button class="btn-category nav-link p-2 w-100 text-start" id="tab-fav" data-bs-toggle="pill"
+                    type="button" role="tab" aria-controls="pills-profile" aria-selected="false" data-id="-1"
+                    onclick="CardsAjax(-1)">
                     <span class="fs-6 tab-text text-nowrap px-2">Favourite Item</span>
                 </button>
             </li>
 
-            <li class="nav-item mb-2 my-md-0" role="presentation" data-id="0">
-                <button class="nav-link p-2 w-100 text-start" id="tab-0" data-bs-toggle="pill" type="button" role="tab"
-                    aria-controls="pills-profile" aria-selected="false">
+            <li class="nav-item mb-2 my-md-0" role="presentation">
+                <button class="btn-category nav-link active p-2 w-100 text-start" id="tab-all" data-bs-toggle="pill"
+                    type="button" role="tab" aria-controls="pills-profile" aria-selected="false" data-id="0"
+                    onclick="CardsAjax(0)">
                     <span class="fs-6 tab-text text-nowrap px-2">All</span>
                 </button>
             </li>
 
-            @foreach (CategoryViewModel? category in Model)
+            @foreach (CategoryViewModel? category in Model.Categories)
             {
-                <li class="nav-item mb-2 my-md-0" role="presentation" data-id="@category.Id">
-                    <button class="nav-link p-2 w-100 text-start" id="tab-@category.Id" data-bs-toggle="pill" type="button"
-                        role="tab" aria-controls="pills-profile" aria-selected="false">
+                <li class="nav-item mb-2 my-md-0" role="presentation">
+                    <button class="btn-category nav-link p-2 w-100 text-start" id="tab-@category.Id" data-bs-toggle="pill"
+                        type="button" role="tab" aria-controls="pills-profile" aria-selected="false" data-id="@category.Id"
+                        onclick="CardsAjax(@category.Id)">
                         <span class="fs-6 tab-text text-nowrap px-2">@category.Name</span>
                     </button>
                 </li>
@@ -45,302 +49,224 @@
 
 <!-- Main content starts-->
 <div class="menu-main-content p-3">
+    <div class="row mx-0">
 
-    <!-- Search Box and Item Type Symbol starts-->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-2">
 
-        <div class="input-group search-group">
-            <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery">
-            <button type="submit" class="input-group-text">
-                <img src="~/images/icons/search.svg" alt="">
-            </button>
+
+        <!-- Menu -->
+        <div class="col">
+            <!-- Search Box and Item Type Symbol starts-->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-3">
+
+                <div class="input-group search-group">
+                    <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery">
+                    <button type="submit" class="input-group-text">
+                        <img src="~/images/icons/search.svg" alt="">
+                    </button>
+                </div>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <div class="text-nowrap">
+                        <i class="bi bi-circle-fill text-success"></i>
+                        <span>Vegetarian</span>
+                    </div>
+                    <div class="text-nowrap">
+                        <i class="bi bi-circle-fill text-danger"></i>
+                        <span>Non-Vegetarian</span>
+                    </div>
+                    <div class="text-nowrap">
+                        <i class="bi bi-circle-fill text-warning"></i>
+                        <span>Vegan</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Search Box and Item Type Symbol ends-->
+
+            <div class="d-flex flex-wrap gap-3" id="itemCards">
+                <!-- Cards Partial View -->
+            </div>
         </div>
 
-        <div class="d-flex justify-content-center gap-2">
-            <div class="text-nowrap">
-                <i class="bi bi-circle-fill text-success"></i>
-                <span>Vegetarian</span>
-            </div>
-            <div class="text-nowrap">
-                <i class="bi bi-circle-fill text-danger"></i>
-                <span>Non-Vegetarian</span>
-            </div>
-            <div class="text-nowrap">
-                <i class="bi bi-circle-fill text-warning"></i>
-                <span>Vegan</span>
+        <!-- Order -->
+        <div class="col-5 ">
+            <div class="bg-white p-2 px-3">
+
+                <!-- Title starts-->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="/images/icons/dining-table.svg" alt="" class="bg-blue" height="40px" width="40px">
+                        <div>
+                            <div>First Floor</div>
+                            <div>
+                                <span class="fw-semibold">Table:</span>
+                                <span>T2,T6</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <img src="/images/icons/qr-code-scan.svg" alt="" class="blue p-2 border rounded-1">
+                        <img src="/images/icons/person-lines-fill.svg" alt="" class="blue p-2 border rounded-1">
+                        <img src="/images/icons/chat-left-text.svg" alt="" class="blue p-2 border rounded-1">
+                    </div>
+                </div>
+                <!-- Title ends-->
+
+                <div>
+                    <div class="row mx-0">
+                        <div class="col-7 px-0 fw-semibold text-grey">Item</div>
+                        <div class="col-2 fw-semibold text-grey">Quantity</div>
+                        <div class="col-2 fw-semibold text-grey">Amount</div>
+                        <div class="col-1 "></div>
+                    </div>
+
+                    <div class="row mx-0 border rounded-1">
+                        <div class="col-7 px-0 fw-semibold">
+
+                            <div class="accordion accordion-item">
+
+                                <div class="accordion-item">
+                                    <div class="accordion-header d-flex">
+                                        <button class="accordion-button px-0" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseOne" aria-expanded="true"
+                                            aria-controls="collapseOne" style="width: fit-content;">
+                                        </button>
+                                        <div class="ms-4 ps-1 fs-5">Pizza</div>
+                                    </div>
+                                    <div id="collapseOne" class="accordion-collapse collapse show"
+                                        aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body p-0">
+                                            <ul>
+                                                <li >
+                                                    
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+
+                        </div>
+                        <div class="col-2">Quantity</div>
+                        <div class="col-2">
+                            <div class="fs-5">₹120.00</div>
+                            <div>₹20.00</div>
+                        </div>
+                        <div class="col-1 ">
+                            <img src="/images/icons/trash.svg" alt="">
+                        </div>
+                    </div>
+
+                </div>
+
+
             </div>
         </div>
+
     </div>
-    <!-- Search Box and Item Type Symbol ends-->
-
-    <!-- Cards Section starts-->
-    <div class="d-flex flex-wrap gap-3">
-
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-
-
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        <!-- Card starts -->
-        <div class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm  rounded-3 menu-card position-relative">
-            <div class="badge-corner vegetarian-badge "></div>
-            <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
-                <img src="\images\dining-menu.png" class="object-fit-contain" height="65px" width="65px">
-            </div>
-            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                <div >Grilled Burger</div>
-                <div class="d-flex justify-content-between">
-                    <div>₹70</div>
-                    <div><i class="bi bi-heart"></i></div>
-                </div>
-            </div>
-
-        </div>
-        <!-- Card ends -->
-        
-
-        
-    </div>
-    <!-- Cards Section ends -->
-
-
 
 </div>
 <!-- Main Content ends -->
+
+
+<!-- Modal Item Detail starts -->
+<div class="modal fade" id="itemDetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" id="itemDetailContent">
+            <!-- Item Detail Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Item Detail ends -->
+
+@section Scripts {
+
+    @* Cards ajax *@
+    <script>
+
+        let activeCategory = 0;
+
+        $(document).on("input", "#searchQuery", function () {
+            CardsAjax(activeCategory);
+        });
+
+
+        $(document).ready(function () {
+            CardsAjax(0);
+        });
+
+        function CardsAjax(categoryId) {
+            activeCategory = categoryId;
+            $.ajax({
+                url: '@Url.Action("GetCards", "AppMenu")',
+                type: "GET",
+                data: {
+                    categoryId: categoryId,
+                    search: $("#searchQuery").val()
+                },
+                dataType: "html",
+                success: function (data) {
+                    $("#itemCards").html(data);
+                    console.log("success");
+                },
+                error: function (data) {
+                    alert("No Card Found");
+                }
+            });
+        }
+    </script>
+
+    @* Favourite Item *@
+    <script>
+
+        function FavItem(itemId) {
+            console.log("FavItem", itemId);
+            $.ajax({
+                url: '@Url.Action("FavouriteItem", "AppMenu")',
+                data: {
+                    itemId: itemId
+                },
+                type: "POST",
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        CardsAjax(activeCategory);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Not Done");
+                }
+
+            })
+        }
+
+    </script>
+
+    @* Item Detail Modal *@
+    <script>
+
+        function ItemDetail(id) {
+            $.ajax({
+                url: '@Url.Action("ItemDetail", "AppMenu")',
+                type: "GET",
+                data: {
+                    itemId: id
+                },
+                dataType: "html",
+                success: function (data) {
+                    $("#itemDetail").modal("show");
+                    $("#itemDetailContent").html(data);
+                },
+                error: function (data) {
+                    alert("No Item Found");
+                }
+            });
+        }
+    </script>
+}
