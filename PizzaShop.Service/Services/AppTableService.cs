@@ -37,11 +37,11 @@ public class AppTableService : IAppTableService
                 s => !s.IsDeleted,
                 thenIncludes: new List<Func<IQueryable<Section>, IQueryable<Section>>>
                 {
-                q => q.Include(s => s.Tables)
-                    .ThenInclude(t => t.Status),
-                q => q.Include(s => s.Tables)
-                    .ThenInclude(t => t.OrderTableMappings)
-                    .ThenInclude(otm => otm.Order)
+                    q => q.Include(s => s.Tables)
+                        .ThenInclude(t => t.Status),
+                    q => q.Include(s => s.Tables)
+                        .ThenInclude(t => t.OrderTableMappings)
+                        .ThenInclude(otm => otm.Order)
                 }
             );
 
@@ -60,7 +60,11 @@ public class AppTableService : IAppTableService
                                 .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
                                 .Select(otm => otm.CreatedAt)
                                 .FirstOrDefault(),
-                    Capacity = t.Capacity
+                    Capacity = t.Capacity,
+                    CustomerId = t.OrderTableMappings
+                                .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
+                                .Select(otm => otm.CustomerId)
+                                .FirstOrDefault(),
                 }).ToList()
             }).ToList();
 

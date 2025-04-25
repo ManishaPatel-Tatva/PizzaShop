@@ -4,6 +4,7 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IAppMenuService
 {
-    Task<List<ItemInfoViewModel>> Get(long categoryId, string search);
+    Task<AppMenuViewModel> Get(long customerId);
+    Task<List<ItemInfoViewModel>> List(long categoryId, string search);
     Task<ResponseViewModel> FavouriteItem(long itemId);
 }

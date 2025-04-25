@@ -1,0 +1,44 @@
+@using PizzaShop.Entity.Models
+@using PizzaShop.Entity.ViewModels
+@model CustomerViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5">Customer Details</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<form asp-action="SaveWaitingToken" asp-controller="WaitingList" method="post" id="saveWTForm">
+    <div class="modal-body row">
+
+        <input asp-for="Id" hidden>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Name" type="text" class="form-control" placeholder="" id="customerName">
+            <label asp-for="Name">Name*</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Phone" type="text" class="form-control" placeholder="" id="customerPhone">
+            <label asp-for="Phone">Mobile Number*</label>
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="col-6 form-floating mb-3">
+            <input asp-for="Members" type="number" class="form-control" placeholder="" id="noOfPersons">
+            <label asp-for="Members">No of Persons*</label>
+            <span asp-validation-for="Members" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3"></div>
+            <input asp-for="Email" type="text" class="form-control" placeholder="" id="customerEmail">
+            <label asp-for="Email">Email*</label>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-blue">Save</button>
+        <button type="reset" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>

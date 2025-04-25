@@ -90,6 +90,11 @@ a{
     width: 55%;
 }
 
+/* Border */
+.border-blue{
+    border: 1px solid #0066A8;
+}
+
 /* Login Page */
 .hero-img{
     height: 100%;
@@ -593,7 +598,6 @@ table td,th{
 /* KOT Item list Modal*/
 .item-quantity{
     width: fit-content;
-    border: 1px solid #0066A8;
 }
 
 .item-quantity input{
@@ -735,4 +739,12 @@ table td,th{
     filter: brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(152%) hue-rotate(230deg) brightness(100%) contrast(103%);
 }
 
+.menu-tax-table td {
+    border-bottom: none !important;
+    padding: 2px;
+}
+
+.menu-order-bottom button{
+    width: 145px;
+}
 

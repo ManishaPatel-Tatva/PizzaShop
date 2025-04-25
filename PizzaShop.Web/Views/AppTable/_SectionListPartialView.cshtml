@@ -40,8 +40,8 @@
                 <div class="d-flex flex-wrap gap-2 gap-md-3 mb-2">
                     @foreach (var table in sec.Tables)
                     {
-                        <div class="flex-grow-1 flex-md-grow-0 p-3 rounded-2 table-@table.TableStatus.ToLower() table-card" data-id="@table.Id" data-sectionid="@sec.Id" data-capacity="@table.Capacity"
-                        @(table.TableStatus == "Available" ? "onclick=selectTable(this)" : "" )>
+                        <div class="flex-grow-1 flex-md-grow-0 p-3 rounded-2 table-@table.TableStatus.ToLower() table-card" data-id="@table.Id" data-sectionid="@sec.Id" data-capacity="@table.Capacity" data-customerid="@table.CustomerId"
+                        @(table.TableStatus == "Available" ? "onclick=selectTable(this)" : "onclick=ViewOrderDetail(this)" )>
                             <div class="d-flex justify-content-between">
                                 <h5 class="blue-text">@table.TableName</h5>
                                 <div>₹@table.OrderAmount</div>

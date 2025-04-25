@@ -8,4 +8,5 @@ public class TableCardViewModel
     public decimal? OrderAmount { get; set; }
     public int Capacity { get; set; }
     public DateTime OrderTime { get; set; }
+    public long CustomerId { get; set; } = 0;
 }

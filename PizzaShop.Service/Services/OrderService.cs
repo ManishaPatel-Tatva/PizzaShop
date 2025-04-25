@@ -181,10 +181,16 @@ public class OrderService : IOrderService
     {
         try
         {
-            IEnumerable<Order>? orderDetail = await _orderRepository.GetByCondition(
-                predicate: o => o.Id == orderId && !o.IsDeleted,
-                includes: new List<Expression<Func<Order, object>>>
-                {
+            if (orderId == 0)
+            {
+                return new OrderDetailViewModel();
+            }
+            else
+            {
+                IEnumerable<Order>? orderDetail = await _orderRepository.GetByCondition(
+                    predicate: o => o.Id == orderId && !o.IsDeleted,
+                    includes: new List<Expression<Func<Order, object>>>
+                    {
                     o => o.Status,
                     o => o.Invoices,
                     o => o.Customer,
@@ -192,9 +198,9 @@ public class OrderService : IOrderService
                     o => o.OrderTaxMappings,
                     o => o.OrderItems,
                     o => o.Payments
-                },
-                thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
-                {
+                    },
+                    thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
+                    {
                     q => q.Include(o => o.OrderTableMappings)
                         .ThenInclude(otm => otm.Table)
                         .ThenInclude(t => t.Section),
@@ -207,94 +213,95 @@ public class OrderService : IOrderService
                         .ThenInclude(p => p.PaymentMethod),
                     q => q.Include(o => o.OrderTaxMappings)
                         .ThenInclude(otm => otm.Tax)
-                }
-            );
+                    }
+                );
 
-            OrderDetailViewModel? orderDetailVM = orderDetail
-            .Select(o => new OrderDetailViewModel
-            {
-                OrderId = o.Id,
+                OrderDetailViewModel? orderDetailVM = orderDetail
+                .Select(o => new OrderDetailViewModel
+                {
+                    OrderId = o.Id,
 
-                OrderStatus = o.Status.Name,
+                    OrderStatus = o.Status.Name,
 
-                InvoiceNo = o.Invoices
-                            .Where(i => i.OrderId == o.Id)
-                            .Select(i => i.InvoiceNo)
+                    InvoiceNo = o.Invoices
+                                .Where(i => i.OrderId == o.Id)
+                                .Select(i => i.InvoiceNo)
+                                .First(),
+
+                    PaidOn = o.Payments
+                            .Where(p => p.OrderId == o.Id)
+                            .Select(p => p.Date)
+                            .First()
+                            .ToString() ?? "",
+
+                    PlacedOn = o.CreatedAt.ToString(),
+
+                    ModifiedOn = o.UpdatedAt.ToString() ?? "",
+
+                    OrderDuration = (o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First()
+                                    - o.CreatedAt)
+                                    .ToString() ?? "",
+
+                    CustomerName = o.Customer.Name,
+
+                    CustomerPhone = o.Customer.Phone,
+
+                    NoOfPerson = o.Members,
+
+                    CustomerEmail = o.Customer.Email,
+
+                    TableList = o.OrderTableMappings
+                                .Where(ot => ot.OrderId == o.Id)
+                                .Select(ot => ot.Table.Name)
+                                .ToList(),
+
+                    Section = o.OrderTableMappings
+                            .Where(ot => ot.OrderId == o.Id)
+                            .Select(ot => ot.Table.Section.Name)
                             .First(),
 
-                PaidOn = o.Payments
-                        .Where(p => p.OrderId == o.Id)
-                        .Select(p => p.Date)
-                        .First()
-                        .ToString() ?? "",
+                    ItemsList = o.OrderItems
+                                .Where(oi => oi.OrderId == o.Id)
+                                .Select(oi => new OrderItemViewModel
+                                {
+                                    ItemName = oi.Item.Name,
+                                    Quantity = oi.Quantity,
+                                    Price = oi.Price,
+                                    TotalAmount = oi.Quantity * oi.Price,
+                                    ModifiersList = oi.OrderItemsModifiers
+                                                    .Where(oim => oim.OrderItemId == oi.Id)
+                                                    .Select(oim => new ModifierViewModel
+                                                    {
+                                                        ModifierName = oim.Modifier.Name,
+                                                        Quantity = oim.Quantity,
+                                                        Rate = oim.Price,
+                                                        TotalAmount = oim.Quantity * oim.Price
+                                                    }).ToList()
+                                }).ToList(),
 
-                PlacedOn = o.CreatedAt.ToString(),
+                    Subtotal = o.SubTotal,
 
-                ModifiedOn = o.UpdatedAt.ToString() ?? "",
+                    TaxList = o.OrderTaxMappings.Where(otm => otm.OrderId == o.Id)
+                                .Select(otm => new TaxViewModel
+                                {
+                                    Name = otm.Tax.Name,
+                                    TaxValue = otm.TaxValue
+                                }).ToList(),
 
-                OrderDuration = (o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First()
-                                - o.CreatedAt)
-                                .ToString() ?? "",
+                    FinalAmount = o.FinalAmount,
 
-                CustomerName = o.Customer.Name,
+                    PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
 
-                CustomerPhone = o.Customer.Phone,
-
-                NoOfPerson = o.Members,
-
-                CustomerEmail = o.Customer.Email,
-
-                TableList = o.OrderTableMappings
-                            .Where(ot => ot.OrderId == o.Id)
-                            .Select(ot => ot.Table.Name)
-                            .ToList(),
-
-                Section = o.OrderTableMappings
-                        .Where(ot => ot.OrderId == o.Id)
-                        .Select(ot => ot.Table.Section.Name)
-                        .First(),
-
-                ItemsList = o.OrderItems
-                            .Where(oi => oi.OrderId == o.Id)
-                            .Select(oi => new OrderItemViewModel
-                            {
-                                ItemName = oi.Item.Name,
-                                Quantity = oi.Quantity,
-                                Price = oi.Price,
-                                TotalAmount = oi.Quantity * oi.Price,
-                                ModifiersList = oi.OrderItemsModifiers
-                                                .Where(oim => oim.OrderItemId == oi.Id)
-                                                .Select(oim => new ModifierViewModel
-                                                {
-                                                    ModifierName = oim.Modifier.Name,
-                                                    Quantity = oim.Quantity,
-                                                    Rate = oim.Price,
-                                                    TotalAmount = oim.Quantity * oim.Price
-                                                }).ToList()
-                            }).ToList(),
-
-                Subtotal = o.SubTotal,
-
-                TaxList = o.OrderTaxMappings.Where(otm => otm.OrderId == o.Id)
-                            .Select(otm => new TaxViewModel
-                            {
-                                Name = otm.Tax.Name,
-                                TaxValue = otm.TaxValue
-                            }).ToList(),
-
-                FinalAmount = o.FinalAmount,
-
-                PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
-
-            }).FirstOrDefault();
+                }).FirstOrDefault();
 
 
-            return orderDetailVM;
+                return orderDetailVM;
+            }
 
         }
         catch (Exception ex)
         {
-            return null;
+            return new OrderDetailViewModel();
         }
     }
 

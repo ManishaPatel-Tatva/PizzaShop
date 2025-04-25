@@ -51,10 +51,8 @@
 <div class="menu-main-content p-3">
     <div class="row mx-0">
 
-
-
         <!-- Menu -->
-        <div class="col">
+        <div class="col-12 @(Model.CustomerId == 0 ? "col-lg-12": "col-lg-7")">
             <!-- Search Box and Item Type Symbol starts-->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mb-3">
 
@@ -88,39 +86,46 @@
         </div>
 
         <!-- Order -->
-        <div class="col-5 ">
-            <div class="bg-white p-2 px-3">
+        <div class="col-12 @(Model.CustomerId == 0 ? "d-none": "col-lg-5") flex-grow-1">
+            <div class="bg-white p-2 px-3 border rounded-2 shadow-sm">
 
                 <!-- Title starts-->
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <div class="d-flex align-items-center gap-2">
                         <img src="/images/icons/dining-table.svg" alt="" class="bg-blue" height="40px" width="40px">
                         <div>
-                            <div>First Floor</div>
+                            <div>@Model.SectionName</div>
                             <div>
                                 <span class="fw-semibold">Table:</span>
-                                <span>T2,T6</span>
+                                <span>
+                                    @foreach (string? table in Model.Tables)
+                                    {
+                                        <span>@table </span>
+                                    }
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     <div class="d-flex gap-2">
-                        <img src="/images/icons/qr-code-scan.svg" alt="" class="blue p-2 border rounded-1">
+                        <img src="/images/icons/qr-code-scan.svg" alt="" class="blue p-2 border rounded-1"
+                            data-bs-toggle="modal" data-bs-target="#qr-scan-modal">
                         <img src="/images/icons/person-lines-fill.svg" alt="" class="blue p-2 border rounded-1">
                         <img src="/images/icons/chat-left-text.svg" alt="" class="blue p-2 border rounded-1">
                     </div>
                 </div>
                 <!-- Title ends-->
 
-                <div>
-                    <div class="row mx-0">
+                <!-- Order Item starts -->
+                <div class="">
+                    <div class="row mx-0 p-1">
                         <div class="col-7 px-0 fw-semibold text-grey">Item</div>
                         <div class="col-2 fw-semibold text-grey">Quantity</div>
                         <div class="col-2 fw-semibold text-grey">Amount</div>
                         <div class="col-1 "></div>
                     </div>
 
-                    <div class="row mx-0 border rounded-1">
+                    <div class="row mx-0 border rounded-1 p-1 mb-2">
                         <div class="col-7 px-0 fw-semibold">
 
                             <div class="accordion accordion-item">
@@ -137,28 +142,177 @@
                                         aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                         <div class="accordion-body p-0">
                                             <ul>
-                                                <li >
-                                                    
+                                                <li>
+                                                    <div class="d-flex gap-4">
+                                                        <span>Onion</span>
+                                                        <span>₹100</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="d-flex gap-4">
+                                                        <span>Chilly</span>
+                                                        <span>₹20</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="d-flex gap-4">
+                                                        <span>Tomato</span>
+                                                        <span>₹50</span>
+                                                    </div>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
 
-                                
+
                             </div>
 
                         </div>
-                        <div class="col-2">Quantity</div>
-                        <div class="col-2">
+                        <div class="col-2 d-flex align-items-center">
+                            <div class="item-quantity border d-flex align-items-center gap-0 ms-auto rounded-2">
+                                <button type="button" class="btn fs-4 p-0">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="text" value="5" class="item-quantity text-center" hidden>
+                                <input type="text" value="5" class="item-quantity text-center bg-white" disabled>
+                                <button type="button" class="btn fs-4 p-0">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-2 d-flex flex-column justify-content-center">
                             <div class="fs-5">₹120.00</div>
                             <div>₹20.00</div>
                         </div>
-                        <div class="col-1 ">
+                        <div class="col-1 d-flex align-items-center">
                             <img src="/images/icons/trash.svg" alt="">
                         </div>
                     </div>
 
+                    @foreach (OrderItemViewModel? item in Model.Order.ItemsList)
+                    {
+                        <div class="row mx-0 border rounded-1 p-1 mb-2">
+                            <div class="col-7 px-0 fw-semibold">
+
+                                <div class="accordion accordion-item">
+
+                                    <div class="accordion-item">
+                                        <div class="accordion-header d-flex">
+                                            <button class="accordion-button px-0" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseOne" aria-expanded="true"
+                                                aria-controls="collapseOne" style="width: fit-content;">
+                                            </button>
+                                            <div class="ms-4 ps-1 fs-5">@item.ItemName</div>
+                                        </div>
+                                        <div id="collapseOne" class="accordion-collapse collapse show"
+                                            aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body p-0">
+                                                <ul>
+                                                    @foreach ( ModifierViewModel? modifier in item.ModifiersList)
+                                                    {
+                                                        <li>
+                                                            <div class="d-flex gap-4">
+                                                                <span>@modifier.ModifierName</span>
+                                                                <span>₹@modifier.Rate</span>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                            <div class="col-2 d-flex align-items-center">
+                                <div class="item-quantity border d-flex align-items-center gap-0 ms-auto rounded-2">
+                                    <button type="button" class="btn fs-4 p-0">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input type="text" value="5" class="item-quantity text-center" hidden>
+                                    <input type="text" value="5" class="item-quantity text-center bg-white" disabled>
+                                    <button type="button" class="btn fs-4 p-0">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-2 d-flex flex-column justify-content-center">
+                                <div class="fs-5">₹@item.Price</div>
+                                <div>₹@item.ModifiersList.Sum(m => m.Rate)</div>
+                            </div>
+                            <div class="col-1 d-flex align-items-center">
+                                <img src="/images/icons/trash.svg" alt="">
+                            </div>
+                        </div>
+                    }
+
+                </div>
+                <!-- Order Item ends -->
+
+                <hr />
+
+                <div class="table-responsive">
+                    <table class="table table-borderless menu-tax-table ">
+                        <tr>
+                            <td class="text-start fs-5">Subtotal</td>
+                            <td class="text-end">₹1780.00</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start">CGST</td>
+                            <td class="text-end">₹200.00</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start">
+                                <input type="checkbox" class="form-check-input me-2">
+                            </td>
+                            <td class="text-end"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fs-5">Total</td>
+                            <td class="text-end">₹2000.00</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start">Payment Method</td>
+                            <td class="text-end d-flex justify-content-end flex-wrap">
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="radio-cash" name="optradio"
+                                        value="option1" checked>Cash
+                                    <label class="form-check-label" for="radio1"></label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="radio-card" name="optradio"
+                                        value="option2">Card
+                                    <label class="form-check-label" for="radio2"></label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="radio-upi" name="optradio"
+                                        value="option3">UPI
+                                    <label class="form-check-label" for="radio3"></label>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="menu-order-bottom d-flex justify-content-end gap-2 mb-2 flex-wrap">
+                    <button class="btn btn-blue ">
+                        Save
+                    </button>
+                    <button class="btn btn-white ">
+                        Complete
+                    </button>
+                    <button class="btn btn-white text-nowrap">
+                        Generate Invoice
+                    </button>
+                </div>
+
+                <div class="menu-order-bottom d-flex justify-content-end">
+                    <button class="btn btn-white ">
+                        Cancel
+                    </button>
                 </div>
 
 
@@ -181,6 +335,41 @@
     </div>
 </div>
 <!-- Modal Item Detail ends -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="qr-scan-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Menu</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <img src="/images/qr-code.png" alt="" height="250px" width="250px">
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-white" data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Customer Detail starts -->
+<div class="modal fade" id="customer-detail-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="customer-detail-content">
+            <!-- Customer Detail Partial View -->
+        </div>
+    </div>
+</div>
+<!-- Modal Customer Detail ends -->
+
+
 
 @section Scripts {
 
@@ -269,4 +458,28 @@
             });
         }
     </script>
+
+    @* Customer Detail Modal *@
+    <script>
+
+        function CustomerDetail(id) {
+            $.ajax({
+                url: '@Url.Action("GetById", "Customer")',
+                type: "GET",
+                data: {
+                    id: id
+                },
+                dataType: "html",
+                success: function (data) {
+                    $("#customer-detail-modal").modal("show");
+                    $("#customer-detail-content").html(data);
+                },
+                error: function (data) {
+                    alert("No Item Found");
+                }
+            });
+        }
+    </script>
+
+
 }

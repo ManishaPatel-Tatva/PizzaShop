@@ -8,4 +8,5 @@ public class CustomerViewModel
     public long Phone { get; set; }
     public DateOnly Date { get; set; }
     public int TotalOrder { get; set; } = 0;
+    public int Members { get; set; }
 }

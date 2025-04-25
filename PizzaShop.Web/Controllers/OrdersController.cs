@@ -46,25 +46,26 @@ public class OrdersController : Controller
     [CustomAuthorize("View_Orders")]
     public async Task<IActionResult> OrderDetails(long orderId)
     {
-        OrderDetailViewModel model = await _orderService.Get(orderId);
+        OrderDetailViewModel orderVM = await _orderService.Get(orderId);
         ViewData["sidebar-active"] = "Orders";
-        return View(model);
+        return View(orderVM);
     }
-    
+
     public async Task<IActionResult> Invoice(long orderId)
     {
-        OrderDetailViewModel model = await _orderService.Get(orderId);
-        ViewAsPdf? pdf = new ( "Invoice" , model )
+        OrderDetailViewModel orderVM = await _orderService.Get(orderId);
+        ViewAsPdf? pdf = new("Invoice", orderVM)
         {
             FileName = "Invoice.pdf"
-        };    
+        };
         return pdf;
     }
 
     public async Task<IActionResult> ExportPdf(long orderId)
     {
-        OrderDetailViewModel model = await _orderService.Get(orderId);
-         ViewAsPdf? pdf = new("OrderDetailsPdf", model){
+        OrderDetailViewModel orderVM = await _orderService.Get(orderId);
+        ViewAsPdf? pdf = new("OrderDetailsPdf", orderVM)
+        {
             FileName = "Invoice.pdf"
         };
         return pdf;

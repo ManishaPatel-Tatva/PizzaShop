@@ -34,7 +34,7 @@ public class CustomersController : Controller
     [CustomAuthorize("View_Customers")]
     public async Task<IActionResult> GetCustomerHistory(long customerId)
     {
-        CustomerHistoryViewModel customer = await _customerService.Get(customerId);
+        CustomerHistoryViewModel customer = await _customerService.GetHistory(customerId);
         return PartialView("_CustomerHistoryPartialView", customer);
     }
 
@@ -46,10 +46,18 @@ public class CustomersController : Controller
         return File(fileData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Customers.xlsx");
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetByEmail(string email)
     {
         CustomerViewModel customer = await _customerService.Get(email);
         return Json(customer);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetById(long id)
+    {
+        CustomerViewModel customer = await _customerService.Get(id);
+        return PartialView("_CustomerDetailPartialView",customer);
     }
 
 }

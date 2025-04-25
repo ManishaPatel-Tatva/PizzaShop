@@ -1,5 +1,6 @@
 
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -11,18 +12,72 @@ namespace PizzaShop.Service.Services;
 public class AppMenuService : IAppMenuService
 {
     private readonly IGenericRepository<Item> _itemRepository;
+    private readonly IGenericRepository<OrderTableMapping> _orderTableRepository;
+    private readonly ICategoryService _categoryService;
+    private readonly IItemService _itemService;
+    private readonly IOrderService _orderService;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService)
     {
         _itemRepository = itemRepository;
+        _orderTableRepository = orderTableRepository;
+        _categoryService = categoryService;
+        _itemService = itemService;
+        _orderService = orderService;
+
     }
 
-    public async Task<List<ItemInfoViewModel>> Get(long categoryId, string search)
+    public async Task<AppMenuViewModel> Get(long customerId)
+    {
+        AppMenuViewModel appMenu = new()
+        {
+            Categories = await _categoryService.Get(),
+            CustomerId = customerId
+        };
+
+        if (customerId == 0)
+        {
+            return appMenu;
+        }
+        else
+        {
+            IEnumerable<OrderTableMapping>? mapping = await _orderTableRepository.GetByCondition(
+                predicate: otm => !otm.IsDeleted,
+                includes: new List<Expression<Func<OrderTableMapping, object>>>
+                {
+                    otm => otm.Order
+                },
+                thenIncludes: new List<Func<IQueryable<OrderTableMapping>, IQueryable<OrderTableMapping>>>
+                {
+                    q => q.Include(otm => otm.Table)
+                        .ThenInclude(t => t.Section).Where(otm => otm.CustomerId == customerId)
+                }
+            );
+
+            appMenu.SectionName = mapping.Select(m => m.Table.Section.Name).FirstOrDefault()!;
+            appMenu.Tables = mapping.Select(m => m.Table.Name).ToList();
+
+            long? orderId = mapping.Select(m => m.OrderId).FirstOrDefault();
+            if (orderId == null)
+            {
+                return appMenu;
+            }
+            else
+            {
+                appMenu.Order = await _orderService.Get((long)orderId);
+                return appMenu;
+            }
+
+        }
+
+    }
+
+    public async Task<List<ItemInfoViewModel>> List(long categoryId, string search)
     {
         IEnumerable<Item>? list = await _itemRepository.GetByCondition(
             predicate: i => !i.IsDeleted &&
-                        ( categoryId == 0 
-                        || categoryId == -1 && i.IsFavourite 
+                        (categoryId == 0
+                        || categoryId == -1 && i.IsFavourite
                         || i.CategoryId == categoryId) &&
                         (string.IsNullOrEmpty(search) ||
                         i.Name.ToLower().Contains(search.ToLower())),
@@ -48,7 +103,7 @@ public class AppMenuService : IAppMenuService
 
     public async Task<ResponseViewModel> FavouriteItem(long itemId)
     {
-        Item? item= await _itemRepository.GetByIdAsync(itemId);
+        Item? item = await _itemRepository.GetByIdAsync(itemId);
 
         ResponseViewModel response = new();
 

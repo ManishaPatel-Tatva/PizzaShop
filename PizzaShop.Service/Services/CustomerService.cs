@@ -31,12 +31,37 @@ public class CustomerService : ICustomerService
         }
         else
         {
-            return new CustomerViewModel
+            return await Get(customer.Id);
+        }
+    }
+
+    /*----------------------------------------------------Get Customer by Id----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<CustomerViewModel> Get(long id)
+    {
+        IEnumerable<Customer>? list = await _customerRepository.GetByCondition(
+            predicate: c => c.Id == id ,
+            includes: new  List<Expression<Func<Customer, object>>>
             {
-                Id = customer.Id,
-                Name = customer.Name,
-                Phone = customer.Phone
-            };
+                c => c.WaitingTokens
+            }
+        );
+
+        if (list == null)
+        {
+            return new CustomerViewModel();
+        }
+        else
+        {
+            CustomerViewModel? customer = list.Select(c => new CustomerViewModel{
+                Id = c.Id,
+                Name = c.Name,
+                Phone = c.Phone,
+                Email = c.Email,
+                Members = c.WaitingTokens.Where(t => t.CustomerId == id).Select(t => t.Members).LastOrDefault()
+            }).LastOrDefault();
+
+            return customer;
         }
     }
 
@@ -136,7 +161,7 @@ public class CustomerService : ICustomerService
 
     #region Customer History
 
-    public async Task<CustomerHistoryViewModel> Get(long customerId)
+    public async Task<CustomerHistoryViewModel> GetHistory(long customerId)
     {
         IEnumerable<Customer>? customer = await _customerRepository.GetByCondition(
             c => c.Id == customerId && !c.IsDeleted,

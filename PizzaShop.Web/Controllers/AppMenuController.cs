@@ -6,30 +6,25 @@ namespace PizzaShop.Web.Controllers;
 
 public class AppMenuController : Controller
 {
-    private readonly ICategoryService _categoryService;
     private readonly IAppMenuService _appMenuService;
     private readonly IItemService _itemService;
 
-    public AppMenuController(ICategoryService categoryService, IAppMenuService appMenuService, IItemService itemService)
+    public AppMenuController(IAppMenuService appMenuService, IItemService itemService)
     {
-        _categoryService = categoryService;
         _appMenuService = appMenuService;
         _itemService = itemService;
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Index(long id)
     {
-        AppMenuViewModel appMenu = new()
-        {
-            Categories = await _categoryService.Get()
-        };
+        AppMenuViewModel appMenu = await _appMenuService.Get(id);
         ViewData["app-active"] = "Menu";
         return View(appMenu);
     }
 
     public async Task<IActionResult> GetCards(long categoryId, string search="")
     {
-        List<ItemInfoViewModel> items = await _appMenuService.Get(categoryId, search);
+        List<ItemInfoViewModel> items = await _appMenuService.List(categoryId, search);
         return PartialView("_CardsPartialView", items);
     }
 
