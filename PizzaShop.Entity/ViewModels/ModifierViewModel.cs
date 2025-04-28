@@ -5,7 +5,7 @@ namespace PizzaShop.Entity.ViewModels;
 
 public class ModifierViewModel
 {
-    public long ModifierId { get; set;} = 0;
+    public long Id { get; set;} = 0;
 
     public long ModifierGroupId { get; set; } = 0;
     public List<ModifierGroup>? ModifierGroups { get; set; } = new List<ModifierGroup>();
@@ -14,7 +14,7 @@ public class ModifierViewModel
 
     [Required(ErrorMessage = "Name is required")]
     [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
-    public string ModifierName { get; set;}
+    public string Name { get; set;}
 
 
     [Required(ErrorMessage = "Unit is required")]

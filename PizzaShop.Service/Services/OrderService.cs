@@ -76,8 +76,8 @@ public class OrderService : IOrderService
             },
             thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
             {
-            q => q.Include(op => op.Payments)
-            .ThenInclude(p => p.PaymentMethod)
+                q => q.Include(op => op.Payments)
+                .ThenInclude(p => p.PaymentMethod)
             }
         );
 
@@ -191,28 +191,28 @@ public class OrderService : IOrderService
                     predicate: o => o.Id == orderId && !o.IsDeleted,
                     includes: new List<Expression<Func<Order, object>>>
                     {
-                    o => o.Status,
-                    o => o.Invoices,
-                    o => o.Customer,
-                    o => o.OrderTableMappings,
-                    o => o.OrderTaxMappings,
-                    o => o.OrderItems,
-                    o => o.Payments
+                        o => o.Status,
+                        o => o.Invoices,
+                        o => o.Customer,
+                        o => o.OrderTableMappings,
+                        o => o.OrderTaxMappings,
+                        o => o.OrderItems,
+                        o => o.Payments
                     },
                     thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
                     {
-                    q => q.Include(o => o.OrderTableMappings)
-                        .ThenInclude(otm => otm.Table)
-                        .ThenInclude(t => t.Section),
-                    q => q.Include(o => o.OrderItems)
-                        .ThenInclude(oi => oi.Item),
-                    q => q.Include(o => o.OrderItems)
-                        .ThenInclude(oi => oi.OrderItemsModifiers)
-                        .ThenInclude(m => m.Modifier),
-                    q => q.Include(o => o.Payments)
-                        .ThenInclude(p => p.PaymentMethod),
-                    q => q.Include(o => o.OrderTaxMappings)
-                        .ThenInclude(otm => otm.Tax)
+                        q => q.Include(o => o.OrderTableMappings)
+                            .ThenInclude(otm => otm.Table)
+                            .ThenInclude(t => t.Section),
+                        q => q.Include(o => o.OrderItems)
+                            .ThenInclude(oi => oi.Item),
+                        q => q.Include(o => o.OrderItems)
+                            .ThenInclude(oi => oi.OrderItemsModifiers)
+                            .ThenInclude(m => m.Modifier),
+                        q => q.Include(o => o.Payments)
+                            .ThenInclude(p => p.PaymentMethod),
+                        q => q.Include(o => o.OrderTaxMappings)
+                            .ThenInclude(otm => otm.Tax)
                     }
                 );
 
@@ -242,6 +242,8 @@ public class OrderService : IOrderService
                                     - o.CreatedAt)
                                     .ToString() ?? "",
 
+                    Comment = o.Instructions,
+
                     CustomerName = o.Customer.Name,
 
                     CustomerPhone = o.Customer.Phone,
@@ -264,7 +266,8 @@ public class OrderService : IOrderService
                                 .Where(oi => oi.OrderId == o.Id)
                                 .Select(oi => new OrderItemViewModel
                                 {
-                                    ItemName = oi.Item.Name,
+                                    Id = oi.ItemId,
+                                    Name = oi.Item.Name,
                                     Quantity = oi.Quantity,
                                     Price = oi.Price,
                                     TotalAmount = oi.Quantity * oi.Price,
@@ -272,7 +275,8 @@ public class OrderService : IOrderService
                                                     .Where(oim => oim.OrderItemId == oi.Id)
                                                     .Select(oim => new ModifierViewModel
                                                     {
-                                                        ModifierName = oim.Modifier.Name,
+                                                        Id = oim.ModifierId,
+                                                        Name = oim.Modifier.Name,
                                                         Quantity = oim.Quantity,
                                                         Rate = oim.Price,
                                                         TotalAmount = oim.Quantity * oim.Price

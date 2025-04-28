@@ -2,6 +2,6 @@ namespace PizzaShop.Entity.ViewModels;
 
 public class ModifierInfoViewModel
 {
-    public long ModifierId { get; set;} 
-    public string? ModifierName { get; set;}
+    public long Id { get; set;} 
+    public string? Name { get; set;}
 }

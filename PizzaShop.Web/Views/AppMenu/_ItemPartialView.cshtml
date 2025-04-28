@@ -1,0 +1,53 @@
+@using PizzaShop.Entity.ViewModels
+@model OrderItemViewModel
+
+<tr class="">
+    <td>
+        <div class="accordion accordion-item">
+            <div class="accordion-item">
+                <div class="accordion-header d-flex">
+                    <button class="accordion-button px-0" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse-@Model.Id" aria-expanded="true" aria-controls="collapseOne"
+                        style="width: fit-content;">
+                    </button>
+                    <div class="ms-4 ps-1 fs-5">@Model.Name</div>
+                </div>
+                <div id="collapse-@Model.Id" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body p-0">
+                        <ul>
+                            @foreach (ModifierViewModel? modifier in Model.ModifiersList)
+                            {
+                                <li>
+                                    <div class="d-flex gap-4">
+                                        <span>@modifier.Name</span>
+                                        <span>₹@modifier.Rate</span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="item-quantity border d-flex align-items-center gap-0 rounded-2">
+            <button type="button" class="btn fs-4 p-0">
+                <i class="bi bi-dash"></i>
+            </button>
+            <input type="text" value="5" class="item-quantity text-center" hidden>
+            <input type="text" value="5" class="item-quantity text-center bg-white" disabled>
+            <button type="button" class="btn fs-4 p-0">
+                <i class="bi bi-plus"></i>
+            </button>
+        </div>
+    </td>
+    <td>
+        <div class="fs-5">₹@Model.Price</div>
+        <div>₹@Model.ModifiersList.Sum(m => m.Rate)</div>
+    </td>
+    <td>
+        <img src="/images/icons/trash.svg" alt="">
+    </td>
+</tr>

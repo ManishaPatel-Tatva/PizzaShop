@@ -7,7 +7,7 @@
     {
         <!-- Card starts -->
         <div
-            class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm rounded-3 menu-card position-relative" onclick="ItemDetail(@item.Id)">
+            class="d-flex flex-grow-1 flex-md-grow-0 align-items-center bg-white shadow-sm rounded-3 menu-card position-relative" data-id="@item.Id" data-name="@item.Name" data-price="@item.Rate" onclick="ItemDetail(this)">
             <div class="badge-corner @item.Type.ToLower()-badge "></div>
             <div class="shadow rounded-3 h-100 p-1 d-flex align-items-center">
                 <img src="@item.ImageUrl" class="object-fit-cover" height="65px" width="65px">

@@ -16,15 +16,18 @@ public class AppMenuService : IAppMenuService
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
     private readonly IOrderService _orderService;
+    private readonly IGenericRepository<Taxis> _taxRepository;
+    private readonly IGenericRepository<PaymentMethod> _paymentMethodRepository;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
         _categoryService = categoryService;
         _itemService = itemService;
         _orderService = orderService;
-
+        _taxRepository = taxRepository;
+        _paymentMethodRepository = paymentMethodRepository;
     }
 
     public async Task<AppMenuViewModel> Get(long customerId)
@@ -32,7 +35,9 @@ public class AppMenuService : IAppMenuService
         AppMenuViewModel appMenu = new()
         {
             Categories = await _categoryService.Get(),
-            CustomerId = customerId
+            CustomerId = customerId,
+            Taxes =  _taxRepository.GetAll().ToList(),
+            PaymentMethods = _paymentMethodRepository.GetAll().ToList(),
         };
 
         if (customerId == 0)

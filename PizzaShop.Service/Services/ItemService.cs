@@ -128,8 +128,8 @@ public class ItemService : IItemService
                 .Where(i => !i.IsDeleted)
                 .Select(m => new ModifierViewModel
                 {
-                    ModifierId = m.Modifier.Id,
-                    ModifierName = m.Modifier.Name,
+                    Id = m.Modifier.Id,
+                    Name = m.Modifier.Name,
                     Rate = m.Modifier.Rate
                 }).ToList()
             }).ToList();
@@ -162,8 +162,8 @@ public class ItemService : IItemService
                 .Where(i => !i.IsDeleted)
                 .Select(mm => new ModifierViewModel
                 {
-                    ModifierId = mm.Modifier.Id,
-                    ModifierName = mm.Modifier.Name,
+                    Id = mm.Modifier.Id,
+                    Name = mm.Modifier.Name,
                     Rate = mm.Modifier.Rate
                 }).ToList()
             }).First();
@@ -340,7 +340,7 @@ public class ItemService : IItemService
 
         foreach (ItemModifierViewModel itemModifier in itemModifierList)
         {
-            ItemModifierGroup existingGroup = await _itemModifierGroupRepository.GetByStringAsync(mg => mg.ItemId == itemModifier.ItemId && mg.ModifierGroupId == itemModifier.ModifierGroupId && mg.IsDeleted == false);
+            ItemModifierGroup existingGroup = await _itemModifierGroupRepository.GetByStringAsync(mg => mg.ItemId == itemId && mg.ModifierGroupId == itemModifier.ModifierGroupId && mg.IsDeleted == false);
             if (existingGroup == null)
             {
                 bool success = await AddItemModifierGroup(itemId, itemModifier, createrId);

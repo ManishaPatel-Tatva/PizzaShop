@@ -57,13 +57,13 @@
                     {
                         <div class="mb-2">
                             <div class="d-flex justify-content-between">
-                                <div>@item.ItemName</div>
+                                <div>@item.Name</div>
                                 <div class="text-black">@item.Quantity</div>
                             </div>
                             <ul class="mb-0">
                                 @foreach (var modifier in item.ModifiersList)
                                 {
-                                    <li>@modifier.ModifierName</li>
+                                    <li>@modifier.Name</li>
                                 }
                             </ul>
                             <div>

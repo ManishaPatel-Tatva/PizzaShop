@@ -69,8 +69,8 @@ public class ModifierService : IModifierService
             ).Result
             .Select(i => new ModifierInfoViewModel
             {
-                ModifierId = i.Modifierid,
-                ModifierName = i.Modifier.Name
+                Id = i.Modifierid,
+                Name = i.Modifier.Name
             }).ToList()
         };
 
@@ -279,8 +279,8 @@ public class ModifierService : IModifierService
             Page = new(),
             Modifiers = modifierMapping.Select(m => new ModifierViewModel()
             {
-                ModifierId = m.Modifierid,
-                ModifierName = m.Modifier.Name,
+                Id = m.Modifierid,
+                Name = m.Modifier.Name,
                 UnitName = m.Modifier.Unit.Name,
                 Rate = m.Modifier.Rate,
                 Quantity = m.Modifier.Quantity,
@@ -310,8 +310,8 @@ public class ModifierService : IModifierService
 
         model.Modifiers = modifiers.Select(m => new ModifierViewModel()
         {
-            ModifierId = m.Id,
-            ModifierName = m.Name,
+            Id = m.Id,
+            Name = m.Name,
             UnitName = m.Unit.Name,
             Rate = m.Rate,
             Quantity = m.Quantity,
@@ -325,7 +325,7 @@ public class ModifierService : IModifierService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ModifierViewModel> GetModifier(long modifierId)
     {
-        ModifierViewModel model = new ModifierViewModel
+        ModifierViewModel model = new()
         {
             ModifierGroups = _modifierGroupRepository.GetAll().ToList(),
             Units = _unitRepository.GetAll().ToList()
@@ -338,8 +338,8 @@ public class ModifierService : IModifierService
 
         Modifier modifier = await _modifierRepository.GetByIdAsync(modifierId);
         
-        model.ModifierId = modifierId;
-        model.ModifierName = modifier.Name;
+        model.Id = modifierId;
+        model.Name = modifier.Name;
         model.Rate = modifier.Rate;
         model.Quantity = modifier.Quantity;
         model.UnitId = modifier.UnitId;
@@ -358,11 +358,11 @@ public class ModifierService : IModifierService
         User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
         long createrId = creater.Id;
 
-        if (model.ModifierId == 0)
+        if (model.Id == 0)
         {
             return await AddModifier(model, createrId);
         }
-        else if (model.ModifierId > 0)
+        else if (model.Id > 0)
         {
             return await UpdateModifier(model, createrId);
         }
@@ -378,7 +378,7 @@ public class ModifierService : IModifierService
     {
         Modifier modifier = new ()
         {
-            Name = model.ModifierName,
+            Name = model.Name,
             Rate = model.Rate,
             Quantity = model.Quantity,
             UnitId = model.UnitId,
@@ -411,9 +411,9 @@ public class ModifierService : IModifierService
     #region Update Modifier
     public async Task<bool> UpdateModifier(ModifierViewModel model, long createrId)
     {
-        Modifier modifier = await _modifierRepository.GetByIdAsync(model.ModifierId);
+        Modifier modifier = await _modifierRepository.GetByIdAsync(model.Id);
 
-        modifier.Name = model.ModifierName;
+        modifier.Name = model.Name;
         modifier.Rate = model.Rate;
         modifier.Quantity = model.Quantity;
         modifier.UnitId = model.UnitId;
@@ -425,7 +425,7 @@ public class ModifierService : IModifierService
         if (!success)
             return false;
 
-        return await UpdateModifierGroupMapping( model.ModifierId, model.SelectedMgList ,  createrId);
+        return await UpdateModifierGroupMapping( model.Id, model.SelectedMgList ,  createrId);
 
     }
 

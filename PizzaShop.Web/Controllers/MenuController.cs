@@ -130,8 +130,8 @@ public class MenuController : Controller
             model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList);
         }
 
-        string token = Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
+        string? token = Request.Cookies["authToken"];
+        string? createrEmail = _jwtService.GetClaimValue(token, "email");
 
         bool success = await _ItemService.AddUpdateItem(model, createrEmail);
 
@@ -303,7 +303,7 @@ public class MenuController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
+            ModifierViewModel updatedModel = await _modifierService.GetModifier(model.Id);
             return PartialView("_ModifierGroupPartialView", updatedModel);
         }
 
@@ -318,7 +318,7 @@ public class MenuController : Controller
         bool success = await _modifierService.SaveModifier(model, createrEmail);
         if (!success)
         {
-            ModifierViewModel updatedModel = await _modifierService.GetModifier(model.ModifierId);
+            ModifierViewModel updatedModel = await _modifierService.GetModifier(model.Id);
             return PartialView("_ModifierGroupPartialView", updatedModel);
         }
         return Json(new { success = true, message = "Modifier Added Successful!" });

@@ -10,6 +10,6 @@ public class AppMenuViewModel
     public List<string> Tables { get; set; } = new();
     public long OrderId { get; set; } = 0;
     public OrderDetailViewModel Order { get; set; } = new();
-    public List<TaxViewModel> Taxes { get; set; } = new ();
+    public List<Taxis> Taxes { get; set; } = new ();
     public List<PaymentMethod> PaymentMethods { get; set; } = new();
 }

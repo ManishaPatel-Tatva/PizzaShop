@@ -110,188 +110,128 @@
                     <div class="d-flex gap-2">
                         <img src="/images/icons/qr-code-scan.svg" alt="" class="blue p-2 border rounded-1"
                             data-bs-toggle="modal" data-bs-target="#qr-scan-modal">
-                        <img src="/images/icons/person-lines-fill.svg" alt="" class="blue p-2 border rounded-1">
-                        <img src="/images/icons/chat-left-text.svg" alt="" class="blue p-2 border rounded-1">
+                        <img src="/images/icons/person-lines-fill.svg" alt="" class="blue p-2 border rounded-1"
+                            onclick="CustomerDetail(@Model.CustomerId)">
+                        <img src="/images/icons/chat-left-text.svg" alt="" class="blue p-2 border rounded-1"
+                            data-bs-toggle="modal" data-bs-target="#order-comment-modal">
                     </div>
                 </div>
                 <!-- Title ends-->
 
                 <!-- Order Item starts -->
-                <div class="">
-                    <div class="row mx-0 p-1">
-                        <div class="col-7 px-0 fw-semibold text-grey">Item</div>
-                        <div class="col-2 fw-semibold text-grey">Quantity</div>
-                        <div class="col-2 fw-semibold text-grey">Amount</div>
-                        <div class="col-1 "></div>
-                    </div>
+                <div class="table-responsive ">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col-6 fs-5">Item</th>
+                                <th scope="col" class="col fs-5">Quantity</th>
+                                <th scope="col" class="col fs-5">Amount</th>
+                                <th scope="col" class="col-1"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="item-list">
 
-                    <div class="row mx-0 border rounded-1 p-1 mb-2">
-                        <div class="col-7 px-0 fw-semibold">
-
-                            <div class="accordion accordion-item">
-
-                                <div class="accordion-item">
-                                    <div class="accordion-header d-flex">
-                                        <button class="accordion-button px-0" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#collapseOne" aria-expanded="true"
-                                            aria-controls="collapseOne" style="width: fit-content;">
-                                        </button>
-                                        <div class="ms-4 ps-1 fs-5">Pizza</div>
-                                    </div>
-                                    <div id="collapseOne" class="accordion-collapse collapse show"
-                                        aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                        <div class="accordion-body p-0">
-                                            <ul>
-                                                <li>
-                                                    <div class="d-flex gap-4">
-                                                        <span>Onion</span>
-                                                        <span>₹100</span>
+                            @foreach (OrderItemViewModel? item in Model.Order.ItemsList)
+                            {
+                                <tr class="">
+                                    <td>
+                                        <div class="accordion accordion-item">
+                                            <div class="accordion-item">
+                                                <div class="accordion-header d-flex">
+                                                    <button class="accordion-button px-0" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id"
+                                                        aria-expanded="true" aria-controls="collapseOne"
+                                                        style="width: fit-content;">
+                                                    </button>
+                                                    <div class="ms-4 ps-1 fs-5">@item.Name</div>
+                                                </div>
+                                                <div id="collapse-@item.Id" class="accordion-collapse collapse show"
+                                                    aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                                    <div class="accordion-body p-0">
+                                                        <ul>
+                                                            @foreach (ModifierViewModel? modifier in item.ModifiersList)
+                                                            {
+                                                                <li>
+                                                                    <div class="d-flex gap-4">
+                                                                        <span>@modifier.Name</span>
+                                                                        <span>₹@modifier.Rate</span>
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                        </ul>
                                                     </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex gap-4">
-                                                        <span>Chilly</span>
-                                                        <span>₹20</span>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="d-flex gap-4">
-                                                        <span>Tomato</span>
-                                                        <span>₹50</span>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-                        <div class="col-2 d-flex align-items-center">
-                            <div class="item-quantity border d-flex align-items-center gap-0 ms-auto rounded-2">
-                                <button type="button" class="btn fs-4 p-0">
-                                    <i class="bi bi-dash"></i>
-                                </button>
-                                <input type="text" value="5" class="item-quantity text-center" hidden>
-                                <input type="text" value="5" class="item-quantity text-center bg-white" disabled>
-                                <button type="button" class="btn fs-4 p-0">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-2 d-flex flex-column justify-content-center">
-                            <div class="fs-5">₹120.00</div>
-                            <div>₹20.00</div>
-                        </div>
-                        <div class="col-1 d-flex align-items-center">
-                            <img src="/images/icons/trash.svg" alt="">
-                        </div>
-                    </div>
-
-                    @foreach (OrderItemViewModel? item in Model.Order.ItemsList)
-                    {
-                        <div class="row mx-0 border rounded-1 p-1 mb-2">
-                            <div class="col-7 px-0 fw-semibold">
-
-                                <div class="accordion accordion-item">
-
-                                    <div class="accordion-item">
-                                        <div class="accordion-header d-flex">
-                                            <button class="accordion-button px-0" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseOne" aria-expanded="true"
-                                                aria-controls="collapseOne" style="width: fit-content;">
-                                            </button>
-                                            <div class="ms-4 ps-1 fs-5">@item.ItemName</div>
-                                        </div>
-                                        <div id="collapseOne" class="accordion-collapse collapse show"
-                                            aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                            <div class="accordion-body p-0">
-                                                <ul>
-                                                    @foreach ( ModifierViewModel? modifier in item.ModifiersList)
-                                                    {
-                                                        <li>
-                                                            <div class="d-flex gap-4">
-                                                                <span>@modifier.ModifierName</span>
-                                                                <span>₹@modifier.Rate</span>
-                                                            </div>
-                                                        </li>
-                                                    }
-                                                </ul>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </td>
+                                    <td>
+                                        <div class="item-quantity border d-flex align-items-center gap-0 rounded-2">
+                                            <button type="button" class="btn fs-4 p-0">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                            <input type="text" value="5" class="item-quantity text-center" hidden>
+                                            <input type="text" value="5" class="item-quantity text-center bg-white"
+                                                disabled>
+                                            <button type="button" class="btn fs-4 p-0">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fs-5">₹@item.Price</div>
+                                        <div>₹@item.ModifiersList.Sum(m => m.Rate)</div>
+                                    </td>
+                                    <td>
+                                        <img src="/images/icons/trash.svg" alt="">
+                                    </td>
+                                </tr>
+                            }
 
 
-                                </div>
-
-                            </div>
-                            <div class="col-2 d-flex align-items-center">
-                                <div class="item-quantity border d-flex align-items-center gap-0 ms-auto rounded-2">
-                                    <button type="button" class="btn fs-4 p-0">
-                                        <i class="bi bi-dash"></i>
-                                    </button>
-                                    <input type="text" value="5" class="item-quantity text-center" hidden>
-                                    <input type="text" value="5" class="item-quantity text-center bg-white" disabled>
-                                    <button type="button" class="btn fs-4 p-0">
-                                        <i class="bi bi-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-2 d-flex flex-column justify-content-center">
-                                <div class="fs-5">₹@item.Price</div>
-                                <div>₹@item.ModifiersList.Sum(m => m.Rate)</div>
-                            </div>
-                            <div class="col-1 d-flex align-items-center">
-                                <img src="/images/icons/trash.svg" alt="">
-                            </div>
-                        </div>
-                    }
-
+                        </tbody>
+                    </table>
                 </div>
                 <!-- Order Item ends -->
-
-                <hr />
 
                 <div class="table-responsive">
                     <table class="table table-borderless menu-tax-table ">
                         <tr>
                             <td class="text-start fs-5">Subtotal</td>
-                            <td class="text-end">₹1780.00</td>
+                            <td class="text-end fs-5">₹@Model.Order.Subtotal</td>
                         </tr>
-                        <tr>
-                            <td class="text-start">CGST</td>
-                            <td class="text-end">₹200.00</td>
-                        </tr>
-                        <tr>
-                            <td class="text-start">
-                                <input type="checkbox" class="form-check-input me-2">
-                            </td>
-                            <td class="text-end"></td>
-                        </tr>
+                        @foreach (var tax in Model.Taxes.Where(t => t.IsEnabled && t.DefaultTax))
+                        {
+                            <tr>
+                                <td class="text-start">@tax.Name</td>
+                                <td class="text-end">₹@tax.TaxValue</td>
+                            </tr>
+                        }
+
+                        @foreach (var tax in Model.Taxes.Where(t => t.IsEnabled && !t.DefaultTax))
+                        {
+                            <tr>
+                                <td class="text-start">
+                                    <input type="checkbox" class="form-check-input me-2" id="@tax.Id">@tax.Name
+                                </td>
+                                <td class="text-end">₹@tax.TaxValue</td>
+                            </tr>
+                        }
+
                         <tr>
                             <td class="text-start fs-5">Total</td>
-                            <td class="text-end">₹2000.00</td>
+                            <td class="text-end fs-5">₹@Model.Order.FinalAmount</td>
                         </tr>
                         <tr>
                             <td class="text-start">Payment Method</td>
                             <td class="text-end d-flex justify-content-end flex-wrap">
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="radio-cash" name="optradio"
-                                        value="option1" checked>Cash
-                                    <label class="form-check-label" for="radio1"></label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="radio-card" name="optradio"
-                                        value="option2">Card
-                                    <label class="form-check-label" for="radio2"></label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="radio-upi" name="optradio"
-                                        value="option3">UPI
-                                    <label class="form-check-label" for="radio3"></label>
-                                </div>
+                                @foreach (var method in Model.PaymentMethods)
+                                {
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="radio-@method.Id" name="optradio"
+                                            value="@method.Id" checked>@method.Name
+                                        <label class="form-check-label" for="radio1"></label>
+                                    </div>
+                                }
                             </td>
                         </tr>
                     </table>
@@ -325,6 +265,9 @@
 <!-- Main Content ends -->
 
 
+<!-- #region Modals---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------->
+
 <!-- Modal Item Detail starts -->
 <div class="modal fade" id="itemDetail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -336,8 +279,7 @@
 </div>
 <!-- Modal Item Detail ends -->
 
-
-<!-- Modal -->
+<!-- Modal QR Scan starts-->
 <div class="modal fade" id="qr-scan-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -357,6 +299,7 @@
         </div>
     </div>
 </div>
+<!-- Modal QR Scan ends-->
 
 <!-- Modal Customer Detail starts -->
 <div class="modal fade" id="customer-detail-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -369,6 +312,33 @@
 </div>
 <!-- Modal Customer Detail ends -->
 
+<!-- Modal Order Comment starts-->
+<div class="modal fade" id="order-comment-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Order Wise Comment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    <textarea asp-for="Order.Comment" class="form-control" rows="4" placeholder=""></textarea>
+                    <label asp-for="Order.Comment">Comments*</label>
+                    <span asp-validation-for="Order.Comment" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-blue">Save</button>
+                <button type="reset" class="btn btn-white">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Order Comment ends-->
+
+<!-- #endregion ----------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------->
 
 
 @section Scripts {
@@ -399,7 +369,6 @@
                 dataType: "html",
                 success: function (data) {
                     $("#itemCards").html(data);
-                    console.log("success");
                 },
                 error: function (data) {
                     alert("No Card Found");
@@ -439,13 +408,35 @@
 
     @* Item Detail Modal *@
     <script>
+        let currentItemId = 0;
+        let currentItemName = "";
+        let currentItemPrice = 0;
+        let modifierList = [];
 
-        function ItemDetail(id) {
+        let item = {
+            Id: currentItemId,
+            Name: currentItemName,
+            Price: currentItemPrice,
+            ModifiersList: modifierList
+        }
+
+        function ItemDetail(tag) {
+            currentItemId = $(tag).data("id");
+            currentItemName = $(tag).data("name");
+            currentItemPrice = $(tag).data("price");
+
+            item = {
+                Id: currentItemId,
+                Name: currentItemName,
+                Price: currentItemPrice,
+                ModifiersList: modifierList
+            }
+
             $.ajax({
                 url: '@Url.Action("ItemDetail", "AppMenu")',
                 type: "GET",
                 data: {
-                    itemId: id
+                    itemId: currentItemId
                 },
                 dataType: "html",
                 success: function (data) {
@@ -457,6 +448,52 @@
                 }
             });
         }
+
+        @* Select Modifier *@
+            function SelectModifier(tag) {
+                let modifierId = $(tag).data("id");
+                let modifierName = $(tag).data("name");
+                let modifierPrice = $(tag).data("price");
+
+                $(tag).toggleClass("modifier-card-selected");
+
+                if (!modifierList.some(m => m.Id == modifierId)) {
+                    modifierList.push({
+                        Id: modifierId,
+                        Name: modifierName,
+                        Rate: modifierPrice
+                    });
+                }
+                else {
+                    modifierList = modifierList.filter(m => m.Id != modifierId);
+                }
+
+                @* item.ModifiersList = modifierList; *@
+                console.log(item);
+            }
+
+    </script>
+
+    @* Add Item to Order *@
+    <script>
+        function AddItem()
+        {
+            console.log("AddItem : Item is ",item);
+            $.ajax({
+                url: '@Url.Action("AddItem","AppMenu")',
+                type: "POST",
+                data: {
+                    item : item
+                },
+                dataType: "html",
+                success: function(data){
+                    console.log(data);
+                    $("#itemDetail").modal("hide");
+                    $("#item-list").append(data);
+                }
+
+            });
+        }
     </script>
 
     @* Customer Detail Modal *@
@@ -464,7 +501,7 @@
 
         function CustomerDetail(id) {
             $.ajax({
-                url: '@Url.Action("GetById", "Customer")',
+                url: '@Url.Action("GetById", "Customers")',
                 type: "GET",
                 data: {
                     id: id
@@ -481,5 +518,29 @@
         }
     </script>
 
+    @* Update Customer Detail Form Submit *@
+    <script>
+        $(document).on("submit", "#customerForm", function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $("#customer-detail-modal").modal("hide");
+                        toastr.success(response.message);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                }
+            });
+        });
+    </script>
 
 }

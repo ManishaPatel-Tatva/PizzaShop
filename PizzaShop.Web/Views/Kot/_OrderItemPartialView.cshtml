@@ -27,24 +27,24 @@
                 {
                     <tr>
                         <td class="text-start">
-                            <input asp-for="Items[i].ItemId" hidden>
+                            <input asp-for="Items[i].Id" hidden>
                             <input asp-for="Items[i].IsSelected" type="checkbox" class="form-check-input me-2 childCheckbox">
-                            @Model.Items[i].ItemName
+                            @Model.Items[i].Name
                             <ul class="mb-0">
                                 @foreach(var modifier in Model.Items[i].ModifiersList)
                                 {
-                                    <li>@modifier.ModifierName</li>
+                                    <li>@modifier.Name</li>
                                 }
                             </ul>
                         </td>
                         <td class="align-text-top ">
                             <div class="item-quantity border-blue d-flex align-items-center gap-0 ms-auto rounded-2 p-1 px-sm-3 ">
-                                <button type="button" class="btn fs-4 p-0" onclick='changeQuantity("@Model.Items[i].ItemId",-1)'>
+                                <button type="button" class="btn fs-4 p-0" onclick='changeQuantity("@Model.Items[i].Id",-1)'>
                                     <i class="bi bi-dash"></i>
                                 </button>
-                                <input type="text" asp-for="@Model.Items[i].Quantity" class="item-quantity-@Model.Items[i].ItemId text-center" max="@Model.Items[i].Quantity" hidden>
-                                <input type="text" value="@Model.Items[i].Quantity" class="item-quantity-@Model.Items[i].ItemId text-center bg-white" max="@Model.Items[i].Quantity" disabled>
-                                <button type="button" class="btn fs-4 p-0" onclick='changeQuantity("@Model.Items[i].ItemId", 1)'>
+                                <input type="text" asp-for="@Model.Items[i].Quantity" class="item-quantity-@Model.Items[i].Id text-center" max="@Model.Items[i].Quantity" hidden>
+                                <input type="text" value="@Model.Items[i].Quantity" class="item-quantity-@Model.Items[i].Id text-center bg-white" max="@Model.Items[i].Quantity" disabled>
+                                <button type="button" class="btn fs-4 p-0" onclick='changeQuantity("@Model.Items[i].Id", 1)'>
                                     <i class="bi bi-plus"></i>
                                 </button>
                             </div>

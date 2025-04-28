@@ -57,7 +57,13 @@ public class CustomersController : Controller
     public async Task<IActionResult> GetById(long id)
     {
         CustomerViewModel customer = await _customerService.Get(id);
-        return PartialView("_CustomerDetailPartialView",customer);
+        return PartialView("_CustomerDetailPartialView", customer);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> SaveCustomer(CustomerViewModel customer)
+    {
+        ResponseViewModel response = await _customerService.Save(customer);
+        return Json(response);
+    }
 }

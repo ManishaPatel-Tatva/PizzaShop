@@ -42,4 +42,10 @@ public class AppMenuController : Controller
         return PartialView("_ItemModifierPartialView",item);
     }
 
+    [HttpPost]
+    public IActionResult AddItem(OrderItemViewModel item)
+    {
+        return PartialView("_ItemPartialView",item);
+    }
+
 }

@@ -75,13 +75,13 @@ public class KotService : IKotService
                             .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
                             .Select(oi => new OrderItemViewModel
                             {
-                                ItemId = oi.ItemId,
-                                ItemName = oi.Item.Name,
+                                Id = oi.ItemId,
+                                Name = oi.Item.Name,
                                 Quantity = isReady ? oi.ReadyQuantity : oi.Quantity - oi.ReadyQuantity,
                                 ModifiersList = oi.OrderItemsModifiers
                                                 .Select(oim => new ModifierViewModel
                                                 {
-                                                    ModifierName = oim.Modifier.Name,
+                                                    Name = oim.Modifier.Name,
                                                     Quantity = oim.Quantity
                                                 }).ToList(),
                                 Instruction = oi.Instructions,
@@ -123,7 +123,7 @@ public class KotService : IKotService
             {
                 if (item.IsSelected)
                 {
-                    OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == kot.OrderId && oi.ItemId == item.ItemId && !oi.IsDeleted);
+                    OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == kot.OrderId && oi.ItemId == item.Id && !oi.IsDeleted);
                     if (orderItem == null)
                     {
                         return new ResponseViewModel

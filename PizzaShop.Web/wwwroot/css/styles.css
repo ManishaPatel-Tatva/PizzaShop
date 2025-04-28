@@ -748,3 +748,7 @@ table td,th{
     width: 145px;
 }
 
+.modifier-card-selected{
+    border: 1px solid #62b6ed !important;
+    background-color: #daf6ff;
+}

@@ -3,14 +3,14 @@
 @model ModifierViewModel
 
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="mModalToggleLabel">@(Model.ModifierId == 0 ? "Add New " : "Update") Modifier</h1>
+    <h1 class="modal-title fs-5" id="mModalToggleLabel">@(Model.Id == 0 ? "Add New " : "Update") Modifier</h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form asp-action="SaveModifier" asp-controller="Menu" id="SaveModifierForm" method="Post">
     <div class="modal-body">
         <div class="form addM-form row">
 
-            <input asp-for="ModifierId" type="text" class="form-control" id="mId" hidden>
+            <input asp-for="Id" type="text" class="form-control" id="mId" hidden>
             <input name="selectedMG" type="text" class="form-control" id="selectedMgList" hidden>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
@@ -32,9 +32,9 @@
             </div>
 
             <div class="col-12 col-sm-6 form-floating mb-3">
-                <input asp-for="ModifierName" type="text" class="form-control" placeholder="" id="mName">
+                <input asp-for="Name" type="text" class="form-control" placeholder="" id="mName">
                 <label for="mName">Name*</label>
-                <span asp-validation-for="ModifierName" class="text-danger"></span>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
 

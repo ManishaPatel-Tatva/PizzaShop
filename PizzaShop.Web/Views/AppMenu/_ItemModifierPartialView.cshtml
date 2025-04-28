@@ -9,7 +9,7 @@
 
     @if (Model.ItemModifierGroups.Count() > 0)
     {
-        @foreach (var mg in Model.ItemModifierGroups)
+        @foreach (ItemModifierViewModel? mg in Model.ItemModifierGroups)
         {
             <div class="mb-4">
                 <div class="text-grey mb-2">
@@ -18,14 +18,14 @@
                 </div>
 
                 <div class="d-flex flex-wrap gap-3">
-                    @foreach (var modifier in mg.ModifierList)
+                    @foreach (ModifierViewModel? modifier in mg.ModifierList)
                     {
                         <!-- Card starts -->
-                        <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative">
+                        <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative" data-id="@modifier.Id" data-name="@modifier.Name" data-price="@modifier.Rate" onclick="SelectModifier(this)">
                             <div class="badge-corner vegan-badge "></div>
 
                             <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                                <div>@modifier.ModifierName</div>
+                                <div>@modifier.Name</div>
                                 <div>₹@modifier.Rate</div>
                             </div>
                         </div>
@@ -43,6 +43,6 @@
 
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-blue">Add</button>
+    <button type="button" class="btn btn-blue" onclick="AddItem()">Add</button>
     <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
 </div>

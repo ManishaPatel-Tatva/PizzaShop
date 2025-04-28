@@ -22,8 +22,8 @@
                 <tr>
                     <td>
                         <input type="checkbox" value="" id="" class="me-2 modifierChildCheckbox"
-                            data-id="@modifier.ModifierId">
-                        @modifier.ModifierName
+                            data-id="@modifier.Id">
+                        @modifier.Name
                     </td>
                     <td>@modifier.UnitName</td>
                     <td>@modifier.Rate</td>
@@ -31,12 +31,12 @@
                     <td>
                         <div class="d-flex flex-row">
                             <button href="edit-user.html" class="editModifierBtn btn ps-0 me-2" data-bs-toggle="modal"
-                                data-bs-target="#addModifier" data-id="@modifier.ModifierId">
+                                data-bs-target="#addModifier" data-id="@modifier.Id">
                                 <img src="~/images/icons/edit.svg" alt="" />
                             </button>
 
                             <button type="button" class="deleteModifierBtn btn" data-bs-toggle="modal"
-                                data-bs-target="#deleteModifierModal" data-id="@modifier.ModifierId">
+                                data-bs-target="#deleteModifierModal" data-id="@modifier.Id">
                                 <img src="~/images/icons/delete.svg" alt="">
                             </button>
                         </div>

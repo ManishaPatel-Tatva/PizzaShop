@@ -161,11 +161,11 @@
                             <tr>
                                 <td class="align-text-top">@(i + 1)</td>
                                 <td>
-                                    @Model.ItemsList[i].ItemName
+                                    @Model.ItemsList[i].Name
                                     @foreach (var modifier in Model.ItemsList[i].ModifiersList)
                                     {
                                         <ul class="mb-0">
-                                            <li>@modifier.ModifierName</li>
+                                            <li>@modifier.Name</li>
                                         </ul>
                                     }
                                 </td>
