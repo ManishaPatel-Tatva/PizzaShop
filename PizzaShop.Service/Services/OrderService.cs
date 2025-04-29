@@ -279,8 +279,9 @@ public class OrderService : IOrderService
                                                         Name = oim.Modifier.Name,
                                                         Quantity = oim.Quantity,
                                                         Rate = oim.Price,
-                                                        TotalAmount = oim.Quantity * oim.Price
-                                                    }).ToList()
+                                                        TotalAmount = oi.Quantity * oim.Price
+                                                    }).ToList(),
+                                    Instruction = oi.Instructions
                                 }).ToList(),
 
                     Subtotal = o.SubTotal,
@@ -288,6 +289,7 @@ public class OrderService : IOrderService
                     TaxList = o.OrderTaxMappings.Where(otm => otm.OrderId == o.Id)
                                 .Select(otm => new TaxViewModel
                                 {
+                                    TaxId = otm.TaxId,
                                     Name = otm.Tax.Name,
                                     TaxValue = otm.TaxValue
                                 }).ToList(),

@@ -735,7 +735,6 @@ table td,th{
 .accordion-item .accordion-button::after {
     background-size: unset;
     position: absolute;
-    margin-left: 5px;
     filter: brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(152%) hue-rotate(230deg) brightness(100%) contrast(103%);
 }
 

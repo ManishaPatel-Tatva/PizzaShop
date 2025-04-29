@@ -151,12 +151,7 @@
 
     @* Inc/Dec Quantity of Item *@
     <script>
-        $(document).on("click", ".incItem", function () {
-            let itemQuantity = (".itemQuantity").val()
-                (".itemQuantity").val()
-        })
-
-        function changeQuantity(itemId, num) {
+        function ChangeQuantity(itemId, num) {
             let quantity = Number($(".item-quantity-" + itemId).val());
             let max = Number($(".item-quantity-" + itemId).prop("max"));
             if (quantity + num > 0 && quantity + num <= max) {
