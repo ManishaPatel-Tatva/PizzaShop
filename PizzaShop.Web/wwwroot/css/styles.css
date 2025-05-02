@@ -728,7 +728,7 @@ table td,th{
 }
  
 .item-modifier-modal{
-    height: 400px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -751,3 +751,4 @@ table td,th{
     border: 1px solid #62b6ed !important;
     background-color: #daf6ff;
 }
+

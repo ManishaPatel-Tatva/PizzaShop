@@ -9,9 +9,10 @@ public class OrderDetailViewModel
     public string PlacedOn { get; set; } = "";
     public string ModifiedOn { get; set; } = "";
     public string OrderDuration { get; set; } = "";
+    public long CustomerId { get; set; } = 0;
     public string CustomerName { get; set; } = "";
     public long CustomerPhone { get; set; }
-    public int NoOfPerson { get; set; }
+    public int NoOfPerson { get; set; } = 1;
     public string CustomerEmail { get; set; } = "";
     public List<string> TableList { get; set; } = new();
     public string Section { get; set; } = "";
@@ -19,6 +20,7 @@ public class OrderDetailViewModel
     public decimal Subtotal { get; set; }
     public List<TaxViewModel> TaxList { get; set; } = new();
     public decimal FinalAmount { get; set; }
+    public long PaymentMethodId { get; set; } =  1;
     public string PaymentMethod { get; set; } = "";
     public string? Comment { get; set; } 
 }

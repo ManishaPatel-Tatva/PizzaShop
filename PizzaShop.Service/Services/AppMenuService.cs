@@ -18,8 +18,11 @@ public class AppMenuService : IAppMenuService
     private readonly IOrderService _orderService;
     private readonly IGenericRepository<Taxis> _taxRepository;
     private readonly IGenericRepository<PaymentMethod> _paymentMethodRepository;
+    private readonly IUserService _userService;
+    private readonly IGenericRepository<Order> _orderRepository;
+    private readonly ICustomerService _customerService;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -28,6 +31,9 @@ public class AppMenuService : IAppMenuService
         _orderService = orderService;
         _taxRepository = taxRepository;
         _paymentMethodRepository = paymentMethodRepository;
+        _userService = userService;
+        _orderRepository = orderRepository;
+        _customerService = customerService;
     }
 
     public async Task<AppMenuViewModel> Get(long customerId)
@@ -36,7 +42,7 @@ public class AppMenuService : IAppMenuService
         {
             Categories = await _categoryService.Get(),
             CustomerId = customerId,
-            Taxes =  _taxRepository.GetAll().ToList(),
+            Taxes = _taxRepository.GetAll().ToList(),
             PaymentMethods = _paymentMethodRepository.GetAll().ToList(),
         };
 
@@ -72,9 +78,7 @@ public class AppMenuService : IAppMenuService
                 appMenu.Order = await _orderService.Get((long)orderId);
                 return appMenu;
             }
-
         }
-
     }
 
     public async Task<List<ItemInfoViewModel>> List(long categoryId, string search)
@@ -123,6 +127,43 @@ public class AppMenuService : IAppMenuService
         response.Success = await _itemRepository.UpdateAsync(item);
         response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Item") : NotificationMessages.UpdatedFailed.Replace("{0}", "Item");
         return response;
+    }
+
+    public async Task<ResponseViewModel> Save(OrderDetailViewModel orderVM)
+    {
+        Order? order = new();
+        ResponseViewModel response = new();
+        if (orderVM.OrderId == 0)
+        {
+            order.CreatedBy = await _userService.LoggedInUser();
+        }
+        else
+        {
+            order = await _orderRepository.GetByIdAsync(orderVM.OrderId);
+            if (order == null)
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.NotFound.Replace("{0}","Order");
+                return response;
+            }
+        }
+        CustomerViewModel customer = new(){
+            Id = orderVM.CustomerId,
+            Name = orderVM.CustomerName,
+            Phone = orderVM.CustomerPhone,
+            Email = orderVM.CustomerEmail,
+        };
+
+        response = await _customerService.Save(customer);
+
+        order.Instructions = orderVM.Comment;
+
+        
+        
+
+
+
+        return new ResponseViewModel();
     }
 
 }

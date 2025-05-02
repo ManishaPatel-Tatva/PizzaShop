@@ -114,14 +114,14 @@
                         <img src="/images/icons/person-lines-fill.svg" alt="" class="blue p-2 border rounded-1"
                             onclick="CustomerDetail(@Model.CustomerId)">
                         <img src="/images/icons/chat-left-text.svg" alt="" class="blue p-2 border rounded-1"
-                            data-bs-toggle="modal" data-bs-target="#order-comment-modal">
+                            onclick="OrderInstruction()">
                     </div>
                 </div>
                 <!-- Title ends-->
 
                 <!-- Order Item starts -->
                 <div class="table-responsive ">
-                    <table class="table">
+                    <table class="table mb-1">
                         <thead>
                             <tr>
                                 <th scope="col" class="col-6 fs-5">Item</th>
@@ -139,6 +139,10 @@
 
                         </tbody>
                     </table>
+                    <div>
+                        <span class="text-light-blue">Instruction: </span>
+                        <span id="orderInstruction">@Model.Order.Comment</span>
+                    </div>
                 </div>
                 <!-- Order Item ends -->
 
@@ -152,29 +156,22 @@
                             </td>
                         </tr>
 
-                        @foreach (Taxis? tax in Model.Taxes.Where(t => t.IsEnabled && t.DefaultTax))
-                        {
-                            <tr>
-                                <td class="text-start">@tax.Name</td>
-                                <td class="text-end">
-                                    <span>₹</span>
-                                    <span class="taxValue" id="taxValue-@tax.Id" data-value="@tax.TaxValue" data-ispercent="@tax.IsPercentage">
-                                        @Model.Order.TaxList.Where(t => t.TaxId == tax.Id).Select(t =>
-                                        t.TaxValue).FirstOrDefault()
-                                </span>
-                            </td>
-                        </tr>
-                                                }
-
-                        @foreach (Taxis? tax in Model.Taxes.Where(t => t.IsEnabled && !t.DefaultTax))
+                        @foreach (Taxis? tax in Model.Taxes.Where(t => t.IsEnabled).OrderByDescending(t =>
+                                                t.DefaultTax))
                         {
                             <tr>
                                 <td class="text-start">
-                                    <input type="checkbox" class="form-check-input me-2" id="@tax.Id">@tax.Name
+                                    @if (!tax.DefaultTax)
+                                    {
+                                        <input type="checkbox" class="form-check-input me-2 tax-cb" id="tax-cb-@tax.Id"
+                                            onchange="CalculateBill()">
+                                    }
+                                    @tax.Name
                                 </td>
                                 <td class="text-end">
                                     <span>₹</span>
-                                    <span class="taxValue" id="taxValue-@tax.Id" data-value="@tax.TaxValue" data-ispercent="@tax.IsPercentage">
+                                    <span class="taxValue" data-id="@tax.Id" data-value="@tax.TaxValue"
+                                        data-ispercent="@tax.IsPercentage" data-taxdefault="@tax.DefaultTax">
                                         @Model.Order.TaxList.Where(t => t.TaxId == tax.Id).Select(t =>
                                         t.TaxValue).FirstOrDefault()
                                 </span>
@@ -184,7 +181,10 @@
 
                         <tr>
                             <td class="text-start fs-5">Total</td>
-                            <td class="text-end fs-5" id="orderTotal">₹@Model.Order.FinalAmount</td>
+                            <td class="text-end fs-5" id="">
+                                <span>₹</span>
+                                <span id="orderTotal">@Model.Order.FinalAmount</span>
+                            </td>
                         </tr>
                         <tr>
                             <td class="text-start">Payment Method</td>
@@ -278,7 +278,7 @@
 <!-- Modal Customer Detail ends -->
 
 <!-- Modal Order Comment starts-->
-<div class="modal fade" id="order-comment-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+<div class="modal fade" id="order-instruction-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -288,13 +288,14 @@
             </div>
             <div class="modal-body">
                 <div class="form-floating">
-                    <textarea asp-for="Order.Comment" class="form-control" rows="4" placeholder=""></textarea>
-                    <label asp-for="Order.Comment">Comments*</label>
-                    <span asp-validation-for="Order.Comment" class="text-danger"></span>
+                    <textarea class="form-control" rows="4" placeholder=""
+                        id="orderInstructionModal"></textarea>
+                    <label for="orderInstructionModal">Comments*</label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-blue">Save</button>
+                <button type="button" class="btn btn-blue" id="saveOrderInstruction"
+                    onclick="SaveOrderInstruction()">Save</button>
                 <button type="reset" class="btn btn-white">Cancel</button>
             </div>
         </div>
@@ -302,7 +303,7 @@
 </div>
 <!-- Modal Order Comment ends-->
 
-<!-- Modal Order Comment starts-->
+<!-- Modal Item Instruction starts-->
 <div class="modal fade" id="item-instruction-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -319,18 +320,25 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-blue" id="saveItemInstruction"
-                    onclick="SaveInstruction()">Save</button>
+                    onclick="SaveItemInstruction()">Save</button>
                 <button type="reset" class="btn btn-white">Cancel</button>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal Order Comment ends-->
+<!-- Modal Item Instruction ends-->
 
 <!-- #endregion ----------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------->
 
 @section Scripts {
+
+    @* Document Ready *@
+    <script>
+        $(document).ready(function () {
+            CardsAjax(0);
+        });
+    </script>
 
     @* Cards ajax *@
     <script>
@@ -339,10 +347,6 @@
 
         $(document).on("input", "#searchQuery", function () {
             CardsAjax(activeCategory);
-        });
-
-        $(document).ready(function () {
-            CardsAjax(0);
         });
 
         function CardsAjax(categoryId) {
@@ -505,8 +509,8 @@
                 }
 
                 @* item.ModifiersList = modifierList; *@
-                    console.log(item);
-            }
+                    @* console.log(item); *@
+                                            }
 
     </script>
 
@@ -520,33 +524,46 @@
             $("#item-instruction-modal").modal("show");
         }
 
-        function SaveInstruction() {
+        function SaveItemInstruction() {
             $("#itemInstruction-" + instructionItemId).text($("#itemInstruction").val());
             $("#item-instruction-modal").modal("hide");
         }
+
+        function OrderInstruction() {
+            $("#orderInstructionModal").val($("#orderInstruction").text());
+            $("#order-instruction-modal").modal("show");
+        }
+
+        function SaveOrderInstruction() {
+            $("#orderInstruction").text($("#orderInstructionModal").val());
+            $("#order-instruction-modal").modal("hide");
+        }
+
     </script>
 
     @* Add and Delete Item *@
     <script>
         function AddItem() {
-            console.log("AddItem : Item is ", item);
-            $.ajax({
-                url: '@Url.Action("AddItem", "AppMenu")',
-                type: "POST",
-                data: {
-                    item: item
-                },
-                dataType: "html",
-                success: function (data) {
-                    $("#itemDetail").modal("hide");
-                    $("#item-list").append(data);
-                }
+            @* console.log("AddItem : Item is ", item); *@
+                $.ajax({
+                    url: '@Url.Action("AddItem", "AppMenu")',
+                    type: "POST",
+                    data: {
+                        item: item
+                    },
+                    dataType: "html",
+                    success: function (data) {
+                        $("#itemDetail").modal("hide");
+                        $("#item-list").append(data);
+                        CalculateBill();
+                    }
 
-            });
+                });
         }
 
         function RemoveItem(itemId) {
             $("tr").remove(".selectedItem[data-id ='" + itemId + "']");
+            CalculateBill();
         }
 
     </script>
@@ -583,28 +600,41 @@
                 subtotal += parseFloat($(this).text());
             });
 
-            $(".modifierSum", function () {
+            $(".modifierSum").each(function () {
                 subtotal += parseFloat($(this).text());
             });
 
             $("#orderSubTotal").text(subtotal);
 
             let totalTax = 0;
-            $(".taxValue").each(function(){
+            $(".taxValue").each(function () {
+                let taxId = $(this).data("id");
                 let taxValue = parseFloat($(this).data("value"));
-                let ispercent = Boolean($(this).data("ispercent"));
+                let ispercent = $(this).data("ispercent") == "True";
+                let defaultTax = $(this).data("taxdefault") == "True";
+                let taxOnItem = 0;
 
-                if(ispercent)
-                {
-                    totalTax += (subtotal*taxValue/100)
+                if (defaultTax || $("#tax-cb-" + taxId).prop("checked")) {
+                    if (ispercent) {
+                        taxOnItem = (subtotal * taxValue / 100)
+                        $(this).text(taxOnItem);
+                        totalTax += taxOnItem;
+                    }
+                    else {
+                        taxOnItem = taxValue;
+                        $(this).text(taxOnItem);
+                        totalTax += taxOnItem;
+                    }
                 }
-                else{
-                    totalTax += taxValue
+                else {
+                    taxOnItem = 0;
+                    $(this).text(taxOnItem);
                 }
 
-                
+            });
 
-            })
+            $("#orderTotal").text(subtotal + totalTax);
+
         }
 
     </script>
