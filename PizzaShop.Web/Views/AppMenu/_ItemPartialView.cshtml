@@ -1,18 +1,18 @@
 @using PizzaShop.Entity.ViewModels
 @model OrderItemViewModel
 
-<tr class="selectedItem" data-id="@Model.Id">
-    <td onclick="ItemInstruction(@Model.Id)">
+<tr class="selectedItem" data-id="@Model.ItemId">
+    <td onclick="ItemInstruction(@Model.ItemId)">
         <div class="accordion accordion-item">
             <div class="accordion-item">
                 <div class="accordion-header d-flex">
                     <button class="accordion-button px-0" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapse-@Model.Id" aria-expanded="true" aria-controls="collapseOne"
+                        data-bs-target="#collapse-@Model.ItemId" aria-expanded="true" aria-controls="collapseOne"
                         style="width: fit-content;" onclick="event.stopPropagation()">
                     </button>
                     <div class="ms-4 ps-1 fs-5">@Model.Name</div>
                 </div>
-                <div id="collapse-@Model.Id" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                <div id="collapse-@Model.ItemId" class="accordion-collapse collapse" aria-labelledby="headingOne"
                     data-bs-parent="#accordionExample">
                     <div class="accordion-body p-0">
                         <ul class="mb-2">
@@ -27,7 +27,7 @@
                             }
                         </ul>
                         <span class="text-light-blue">Instruction: </span>
-                        <span id="itemInstruction-@Model.Id"></span>
+                        <span id="itemInstruction-@Model.ItemId"></span>
                     </div>
                 </div>
             </div>
@@ -35,12 +35,12 @@
     </td>
     <td>
         <div class="item-quantity border d-flex align-items-center gap-0 rounded-2">
-            <button type="button" class="btn fs-4 p-0" data-id="@Model.Id" onclick='ChangeQuantity(this, -1)'>
+            <button type="button" class="btn fs-4 p-0" data-id="@Model.ItemId" onclick='ChangeQuantity(this, -1)'>
                 <i class="bi bi-dash"></i>
             </button>
             <input type="text" value="@(Model.Quantity > 0 ? Model.Quantity : 1)"
-                class="item-quantity-@Model.Id text-center bg-white" disabled>
-            <button type="button" class="btn fs-4 p-0" data-id="@Model.Id" onclick='ChangeQuantity(this, 1)'>
+                class="item-quantity-@Model.ItemId text-center bg-white" disabled>
+            <button type="button" class="btn fs-4 p-0" data-id="@Model.ItemId" onclick='ChangeQuantity(this, 1)'>
                 <i class="bi bi-plus"></i>
             </button>
         </div>
@@ -56,7 +56,7 @@
         </div>
     </td>
     <td>
-        <img src="/images/icons/trash.svg" alt="" onclick="RemoveItem(@Model.Id)">
+        <img src="/images/icons/trash.svg" alt="" onclick="RemoveItem(@Model.ItemId)">
         
     </td>
 </tr>

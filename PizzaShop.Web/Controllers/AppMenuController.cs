@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
@@ -46,6 +47,13 @@ public class AppMenuController : Controller
     public IActionResult AddItem(OrderItemViewModel item)
     {
         return PartialView("_ItemPartialView",item);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SaveOrder([FromBody] OrderDetailViewModel orderVM)
+    {
+        ResponseViewModel response = await _appMenuService.Save(orderVM);
+        return Json(response);
     }
 
 }

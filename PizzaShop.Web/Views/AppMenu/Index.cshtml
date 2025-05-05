@@ -1,5 +1,6 @@
 @using PizzaShop.Entity.Models
 @using PizzaShop.Entity.ViewModels
+@using System.Text.Json
 @model AppMenuViewModel
 
 @{
@@ -140,7 +141,7 @@
                         </tbody>
                     </table>
                     <div>
-                        <span class="text-light-blue">Instruction: </span>
+                        <span class="text-light-blue ps-1">Instruction: </span>
                         <span id="orderInstruction">@Model.Order.Comment</span>
                     </div>
                 </div>
@@ -203,7 +204,7 @@
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end gap-2 mb-2 flex-wrap">
-                    <button class="btn btn-blue ">
+                    <button class="btn btn-blue " onclick="SaveOrder()">
                         Save
                     </button>
                     <button class="btn btn-white ">
@@ -288,8 +289,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-floating">
-                    <textarea class="form-control" rows="4" placeholder=""
-                        id="orderInstructionModal"></textarea>
+                    <textarea class="form-control" rows="4" placeholder="" id="orderInstructionModal"></textarea>
                     <label for="orderInstructionModal">Comments*</label>
                 </div>
             </div>
@@ -338,6 +338,9 @@
         $(document).ready(function () {
             CardsAjax(0);
         });
+
+        let order = @Html.Raw(JsonSerializer.Serialize(Model.Order));
+        console.log(order);
     </script>
 
     @* Cards ajax *@
@@ -466,7 +469,7 @@
             modifierList = [];
 
             item = {
-                Id: currentItemId,
+                ItemId: currentItemId,
                 Name: currentItemName,
                 Price: currentItemPrice,
                 ModifiersList: modifierList
@@ -510,7 +513,7 @@
 
                 @* item.ModifiersList = modifierList; *@
                     @* console.log(item); *@
-                                            }
+                                                        }
 
     </script>
 
@@ -544,25 +547,29 @@
     @* Add and Delete Item *@
     <script>
         function AddItem() {
-            @* console.log("AddItem : Item is ", item); *@
-                $.ajax({
-                    url: '@Url.Action("AddItem", "AppMenu")',
-                    type: "POST",
-                    data: {
-                        item: item
-                    },
-                    dataType: "html",
-                    success: function (data) {
-                        $("#itemDetail").modal("hide");
-                        $("#item-list").append(data);
-                        CalculateBill();
-                    }
+            $.ajax({
+                url: '@Url.Action("AddItem", "AppMenu")',
+                type: "POST",
+                data: {
+                    item: item
+                },
+                dataType: "html",
+                success: function (data) {
+                    $("#itemDetail").modal("hide");
+                    $("#item-list").append(data);
+                    CalculateBill();
 
-                });
+                    order.ItemsList.push(item);
+                    console.log("after adding item", order.ItemsList);
+                    console.log("order is ", order);
+                }
+
+            });
         }
 
         function RemoveItem(itemId) {
             $("tr").remove(".selectedItem[data-id ='" + itemId + "']");
+            order.ItemsList = order.ItemsList.filter(i => i.ItemId != itemId)
             CalculateBill();
         }
 
@@ -585,6 +592,9 @@
 
             let modifierRate = itemRow.find(".modifierSum").data("rate");
             $(itemRow).find(".modifierSum").text((modifierRate * quantity).toFixed(2));
+
+            let existingItem = order.ItemsList.find(i => i.ItemId == itemId);
+            existingItem.Quantity = quantity;
 
             CalculateBill();
         }
@@ -635,6 +645,28 @@
 
             $("#orderTotal").text(subtotal + totalTax);
 
+        }
+
+    </script>
+
+    @* Save Order *@
+    <script>
+
+        function SaveOrder() {
+            console.log("order is ",order);
+            $.ajax({
+                url: '@Url.Action("SaveOrder", "AppMenu")',
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(order),
+                dataType: "html",
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function(data){
+                    console.log("An error occurred");
+                }
+            });
         }
 
     </script>

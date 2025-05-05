@@ -21,8 +21,12 @@ public class AppMenuService : IAppMenuService
     private readonly IUserService _userService;
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly ICustomerService _customerService;
+    private readonly IGenericRepository<OrderItem> _orderItemRepository;
+    private readonly IGenericRepository<OrderItemsModifier> _orderItemsModifierRepository;
+    private readonly IGenericRepository<OrderTaxMapping> _orderTaxRepository;
+    private readonly IGenericRepository<WaitingToken> _waitingTokenRepository;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderItemsModifier> orderItemsModifierRepository, IGenericRepository<OrderTaxMapping> orderTaxRepository, IGenericRepository<WaitingToken> waitingTokenRepository)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -34,6 +38,11 @@ public class AppMenuService : IAppMenuService
         _userService = userService;
         _orderRepository = orderRepository;
         _customerService = customerService;
+        _orderItemRepository = orderItemRepository;
+        _orderItemsModifierRepository = orderItemsModifierRepository;
+        _orderTaxRepository = orderTaxRepository;
+        _waitingTokenRepository = waitingTokenRepository;
+
     }
 
     public async Task<AppMenuViewModel> Get(long customerId)
@@ -135,7 +144,10 @@ public class AppMenuService : IAppMenuService
         ResponseViewModel response = new();
         if (orderVM.OrderId == 0)
         {
+            order.CustomerId = orderVM.CustomerId;
+            order.StatusId = 1;
             order.CreatedBy = await _userService.LoggedInUser();
+            order.Members = _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId).Result!.Members;
         }
         else
         {
@@ -143,27 +155,279 @@ public class AppMenuService : IAppMenuService
             if (order == null)
             {
                 response.Success = false;
-                response.Message = NotificationMessages.NotFound.Replace("{0}","Order");
+                response.Message = NotificationMessages.NotFound.Replace("{0}", "Order");
                 return response;
             }
         }
-        CustomerViewModel customer = new(){
-            Id = orderVM.CustomerId,
-            Name = orderVM.CustomerName,
-            Phone = orderVM.CustomerPhone,
-            Email = orderVM.CustomerEmail,
-        };
-
-        response = await _customerService.Save(customer);
 
         order.Instructions = orderVM.Comment;
 
-        
-        
+        decimal subTotal = 0;
+        foreach (var item in orderVM.ItemsList)
+        {
+            subTotal += item.Price * item.Quantity;
+            foreach (var modifier in item.ModifiersList)
+            {
+                subTotal += modifier.Rate * item.Quantity;
+            }
+        }
 
+        order.SubTotal = subTotal;
 
+        List<long>? existingTax = _orderTaxRepository.GetByCondition(
+            otm => otm.OrderId == orderVM.OrderId
+        ).Result
+        .Select(ot => ot.TaxId).ToList();
 
-        return new ResponseViewModel();
+        List<long> removeTax = existingTax.Except(orderVM.TaxList.Select(t => t.TaxId)).ToList();
+
+        foreach(long taxId in removeTax)
+        {
+            OrderTaxMapping? mapping = await _orderTaxRepository.GetByStringAsync(t => t.TaxId == taxId);
+            if (mapping == null)
+            {
+                response.Success = false;
+                return response;
+            }
+
+            
+        }
+
+        decimal taxAmount = 0;
+        foreach (var tax in orderVM.TaxList)
+        {
+            if (tax.IsEnabled)
+            {
+                decimal taxOnOrder = (bool)tax.IsPercentage ? subTotal * tax.TaxValue / 100 : tax.TaxValue;
+                OrderTaxMapping taxMapping = new()
+                {
+                    OrderId = orderVM.OrderId,
+                    TaxId = tax.TaxId,
+                    TaxValue = taxOnOrder,
+                };
+
+                response.Success = await _orderTaxRepository.AddAsync(taxMapping);
+                if (!response.Success)
+                {
+                    response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Tax");
+                    return response;
+                }
+                taxAmount += taxOnOrder;
+            }
+        }
+
+        order.FinalAmount = subTotal + taxAmount;
+
+        List<long>? existingItems = _orderItemRepository.GetByCondition(
+            predicate: oi => oi.OrderId == orderVM.OrderId && !oi.IsDeleted
+        ).Result
+        .Select(oi => oi.Id = oi.Id)
+        .ToList();
+
+        List<long>? removeItems = existingItems.Except(orderVM.ItemsList.Select(oi => oi.Id)).ToList();
+
+        foreach (long orderItemId in removeItems)
+        {
+            OrderItem? removeItem = await _orderItemRepository.GetByIdAsync(orderItemId);
+            removeItem.IsDeleted = true;
+            removeItem.UpdatedBy = await _userService.LoggedInUser();
+            removeItem.UpdatedAt = DateTime.Now;
+
+            if (!await _orderItemRepository.UpdateAsync(removeItem))
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Order Item");
+                return response;
+            }
+        }
+
+        foreach (OrderItemViewModel? orderItem in orderVM.ItemsList)
+        {
+            OrderItem? existingItem = await _orderItemRepository.GetByIdAsync(orderItem.Id);
+            if (existingItem == null)
+            {
+                OrderItem newItem = new()
+                {
+                    OrderId = orderVM.OrderId,
+                    ItemId = orderItem.ItemId,
+                    Quantity = orderItem.Quantity,
+                    Price = orderItem.Price,
+                    Instructions = orderItem.Instruction,
+                    CreatedBy = await _userService.LoggedInUser(),
+                    UpdatedAt = DateTime.Now,
+                    UpdatedBy = await _userService.LoggedInUser()
+                };
+
+                newItem.Id = await _orderItemRepository.AddAsyncReturnId(newItem);
+
+                if (newItem.Id < 1)
+                {
+                    response.Success = false;
+                    return response;
+                }
+
+                foreach (ModifierViewModel? modifier in orderItem.ModifiersList)
+                {
+                    if (!await SaveOrderItemModifier(modifier, newItem.Id))
+                    {
+                        response.Success = false;
+                        response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Order Item Modifier");
+                    }
+                }
+
+                response.Success = true;
+            }
+            else
+            {
+                existingItem.Quantity = orderItem.Quantity;
+                existingItem.Instructions = orderItem.Instruction;
+                existingItem.UpdatedAt = DateTime.Now;
+                existingItem.UpdatedBy = await _userService.LoggedInUser();
+
+                response.Success = await _orderItemRepository.UpdateAsync(existingItem);
+                return response;
+            }
+        }
+
+        response.Success = true;
+
+        return response;
+    }
+
+    // public async Task<bool> SaveOrderItem(OrderItemViewModel orderItemVM, long orderId)
+    // {
+    //     OrderItem? orderItem = new();
+    //     if (orderItemVM.Id == 0)
+    //     {
+    //         orderItem.OrderId = orderId;
+    //         orderItem.ItemId = orderItemVM.ItemId;
+    //         orderItem.CreatedBy = await _userService.LoggedInUser();
+    //     }
+    //     else
+    //     {
+    //         orderItem = await _orderItemRepository.GetByIdAsync(orderItemVM.Id);
+    //         if (orderItem == null)
+    //         {
+    //             return false;
+    //         }
+    //     }
+
+    //     orderItem.Quantity = orderItemVM.Quantity;
+    //     orderItem.Instructions = orderItemVM.Instruction;
+    //     orderItem.Price = orderItemVM.Price;
+    //     orderItem.UpdatedAt = DateTime.Now;
+    //     orderItem.UpdatedBy = await _userService.LoggedInUser();
+
+    //     if (orderItemVM.Id == 0)
+    //     {
+    //         orderItemVM.Id = await _orderItemRepository.AddAsyncReturnId(orderItem);
+    //         if (orderItemVM.Id < 1)
+    //         {
+    //             return false;
+    //         }
+
+    //         foreach (var modifier in orderItemVM.ModifiersList)
+    //         {
+    //             if (!await SaveOrderItemModifier(modifier, orderItemVM.Id))
+    //             {
+    //                 return false;
+    //             }
+    //         }
+    //     }
+    //     else
+    //     {
+    //         return await _orderItemRepository.UpdateAsync(orderItem);
+    //     }
+
+    //     return false;
+    // }
+
+    public async Task<bool> SaveOrderItemModifier(ModifierViewModel modifier, long orderItemId)
+    {
+        OrderItemsModifier oim = new()
+        {
+            OrderItemId = orderItemId,
+            ModifierId = modifier.Id,
+            Price = modifier.Rate,
+            CreatedBy = await _userService.LoggedInUser(),
+            UpdatedAt = DateTime.Now,
+            UpdatedBy = await _userService.LoggedInUser()
+        };
+
+        return await _orderItemsModifierRepository.AddAsync(oim);
+    }
+
+    public async Task<bool> SaveOrderItem(List<OrderItemViewModel> ItemsList, long orderId)
+    {
+        long createrId = await _userService.LoggedInUser();
+
+        List<long> existingItem = _orderItemRepository.GetByCondition(
+            oi => oi.OrderId == orderId && !oi.IsDeleted
+        ).Result
+        .Select(oi => oi.ItemId)
+        .ToList();
+
+        List<long> removeOrderItem = existingItem.Except(existingItem).ToList();
+
+        foreach (var itemId in removeOrderItem)
+        {
+            OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == orderId && oi.ItemId == itemId && !oi.IsDeleted);
+
+            if (orderItem == null)
+            {
+                return false;
+            }
+
+            orderItem.IsDeleted = true;
+            orderItem.UpdatedBy = await _userService.LoggedInUser();
+            orderItem.UpdatedAt = DateTime.Now;
+
+            bool success = await _orderItemRepository.UpdateAsync(orderItem);
+            if (!success)
+            {
+                return false;
+            }
+
+        }
+
+        foreach (var item in ItemsList)
+        {
+            OrderItem orderItem = new()
+            {
+                ItemId = item.ItemId,
+                Quantity = item.Quantity,
+                Price = item.Price,
+                CreatedBy = createrId,
+                UpdatedBy = createrId
+            };
+
+            long orderItemId = await _orderItemRepository.AddAsyncReturnId(orderItem);
+            if (orderItemId < 1)
+            {
+                return false;
+            }
+
+            foreach (var modifier in item.ModifiersList)
+            {
+                OrderItemsModifier oim = new()
+                {
+                    OrderItemId = orderItemId,
+                    ModifierId = modifier.Id,
+                    Quantity = 1,
+                    Price = modifier.Rate,
+                    CreatedBy = createrId,
+                    UpdatedBy = createrId,
+                    UpdatedAt = DateTime.Now,
+                };
+
+                if (await _orderItemsModifierRepository.AddAsync(oim))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 }

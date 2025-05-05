@@ -266,7 +266,8 @@ public class OrderService : IOrderService
                                 .Where(oi => oi.OrderId == o.Id)
                                 .Select(oi => new OrderItemViewModel
                                 {
-                                    Id = oi.ItemId,
+                                    Id = oi.Id,
+                                    ItemId = oi.ItemId,
                                     Name = oi.Item.Name,
                                     Quantity = oi.Quantity,
                                     Price = oi.Price,

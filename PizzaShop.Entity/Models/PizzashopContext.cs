@@ -1017,6 +1017,7 @@ public partial class PizzaShopContext : DbContext
             entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.IsEnabled).HasColumnName("is_enabled");
             entity.Property(e => e.IsPercentage)
+                .IsRequired()
                 .HasDefaultValueSql("true")
                 .HasColumnName("is_percentage");
             entity.Property(e => e.Name)

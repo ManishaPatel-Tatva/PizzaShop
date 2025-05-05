@@ -54,7 +54,7 @@ public class ModifierService : IModifierService
 
         ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
 
-        ModifierGroupViewModel model = new ()
+        ModifierGroupViewModel model = new()
         {
             ModifierGroupId = modifierGroup.Id,
             Name = modifierGroup.Name,
@@ -137,7 +137,7 @@ public class ModifierService : IModifierService
     public async Task<bool> AddModifierMapping(long modifierGroupId, long modifierId, long createrId)
     {
 
-        ModifierMapping mapping = new ()
+        ModifierMapping mapping = new()
         {
             Modifierid = modifierId,
             Modifiergroupid = modifierGroupId,
@@ -219,13 +219,15 @@ public class ModifierService : IModifierService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<bool> DeleteModifierGroup(long modifierGroupId, string createrEmail)
     {
-        User user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        ModifierGroup modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        ModifierGroup? modifierGroup = await _modifierGroupRepository.GetByIdAsync(modifierGroupId);
         modifierGroup.IsDeleted = true;
         bool success = await _modifierGroupRepository.UpdateAsync(modifierGroup);
 
         if (!success)
+        {
             return false;
+        }
 
         List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == modifierGroupId).Result.ToList();
 
@@ -255,7 +257,7 @@ public class ModifierService : IModifierService
     public async Task<ModifiersPaginationViewModel> GetPagedModifiers(long modifierGroupId, int pageSize, int pageNumber, string search)
     {
         IEnumerable<ModifierMapping> modifierMapping = await _modifierMappingRepository.GetByCondition(
-           
+
             predicate: mm => !mm.IsDeleted &&
                     mm.Modifiergroupid == modifierGroupId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
@@ -272,7 +274,7 @@ public class ModifierService : IModifierService
             }
         );
 
-        (modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecords(pageSize,pageNumber,modifierMapping);
+        (modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecords(pageSize, pageNumber, modifierMapping);
 
         ModifiersPaginationViewModel model = new()
         {
@@ -337,14 +339,14 @@ public class ModifierService : IModifierService
         }
 
         Modifier modifier = await _modifierRepository.GetByIdAsync(modifierId);
-        
+
         model.Id = modifierId;
         model.Name = modifier.Name;
         model.Rate = modifier.Rate;
         model.Quantity = modifier.Quantity;
         model.UnitId = modifier.UnitId;
         model.Description = modifier.Description;
-        model.SelectedMgList =  _modifierMappingRepository.GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted).Result.Select(m => m.Modifiergroupid).ToList();
+        model.SelectedMgList = _modifierMappingRepository.GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted).Result.Select(m => m.Modifiergroupid).ToList();
 
         return model;
     }
@@ -376,7 +378,7 @@ public class ModifierService : IModifierService
     #region Add Modifier
     public async Task<bool> AddModifier(ModifierViewModel model, long createrId)
     {
-        Modifier modifier = new ()
+        Modifier modifier = new()
         {
             Name = model.Name,
             Rate = model.Rate,
@@ -425,7 +427,7 @@ public class ModifierService : IModifierService
         if (!success)
             return false;
 
-        return await UpdateModifierGroupMapping( model.Id, model.SelectedMgList ,  createrId);
+        return await UpdateModifierGroupMapping(model.Id, model.SelectedMgList, createrId);
 
     }
 
@@ -441,7 +443,7 @@ public class ModifierService : IModifierService
 
         foreach (long mgId in removeMg)
         {
-            ModifierMapping mapping =  await _modifierMappingRepository
+            ModifierMapping? mapping = await _modifierMappingRepository
             .GetByStringAsync(mm => mm.Modifiergroupid == mgId && mm.Modifierid == modifierId && !mm.IsDeleted);
 
             mapping.IsDeleted = true;
