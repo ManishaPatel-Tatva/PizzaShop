@@ -263,7 +263,7 @@ public class OrderService : IOrderService
                             .First(),
 
                     ItemsList = o.OrderItems
-                                .Where(oi => oi.OrderId == o.Id)
+                                .Where(oi => oi.OrderId == o.Id && !oi.IsDeleted)
                                 .Select(oi => new OrderItemViewModel
                                 {
                                     Id = oi.Id,
@@ -273,7 +273,7 @@ public class OrderService : IOrderService
                                     Price = oi.Price,
                                     TotalAmount = oi.Quantity * oi.Price,
                                     ModifiersList = oi.OrderItemsModifiers
-                                                    .Where(oim => oim.OrderItemId == oi.Id)
+                                                    .Where(oim => oim.OrderItemId == oi.Id && !oim.IsDeleted)
                                                     .Select(oim => new ModifierViewModel
                                                     {
                                                         Id = oim.ModifierId,
@@ -296,6 +296,8 @@ public class OrderService : IOrderService
                                 }).ToList(),
 
                     FinalAmount = o.FinalAmount,
+
+                    PaymentMethodId = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethodId).First(),
 
                     PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
 

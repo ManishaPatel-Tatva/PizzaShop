@@ -733,9 +733,21 @@ public partial class PizzaShopContext : DbContext
             entity.ToTable("OrderTaxMapping");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy)
+                .HasDefaultValueSql("1")
+                .HasColumnName("created_by");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.TaxId).HasColumnName("tax_id");
             entity.Property(e => e.TaxValue).HasColumnName("tax_value");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderTaxMappings)
                 .HasForeignKey(d => d.OrderId)

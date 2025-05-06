@@ -355,9 +355,9 @@ public class UserService : IUserService
     {
         // string email = _httpContextAccessor.HttpContext.Session.GetString("email");
         string token = _httpContextAccessor.HttpContext.Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
+        string? createrEmail = _jwtService.GetClaimValue(token, "email");
         
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
+        User? user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail && !u.IsDeleted);
         if (user == null)
         {
             return 1;

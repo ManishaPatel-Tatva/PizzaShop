@@ -23,9 +23,7 @@ public class TableService : ITableService
         _sectionRepository = sectionRepository;
         _tableStatusRepository = tableStatusRepository;
         _userService = userService;
-
     }
-
 
     #region Get
     /*-----------------------------------------------------------------Display Tables---------------------------------------------------------------------------------

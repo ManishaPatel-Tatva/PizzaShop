@@ -25,8 +25,10 @@ public class AppMenuService : IAppMenuService
     private readonly IGenericRepository<OrderItemsModifier> _orderItemsModifierRepository;
     private readonly IGenericRepository<OrderTaxMapping> _orderTaxRepository;
     private readonly IGenericRepository<WaitingToken> _waitingTokenRepository;
+    private readonly IGenericRepository<Invoice> _invoiceRepository;
+    private readonly IGenericRepository<Payment> _paymentRepository;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderItemsModifier> orderItemsModifierRepository, IGenericRepository<OrderTaxMapping> orderTaxRepository, IGenericRepository<WaitingToken> waitingTokenRepository)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderItemsModifier> orderItemsModifierRepository, IGenericRepository<OrderTaxMapping> orderTaxRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<Invoice> invoiceRepository, IGenericRepository<Payment> paymentRepository)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -42,7 +44,8 @@ public class AppMenuService : IAppMenuService
         _orderItemsModifierRepository = orderItemsModifierRepository;
         _orderTaxRepository = orderTaxRepository;
         _waitingTokenRepository = waitingTokenRepository;
-
+        _invoiceRepository = invoiceRepository;
+        _paymentRepository = paymentRepository;
     }
 
     public async Task<AppMenuViewModel> Get(long customerId)
@@ -54,6 +57,8 @@ public class AppMenuService : IAppMenuService
             Taxes = _taxRepository.GetAll().ToList(),
             PaymentMethods = _paymentMethodRepository.GetAll().ToList(),
         };
+
+        appMenu.Order.CustomerId = customerId;
 
         if (customerId == 0)
         {
@@ -140,158 +145,261 @@ public class AppMenuService : IAppMenuService
 
     public async Task<ResponseViewModel> Save(OrderDetailViewModel orderVM)
     {
-        Order? order = new();
-        ResponseViewModel response = new();
-        if (orderVM.OrderId == 0)
+        try
         {
-            order.CustomerId = orderVM.CustomerId;
-            order.StatusId = 1;
-            order.CreatedBy = await _userService.LoggedInUser();
-            order.Members = _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId).Result!.Members;
-        }
-        else
-        {
-            order = await _orderRepository.GetByIdAsync(orderVM.OrderId);
-            if (order == null)
+            Order? order = new();
+            ResponseViewModel response = new();
+
+            if (orderVM.OrderId == 0)
             {
-                response.Success = false;
-                response.Message = NotificationMessages.NotFound.Replace("{0}", "Order");
-                return response;
+                order.CustomerId = orderVM.CustomerId;
+                order.StatusId = 1;
+                order.CreatedBy = await _userService.LoggedInUser();
+                order.Members = _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId).Result!.Members;
             }
-        }
-
-        order.Instructions = orderVM.Comment;
-
-        decimal subTotal = 0;
-        foreach (var item in orderVM.ItemsList)
-        {
-            subTotal += item.Price * item.Quantity;
-            foreach (var modifier in item.ModifiersList)
+            else
             {
-                subTotal += modifier.Rate * item.Quantity;
-            }
-        }
-
-        order.SubTotal = subTotal;
-
-        List<long>? existingTax = _orderTaxRepository.GetByCondition(
-            otm => otm.OrderId == orderVM.OrderId
-        ).Result
-        .Select(ot => ot.TaxId).ToList();
-
-        List<long> removeTax = existingTax.Except(orderVM.TaxList.Select(t => t.TaxId)).ToList();
-
-        foreach(long taxId in removeTax)
-        {
-            OrderTaxMapping? mapping = await _orderTaxRepository.GetByStringAsync(t => t.TaxId == taxId);
-            if (mapping == null)
-            {
-                response.Success = false;
-                return response;
-            }
-
-            
-        }
-
-        decimal taxAmount = 0;
-        foreach (var tax in orderVM.TaxList)
-        {
-            if (tax.IsEnabled)
-            {
-                decimal taxOnOrder = (bool)tax.IsPercentage ? subTotal * tax.TaxValue / 100 : tax.TaxValue;
-                OrderTaxMapping taxMapping = new()
+                order = await _orderRepository.GetByIdAsync(orderVM.OrderId);
+                if (order == null)
                 {
-                    OrderId = orderVM.OrderId,
-                    TaxId = tax.TaxId,
-                    TaxValue = taxOnOrder,
-                };
-
-                response.Success = await _orderTaxRepository.AddAsync(taxMapping);
-                if (!response.Success)
-                {
-                    response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Tax");
+                    response.Success = false;
+                    response.Message = NotificationMessages.NotFound.Replace("{0}", "Order");
                     return response;
                 }
-                taxAmount += taxOnOrder;
             }
-        }
 
-        order.FinalAmount = subTotal + taxAmount;
+            order.Instructions = orderVM.Comment;
 
-        List<long>? existingItems = _orderItemRepository.GetByCondition(
-            predicate: oi => oi.OrderId == orderVM.OrderId && !oi.IsDeleted
-        ).Result
-        .Select(oi => oi.Id = oi.Id)
-        .ToList();
-
-        List<long>? removeItems = existingItems.Except(orderVM.ItemsList.Select(oi => oi.Id)).ToList();
-
-        foreach (long orderItemId in removeItems)
-        {
-            OrderItem? removeItem = await _orderItemRepository.GetByIdAsync(orderItemId);
-            removeItem.IsDeleted = true;
-            removeItem.UpdatedBy = await _userService.LoggedInUser();
-            removeItem.UpdatedAt = DateTime.Now;
-
-            if (!await _orderItemRepository.UpdateAsync(removeItem))
+            decimal subTotal = 0;
+            foreach (OrderItemViewModel? item in orderVM.ItemsList)
             {
-                response.Success = false;
-                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Order Item");
-                return response;
-            }
-        }
-
-        foreach (OrderItemViewModel? orderItem in orderVM.ItemsList)
-        {
-            OrderItem? existingItem = await _orderItemRepository.GetByIdAsync(orderItem.Id);
-            if (existingItem == null)
-            {
-                OrderItem newItem = new()
+                subTotal += item.Price * item.Quantity;
+                foreach (ModifierViewModel? modifier in item.ModifiersList)
                 {
-                    OrderId = orderVM.OrderId,
-                    ItemId = orderItem.ItemId,
-                    Quantity = orderItem.Quantity,
-                    Price = orderItem.Price,
-                    Instructions = orderItem.Instruction,
-                    CreatedBy = await _userService.LoggedInUser(),
-                    UpdatedAt = DateTime.Now,
-                    UpdatedBy = await _userService.LoggedInUser()
-                };
+                    subTotal += modifier.Rate * item.Quantity;
+                }
+            }
 
-                newItem.Id = await _orderItemRepository.AddAsyncReturnId(newItem);
+            order.SubTotal = subTotal;
+            order.FinalAmount = subTotal;
 
-                if (newItem.Id < 1)
+            //Create new Order if doesn't exist
+            if (orderVM.OrderId == 0)
+            {
+                orderVM.OrderId = await _orderRepository.AddAsyncReturnId(order);
+                if (orderVM.OrderId < 1)
                 {
                     response.Success = false;
                     return response;
                 }
 
-                foreach (ModifierViewModel? modifier in orderItem.ModifiersList)
+                //Create Invoice
+                Invoice invoice = new(){
+                    InvoiceNo = "#DOM" + DateTime.Today.Ticks,
+                    OrderId = orderVM.OrderId,
+                    CreatedBy = await _userService.LoggedInUser()
+                };
+
+                response.Success = await _invoiceRepository.AddAsync(invoice);
+                if(!response.Success)
                 {
-                    if (!await SaveOrderItemModifier(modifier, newItem.Id))
+                    return response;
+                }
+
+                //Create Payment
+                Payment payment = new(){
+                    OrderId = orderVM.OrderId,
+                    PaymentMethodId = orderVM.PaymentMethodId
+                };
+
+                response.Success = await _paymentRepository.AddAsync(payment);
+                if(!response.Success)
+                {
+                    return response;
+                }
+
+                //Update order table mapping
+                var mappings = await _orderTableRepository.GetByCondition(ot => ot.CustomerId == orderVM.CustomerId && !ot.IsDeleted);
+                foreach(var mapping in mappings)
+                {
+                    mapping.OrderId = orderVM.OrderId;
+                    mapping.UpdatedBy = await _userService.LoggedInUser();
+                    mapping.UpdatedAt = DateTime.Now;
+
+                    response.Success = await _orderTableRepository.UpdateAsync(mapping);
+                    if(!response.Success)
                     {
-                        response.Success = false;
-                        response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Order Item Modifier");
+                        return response;
                     }
                 }
 
-                response.Success = true;
+
             }
             else
             {
-                existingItem.Quantity = orderItem.Quantity;
-                existingItem.Instructions = orderItem.Instruction;
-                existingItem.UpdatedAt = DateTime.Now;
-                existingItem.UpdatedBy = await _userService.LoggedInUser();
+                response.Success = await _orderRepository.UpdateAsync(order);
+                if (!response.Success)
+                {
+                    return response;
+                }
+            }
 
-                response.Success = await _orderItemRepository.UpdateAsync(existingItem);
+            List<long>? existingTaxes = _orderTaxRepository.GetByCondition(
+                otm => otm.OrderId == orderVM.OrderId
+            ).Result
+            .Select(ot => ot.TaxId).ToList();
+
+            List<long> removeTax = existingTaxes.Except(orderVM.TaxList.Select(t => t.TaxId)).ToList();
+
+            foreach (long taxId in removeTax)
+            {
+                OrderTaxMapping? mapping = await _orderTaxRepository.GetByStringAsync(t => t.TaxId == taxId && t.OrderId == orderVM.OrderId);
+                if (mapping == null)
+                {
+                    response.Success = false;
+                    return response;
+                }
+
+                mapping.IsDeleted = true;
+                mapping.UpdatedAt = DateTime.Now;
+                mapping.UpdatedBy = await _userService.LoggedInUser();
+
+                response.Success = await _orderTaxRepository.UpdateAsync(mapping);
+                if (!response.Success)
+                {
+                    return response;
+                }
+            }
+
+            decimal taxAmount = 0;
+            foreach (long taxId in orderVM.Taxes)
+            {
+                Taxis? tax = await _taxRepository.GetByIdAsync(taxId);
+                if (tax == null)
+                {
+                    response.Success = false;
+                    return response;
+                }
+
+                OrderTaxMapping? taxMapping = await _orderTaxRepository.GetByStringAsync(ot => ot.TaxId == taxId && ot.OrderId == orderVM.OrderId);
+
+                //If doesn't exist then create new tax
+                taxMapping ??= new OrderTaxMapping
+                {
+                    OrderId = orderVM.OrderId,
+                    TaxId = taxId,
+                    CreatedBy = await _userService.LoggedInUser()
+                };
+
+                if (tax.IsEnabled)
+                {
+                    decimal taxOnOrder = (bool)tax.IsPercentage ? subTotal * tax.TaxValue / 100 : tax.TaxValue;
+                    taxMapping.TaxValue = taxOnOrder;
+
+                    response.Success = taxMapping.Id == 0 ? await _orderTaxRepository.AddAsync(taxMapping) : await _orderTaxRepository.UpdateAsync(taxMapping);
+                    if (!response.Success)
+                    {
+                        response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Tax");
+                        return response;
+                    }
+                    taxAmount += taxOnOrder;
+                }
+            }
+
+            order.FinalAmount = subTotal + taxAmount;
+            response.Success = await _orderRepository.UpdateAsync(order);
+            if (!response.Success)
+            {
                 return response;
             }
+
+            List<long>? existingItems = _orderItemRepository.GetByCondition(
+                predicate: oi => oi.OrderId == orderVM.OrderId && !oi.IsDeleted
+            ).Result
+            .Select(oi => oi.Id = oi.Id)
+            .ToList();
+
+            List<long>? removeItems = existingItems.Except(orderVM.ItemsList.Select(oi => oi.Id)).ToList();
+
+            foreach (long orderItemId in removeItems)
+            {
+                OrderItem? removeItem = await _orderItemRepository.GetByIdAsync(orderItemId);
+                removeItem.IsDeleted = true;
+                removeItem.UpdatedBy = await _userService.LoggedInUser();
+                removeItem.UpdatedAt = DateTime.Now;
+
+                if (!await _orderItemRepository.UpdateAsync(removeItem))
+                {
+                    response.Success = false;
+                    response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Order Item");
+                    return response;
+                }
+            }
+
+            foreach (OrderItemViewModel? orderItem in orderVM.ItemsList)
+            {
+                OrderItem? existingItem = await _orderItemRepository.GetByIdAsync(orderItem.Id);
+                if (existingItem == null)
+                {
+                    OrderItem newItem = new()
+                    {
+                        OrderId = orderVM.OrderId,
+                        ItemId = orderItem.ItemId,
+                        Quantity = orderItem.Quantity,
+                        Price = orderItem.Price,
+                        Instructions = orderItem.Instruction,
+                        CreatedBy = await _userService.LoggedInUser(),
+                        UpdatedAt = DateTime.Now,
+                        UpdatedBy = await _userService.LoggedInUser()
+                    };
+
+                    newItem.Id = await _orderItemRepository.AddAsyncReturnId(newItem);
+
+                    if (newItem.Id < 1)
+                    {
+                        response.Success = false;
+                        return response;
+                    }
+
+                    foreach (ModifierViewModel? modifier in orderItem.ModifiersList)
+                    {
+                        if (!await SaveOrderItemModifier(modifier, newItem.Id))
+                        {
+                            response.Success = false;
+                            response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Order Item Modifier");
+                        }
+                    }
+
+                    response.Success = true;
+                }
+                else
+                {
+                    existingItem.Quantity = orderItem.Quantity;
+                    existingItem.Instructions = orderItem.Instruction;
+                    existingItem.UpdatedAt = DateTime.Now;
+                    existingItem.UpdatedBy = await _userService.LoggedInUser();
+
+                    response.Success = await _orderItemRepository.UpdateAsync(existingItem);
+                    return response;
+                }
+            }
+
+
+            
+
+
+            response.Success = true;
+
+            return response;
         }
-
-        response.Success = true;
-
-        return response;
+        catch (Exception ex)
+        {
+            return new ResponseViewModel
+            {
+                Success = false,
+                ExMessage = ex.Message,
+            };
+        }
     }
 
     // public async Task<bool> SaveOrderItem(OrderItemViewModel orderItemVM, long orderId)

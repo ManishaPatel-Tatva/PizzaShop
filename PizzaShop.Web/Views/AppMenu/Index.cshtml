@@ -190,12 +190,11 @@
                         <tr>
                             <td class="text-start">Payment Method</td>
                             <td class="text-end d-flex justify-content-end flex-wrap gap-3">
-                                @foreach (var method in Model.PaymentMethods)
+                                @foreach (PaymentMethod? method in Model.PaymentMethods)
                                 {
                                     <div class="form-check">
-                                        <input type="radio" class="form-check-input" id="radio-@method.Id" name="optradio"
-                                            value="@method.Id" checked>@method.Name
-                                        <label class="form-check-label" for="radio1"></label>
+                                        <input type="radio" class="form-check-input payment-radio" id="radio-@method.Id" name="optradio"
+                                            value="@method.Id" @(Model.Order.PaymentMethodId == method.Id ? "checked" : "")>@method.Name
                                     </div>
                                 }
                             </td>
@@ -617,6 +616,7 @@
             $("#orderSubTotal").text(subtotal);
 
             let totalTax = 0;
+            order.Taxes = [];
             $(".taxValue").each(function () {
                 let taxId = $(this).data("id");
                 let taxValue = parseFloat($(this).data("value"));
@@ -629,11 +629,13 @@
                         taxOnItem = (subtotal * taxValue / 100)
                         $(this).text(taxOnItem);
                         totalTax += taxOnItem;
+                        order.Taxes.push(taxId);
                     }
                     else {
                         taxOnItem = taxValue;
                         $(this).text(taxOnItem);
                         totalTax += taxOnItem;
+                        order.Taxes.push(taxId);
                     }
                 }
                 else {
@@ -645,6 +647,8 @@
 
             $("#orderTotal").text(subtotal + totalTax);
 
+
+
         }
 
     </script>
@@ -653,7 +657,11 @@
     <script>
 
         function SaveOrder() {
+
+            order.PaymentMethodId = $(".payment-radio:checked").val();
+
             console.log("order is ",order);
+
             $.ajax({
                 url: '@Url.Action("SaveOrder", "AppMenu")',
                 type: "POST",

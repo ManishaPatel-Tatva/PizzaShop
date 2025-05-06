@@ -122,7 +122,6 @@
                 url: '@Url.Action("Get", "Orders")',
                 data: { filter },
                 type: "POST",
-                dataType: "html",
                 success: function (data) {
                     $("#orderContent").html(data);
                 },
