@@ -56,4 +56,24 @@ public class AppMenuController : Controller
         return Json(response);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> CompleteOrder(long orderId)
+    {
+        ResponseViewModel response = await _appMenuService.CompleteOrder(orderId);
+        return Json(response);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CancelOrder(long orderId)
+    {
+        ResponseViewModel response = await _appMenuService.CancelOrder(orderId);
+        return Json(response);
+    }
+
+
+
+
+
+
+
 }

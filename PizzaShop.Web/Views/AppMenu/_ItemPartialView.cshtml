@@ -38,7 +38,7 @@
             <button type="button" class="btn fs-4 p-0" data-id="@Model.ItemId" onclick='ChangeQuantity(this, -1)'>
                 <i class="bi bi-dash"></i>
             </button>
-            <input type="text" value="@(Model.Quantity > 0 ? Model.Quantity : 1)"
+            <input type="text" value="@(Model.Quantity > 0 ? Model.Quantity : 1)" min='@(Model.ReadyQuantity ==0 ? "1" : Model.ReadyQuantity )'
                 class="item-quantity-@Model.ItemId text-center bg-white" disabled>
             <button type="button" class="btn fs-4 p-0" data-id="@Model.ItemId" onclick='ChangeQuantity(this, 1)'>
                 <i class="bi bi-plus"></i>
@@ -56,7 +56,6 @@
         </div>
     </td>
     <td>
-        <img src="/images/icons/trash.svg" alt="" onclick="RemoveItem(@Model.ItemId)">
-        
+        <img src="/images/icons/trash.svg" alt="" class=@(Model.ReadyQuantity > 0 ? "d-none" : "") onclick="RemoveItem(@Model.ItemId)">
     </td>
 </tr>

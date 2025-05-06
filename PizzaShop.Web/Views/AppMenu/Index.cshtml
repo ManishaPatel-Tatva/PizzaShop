@@ -97,6 +97,7 @@
                         <img src="/images/icons/dining-table.svg" alt="" class="bg-blue" height="40px" width="40px">
                         <div>
                             <div>@Model.SectionName</div>
+                            <div>Order Id : @Model.Order.OrderId</div>
                             <div>
                                 <span class="fw-semibold">Table:</span>
                                 <span>
@@ -193,10 +194,11 @@
                                 @foreach (PaymentMethod? method in Model.PaymentMethods)
                                 {
                                     <div class="form-check">
-                                        <input type="radio" class="form-check-input payment-radio" id="radio-@method.Id" name="optradio"
-                                            value="@method.Id" @(Model.Order.PaymentMethodId == method.Id ? "checked" : "")>@method.Name
-                                    </div>
-                                }
+                                        <input type="radio" class="form-check-input payment-radio" id="radio-@method.Id"
+                                            name="optradio" value="@method.Id" @(Model.Order.PaymentMethodId == method.Id ?
+                                                                                                                       "checked" : "")>@method.Name
+                                </div>
+                                                                }
                             </td>
                         </tr>
                     </table>
@@ -206,16 +208,17 @@
                     <button class="btn btn-blue " onclick="SaveOrder()">
                         Save
                     </button>
-                    <button class="btn btn-white ">
+                    <button class="btn btn-white" data-bs-toggle="modal" data-bs-target="#completeOrderModal"
+                        @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity) ? "disabled": "" )>
                         Complete
                     </button>
-                    <button class="btn btn-white text-nowrap">
+                    <button class="btn btn-white text-nowrap" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Generate Invoice
                     </button>
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end">
-                    <button class="btn btn-white ">
+                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ? "disabled" : "")>
                         Cancel
                     </button>
                 </div>
@@ -326,6 +329,52 @@
     </div>
 </div>
 <!-- Modal Item Instruction ends-->
+
+<!-- Modal Completion Confirmation starts-->
+<div class="modal fade" id="completeOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Completion Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <img src="~/images/icons/warning.svg" alt="" width="50px">
+                <span>Are you sure you want to complete Order?</span>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" id="confirmCompletion" class="btn btn-blue btn-modal" data-bs-dismiss="modal"
+                    onclick="completeOrder()">YES</button>
+                <button type="button" class="btn btn-white btn-modal">NO</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Completion Confirmation ends-->
+
+<!-- Modal Order Cancelletion Confirmation starts-->
+<div class="modal fade" id="cancelOrderModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Completion Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <img src="~/images/icons/warning.svg" alt="" width="50px">
+                <span>Are you sure you want to complete Order?</span>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" id="confirmCancellation" class="btn btn-blue btn-modal" data-bs-dismiss="modal"
+                    onclick="cancelOrder()">YES</button>
+                <button type="button" class="btn btn-white btn-modal">NO</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Order Cancelletion Confirmation ends-->
 
 <!-- #endregion ----------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------->
@@ -512,7 +561,7 @@
 
                 @* item.ModifiersList = modifierList; *@
                     @* console.log(item); *@
-                                                        }
+                                                                }
 
     </script>
 
@@ -579,7 +628,8 @@
         function ChangeQuantity(tag, num) {
             let itemId = $(tag).data("id");
             let quantity = parseFloat($(tag).parent().children("input").val());
-            if (quantity + num > 0) {
+            let minQuantity = parseFloat($(tag).parent().children("input").attr("min"));
+            if (quantity + num >= minQuantity) {
                 quantity = quantity + num;
                 $(tag).parent().children("input").val(quantity);
             }
@@ -660,7 +710,7 @@
 
             order.PaymentMethodId = $(".payment-radio:checked").val();
 
-            console.log("order is ",order);
+            console.log("order is ", order);
 
             $.ajax({
                 url: '@Url.Action("SaveOrder", "AppMenu")',
@@ -671,7 +721,7 @@
                 success: function (data) {
                     console.log(data);
                 },
-                error: function(data){
+                error: function (data) {
                     console.log("An error occurred");
                 }
             });
@@ -679,6 +729,42 @@
 
     </script>
 
+    @* Complete and cancel Order *@
+    <script>
+
+        function completeOrder() {
+            $.ajax({
+                url: '@Url.Action("CompleteOrder", "AppMenu")',
+                type: "POST",
+                data: {
+                    orderId: '@Model.Order.OrderId'
+                },
+                success: function (response) {
+                    ("#completeOrderModal").modal("hide");
+                },
+                error: function (data) {
+                    console.log("An error occurred");
+                }
+            });
+        }
+
+        function cancelOrder() {
+            $.ajax({
+                url: '@Url.Action("CancelOrder", "AppMenu")',
+                type: "POST",
+                data: {
+                    orderId: '@Model.Order.OrderId'
+                },
+                success: function (response) {
+                    ("#completeOrderModal").modal("hide");
+                },
+                error: function (data) {
+                    console.log("An error occurred");
+                }
+            });
+        }
+
+    </script>
 
 
 

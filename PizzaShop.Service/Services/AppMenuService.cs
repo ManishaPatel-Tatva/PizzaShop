@@ -27,8 +27,11 @@ public class AppMenuService : IAppMenuService
     private readonly IGenericRepository<WaitingToken> _waitingTokenRepository;
     private readonly IGenericRepository<Invoice> _invoiceRepository;
     private readonly IGenericRepository<Payment> _paymentRepository;
+    private readonly IGenericRepository<Table> _tableRepository;
+    private readonly IGenericRepository<TableStatus> _tableStatusRepository;
+    private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderItemsModifier> orderItemsModifierRepository, IGenericRepository<OrderTaxMapping> orderTaxRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<Invoice> invoiceRepository, IGenericRepository<Payment> paymentRepository)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IItemService itemService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, ICustomerService customerService, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderItemsModifier> orderItemsModifierRepository, IGenericRepository<OrderTaxMapping> orderTaxRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<Invoice> invoiceRepository, IGenericRepository<Payment> paymentRepository, IGenericRepository<Table> tableRepository, IGenericRepository<TableStatus> tableStatusRepository, IGenericRepository<OrderStatus> orderStatusRepository)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -46,6 +49,10 @@ public class AppMenuService : IAppMenuService
         _waitingTokenRepository = waitingTokenRepository;
         _invoiceRepository = invoiceRepository;
         _paymentRepository = paymentRepository;
+        _tableRepository = tableRepository;
+        _tableStatusRepository = tableStatusRepository;
+        _orderStatusRepository = orderStatusRepository;
+
     }
 
     public async Task<AppMenuViewModel> Get(long customerId)
@@ -194,40 +201,42 @@ public class AppMenuService : IAppMenuService
                 }
 
                 //Create Invoice
-                Invoice invoice = new(){
+                Invoice invoice = new()
+                {
                     InvoiceNo = "#DOM" + DateTime.Today.Ticks,
                     OrderId = orderVM.OrderId,
                     CreatedBy = await _userService.LoggedInUser()
                 };
 
                 response.Success = await _invoiceRepository.AddAsync(invoice);
-                if(!response.Success)
+                if (!response.Success)
                 {
                     return response;
                 }
 
                 //Create Payment
-                Payment payment = new(){
+                Payment payment = new()
+                {
                     OrderId = orderVM.OrderId,
                     PaymentMethodId = orderVM.PaymentMethodId
                 };
 
                 response.Success = await _paymentRepository.AddAsync(payment);
-                if(!response.Success)
+                if (!response.Success)
                 {
                     return response;
                 }
 
                 //Update order table mapping
                 var mappings = await _orderTableRepository.GetByCondition(ot => ot.CustomerId == orderVM.CustomerId && !ot.IsDeleted);
-                foreach(var mapping in mappings)
+                foreach (var mapping in mappings)
                 {
                     mapping.OrderId = orderVM.OrderId;
                     mapping.UpdatedBy = await _userService.LoggedInUser();
                     mapping.UpdatedAt = DateTime.Now;
 
                     response.Success = await _orderTableRepository.UpdateAsync(mapping);
-                    if(!response.Success)
+                    if (!response.Success)
                     {
                         return response;
                     }
@@ -385,7 +394,7 @@ public class AppMenuService : IAppMenuService
             }
 
 
-            
+
 
 
             response.Success = true;
@@ -402,54 +411,6 @@ public class AppMenuService : IAppMenuService
         }
     }
 
-    // public async Task<bool> SaveOrderItem(OrderItemViewModel orderItemVM, long orderId)
-    // {
-    //     OrderItem? orderItem = new();
-    //     if (orderItemVM.Id == 0)
-    //     {
-    //         orderItem.OrderId = orderId;
-    //         orderItem.ItemId = orderItemVM.ItemId;
-    //         orderItem.CreatedBy = await _userService.LoggedInUser();
-    //     }
-    //     else
-    //     {
-    //         orderItem = await _orderItemRepository.GetByIdAsync(orderItemVM.Id);
-    //         if (orderItem == null)
-    //         {
-    //             return false;
-    //         }
-    //     }
-
-    //     orderItem.Quantity = orderItemVM.Quantity;
-    //     orderItem.Instructions = orderItemVM.Instruction;
-    //     orderItem.Price = orderItemVM.Price;
-    //     orderItem.UpdatedAt = DateTime.Now;
-    //     orderItem.UpdatedBy = await _userService.LoggedInUser();
-
-    //     if (orderItemVM.Id == 0)
-    //     {
-    //         orderItemVM.Id = await _orderItemRepository.AddAsyncReturnId(orderItem);
-    //         if (orderItemVM.Id < 1)
-    //         {
-    //             return false;
-    //         }
-
-    //         foreach (var modifier in orderItemVM.ModifiersList)
-    //         {
-    //             if (!await SaveOrderItemModifier(modifier, orderItemVM.Id))
-    //             {
-    //                 return false;
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         return await _orderItemRepository.UpdateAsync(orderItem);
-    //     }
-
-    //     return false;
-    // }
-
     public async Task<bool> SaveOrderItemModifier(ModifierViewModel modifier, long orderItemId)
     {
         OrderItemsModifier oim = new()
@@ -465,77 +426,132 @@ public class AppMenuService : IAppMenuService
         return await _orderItemsModifierRepository.AddAsync(oim);
     }
 
-    public async Task<bool> SaveOrderItem(List<OrderItemViewModel> ItemsList, long orderId)
+    public async Task<ResponseViewModel> CompleteOrder(long orderId)
     {
-        long createrId = await _userService.LoggedInUser();
+        ResponseViewModel response = new();
 
-        List<long> existingItem = _orderItemRepository.GetByCondition(
-            oi => oi.OrderId == orderId && !oi.IsDeleted
-        ).Result
-        .Select(oi => oi.ItemId)
-        .ToList();
-
-        List<long> removeOrderItem = existingItem.Except(existingItem).ToList();
-
-        foreach (var itemId in removeOrderItem)
+        // Order status - Completion
+        Order? order = await _orderRepository.GetByIdAsync(orderId);
+        if (order == null)
         {
-            OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == orderId && oi.ItemId == itemId && !oi.IsDeleted);
-
-            if (orderItem == null)
-            {
-                return false;
-            }
-
-            orderItem.IsDeleted = true;
-            orderItem.UpdatedBy = await _userService.LoggedInUser();
-            orderItem.UpdatedAt = DateTime.Now;
-
-            bool success = await _orderItemRepository.UpdateAsync(orderItem);
-            if (!success)
-            {
-                return false;
-            }
-
+            response.Success = false;
+            return response;
         }
 
-        foreach (var item in ItemsList)
+        if (order.OrderItems.Any(oi => oi.ReadyQuantity != oi.Quantity))
         {
-            OrderItem orderItem = new()
-            {
-                ItemId = item.ItemId,
-                Quantity = item.Quantity,
-                Price = item.Price,
-                CreatedBy = createrId,
-                UpdatedBy = createrId
-            };
-
-            long orderItemId = await _orderItemRepository.AddAsyncReturnId(orderItem);
-            if (orderItemId < 1)
-            {
-                return false;
-            }
-
-            foreach (var modifier in item.ModifiersList)
-            {
-                OrderItemsModifier oim = new()
-                {
-                    OrderItemId = orderItemId,
-                    ModifierId = modifier.Id,
-                    Quantity = 1,
-                    Price = modifier.Rate,
-                    CreatedBy = createrId,
-                    UpdatedBy = createrId,
-                    UpdatedAt = DateTime.Now,
-                };
-
-                if (await _orderItemsModifierRepository.AddAsync(oim))
-                {
-                    return false;
-                }
-            }
+            response.Success = false;
+            return response;
         }
 
-        return true;
+        order.StatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Completed").Result!.Id;
+        response.Success = await _orderRepository.UpdateAsync(order);
+        if (!response.Success)
+        {
+            return response;
+        }
+
+        // Delete Table assignment
+        IEnumerable<OrderTableMapping>? mappings = await _orderTableRepository.GetByCondition(ot => ot.OrderId == orderId && !ot.IsDeleted);
+
+        foreach (OrderTableMapping mapping in mappings)
+        {
+            mapping.IsDeleted = true;
+            mapping.UpdatedBy = await _userService.LoggedInUser();
+            mapping.UpdatedAt = DateTime.Now;
+
+            response.Success = await _orderTableRepository.UpdateAsync(mapping);
+            if (!response.Success)
+            {
+                return response;
+            }
+
+            //Change table status to available
+            Table? table = await _tableRepository.GetByIdAsync(mapping.TableId);
+            if (table == null)
+            {
+                return response;
+            }
+
+            table.StatusId = _tableStatusRepository.GetByStringAsync(ts => ts.Name == "Available").Result!.Id;
+            table.UpdatedBy = await _userService.LoggedInUser();
+            table.UpdatedAt = DateTime.Now;
+            response.Success = await _tableRepository.UpdateAsync(table);
+            if (!response.Success)
+            {
+                return response;
+            }
+            
+        }
+
+        response.Success = true;
+        return response;
+
     }
+
+
+    public async Task<ResponseViewModel> CancelOrder(long orderId)
+    {
+        ResponseViewModel response = new();
+
+        // Order status - Cancelled
+        Order? order = await _orderRepository.GetByIdAsync(orderId);
+        if (order == null)
+        {
+            response.Success = false;
+            return response;
+        }
+
+        if (order.OrderItems.Any(oi => oi.ReadyQuantity > 0))
+        {
+            response.Success = false;
+            return response;
+        }
+
+        order.StatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
+        response.Success = await _orderRepository.UpdateAsync(order);
+        if (!response.Success)
+        {
+            return response;
+        }
+
+        // Delete Table assignment
+        IEnumerable<OrderTableMapping>? mappings = await _orderTableRepository.GetByCondition(ot => ot.OrderId == orderId && !ot.IsDeleted);
+
+        foreach (OrderTableMapping mapping in mappings)
+        {
+            mapping.IsDeleted = true;
+            mapping.UpdatedBy = await _userService.LoggedInUser();
+            mapping.UpdatedAt = DateTime.Now;
+
+            response.Success = await _orderTableRepository.UpdateAsync(mapping);
+            if (!response.Success)
+            {
+                return response;
+            }
+
+            //Change table status to available
+            Table? table = await _tableRepository.GetByIdAsync(mapping.TableId);
+            if (table == null)
+            {
+                return response;
+            }
+
+            table.StatusId = _tableStatusRepository.GetByStringAsync(ts => ts.Name == "Available").Result!.Id;
+            table.UpdatedBy = await _userService.LoggedInUser();
+            table.UpdatedAt = DateTime.Now;
+            response.Success = await _tableRepository.UpdateAsync(table);
+            if (!response.Success)
+            {
+                return response;
+            }
+            
+        }
+
+        response.Success = true;
+        return response;
+
+    }
+
 
 }

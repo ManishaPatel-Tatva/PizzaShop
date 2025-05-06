@@ -272,6 +272,7 @@ public class OrderService : IOrderService
                                     Quantity = oi.Quantity,
                                     Price = oi.Price,
                                     TotalAmount = oi.Quantity * oi.Price,
+                                    ReadyQuantity = oi.ReadyQuantity,
                                     ModifiersList = oi.OrderItemsModifiers
                                                     .Where(oim => oim.OrderItemId == oi.Id && !oim.IsDeleted)
                                                     .Select(oim => new ModifierViewModel

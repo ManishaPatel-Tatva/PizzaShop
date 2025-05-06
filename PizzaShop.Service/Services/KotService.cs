@@ -49,7 +49,7 @@ public class KotService : IKotService
             }
         );
 
-            (orders, int totalRecord) = await _orderRepository.GetPagedRecords(pageSize, pageNumber, orders);
+            // (orders, int totalRecord) = await _orderRepository.GetPagedRecords(pageSize, pageNumber, orders);
 
             KotViewModel kot = new()
             {
@@ -91,7 +91,7 @@ public class KotService : IKotService
                 Page = new()
             };
 
-            kot.Page.SetPagination(totalRecord, pageSize, pageNumber);
+            // kot.Page.SetPagination(totalRecord, pageSize, pageNumber);
 
             return kot;
         }
