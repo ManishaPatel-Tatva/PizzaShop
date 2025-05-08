@@ -244,6 +244,8 @@ public class OrderService : IOrderService
 
                     Comment = o.Instructions,
 
+                    CustomerId = o.CustomerId,
+
                     CustomerName = o.Customer.Name,
 
                     CustomerPhone = o.Customer.Phone,

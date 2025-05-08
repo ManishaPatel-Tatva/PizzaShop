@@ -26,69 +26,79 @@
     </div>
 </div>
 
-<div class="px-auto px-sm-3 py-1 py-sm-2 d-flex align-items-center gap-1 gap-sm-3 flex-wrap">
+@if (Model.KotCards.Count > 0)
+{
+    <div class="px-auto px-sm-3 py-1 py-sm-2 d-flex align-items-center gap-1 gap-sm-3 flex-wrap">
 
-    @foreach (KotCardViewModel? kot in Model.KotCards)
-    {
-        <!-- Order Cards starts-->
-        <div class="kot-card d-flex flex-column rounded-2" data-id=@kot.OrderId onclick='GetOrderItems(@Html.Raw(Json.Serialize(kot)), "@Model.IsReady")'>
-            <div class="kot-card-header p-1">
-                <div class="d-flex justify-content-between fw-semibold">
-                    <div class="blue-text fs-5">#@kot.OrderId</div>
-                    <div class="d-flex align-items-center text-grey order-time"
-                        data-time="@kot.Time.ToString("yyyy-MM-ddTHH:mm:ss")">
-                        <i class="bi bi-stopwatch me-1"></i>
-                        <span class="time-difference"></span>
+        @foreach (KotCardViewModel? kot in Model.KotCards)
+        {
+            <!-- Order Cards starts-->
+            <div class="kot-card d-flex flex-column rounded-2" data-id=@kot.OrderId
+                onclick='GetOrderItems(@Html.Raw(Json.Serialize(kot)), "@Model.IsReady")'>
+                <div class="kot-card-header p-1">
+                    <div class="d-flex justify-content-between fw-semibold">
+                        <div class="blue-text fs-5">#@kot.OrderId</div>
+                        <div class="d-flex align-items-center text-grey order-time"
+                            data-time="@kot.Time.ToString("yyyy-MM-ddTHH:mm:ss")">
+                            <i class="bi bi-stopwatch me-1"></i>
+                            <span class="time-difference"></span>
+                        </div>
+                    </div>
+                    <div>
+                        @kot.SectionName
+                        <i class="bi bi-dot"></i>
+                        @foreach (string? table in kot.Tables)
+                        {
+                            <span>@table</span>
+                        }
                     </div>
                 </div>
-                <div>
-                    @kot.SectionName
-                    <i class="bi bi-dot"></i>
-                    @foreach (string? table in kot.Tables)
-                    {
-                        <span>@table</span>
-                    }
-                </div>
-            </div>
-            <div class="kot-card-body text-grey p-1">
+                <div class="kot-card-body text-grey p-1">
 
-                <div>
-                    @foreach (var item in kot.Items)
-                    {
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-between">
-                                <div>@item.Name</div>
-                                <div class="text-black">@item.Quantity</div>
+                    <div>
+                        @foreach (var item in kot.Items)
+                        {
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>@item.Name</div>
+                                    <div class="text-black">@item.Quantity</div>
+                                </div>
+                                <ul class="mb-0">
+                                    @foreach (var modifier in item.ModifiersList)
+                                    {
+                                        <li>@modifier.Name</li>
+                                    }
+                                </ul>
+                                <div>
+                                    @if (!string.IsNullOrEmpty(item.Instruction))
+                                    {
+                                        <span class="text-light-blue ps-3">Instructions:</span>
+                                        <span>@item.Instruction</span>
+                                    }
+                                </div>
                             </div>
-                            <ul class="mb-0">
-                                @foreach (var modifier in item.ModifiersList)
-                                {
-                                    <li>@modifier.Name</li>
-                                }
-                            </ul>
-                            <div>
-                                @if (!string.IsNullOrEmpty(item.Instruction))
-                                {
-                                    <span class="text-light-blue ps-3">Instructions:</span>
-                                    <span>@item.Instruction</span>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
+                        }
+                    </div>
 
-            </div>
-            <div class="kot-card-footer p-1">
-                <div>
-                    @if (!string.IsNullOrEmpty(kot.Instruction))
-                    {
-                        <span class="text-light-blue">Order Instructions:</span>
-                        <span>@kot.Instruction</span>
-                    }
+                </div>
+                <div class="kot-card-footer p-1">
+                    <div>
+                        @if (!string.IsNullOrEmpty(kot.Instruction))
+                        {
+                            <span class="text-light-blue">Order Instructions:</span>
+                            <span>@kot.Instruction</span>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- Order Cards ends-->
-    }
+            <!-- Order Cards ends-->
+        }
 
-</div>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-center">
+        <h5>No Record Found!</h5>
+    </div>
+}

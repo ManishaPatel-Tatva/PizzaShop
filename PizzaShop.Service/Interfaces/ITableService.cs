@@ -10,6 +10,7 @@ public interface ITableService
     Task<ResponseViewModel> Save(TableViewModel model);
     Task<bool> SetTableAssign(long tableId);
     Task<bool> SetTableAvailable(long tableId);
+    Task<bool> SetTableOccupied(long tableId);
     Task<ResponseViewModel> Delete(long tableId);
     Task<ResponseViewModel> Delete(List<long> tableIdList);
 }

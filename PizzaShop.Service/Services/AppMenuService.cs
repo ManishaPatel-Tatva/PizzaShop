@@ -27,7 +27,7 @@ public class AppMenuService : IAppMenuService
     private readonly IOrderTaxService _orderTaxService;
     private readonly IOrderItemService _orderItemService;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<OrderStatus> orderStatusRepository, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderItemService orderItemService)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<OrderStatus> orderStatusRepository, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderItemService orderItemService, IOrderTaxService orderTaxService)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -43,7 +43,11 @@ public class AppMenuService : IAppMenuService
         _paymentService = paymentService;
         _orderTableService = orderTableService;
         _orderItemService = orderItemService;
+        _orderTaxService = orderTaxService;
+
     }
+
+    #region Get
 
     public async Task<AppMenuViewModel> Get(long customerId)
     {
@@ -140,6 +144,9 @@ public class AppMenuService : IAppMenuService
         return response;
     }
 
+    #endregion Get
+
+    #region  Save
     public async Task<ResponseViewModel> Save(OrderDetailViewModel orderVM)
     {
         try
@@ -170,22 +177,22 @@ public class AppMenuService : IAppMenuService
             //Create new Order if doesn't exist
             if (orderVM.OrderId == 0)
             {
-                orderVM.OrderId = await _orderRepository.AddAsyncReturnId(order);
-                if (orderVM.OrderId < 1)
+                order.Id = await _orderRepository.AddAsyncReturnId(order);
+                if (order.Id < 1)
                 {
                     response.Success = false;
                     return response;
                 }
 
                 //Create Invoice
-                if (!await _invoiceService.Add(orderVM.OrderId))
+                if (!await _invoiceService.Add(order.Id))
                 {
                     response.Success = false;
                     return response;
                 }
 
                 //Update order table mapping
-                if (!await _orderTableService.Update(orderVM.OrderId))
+                if (!await _orderTableService.Update(order.Id))
                 {
                     response.Success = false;
                     return response;
@@ -202,12 +209,19 @@ public class AppMenuService : IAppMenuService
 
             // Order Item
             decimal subTotal = 0;
-            response.Success = await _orderItemService.Save(orderVM.ItemsList, orderVM.OrderId);
+            response.Success = await _orderItemService.Save(orderVM.ItemsList, order.Id);
             if (response.Success)
             {
-                subTotal = _orderItemService.OrderItemTotal(orderVM.OrderId);
+                subTotal = _orderItemService.OrderItemTotal(order.Id);
             }
             else
+            {
+                return response;
+            }
+
+            order.SubTotal = subTotal;
+            response.Success = await _orderRepository.UpdateAsync(order);
+            if(!response.Success)
             {
                 return response;
             }
@@ -217,7 +231,7 @@ public class AppMenuService : IAppMenuService
             response.Success = await _orderTaxService.Save(orderVM.Taxes, order.Id);
             if (response.Success)
             {
-                taxAmount = _orderTaxService.TotalTaxOnOrder(orderVM.OrderId);
+                taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
             }
             else
             {
@@ -232,7 +246,7 @@ public class AppMenuService : IAppMenuService
             }
 
             //Save Payment
-            response.Success = await _paymentService.Save(orderVM.PaymentMethodId, orderVM.OrderId);
+            response.Success = await _paymentService.Save(orderVM.PaymentMethodId, order.Id);
             if (!response.Success)
             {
                 response.Success = false;
@@ -240,6 +254,7 @@ public class AppMenuService : IAppMenuService
             }
 
             response.Success = true;
+            response.Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}","Order") : NotificationMessages.Updated.Replace("{0}","Order");
 
             return response;
         }
@@ -252,7 +267,9 @@ public class AppMenuService : IAppMenuService
             };
         }
     }
+    #endregion Save
 
+    #region Complete/Cancel
     public async Task<ResponseViewModel> CompleteOrder(long orderId)
     {
         ResponseViewModel response = new();
@@ -284,7 +301,6 @@ public class AppMenuService : IAppMenuService
 
     }
 
-
     public async Task<ResponseViewModel> CancelOrder(long orderId)
     {
         ResponseViewModel response = new();
@@ -314,4 +330,6 @@ public class AppMenuService : IAppMenuService
         response.Success = await _orderTableService.Delete(orderId);
         return response;
     }
+
+    #endregion Complete/Cancel
 }

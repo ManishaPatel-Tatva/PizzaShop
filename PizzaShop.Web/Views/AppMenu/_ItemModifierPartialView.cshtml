@@ -21,7 +21,7 @@
                     @foreach (ModifierViewModel? modifier in mg.ModifierList)
                     {
                         <!-- Card starts -->
-                        <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative" data-id="@modifier.Id" data-name="@modifier.Name" data-price="@modifier.Rate" onclick="SelectModifier(this)">
+                        <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative" data-id="@modifier.Id" data-name="@modifier.Name" data-price="@modifier.Rate" data-mg-id="@mg.ModifierGroupId" data-min="@mg.MinAllowed" data-max="@mg.MaxAllowed" onclick="SelectModifier(this)">
                             <div class="badge-corner vegan-badge "></div>
 
                             <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">

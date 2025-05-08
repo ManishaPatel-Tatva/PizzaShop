@@ -179,7 +179,6 @@ public class WaitingListService : IWaitingListService
             token.UpdatedBy = createrId;
             token.UpdatedAt = DateTime.Now;
 
-            response.EntityId = token.Id;
 
             if (wtokenVM.Id == 0)
             {
@@ -192,6 +191,8 @@ public class WaitingListService : IWaitingListService
                 response.Success = await _waitingTokenRepository.UpdateAsync(token);
                 response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Waiting Token") : NotificationMessages.UpdatedFailed.Replace("{0}", "Waiting Token");
             }
+
+            response.EntityId = token.Id;
 
             return response;
 

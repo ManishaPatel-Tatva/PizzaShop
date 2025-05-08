@@ -33,7 +33,7 @@ public class CustomerReviewService : ICustomerReviewService
         };
 
         review.FoodRating = reviewVM.FoodRating;
-        review.EnvRating = reviewVM.EnvRating;
+        review.EnvRating = reviewVM.ServiceRating;
         review.AmbienceRating = reviewVM.AmbienceRating;
         review.Review = reviewVM.Comment;
 

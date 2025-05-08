@@ -212,9 +212,9 @@
                         @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity) ? "disabled": "" )>
                         Complete
                     </button>
-                    <button class="btn btn-white text-nowrap">
+                    <a asp-action="Invoice" asp-controller="Orders" asp-route-orderId="@Model.Order.OrderId" type="button" class="btn btn-white text-nowrap">
                         Generate Invoice
-                    </button>
+                    </a>
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end">
@@ -223,12 +223,6 @@
                         Cancel
                     </button>
                 </div>
-
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#customerReviewModal">
-                    Launch static backdrop modal
-                </button>
 
             </div>
         </div>
@@ -382,7 +376,7 @@
 </div>
 <!-- Modal Order Cancelletion Confirmation ends-->
 
-<!-- Modal Customer Review starts-->
+@* <!-- Modal Customer Review starts-->
 <div class="modal fade" id="customerReviewModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -391,7 +385,60 @@
         </div>
     </div>
 </div>
-<!-- Modal Customer Review ends-->
+<!-- Modal Customer Review ends--> *@
+
+<!-- Customer Review Modal -->
+<div class="modal" tabindex="-1" id="customerReviewModal" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-clr-grey fw-bolder">Customer Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-0">
+                <div class="mb-3 py-2 border-bottom border-2 border-warning">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold text-clr-grey">Food</span>
+                        <div class="d-flex gap-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="star foodStar fa fa-star-o clr-yellow" data-number=@i></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold text-clr-grey">Service</span>
+                        <div class="d-flex gap-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="star serviceStar fa fa-star-o clr-yellow" data-number=@i></i>
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold text-clr-grey">Ambience</span>
+                        <div class="d-flex gap-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="star ambienceStar fa fa-star-o clr-yellow" data-number=@i></i>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" id="customerReview" rows="3" placeholder="Comment"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-0 d-flex justify-content-center">
+                <button class="btn btn-blue" id="completionConfirm"
+                    onclick='customerReview("@Model.OrderId")'>Save</button>
+                <button type="button" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Customer Review Modal end-->
+
 
 <!-- #endregion ----------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------->
@@ -405,13 +452,15 @@
         });
 
         let order = @Html.Raw(JsonSerializer.Serialize(Model.Order));
+        @* let customerReview = @Html.Raw(JsonSerializer.Serialize(Model.CustomerReview));
         console.log(order);
+        console.log(customerReview); *@
     </script>
 
     @* Cards ajax *@
     <script>
 
-        let activeCategory = 0;
+            let activeCategory = 0;
 
         $(document).on("input", "#searchQuery", function () {
             CardsAjax(activeCategory);
@@ -562,23 +611,31 @@
                 let modifierId = $(tag).data("id");
                 let modifierName = $(tag).data("name");
                 let modifierPrice = $(tag).data("price");
+                let modifierGroupId = $(tag).data("mg-id");
+                let minAllowed = $(tag).data("min");
+                let maxAllowed = $(tag).data("max");
 
-                $(tag).toggleClass("modifier-card-selected");
 
                 if (!modifierList.some(m => m.Id == modifierId)) {
-                    modifierList.push({
-                        Id: modifierId,
-                        Name: modifierName,
-                        Rate: modifierPrice
-                    });
+                    if (modifierList.filter(m => m.ModifierGroupId == modifierGroupId).length < maxAllowed) {
+
+                        modifierList.push({
+                            Id: modifierId,
+                            Name: modifierName,
+                            Rate: modifierPrice,
+                            ModifierGroupId: modifierGroupId
+                        });
+                        $(tag).toggleClass("modifier-card-selected");
+                    }
                 }
                 else {
                     modifierList = modifierList.filter(m => m.Id != modifierId);
+                    $(tag).toggleClass("modifier-card-selected");
                 }
 
                 @* item.ModifiersList = modifierList; *@
                     @* console.log(item); *@
-                                                                                                    }
+                                                                                                                }
 
     </script>
 
@@ -612,6 +669,43 @@
     @* Add and Delete Item *@
     <script>
         function AddItem() {
+
+            let allMG = {};
+
+            $(".modifier-card").each(function () {
+                let mgId = $(this).data("mg-id");
+                let minAllowed = $(this).data("min");
+
+                if (!allMG[mgId]) {
+                    allMG[mgId] = {
+                        minAllowed: minAllowed,
+                        counter: 0
+                    };
+                }
+            });
+
+            //count selected modifier in Modifier Group
+            modifierList.forEach(m => {
+                if (allMG[m.ModifierGroupId]) {
+                    allMG[m.ModifierGroupId].counter++;
+                }
+            });
+
+            //Min Validation
+            let valid = true;
+            Object.keys(allMG).forEach(mgId => {
+                let group = allMG[mgId];
+                if (group.counter < group.minAllowed) {
+                    valid = false;
+                }
+            });
+
+            if (!valid) {
+                toastr.warning("Please select minimum no. of modifiers");
+                return false;
+            }
+
+
             $.ajax({
                 url: '@Url.Action("AddItem", "AppMenu")',
                 type: "POST",
@@ -627,12 +721,15 @@
                     order.ItemsList.push(item);
                     console.log("after adding item", order.ItemsList);
                     console.log("order is ", order);
+                },
+                error: function (data) {
+                    console.log("an error occurred");
                 }
-
             });
         }
 
         function RemoveItem(itemId) {
+            console.log("remove item")
             $("tr").remove(".selectedItem[data-id ='" + itemId + "']");
             order.ItemsList = order.ItemsList.filter(i => i.ItemId != itemId)
             CalculateBill();
@@ -726,6 +823,7 @@
         function SaveOrder() {
 
             order.PaymentMethodId = $(".payment-radio:checked").val();
+            order.Comment = $("#orderInstruction").text();
 
             console.log("order is ", order);
 
@@ -734,9 +832,14 @@
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(order),
-                dataType: "html",
-                success: function (data) {
-                    console.log(data);
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        toastr.success(response.message);
+                    }
+                    else {
+                        toastr.error(response.Message);
+                    }
                 },
                 error: function (data) {
                     console.log("An error occurred");
@@ -757,7 +860,8 @@
                     orderId: '@Model.Order.OrderId'
                 },
                 success: function (response) {
-                    ("#completeOrderModal").modal("hide");
+                    $("#completeOrderModal").modal("hide");
+                    $("#customerReviewModal").modal("show");
                 },
                 error: function (data) {
                     console.log("An error occurred");
@@ -785,7 +889,59 @@
 
     </script>
 
+    @* Customer Review *@
+    <script>
+        // Select Star
+        $(document).on("click", ".star", function () {
+            let number = $(this).data("number");
+            $(this).parent().find(".star").each(function () {
+                $(this).addClass("fa-star-o").removeClass("fa-star");
+                if ($(this).data("number") <= number) {
+                    $(this).removeClass("fa-star-o").addClass("fa-star");
+                }
+            });
+        });
 
+        // Customer Review
+        function customerReview() {
+            // Review Object
+            let review = {
+                CustomerId: Number(order.CustomerId),
+                OrderId: Number(order.OrderId),
+                FoodRating: Number($(".foodStar.fa-star").length),
+                ServiceRating: Number($(".serviceStar.fa-star").length),
+                AmbienceRating: Number($(".ambienceStar.fa-star").length),
+                Comment: $("#customerReview").val(),
+            };
 
+            console.log(review);
+
+            // Send Review
+            $.ajax({
+                url: '@Url.Action("CustomerReview", "AppMenu")',
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(review),
+                success: function (response) {
+                    if (response.success == true) {
+                        toastr.success(response.message);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                    $("#customerReviewModal").modal("hide");
+                },
+                error: function () {
+                    toastr.error("Cannot add review");
+                },
+            });
+        }
+
+        // Redirect to Tables on review modal close
+        $(document).on("hide.bs.modal", "#customerReviewModal", function () {
+            window.location.replace('@Url.Action("Index", "AppTable")');
+        });
+
+    </script>
 
 }

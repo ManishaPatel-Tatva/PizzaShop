@@ -29,7 +29,11 @@ public class OrderTableService : IOrderTableService
             mapping.UpdatedBy = await _userService.LoggedInUser();
             mapping.UpdatedAt = DateTime.Now;
 
-            if (!await _orderTableRepository.UpdateAsync(mapping))
+            if (await _orderTableRepository.UpdateAsync(mapping))
+            {
+                await _tableService.SetTableOccupied(mapping.TableId);
+            }
+            else
             {
                 return false;
             }
@@ -57,7 +61,7 @@ public class OrderTableService : IOrderTableService
             }
 
             //Change table status to available
-            success = await _tableService.SetTableAvailable(orderId);
+            success = await _tableService.SetTableAvailable(mapping.TableId);
             if (!success)
             {
                 return success;

@@ -30,11 +30,15 @@ public class KotService : IKotService
     {
         try
         {
-            long orderStatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
+            long completeId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Completed").Result!.Id;
+            long cancelId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
+
             IEnumerable<Order> orders = await _orderRepository.GetByCondition(
-            predicate: o => !o.IsDeleted && o.StatusId != orderStatusId
+            predicate: o => !o.IsDeleted
+                            && o.StatusId != completeId 
+                            && o.StatusId != cancelId
                             && o.OrderItems.Any(oi => !oi.IsDeleted
-                                                    && (categoryId == 0 || oi.Item.CategoryId == categoryId)),
+                            && (categoryId == 0 || oi.Item.CategoryId == categoryId)),
             orderBy: q => q.OrderBy(o => o.Id),
             thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
             {
@@ -47,10 +51,7 @@ public class KotService : IKotService
                 q => q.Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.OrderItemsModifiers)
                     .ThenInclude(m => m.Modifier),
-            }
-        );
-
-            // (orders, int totalRecord) = await _orderRepository.GetPagedRecords(pageSize, pageNumber, orders);
+            });
 
             KotViewModel kot = new()
             {
@@ -73,7 +74,7 @@ public class KotService : IKotService
                                 .ToList(),
                     Time = o.CreatedAt,
                     Items = o.OrderItems
-                            .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
+                            .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && (!oi.IsDeleted) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
                             .Select(oi => new OrderItemViewModel
                             {
                                 ItemId = oi.ItemId,
@@ -92,14 +93,12 @@ public class KotService : IKotService
                 Page = new()
             };
 
-            // kot.Page.SetPagination(totalRecord, pageSize, pageNumber);
-
             return kot;
         }
         catch (Exception ex)
         {
             string message = ex.Message;
-            return null;
+            return new KotViewModel();
         }
 
     }
@@ -112,13 +111,13 @@ public class KotService : IKotService
     {
         try
         {
+            ResponseViewModel response = new();
+
             if (kot.Items.All(i => i.IsSelected == false))
             {
-                return new ResponseViewModel
-                {
-                    Success = false,
-                    Message = NotificationMessages.AtleastOne.Replace("{0}", "Item")
-                };
+                response.Success = false;
+                response.Message = NotificationMessages.AtleastOne.Replace("{0}", "Item");
+                return response;
             }
 
             foreach (OrderItemViewModel? item in kot.Items)
@@ -128,11 +127,9 @@ public class KotService : IKotService
                     OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == kot.OrderId && oi.ItemId == item.ItemId && !oi.IsDeleted);
                     if (orderItem == null)
                     {
-                        return new ResponseViewModel
-                        {
-                            Success = false,
-                            Message = NotificationMessages.NotFound.Replace("{0}", "Item")
-                        };
+                        response.Success = false;
+                        response.Message = NotificationMessages.NotFound.Replace("{0}", "Item");
+                        return response;
                     }
 
                     if (kot.IsReady)
@@ -146,24 +143,21 @@ public class KotService : IKotService
 
                     if (!await _orderItemRepository.UpdateAsync(orderItem))
                     {
-                        return new ResponseViewModel
-                        {
-                            Success = false,
-                            Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Item Status")
-                        };
+                        response.Success = false;
+                        response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Item Status");
+                        return response;
                     }
                 }
             }
 
-            return new ResponseViewModel
-            {
-                Success = true,
-                Message = NotificationMessages.Updated.Replace("{0}", "Item Status")
-            };
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Item Status");
+            return response;
         }
         catch (Exception ex)
         {
-            return new ResponseViewModel{
+            return new ResponseViewModel
+            {
                 Success = false,
                 Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Item Status"),
                 ExMessage = ex.Message

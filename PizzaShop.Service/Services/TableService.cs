@@ -157,6 +157,9 @@ public class TableService : ITableService
 
     }
 
+    #endregion Save
+
+    #region Table Status
     public async Task<bool> SetTableAssign(long tableId)
     {
         Table? table = await _tableRepository.GetByIdAsync(tableId);
@@ -189,7 +192,24 @@ public class TableService : ITableService
         return await _tableRepository.UpdateAsync(table);
     }
 
-    #endregion Save
+    public async Task<bool> SetTableOccupied(long tableId)
+    {
+        Table? table = await _tableRepository.GetByIdAsync(tableId);
+
+        if (table == null)
+        {
+            return false;
+        }
+
+        table.StatusId = _tableStatusRepository.GetByStringAsync(ts => ts.Name == "Occupied").Result!.Id;
+        table.UpdatedBy = await _userService.LoggedInUser();
+        table.UpdatedAt = DateTime.Now;
+
+        return await _tableRepository.UpdateAsync(table);
+    }
+
+
+    #endregion
 
     #region Delete
     /*----------------------------------------------------------------Delete Table Group---------------------------------------------------------------------------------

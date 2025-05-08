@@ -104,8 +104,8 @@ public class AppTableService : IAppTableService
             return response;
         }
 
-        //For newly added customer
-        assignTableVM.WaitingToken.CustomerId = response.EntityId;
+        assignTableVM.WaitingToken.Id = response.EntityId;
+        assignTableVM.WaitingToken.CustomerId = _waitingService.Get(assignTableVM.WaitingToken.Id).Result.CustomerId;
 
         //Assign Table
         return await AssignTable(assignTableVM);

@@ -80,7 +80,8 @@
                 <span asp-validation-for="DefaultTax" class="text-danger"></span>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
-                <input asp-for="@Model.TaxPercentage" type="text" placeholder="" class="form-control" id="taxPercentage">
+                <input asp-for="@Model.TaxPercentage" type="text" placeholder="" class="form-control"
+                    id="taxPercentage">
                 <label for="taxPercentage">Tax Percentage</label>
                 <span asp-validation-for="TaxPercentage" class="text-danger"></span>
             </div>
@@ -127,50 +128,7 @@
 
                 @foreach (var modifierGroup in Model.ItemModifierGroups)
                 {
-                    <div class="px-4 modifierGroupDetail" data-id="@modifierGroup.ModifierGroupId">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fs-5 fw-bold light-grey-text">@modifierGroup.ModifierGroupName</span>
-                            <a class="btn deselectModifierGroup" data-id="@modifierGroup.ModifierGroupId">
-                                <img src="~/images/icons/deleteFill.svg" alt="delete" height="20px">
-                            </a>
-                        </div>
-                        <div class="row modifier-option">
-                            <div class="col-6">
-                                <select asp-for="@modifierGroup.MinAllowed" class="form-select minAllowed" aria-label=""
-                                    data-id="@modifierGroup.ModifierGroupId">
-                                    <option selected value="">0</option>
-                                    @for (int num = 1; num <= modifierGroup.ModifierList.Count(); num++)
-                                    {
-                                        <option value="@num">@num</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <select asp-for="@modifierGroup.MaxAllowed" class="form-select maxAllowed" aria-label=""
-                                    data-id="@modifierGroup.ModifierGroupId">
-                                    <option selected value="">0</option>
-                                    @for (int num = 1; num <= modifierGroup.ModifierList.Count(); num++)
-                                    {
-                                        <option value="@num">@num</option>
-                                    }
-                                </select>
-                                <span asp-validation-for="@modifierGroup.MaxAllowed" class="text-danger"></span>
-                            </div>
-                            <div class="col-12">
-                                <ul>
-                                    @foreach (var modifier in modifierGroup.ModifierList)
-                                    {
-                                        <li>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <span>@modifier.Name</span>
-                                                <span>@modifier.Rate</span>
-                                            </div>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_ItemModifierPartialView" model="modifierGroup" />
                 }
             </div>
 

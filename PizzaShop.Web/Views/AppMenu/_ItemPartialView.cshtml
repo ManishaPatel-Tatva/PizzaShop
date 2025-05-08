@@ -56,6 +56,6 @@
         </div>
     </td>
     <td>
-        <img src="/images/icons/trash.svg" alt="" class=@(Model.ReadyQuantity > 0 ? "d-none" : "") onclick="RemoveItem(@Model.ItemId)">
+        <img src="/images/icons/trash.svg" alt="" class="@(Model.ReadyQuantity > 0 ? "d-none" : "")" onclick='RemoveItem(@Model.ItemId)'>
     </td>
 </tr>

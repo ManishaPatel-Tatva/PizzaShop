@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -95,8 +96,12 @@ public class OrderItemService : IOrderItemService
     public decimal OrderItemTotal(long orderId)
     {
         return _orderItemRepository.GetByCondition(
-            oi => oi.OrderId == orderId && !oi.IsDeleted
-        ).Result!.Sum(oi => oi.Price);
+            oi => oi.OrderId == orderId && !oi.IsDeleted,
+            includes: new List<Expression<Func<OrderItem, object>>>
+            {
+                oi => oi.OrderItemsModifiers
+            }
+        ).Result!.Sum(oi => (oi.Price * oi.Quantity) + oi.OrderItemsModifiers.Sum(oim => oim.Price * oi.Quantity));
     }
 
 

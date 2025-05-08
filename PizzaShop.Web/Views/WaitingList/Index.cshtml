@@ -210,11 +210,11 @@
 
     @* Get Customer Details in Waiting Token *@
     <script>
-        function GetCustomerDetail() {
+        function GetCustomerDetail(tag) {
             console.log("GetCustomerDetail");
             $.ajax({
                 url: '@Url.Action("GetByEmail", "Customers")',
-                data: { email: $(this).val() },
+                data: { email: $(tag).val() },
                 type: "GET",
                 success: function (response) {
                     $("#customerId").val(response.id);

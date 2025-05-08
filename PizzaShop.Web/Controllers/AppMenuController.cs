@@ -74,7 +74,7 @@ public class AppMenuController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CustomerReview(CustomerReviewViewModel review)
+    public async Task<IActionResult> CustomerReview([FromBody] CustomerReviewViewModel review)
     {
         ResponseViewModel response = await _customerReviewService.Save(review);
         return Json(response);
