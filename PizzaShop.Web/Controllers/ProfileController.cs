@@ -15,19 +15,21 @@ public class ProfileController : Controller
     private readonly IProfileService _profileService;
     private readonly IJwtService _jwtService;
     private readonly IAddressService _addressService;
+    private readonly IDashboardService _dashboardService;
 
-    public ProfileController(IProfileService profileService, IJwtService jwtService, IAddressService addressService)
+    public ProfileController(IProfileService profileService, IJwtService jwtService, IAddressService addressService, IDashboardService dashboardService)
     {
         _profileService = profileService;
         _jwtService = jwtService;
         _addressService = addressService;
+        _dashboardService = dashboardService;
     }
 
     #region Dashboard
     /*--------------------------------------------------------Dashboard---------------------------------------------------------------------------------
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    [CustomAuthorize("View_Orders")]
     [HttpGet]
+    [CustomAuthorize("View_Orders")]
     public IActionResult Dashboard()
     {
         if (User.IsInRole("Chef"))
@@ -37,6 +39,18 @@ public class ProfileController : Controller
 
         ViewData["sidebar-active"] = "Dashboard";
         return View();
+    }
+
+    // POST DashBoardPartial
+    [HttpPost]
+    public async Task<IActionResult> DashBoardPartial(FilterViewModel filter)
+    {
+        if (filter.FromDate.HasValue && filter.ToDate.HasValue && filter.FromDate > filter.ToDate)
+        {
+            return Json(new { success = false, message = "FromDate must be less then ToDate" });
+        }
+       
+        return PartialView("_DashboardPartialView", await _dashboardService.Get(filter));
     }
     #endregion Dashboard
 

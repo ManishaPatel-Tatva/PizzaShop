@@ -216,6 +216,7 @@ public class WaitingListService : IWaitingListService
         }
 
         token.IsAssigned = true;
+        token.AssignedAt = DateTime.Now;
         return await _waitingTokenRepository.UpdateAsync(token);
     }
 

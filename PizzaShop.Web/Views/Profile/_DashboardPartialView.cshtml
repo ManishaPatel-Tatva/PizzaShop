@@ -1,0 +1,286 @@
+@using PizzaShop.Entity.ViewModels
+@model DashboardViewModel
+ 
+<div class="row gx-4 ">
+    <!-- Total Sales -->
+    <div class="dashboard-card col-12 mt-2 col-sm-6 col-xl-3">
+        <div class="bg-white d-flex flex-column justify-content-between shadow rounded p-3 h-100">
+            <div class="d-flex justify-content-end ">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(93, 214, 93);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(93, 214, 93);">
+                        <img src="~/images/icons/total-sales.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">₹ @Model.TotalSales.ToString("f2")</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Total Sales</span>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Total Orders -->
+    <div class="dashboard-card col-12 mt-2 col-sm-6 col-xl-3">
+        <div class="bg-white d-flex flex-column justify-content-between shadow rounded p-3 h-100">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(202 141 240);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(202 141 240);">
+                        <img src="~/images/icons/total-orders.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left"> @Model.TotalOrders</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Total Orders</span>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Avg Order Value -->
+    <div class="dashboard-card col-12 mt-2 col-sm-6 col-xl-3 ">
+        <div class="bg-white d-flex flex-column justify-content-between shadow rounded p-3 h-100">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(133 213 233)">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(133 213 233)">
+                        <img src="~/images/icons/total-orders.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">₹ @Model.AvgOrderValue.ToString("f2")</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Avg Order Value</span>
+                </div>
+            </div>
+        </div>
+ 
+    </div>
+ 
+    <!-- Avg Waiting Time -->
+    <div class="dashboard-card col-12 mt-2 col-sm-6 col-xl-3">
+        <div class="bg-white d-flex flex-column justify-content-between shadow rounded p-3 h-100">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid rgb(255, 118, 64);">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: rgb(255, 118, 64);">
+                        <img src="~/images/icons/waiting-time.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">@Model.AvgWaitingTime.ToString("f2") mins</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Avg Waiting Time</span>
+                </div>
+            </div>
+        </div>
+ 
+    </div>
+</div>
+ 
+<!-- Charts -->
+<div class="row gx-4 mt-0 mt-lg-4">
+    <div class="dashboard-card col-12 col-lg-6 mt-2">
+        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
+            <h4>Revenue</h4>
+            <div class="chart">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-card col-12 col-lg-6 mt-2">
+        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
+            <h4>Customer Growth</h4>
+            <div class="chart">
+                <canvas id="customerGrowthChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<div class="row d-flex mt-0 mt-lg-4">
+    <!-- Top Selling Items -->
+    <div class="dashboard-card col-12 mt-2 col-lg-6 col-xl-3">
+        <div class="d-flex flex-column bg-white shadow rounded p-3 h-100">
+            <h4>Top Selling Items</h4>
+            @for (int i = 0; i < Model.TopSellingItems.Count; i++)
+            {
+                <div class="d-flex justify-content-start align-items-center border-bottom py-2">
+                    <span class="me-1">#@(i + 1)</span>
+                    <img src=@(Model.TopSellingItems[i].ImgUrl != null ? Model.TopSellingItems[i].ImgUrl :
+                                             "/images/dining-menu.png") alt="" height="40" width="40" class="object-fit-cover rounded-circle">
+                <div class="d-flex flex-column ms-2">
+                    <span>@Model.TopSellingItems[i].Name</span>
+                    <div class="d-flex">
+                        <img src="/images/navigation/menu.png" alt="" width="20" height="20">
+                        @Model.TopSellingItems[i].TotalQuantity Order
+                    </div>
+                </div>
+            </div>
+                        }
+        </div>
+    </div>
+ 
+    <!-- Least Selling Items -->
+    <div class="dashboard-card col-12 mt-2 col-lg-6 col-xl-3">
+        <div class="d-flex flex-column bg-white shadow rounded p-3 h-100">
+            <h4>Least Selling Items</h4>
+            @for (int i = 0; i < Model.LeastSellingItems.Count; i++)
+            {
+                <div class="d-flex justify-content-start align-items-center border-bottom py-2">
+                    <span class="me-1">#@(i + 1)</span>
+                    <img src=@(Model.LeastSellingItems[i].ImgUrl != null ? Model.LeastSellingItems[i].ImgUrl :
+                                             "/images/dining-menu.png") alt="" height="40" width="40" class="object-fit-cover rounded-circle">
+                <div class="d-flex flex-column ms-2">
+                    <span>@Model.LeastSellingItems[i].Name</span>
+                    <div class="d-flex">
+                        <img src="/images/navigation/menu.png" alt="" width="20" height="20">
+                        @Model.LeastSellingItems[i].TotalQuantity Order
+                    </div>
+                </div>
+            </div>
+                        }
+        </div>
+    </div>
+ 
+    <!-- Waiting List Count -->
+    <div class="dashboard-card col-12 mt-2 col-sm-6 col-lg-6 col-xl-3">
+        <div class="bg-white shadow rounded p-3 h-100 d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid orange;">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: orange;">
+                        <img src="~/images/icons/waiting-list.svg" height="20" width="20" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">@Model.WaitingListCount</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>Waiting List Count</span>
+                </div>
+            </div>
+ 
+        </div>
+    </div>
+ 
+    <!-- New Customer Count -->
+    <div class="dashboard-card col-12 mt-2 col-sm-6 col-lg-6 col-xl-3">
+        <div class="bg-white shadow rounded p-3 h-100 d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-end">
+                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
+                    style="border: 1px solid #fe984a;">
+                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
+                        style="background-color: #fe984a;">
+                        <img src="~/images/icons/person-fill.svg" class="opacity-75" height="25" width="25" alt="">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-start">
+                    <h2 class="text-left">@Model.NewCustomerCount</h2>
+                </div>
+                <div class="d-flex justify-content-start">
+                    <span>New Customer Count</span>
+                </div>
+            </div>
+ 
+        </div>
+    </div>
+</div>
+ 
+<script>
+    function generateCharts() {
+        let ctx = document.getElementById("revenueChart").getContext("2d");
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: Array.from({ length: 31 }, (_, i) => i + 1),
+                datasets: [{
+                    label: "Revenue (₹)",
+                    data: @Html.Raw(Json.Serialize(Model.Revenue)),
+                    backgroundColor: "rgba(54, 162, 235, 0.2)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.5,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+ 
+        let ctx2 = document.getElementById("customerGrowthChart").getContext("2d");
+        new Chart(ctx2, {
+            type: "line",
+            data: {
+                labels: [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                ],
+                datasets: [{
+                    label: "Customer",
+                    data: @Html.Raw(Json.Serialize(Model.CustomerCount)),
+                    backgroundColor: "rgba(54, 162, 235, 0.2)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.5,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                    }
+                },
+            }
+        });
+    }
+</script>
+ 

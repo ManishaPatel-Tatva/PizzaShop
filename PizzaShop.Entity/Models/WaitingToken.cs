@@ -27,6 +27,8 @@ public partial class WaitingToken
 
     public bool IsDeleted { get; set; }
 
+    public DateTime? AssignedAt { get; set; }
+
     public virtual User CreatedByNavigation { get; set; } = null!;
 
     public virtual Customer Customer { get; set; } = null!;

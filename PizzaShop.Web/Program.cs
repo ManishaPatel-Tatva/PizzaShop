@@ -43,6 +43,9 @@ builder.Services.AddScoped<IAddressService, AddressService>();
 //Auth Service
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Dashboard Service
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
 //User Service
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -81,6 +84,7 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IOrderTableService, OrderTableService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IOrderItemModifierService, OrderItemModifierService>();
 builder.Services.AddScoped<IOrderTaxService, OrderTaxService>();
 
 //Session 

@@ -4,301 +4,142 @@
 }
 
 <!-- User heading, search and add button -->
-<div class="d-flex justify-content-between users mb-3">
-    <div>
-        <h1 class="blue-text">Dashboard</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h1 class="blue-text">Dashboard</h1>
+
+    <div class="dropdown bg-white border-2" style="width: 200px;">
+        <a class="btn fw-semibold text-muted dropdown-toggle w-100 d-flex justify-content-between align-items-center"
+            id="timeFrameBtn" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Time Range">
+            Last 30 days
+        </a>
+
+        <ul class="dropdown-menu w-100">
+            <li><span class="dropdown-item bg-white cursor-pointer" onclick="changeTimeFrame('Today')">Today</span></li>
+            <li><span class="dropdown-item bg-white cursor-pointer" onclick="changeTimeFrame('Last 7 days')">Last 7
+                    days</span></li>
+            <li><span class="dropdown-item bg-white cursor-pointer" onclick="changeTimeFrame('Last 30 days')">Last 30
+                    days</span></li>
+            <li><span class="dropdown-item bg-white cursor-pointer" onclick="changeTimeFrame('Current Month')">Current
+                    Month</span></li>
+            <li><span class="dropdown-item bg-white cursor-pointer" onclick="changeTimeFrame('Custom Date')">Custom
+                    Date</span></li>
+        </ul>
     </div>
 </div>
- 
-<div class="row gx-4 ">
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="bg-white shadow rounded p-2 h-100">
-            <div class="d-flex justify-content-end ">
-                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
-                    style="border: 1px solid rgb(93, 214, 93);">
-                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
-                        style="background-color: rgb(93, 214, 93);">
-                        <img src="~/images/icons/total-sales.svg" height="20" width="20" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-start">
-                <h2 class="text-left"> &#x20b9; 1600</h2>
-            </div>
-            <div class="d-flex justify-content-start">
-                <span>Total Sales</span>
-            </div>
-        </div>
- 
-    </div>
- 
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="bg-white shadow rounded p-2 h-100">
-            <div class="d-flex justify-content-end">
-                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
-                    style="border: 1px solid rgb(255, 118, 255);">
-                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
-                        style="background-color: rgb(255, 118, 255);">
-                        <img src="~/images/icons/total-orders.svg" height="20" width="20" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-start">
-                <h2 class="text-left"> 1</h2>
-            </div>
-            <div class="d-flex justify-content-start">
-                <span>Total Orders</span>
-            </div>
-        </div>
- 
-    </div>
- 
-    <div class="col-12 mt-2 col-sm-6 col-lg-3 ">
-        <div class="bg-white shadow rounded p-2 h-100">
-            <div class="d-flex justify-content-end">
-                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
-                    style="border: 1px solid rgb(180, 180, 180);">
-                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
-                        style="background-color: rgb(180, 180, 180);">
-                        <img src="~/images/icons/total-orders.svg" height="20" width="20" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-start">
-                <h2 class="text-left"> &#x20b9; 1630</h2>
-            </div>
-            <div class="d-flex justify-content-start">
-                <span>Avg Order Value</span>
-            </div>
-        </div>
- 
-    </div>
- 
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="bg-white shadow rounded p-2 h-100">
-            <div class="d-flex justify-content-end">
-                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
-                    style="border: 1px solid rgb(255, 118, 64);">
-                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
-                        style="background-color: rgb(255, 118, 64);">
-                        <img src="~/images/icons/waiting-time.svg" height="20" width="20" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-start">
-                <h2 class="text-left"> 6.96 mins</h2>
-            </div>
-            <div class="d-flex justify-content-start">
-                <span>Avg Waiting Time</span>
-            </div>
-        </div>
- 
-    </div>
+
+<div id="DashboardContent">
+    <!-- Partial View -->
 </div>
- 
-<div class="row gx-4 mt-4">
-    <div class="col mt-2">
-        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
-            <h4>Revenue</h4>
-            <div class="chart">
-                <canvas id="myChart"></canvas>
+
+<!-- #region Modals -->
+<!-- Date Range Modal -->
+<div class="modal" tabindex="-1" id="dateRangeModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-clr-grey fw-bolder">Select Date Range</h5>
+                <button type="button" class="btn-close" id="dateRangeClose" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-    <div class="col mt-2">
-        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
-            <h4>Customer Growth</h4>
-            <div class="chart">
-                <canvas id="customerGrowthChart"></canvas>
+            <div class="modal-body d-flex align-items-center row gap-2 mx-0">
+                <div class="dateSelection form-floating col px-0">
+                    <input type="date" class="form-control" id="customerFromDate">
+                    <label for="customerFromDate" class="mx-2">From Date</label>
+                </div>
+                <div class="dateSelection form-floating col px-0">
+                    <input type="date" class="form-control" id="customerToDate">
+                    <label for="customerToDate" class="mx-2">To Date</label>
+                </div>
+            </div>
+            <div class="modal-footer border-0 d-flex justify-content-center">
+                <button data-userId="" class="btn btn-primary" id="dateRangeSubmit">Submit</button>
+                <button type="button" class="btn btn-secondary" id="dateRangeCancel"
+                    data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
-<div class="row d-flex mt-4">
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="d-flex flex-column bg-white shadow rounded p-2 h-100">
-            <h4>Top Selling Items</h4>
-            <div class="d-flex justify-content-start align-items-center">
-                <span>#1</span>
-                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
-                <div class="d-flex flex-column">
-                    <span>Grilled Burger</span>
-                    <div class="d-flex">
-                         1 Order
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-start align-items-center">
-                <span>#2</span>
-                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
-                <div class="d-flex flex-column">
-                    <span>Grilled Burger</span>
-                    <div class="d-flex">
-                         1 Order
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="d-flex flex-column bg-white shadow rounded p-2">
-            <h4>Least Selling Items</h4>
-            <div class="d-flex justify-content-start align-items-center">
-                <span>#1</span>
-                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
-                <div class="d-flex flex-column">
-                    <span>Grilled Burger</span>
-                    <div class="d-flex">
-                         1 Order
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-start align-items-center">
-                <span>#2</span>
-                <img src="~/images/dining-menu.png" alt="" height="30" width="30">
-                <div class="d-flex flex-column">
-                    <span>Grilled Burger</span>
-                    <div class="d-flex">
-                         1 Order
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="bg-white shadow rounded p-2  h-100 d-flex flex-column justify-content-between">
-            <div class="d-flex justify-content-end">
-                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
-                    style="border: 1px solid orange;">
-                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
-                        style="background-color: orange;">
-                        <img src="~/images/icons/waiting-list.svg" height="20" width="20" alt="">
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div class="d-flex justify-content-start">
-                    <h2 class="text-left">5</h2>
-                </div>
-                <div class="d-flex justify-content-start">
-                    <span>Waiting List Count</span>
-                </div>
-            </div>
- 
-        </div>
-    </div>
-    <div class="col-12 mt-2 col-sm-6 col-lg-3">
-        <div class="bg-white shadow rounded p-2  h-100 d-flex flex-column justify-content-between">
-            <div class="d-flex justify-content-end">
-                <div class="p-2 d-flex justify-content-center align-items-center dashboard-icon-outer rounded-circle"
-                    style="border: 1px solid orange;">
-                    <div class="dashboard-icon d-flex justify-content-center align-items-center"
-                        style="background-color: orange;">
-                        <img src="~/images/icons/waiting-list.svg" height="20" width="20" alt="">
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div class="d-flex justify-content-start">
-                    <h2 class="text-left">5</h2>
-                </div>
-                <div class="d-flex justify-content-start">
-                    <span>Waiting List Count</span>
-                </div>
-            </div>
- 
-        </div>
-    </div>
-</div>
- 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var ctx = document.getElementById("myChart").getContext("2d");
- 
-        new Chart(ctx, {
-            type: "line", // Line chart type
-            data: {
-                labels: Array.from({ length: 31 }, (_, i) => i + 1), // Generate numbers from 1 to 31
-                datasets: [{
-                    label: "Revenue (₹)",
-                    data: Array.from({ length: 31 }, () => Math.floor(Math.random() * 10000) + 5000), // Random data for each day
-                    backgroundColor: "rgba(75, 192, 192, 0.2)", // Light fill color
-                    borderColor: "rgba(75, 192, 192, 1)", // Line color
-                    borderWidth: 2,
-                    fill: true, // Fill area under line
-                    tension: 0.3 // Smooth curve effect
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                        }
-                    }
-                }
-            }
+<!-- Date Range end-->
+<!-- #endregion -->
+
+@section Scripts {
+    @* Load Dashboard *@
+    <script>
+        let timeRange = "Last 30 days"
+        $(document).ready(function () {
+            loadDashboard();
         });
- 
-        var ctx2 = document.getElementById("customerGrowthChart").getContext("2d");
- 
-        new Chart(ctx2, {
-            type: "line",
-            data: {
-                labels: [
-                    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                ],
-                datasets: [{
-                    label: "Customer Growth",
-                    data: [100, 250, 400, 550, 700, 850, 1000, 1300, 1600, 1900, 2200, 2500],
-                    backgroundColor: "rgba(54, 162, 235, 0.2)",
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: "Months"
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            display: false
-                        },
-                        grid: {
-                            drawTicks: false,
-                            drawBorder: false
-                        }
+
+        // Handle time range change
+        function changeTimeFrame(time) {
+            timeRange = time;
+            $("#timeFrameBtn").text(time);
+            if (time === "Custom Date") {
+                // Show modal
+                $("#dateRangeModal").modal("show");
+                resetDate();
+            }
+            else {
+                loadDashboard();
+            }
+        }
+
+        // Date Range Selection
+        $(document).on("click", "#dateRangeSubmit", function () {
+            loadDashboard();
+            $("#dateRangeModal").modal("hide");
+        });
+
+        // Date Range Cancel
+        $(document).on("hide.bs.modal", "#dateRangeModal", function () {
+            resetDate();
+        });
+
+        // Restrict future dates
+        function resetDate() {
+            $("#customerFromDate, #customerToDate").val("");
+            let today = new Date().toISOString().split("T")[0];
+            $("#customerFromDate, #customerToDate").attr("max", today);
+        }
+
+        // Validate Date
+        $(document).on("change", "#customerFromDate", function () {
+            let fromDate = $(this).val();
+            $("#customerToDate").attr("min", fromDate);
+        });
+
+        $(document).on("change", "#customerToDate", function () {
+            let toDate = $(this).val();
+            $("#customerFromDate").attr("max", toDate);
+        });
+
+        // Load Dashborad
+        function loadDashboard() {
+            let filter = {
+                DateRange: timeRange,
+                FromDate: $("#customerFromDate").val(),
+                ToDate: $("#customerToDate").val(),
+            };
+
+            $.ajax({
+                url: '@Url.Action("DashBoardPartial", "Profile")',
+                type: "POST",
+                data: { filter },
+                success: function (response) {
+                    if (response.success == false) {
+                        toastr.error(response.message);
+                    }
+                    else {
+                        $("#DashboardContent").html(response);
+                        resetDate();
+                        generateCharts();
                     }
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+                error: function () {
+                    toastr.error("Error loading data");
                 }
-            }
-        });
-    });
- 
-</script>
- 
+            });
+        }
+    </script>
+}

@@ -43,7 +43,6 @@ public class AppMenuService : IAppMenuService
         _paymentService = paymentService;
         _orderTableService = orderTableService;
         _orderItemService = orderItemService;
-
     }
 
     public async Task<AppMenuViewModel> Get(long customerId)

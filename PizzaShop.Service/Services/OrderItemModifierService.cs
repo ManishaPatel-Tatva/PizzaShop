@@ -5,7 +5,7 @@ using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
 
-public class OrderItemModifierService
+public class OrderItemModifierService : IOrderItemModifierService
 {
     private readonly IGenericRepository<OrderItemsModifier> _oimRepository;
     private readonly IUserService _userService;

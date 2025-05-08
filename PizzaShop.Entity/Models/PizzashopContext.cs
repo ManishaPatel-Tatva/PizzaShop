@@ -1139,6 +1139,9 @@ public partial class PizzaShopContext : DbContext
             entity.ToTable("waiting_token");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AssignedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("assigned_at");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
