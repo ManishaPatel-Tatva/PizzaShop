@@ -35,7 +35,7 @@ public class ModifierViewModel
 
 
     [Required(ErrorMessage = "Description is required")]
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; } = "";
 
     public decimal TotalAmount { get; set; } = 0; 
     public string Type { get; set; } = "";

@@ -8,7 +8,8 @@ public interface ITableService
     Task<TableViewModel> Get(long tableId);
     Task<List<TableViewModel>> List(long sectionId);
     Task<ResponseViewModel> Save(TableViewModel model);
-    Task<bool> AssignTable(long tableId);
+    Task<bool> SetTableAssign(long tableId);
+    Task<bool> SetTableAvailable(long tableId);
     Task<ResponseViewModel> Delete(long tableId);
     Task<ResponseViewModel> Delete(List<long> tableIdList);
 }

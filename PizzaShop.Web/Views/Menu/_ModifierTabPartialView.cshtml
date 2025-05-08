@@ -18,18 +18,18 @@
         <ul class="pe-1" id="ul-modifierGroup">
             @foreach (var mg in Model.ModifierGroups)
             {
-                <li class="d-flex justify-content-between li-modifierGroup" data-id="@mg.ModifierGroupId">
+                <li class="d-flex justify-content-between li-modifierGroup" data-id="@mg.Id">
                     <a class="d-flex align-items-center">
                         <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
                         <span class="modifierGroupName">@mg.Name</span>
                     </a>
                     <div class="EditDeleteModifierGroup">
                         <button class="btn p-0 pe-1 editModifierGroupBtn" data-bs-toggle="modal"
-                            data-bs-target="#addMgModal" data-id="@mg.ModifierGroupId">
+                            data-bs-target="#addMgModal" data-id="@mg.Id">
                             <img src="~/images/icons/edit.svg" alt="" />
                         </button>
                         <button class="btn p-0 pe-1 deleteMgBtn" data-bs-toggle="modal"
-                            data-bs-target="#deleteModifierGroupModal" data-id="@mg.ModifierGroupId">
+                            data-bs-target="#deleteModifierGroupModal" data-id="@mg.Id">
                             <img src="~/images/icons/delete.svg" alt="">
                         </button>
                     </div>

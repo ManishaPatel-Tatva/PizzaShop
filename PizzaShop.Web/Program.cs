@@ -53,6 +53,8 @@ builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IModifierService, ModifierService>();
+builder.Services.AddScoped<IModifierGroupService, ModifierGroupService>();
+builder.Services.AddScoped<IModifierMappingService, ModifierMappingService>();
 
 //Table and Section
 builder.Services.AddScoped<ITableService, TableService>();
@@ -66,12 +68,20 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 //Customers
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerReviewService, CustomerReviewService>();
 
 //OrderApp - KOT, Tables, Waiting List, Menu
 builder.Services.AddScoped<IKotService, KotService>();
 builder.Services.AddScoped<IAppTableService, AppTableService>();
 builder.Services.AddScoped<IWaitingListService, WaitingListService>();
 builder.Services.AddScoped<IAppMenuService, AppMenuService>();
+
+//Invoice, Payment, Order Mapping with - table, tax & item
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IOrderTableService, OrderTableService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IOrderTaxService, OrderTaxService>();
 
 //Session 
 builder.Services.AddSession(options =>

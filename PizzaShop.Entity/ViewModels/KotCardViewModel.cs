@@ -7,6 +7,6 @@ public class KotCardViewModel
     public List<string> Tables { get; set; } = new List<string>();
     public DateTime Time { get; set; }
     public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();
-    public string Instruction { get; set; } = "";
+    public string? Instruction { get; set; } = "";
     public bool IsReady { get; set; } = false;
 }

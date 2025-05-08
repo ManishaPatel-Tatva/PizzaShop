@@ -12,4 +12,5 @@ public class AppMenuViewModel
     public OrderDetailViewModel Order { get; set; } = new();
     public List<Taxis> Taxes { get; set; } = new ();
     public List<PaymentMethod> PaymentMethods { get; set; } = new();
+    public CustomerReviewViewModel CustomerReview { get; set; } = new();
 }

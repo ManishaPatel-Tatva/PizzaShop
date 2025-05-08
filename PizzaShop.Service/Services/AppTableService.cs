@@ -126,7 +126,7 @@ public class AppTableService : IAppTableService
             };
 
             //Change table Status from available to assigned
-            response.Success = await _tableService.AssignTable(table.Id);
+            response.Success = await _tableService.SetTableAssign(table.Id);
             if(!response.Success)
             {
                 response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");

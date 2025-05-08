@@ -11,15 +11,15 @@ namespace PizzaShop.Service.Services;
 
 public class KotService : IKotService
 {
-
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly IGenericRepository<OrderItem> _orderItemRepository;
+    private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
 
-
-    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository)
+    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderStatus> orderStatusRepository)
     {
         _orderRepository = orderRepository;
         _orderItemRepository = orderItemRepository;
+        _orderStatusRepository = orderStatusRepository;
     }
 
     #region Get
@@ -30,8 +30,9 @@ public class KotService : IKotService
     {
         try
         {
+            long orderStatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
             IEnumerable<Order> orders = await _orderRepository.GetByCondition(
-            predicate: o => !o.IsDeleted
+            predicate: o => !o.IsDeleted && o.StatusId != orderStatusId
                             && o.OrderItems.Any(oi => !oi.IsDeleted
                                                     && (categoryId == 0 || oi.Item.CategoryId == categoryId)),
             orderBy: q => q.OrderBy(o => o.Id),
@@ -97,6 +98,7 @@ public class KotService : IKotService
         }
         catch (Exception ex)
         {
+            string message = ex.Message;
             return null;
         }
 

@@ -212,17 +212,23 @@
                         @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity) ? "disabled": "" )>
                         Complete
                     </button>
-                    <button class="btn btn-white text-nowrap" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                    <button class="btn btn-white text-nowrap">
                         Generate Invoice
                     </button>
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end">
-                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ? "disabled" : "")>
+                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ? "disabled":
+                                                                           "") data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel
                     </button>
                 </div>
 
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#customerReviewModal">
+                    Launch static backdrop modal
+                </button>
 
             </div>
         </div>
@@ -367,14 +373,25 @@
                 <span>Are you sure you want to complete Order?</span>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-                <button type="button" id="confirmCancellation" class="btn btn-blue btn-modal" data-bs-dismiss="modal"
+                <button type="button" id="confirmCancellation" class="btn btn-blue btn-modal"
                     onclick="cancelOrder()">YES</button>
-                <button type="button" class="btn btn-white btn-modal">NO</button>
+                <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">NO</button>
             </div>
         </div>
     </div>
 </div>
 <!-- Modal Order Cancelletion Confirmation ends-->
+
+<!-- Modal Customer Review starts-->
+<div class="modal fade" id="customerReviewModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <partial name="_CustomerReview" model="Model.CustomerReview" />
+        </div>
+    </div>
+</div>
+<!-- Modal Customer Review ends-->
 
 <!-- #endregion ----------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------->
@@ -561,7 +578,7 @@
 
                 @* item.ModifiersList = modifierList; *@
                     @* console.log(item); *@
-                                                                }
+                                                                                                    }
 
     </script>
 
@@ -749,6 +766,7 @@
         }
 
         function cancelOrder() {
+            console.log("cancelOrder hello");
             $.ajax({
                 url: '@Url.Action("CancelOrder", "AppMenu")',
                 type: "POST",
@@ -756,7 +774,8 @@
                     orderId: '@Model.Order.OrderId'
                 },
                 success: function (response) {
-                    ("#completeOrderModal").modal("hide");
+                    $("#cancelOrderModal").modal("hide");
+                    console.log("Order Cancel");
                 },
                 error: function (data) {
                     console.log("An error occurred");

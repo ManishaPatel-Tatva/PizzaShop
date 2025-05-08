@@ -1,0 +1,55 @@
+@using PizzaShop.Entity.ViewModels
+@model CustomerReviewViewModel
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5">Customer Review</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form action="CustomerReview" asp-asp-controller="AppMenu">
+    <div class="modal-body d-flex flex-column ">
+        <div class="d-flex justify-content-between">
+            <div>Food</div>
+            <div>
+                @for (int i = 0; i < Model.FoodRating; i++)
+                {
+                    <i class="fa fa-star clr-yellow"></i>
+                }
+                @for (int i = Model.FoodRating; i < 5; i++)
+                {
+                    <i class="fa fa-star-o clr-yellow"></i>
+                }
+
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <div>Service</div>
+            <div>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <i class="fa fa-star clr-yellow"></i>
+                }
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <div>Ambience</div>
+            <div>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <i class="fa fa-star clr-yellow"></i>
+                }
+            </div>
+        </div>
+
+        <hr class="clr-yellow opacity-100" />
+
+        <div class="form-floating">
+            <textarea class="form-control" rows="3" placeholder="" id="custComment"></textarea>
+            <label for="custComment">Comment</label>
+        </div>
+
+    </div>
+    <div class="modal-footer d-flex justify-content-center">
+        <button type="button" id="saveCustomerReview" class="btn btn-blue">Save</button>
+        <button type="reset" class="btn btn-white">Cancel</button>
+    </div>
+</form>

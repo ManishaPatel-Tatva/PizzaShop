@@ -157,7 +157,7 @@ public class TableService : ITableService
 
     }
 
-    public async Task<bool> AssignTable(long tableId)
+    public async Task<bool> SetTableAssign(long tableId)
     {
         Table? table = await _tableRepository.GetByIdAsync(tableId);
 
@@ -166,7 +166,25 @@ public class TableService : ITableService
             return false;
         }
 
-        table.StatusId = _tableStatusRepository.GetByStringAsync(s => s.Name == "Assigned").Result.Id;
+        table.StatusId = _tableStatusRepository.GetByStringAsync(s => s.Name == "Assigned").Result!.Id;
+        table.UpdatedBy = await _userService.LoggedInUser();
+        table.UpdatedAt = DateTime.Now;
+
+        return await _tableRepository.UpdateAsync(table);
+    }
+
+    public async Task<bool> SetTableAvailable(long tableId)
+    {
+        Table? table = await _tableRepository.GetByIdAsync(tableId);
+
+        if (table == null)
+        {
+            return false;
+        }
+
+        table.StatusId = _tableStatusRepository.GetByStringAsync(ts => ts.Name == "Available").Result!.Id;
+        table.UpdatedBy = await _userService.LoggedInUser();
+        table.UpdatedAt = DateTime.Now;
 
         return await _tableRepository.UpdateAsync(table);
     }

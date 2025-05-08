@@ -9,11 +9,14 @@ public class AppMenuController : Controller
 {
     private readonly IAppMenuService _appMenuService;
     private readonly IItemService _itemService;
+    private readonly ICustomerReviewService _customerReviewService;
 
-    public AppMenuController(IAppMenuService appMenuService, IItemService itemService)
+    public AppMenuController(IAppMenuService appMenuService, IItemService itemService, ICustomerReviewService customerReviewService)
     {
         _appMenuService = appMenuService;
         _itemService = itemService;
+        _customerReviewService = customerReviewService;
+
     }
 
     public async Task<ActionResult> Index(long id)
@@ -70,10 +73,11 @@ public class AppMenuController : Controller
         return Json(response);
     }
 
-
-
-
-
-
+    [HttpPost]
+    public async Task<IActionResult> CustomerReview(CustomerReviewViewModel review)
+    {
+        ResponseViewModel response = await _customerReviewService.Save(review);
+        return Json(response);
+    }
 
 }

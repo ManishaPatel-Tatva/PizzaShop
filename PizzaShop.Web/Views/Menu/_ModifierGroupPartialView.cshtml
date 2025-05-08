@@ -2,7 +2,7 @@
 @model ModifierGroupViewModel
 
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="mgModalToggleLabel"> @(Model.ModifierGroupId == 0 ? "Add New " : "Update") Modifier
+    <h1 class="modal-title fs-5" id="mgModalToggleLabel"> @(Model.Id == 0 ? "Add New " : "Update") Modifier
         Group</h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
@@ -10,7 +10,7 @@
     <div class="modal-body">
         <div class="form addMG-form">
 
-            <input asp-for="ModifierGroupId" type="text" class="form-control" id="mgId" hidden>
+            <input asp-for="Id" type="text" class="form-control" id="mgId" hidden>
             <input type="text" class="form-control" id="modifierList" name="modifierList" hidden>
 
             <div class="form-floating mb-3">
