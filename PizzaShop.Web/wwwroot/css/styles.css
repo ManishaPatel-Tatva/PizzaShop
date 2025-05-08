@@ -752,3 +752,15 @@ table td,th{
     background-color: #daf6ff;
 }
 
+.errCode {
+    font-size: 200px;
+    font-weight: bold;
+    color: #005586;
+}
+
+@media (max-width: 576px) {
+ 
+    .errCode {
+        font-size: 150px;
+    }
+}

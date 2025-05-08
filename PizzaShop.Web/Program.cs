@@ -10,8 +10,30 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Service.Services;
 using PizzaShop.Web.Middleware;
 using Rotativa.AspNetCore;
+using Serilog;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+
+// Serilog
+var logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "myapp-log.txt");
+ 
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Error()
+    .Enrich.FromLogContext()
+    .WriteTo.File(
+        path: logFilePath,
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7,
+        fileSizeLimitBytes: 10_000_000,
+        rollOnFileSizeLimit: true,
+        shared: true,
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}{NewLine}"
+    )
+    .CreateLogger();
+ 
+// Replace built-in logger with Serilog
+builder.Host.UseSerilog();
 
 #region Services
 /*---------------Add services to the container.-----------------------------------------------
@@ -27,6 +49,7 @@ builder.Services.AddDbContext<PizzaShopContext>(q => q.UseNpgsql(conn));
 
 //Repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 //Email Service and Setting
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("SmtpSettings"));
@@ -167,9 +190,12 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 
+app.UseStatusCodePagesWithReExecute("/Auth/Error/{0}");
+
 app.UseAuthentication();
 app.UseMiddleware<RolePermissionMiddleware>();
 app.UseAuthorization();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Rotativa
 app.UseRotativa();

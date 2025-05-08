@@ -31,5 +31,8 @@ public static class NotificationMessages
     public const string EmailSent = "Email has been sent successfully!";
     public const string EmailSendingFailed = "Failed to send the email." + TryAgain;
 
+    //Save order
+    public const string CompleteOrderFailed = "All items must be served before completing the order";
+
 
 }

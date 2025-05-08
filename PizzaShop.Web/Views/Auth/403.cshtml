@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "403";
+    Layout = "_LoginLayout";
+}
+<div class="min-vh-100 bg-blue">
+    <div class="py-4 d-flex flex-column align-items-center">
+        <div class="d-flex justify-content-evenly align-items-center px-1">
+            <img src="~/images/logos/pizzashop_logo.png" alt="" class="mx-2" width="75px">
+            <span class="clr-primary fs-1">PIZZASHOP</span>
+        </div>
+        <div class="errCode my-5">
+            403
+        </div>
+        <div class="fs-4 my-3">Access Denied</div>
+        <div class="clr-primary">You don't have access to this page.</div>
+        <a asp-controller="Auth" asp-action="Login" class="text-decoration-none clr-primary back-links mt-2">Login here</a>
+    </div>
+</div>

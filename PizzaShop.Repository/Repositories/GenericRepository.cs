@@ -24,38 +24,23 @@ public class GenericRepository<T> : IGenericRepository<T>
     -------------------------------------------------------------------------------------------------------*/
     public async Task<bool> AddAsync(T entity)
     {
-        try
-        {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
+        await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<long> AddAsyncReturnId(T entity)
     {
-        try
-        {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+        await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
 
-            PropertyInfo? idProperty = typeof(T).GetProperty("Id");
-            if (idProperty != null)
-            {
-                return (long)idProperty.GetValue(entity);
-            }
-
-            return 0;
-        }
-        catch (Exception ex)
+        PropertyInfo? idProperty = typeof(T).GetProperty("Id");
+        if (idProperty != null)
         {
-            return -1;
+            return (long)idProperty.GetValue(entity);
         }
 
+        return 0;
     }
     #endregion C : Create
 
@@ -70,47 +55,40 @@ public class GenericRepository<T> : IGenericRepository<T>
         List<Expression<Func<T, object>>>? includes = null,
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null)
     {
-        try
+
+        IQueryable<T> query = _dbSet;
+
+        //Apply Filters
+        if (predicate != null)
         {
-            IQueryable<T> query = _dbSet;
-
-            //Apply Filters
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            //Order By
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            // Apply Includes (First-level navigation properties)
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-
-            // Apply ThenIncludes (Deeper navigation properties)
-            if (thenIncludes != null)
-            {
-                foreach (var thenInclude in thenIncludes)
-                {
-                    query = thenInclude(query);
-                }
-            }
-
-            return await query.ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            return null;
+            query = query.Where(predicate);
         }
 
+        //Order By
+        if (orderBy != null)
+        {
+            query = orderBy(query);
+        }
+
+        // Apply Includes (First-level navigation properties)
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        // Apply ThenIncludes (Deeper navigation properties)
+        if (thenIncludes != null)
+        {
+            foreach (var thenInclude in thenIncludes)
+            {
+                query = thenInclude(query);
+            }
+        }
+
+        return await query.ToListAsync();
     }
 
     public async Task<(IEnumerable<T> items, int totalCount)> GetPagedRecords
@@ -120,35 +98,22 @@ public class GenericRepository<T> : IGenericRepository<T>
         IEnumerable<T>? items = null
     )
     {
-        try
-        {
-            int totalCount = items.Count();
+        int totalCount = items.Count();
 
-            items = items
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+        items = items
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-            return (items, totalCount);
-        }
-        catch (Exception ex)
-        {
-            return (null, 0);
-        }
+        return (items, totalCount);
     }
 
     /*----------------------retrieves a single record from the database by its primary key (id)----------------------------------------
     -------------------------------------------------------------------------------------------------------*/
     public async Task<T?> GetByIdAsync(long id)
     {
-        try{
-            return await _dbSet.FindAsync(id);
-        }
-        catch(Exception ex)
-        {
-            return null;
-        }
-    } 
+        return await _dbSet.FindAsync(id);
+    }
 
 
     /*----------------------fetches a single record from the database based on a given condition----------------------------------------
@@ -165,17 +130,9 @@ public class GenericRepository<T> : IGenericRepository<T>
     -------------------------------------------------------------------------------------------------------*/
     public async Task<bool> UpdateAsync(T entity)
     {
-        try
-        {
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            return false;
-        }
-
+        _dbSet.Update(entity);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     #endregion U : Update

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
 
@@ -61,6 +62,7 @@ public class ProfileController : Controller
     [HttpGet]
     public async Task<IActionResult> MyProfile()
     {
+        throw new NotFoundException("Hello");
         string token = Request.Cookies["authToken"];
         string email = _jwtService.GetClaimValue(token, "email");
 

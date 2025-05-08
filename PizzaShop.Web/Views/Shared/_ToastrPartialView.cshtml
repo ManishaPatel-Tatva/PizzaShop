@@ -1,6 +1,6 @@
 <script type="text/javascript">
-    
-    $(document).ready(function() {
+
+    $(document).ready(function () {
         toastr.options = {
             'closeButton': true,
             'debug': false,
@@ -18,8 +18,8 @@
             'hideMethod': 'fadeOut',
         }
 
-        var message = '@TempData["NotificationMessage"]' ;
-        var type = '@TempData["NotificationType"]' ;
+        var message = '@TempData["NotificationMessage"]';
+        var type = '@TempData["NotificationType"]';
 
         type = type.toLowerCase();
 
@@ -46,19 +46,26 @@
 
     });
 
-    // Toast Type
-    @* $('#success').click(function(event) {
-        toastr.success('You clicked Success toast');
-    });
-    $('#info').click(function(event) {
-        toastr.info('You clicked Info toast')
-    });
-    $('#error').click(function(event) {
-        toastr.error('You clicked Error Toast')
-    });
-    $('#warning').click(function(event) {
-        toastr.warning('You clicked Warning Toast')
-    }); *@
+</script>
 
+<script>
+    $(document).ready(function () {
+        // 1. Show toaster if TempData contains error (normal request)
+        var errorMessage = '@TempData["ToastError"]';
+        if (errorMessage && errorMessage.trim() !== "") {
+            toastr.error("Server Error, Try again later");
+        }
 
+        // 2. Global AJAX error catcher
+        $(document).ajaxComplete(function (event, xhr, settings) {
+            if (xhr.getResponseHeader("X-Error") === "true") {
+                const response = xhr.responseJSON;
+                if (response && response.error) {
+                    toastr.error("Server Error, Try again later");
+                } else {
+                    toastr.error('An unexpected error occurred.');
+                }
+            }
+        });
+    });
 </script>

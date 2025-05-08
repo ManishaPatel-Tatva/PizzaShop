@@ -5,6 +5,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -26,8 +27,9 @@ public class AppMenuService : IAppMenuService
     private readonly IOrderTableService _orderTableService;
     private readonly IOrderTaxService _orderTaxService;
     private readonly IOrderItemService _orderItemService;
+    private readonly ITransactionRepository _transaction;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<OrderStatus> orderStatusRepository, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderItemService orderItemService, IOrderTaxService orderTaxService)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<OrderStatus> orderStatusRepository, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderItemService orderItemService, IOrderTaxService orderTaxService, ITransactionRepository transaction)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -44,7 +46,7 @@ public class AppMenuService : IAppMenuService
         _orderTableService = orderTableService;
         _orderItemService = orderItemService;
         _orderTaxService = orderTaxService;
-
+        _transaction = transaction;
     }
 
     #region Get
@@ -151,6 +153,8 @@ public class AppMenuService : IAppMenuService
     {
         try
         {
+            await _transaction.BeginTransactionAsync();
+
             Order? order = new();
             ResponseViewModel response = new();
 
@@ -163,13 +167,7 @@ public class AppMenuService : IAppMenuService
             }
             else
             {
-                order = await _orderRepository.GetByIdAsync(orderVM.OrderId);
-                if (order == null)
-                {
-                    response.Success = false;
-                    response.Message = NotificationMessages.NotFound.Replace("{0}", "Order");
-                    return response;
-                }
+                order = await _orderRepository.GetByIdAsync(orderVM.OrderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
             }
 
             order.Instructions = orderVM.Comment;
@@ -178,93 +176,48 @@ public class AppMenuService : IAppMenuService
             if (orderVM.OrderId == 0)
             {
                 order.Id = await _orderRepository.AddAsyncReturnId(order);
-                if (order.Id < 1)
-                {
-                    response.Success = false;
-                    return response;
-                }
-
-                //Create Invoice
-                if (!await _invoiceService.Add(order.Id))
-                {
-                    response.Success = false;
-                    return response;
-                }
-
-                //Update order table mapping
-                if (!await _orderTableService.Update(order.Id))
-                {
-                    response.Success = false;
-                    return response;
-                }
+                
+                await _invoiceService.Add(order.Id);
+                await _orderTableService.Update(order.Id);
             }
             else
             {
-                response.Success = await _orderRepository.UpdateAsync(order);
-                if (!response.Success)
-                {
-                    return response;
-                }
+                await _orderRepository.UpdateAsync(order);
             }
 
             // Order Item
             decimal subTotal = 0;
-            response.Success = await _orderItemService.Save(orderVM.ItemsList, order.Id);
-            if (response.Success)
-            {
-                subTotal = _orderItemService.OrderItemTotal(order.Id);
-            }
-            else
-            {
-                return response;
-            }
+            await _orderItemService.Save(orderVM.ItemsList, order.Id);
+
+            subTotal = _orderItemService.OrderItemTotal(order.Id);
 
             order.SubTotal = subTotal;
-            response.Success = await _orderRepository.UpdateAsync(order);
-            if(!response.Success)
-            {
-                return response;
-            }
+            await _orderRepository.UpdateAsync(order);
+            
 
             //Tax on order item
             decimal taxAmount = 0;
-            response.Success = await _orderTaxService.Save(orderVM.Taxes, order.Id);
-            if (response.Success)
-            {
-                taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
-            }
-            else
-            {
-                return response;
-            }
-
+            await _orderTaxService.Save(orderVM.Taxes, order.Id);
+            taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
+            
             order.FinalAmount = subTotal + taxAmount;
-            response.Success = await _orderRepository.UpdateAsync(order);
-            if (!response.Success)
-            {
-                return response;
-            }
+            await _orderRepository.UpdateAsync(order);
+            
 
             //Save Payment
-            response.Success = await _paymentService.Save(orderVM.PaymentMethodId, order.Id);
-            if (!response.Success)
-            {
-                response.Success = false;
-                return response;
-            }
+            await _paymentService.Save(orderVM.PaymentMethodId, order.Id);
 
             response.Success = true;
             response.Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}","Order") : NotificationMessages.Updated.Replace("{0}","Order");
 
+            await _transaction.CommitAsync();
+
             return response;
         }
-        catch (Exception ex)
+        catch
         {
-            return new ResponseViewModel
-            {
-                Success = false,
-                ExMessage = ex.Message,
-            };
+            await _transaction.RollbackAsync();
+            throw;
         }
     }
     #endregion Save
@@ -275,28 +228,22 @@ public class AppMenuService : IAppMenuService
         ResponseViewModel response = new();
 
         // Order status - Completion
-        Order? order = await _orderRepository.GetByIdAsync(orderId);
-        if (order == null)
-        {
-            response.Success = false;
-            return response;
-        }
+        Order? order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Order"));
 
         if (order.OrderItems.Any(oi => oi.ReadyQuantity != oi.Quantity))
         {
             response.Success = false;
+            response.Message = NotificationMessages.CompleteOrderFailed;
             return response;
         }
 
         order.StatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Completed").Result!.Id;
-        response.Success = await _orderRepository.UpdateAsync(order);
-        if (!response.Success)
-        {
-            return response;
-        }
-
+        await _orderRepository.UpdateAsync(order);
+        
         // Delete Table assignment
-        response.Success = await _orderTableService.Delete(orderId);
+        await _orderTableService.Delete(orderId);
+
+        response.Success = true;
         return response;
 
     }
@@ -306,12 +253,7 @@ public class AppMenuService : IAppMenuService
         ResponseViewModel response = new();
 
         // Order status - Cancelled
-        Order? order = await _orderRepository.GetByIdAsync(orderId);
-        if (order == null)
-        {
-            response.Success = false;
-            return response;
-        }
+        Order? order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Order"));
 
         if (order.OrderItems.Any(oi => oi.ReadyQuantity > 0))
         {
