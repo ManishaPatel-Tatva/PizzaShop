@@ -12,6 +12,7 @@
 
         <input asp-for="WaitingToken.Id" hidden>
         <input asp-for="WaitingToken.CustomerId" hidden>
+        <input asp-for="WaitingToken.Members" hidden>
 
         <div class="col-6 form-floating mb-3">
             <select asp-for="WaitingToken.SectionId" class="form-select" aria-label="" id="sections" disabled>
@@ -33,11 +34,13 @@
                     @for (int i = 0; i < Model.Tables.Count; i++)
                     {
                         <input asp-for="Tables[i].Id" hidden>
+                        <input asp-for="Tables[i].Capacity" hidden>
+
                         if (Model.Tables[i].StatusName == "Available")
                         {
                             <li class="d-flex px-2 pb-1">
                                 <input asp-for="Tables[i].IsSelected" type="checkbox" class="me-2 mgCheckbox" data-id="@Model.Tables[i].Id">
-                                <span class="">@Model.Tables[i].Name</span>
+                                <span class="">@Model.Tables[i].Name (@Model.Tables[i].Capacity)</span>
                             </li>
                         } 
                     }

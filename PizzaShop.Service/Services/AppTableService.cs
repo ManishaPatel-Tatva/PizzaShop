@@ -4,6 +4,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -71,14 +72,14 @@ public class AppTableService : IAppTableService
 
     public async Task<AssignTableViewModel> Get(long tokenId)
     {
+        WaitingTokenViewModel token = await _waitingService.Get(tokenId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Token"));
+
         AssignTableViewModel assignTableVM = new();
-
-        WaitingTokenViewModel token = await _waitingService.Get(tokenId);
-
         assignTableVM.WaitingToken.Id = tokenId;
         assignTableVM.WaitingToken.Sections = await _sectionService.Get();
         assignTableVM.WaitingToken.SectionId = token.SectionId;
         assignTableVM.WaitingToken.CustomerId = token.CustomerId;
+        assignTableVM.WaitingToken.Members = token.Members;
         assignTableVM.Tables = _tableService.List(assignTableVM.WaitingToken.SectionId).Result.Where(t => t.StatusName == "Available").ToList();
 
         return assignTableVM;
@@ -92,10 +93,6 @@ public class AppTableService : IAppTableService
     {
         //Add Waiting Token
         ResponseViewModel response = await _waitingService.Save(assignTableVM.WaitingToken);
-        if (!response.Success)
-        {
-            return response;
-        }
 
         assignTableVM.WaitingToken.Id = response.EntityId;
         assignTableVM.WaitingToken.CustomerId = _waitingService.Get(assignTableVM.WaitingToken.Id).Result.CustomerId;
@@ -107,6 +104,12 @@ public class AppTableService : IAppTableService
     public async Task<ResponseViewModel> AssignTable(AssignTableViewModel assignTableVM)
     {
         ResponseViewModel response = new();
+        if(assignTableVM.Tables.Sum(t => t.Capacity) < assignTableVM.WaitingToken.Members)
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.CapacityExceeded;
+            return response;
+        }
 
         //Assign Table
         foreach (TableViewModel? table in assignTableVM.Tables)
@@ -118,21 +121,9 @@ public class AppTableService : IAppTableService
                 CreatedBy = await _userService.LoggedInUser()
             };
 
-            //Change table Status from available to assigned
-            response.Success = await _tableService.SetTableAssign(table.Id);
-            if (!response.Success)
-            {
-                response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
-                return response;
-            }
-
-            //Order Table Mappping
-            response.Success = await _orderTableRepository.AddAsync(mapping);
-            if (!response.Success)
-            {
-                response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
-                return response;
-            }
+            //Change table Status from available to assigned and add mapping
+            await _tableService.SetTableAssign(table.Id);
+            await _orderTableRepository.AddAsync(mapping);
         }
 
         // Change assign status in Waiting Token

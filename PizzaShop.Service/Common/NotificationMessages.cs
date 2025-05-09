@@ -34,5 +34,8 @@ public static class NotificationMessages
     //Save order
     public const string CompleteOrderFailed = "All items must be served before completing the order";
 
+    // Assign Table
+    public const string CapacityExceeded = "Members should be less than table capacity";
+
 
 }

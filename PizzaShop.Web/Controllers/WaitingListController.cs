@@ -49,7 +49,6 @@ public class WaitingListController : Controller
         return PartialView("_AssignTablePartialView", assignTableVM);
     }
 
-
     [HttpPost]
     public async Task<IActionResult> AssignTable(AssignTableViewModel assignTableVM)
     {   
