@@ -31,49 +31,42 @@ public class AppTableService : IAppTableService
 
     public async Task<List<SectionViewModel>> Get()
     {
-        try
-        {
-            IEnumerable<Section>? list = await _sectionRepository.GetByCondition(
-                s => !s.IsDeleted,
-                thenIncludes: new List<Func<IQueryable<Section>, IQueryable<Section>>>
-                {
+        IEnumerable<Section>? list = await _sectionRepository.GetByCondition(
+            s => !s.IsDeleted,
+            thenIncludes: new List<Func<IQueryable<Section>, IQueryable<Section>>>
+            {
                     q => q.Include(s => s.Tables)
                         .ThenInclude(t => t.Status),
                     q => q.Include(s => s.Tables)
                         .ThenInclude(t => t.OrderTableMappings)
                         .ThenInclude(otm => otm.Order)
-                }
-            );
+            }
+        );
 
-            List<SectionViewModel> sections = list.Select(s => new SectionViewModel
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Tables = s.Tables.Select(t => new TableCardViewModel
-                {
-                    Id = t.Id,
-                    TableName = t.Name,
-                    TableStatus = t.Status.Name,
-                    OrderAmount = t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Any(otm => otm.OrderId == null)  ?  0 :
-                                t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Select(otm => otm.Order.FinalAmount).FirstOrDefault(),
-                    OrderTime = t.OrderTableMappings
-                                .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
-                                .Select(otm => otm.CreatedAt)
-                                .FirstOrDefault(),
-                    Capacity = t.Capacity,
-                    CustomerId = t.OrderTableMappings
-                                .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
-                                .Select(otm => otm.CustomerId)
-                                .FirstOrDefault(),
-                }).ToList()
-            }).ToList();
-
-            return sections;
-        }
-        catch (Exception ex)
+        List<SectionViewModel> sections = list.Select(s => new SectionViewModel
         {
-            return null;
-        }
+            Id = s.Id,
+            Name = s.Name,
+            Tables = s.Tables.Select(t => new TableCardViewModel
+            {
+                Id = t.Id,
+                TableName = t.Name,
+                TableStatus = t.Status.Name,
+                OrderAmount = t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Any(otm => otm.OrderId == null) ? 0 :
+                            t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Select(otm => otm.Order.FinalAmount).FirstOrDefault(),
+                OrderTime = t.OrderTableMappings
+                            .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
+                            .Select(otm => otm.CreatedAt)
+                            .FirstOrDefault(),
+                Capacity = t.Capacity,
+                CustomerId = t.OrderTableMappings
+                            .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
+                            .Select(otm => otm.CustomerId)
+                            .FirstOrDefault(),
+            }).ToList()
+        }).ToList();
+
+        return sections;
     }
 
     public async Task<AssignTableViewModel> Get(long tokenId)
@@ -85,7 +78,7 @@ public class AppTableService : IAppTableService
         assignTableVM.WaitingToken.Id = tokenId;
         assignTableVM.WaitingToken.Sections = await _sectionService.Get();
         assignTableVM.WaitingToken.SectionId = token.SectionId;
-        assignTableVM.WaitingToken.CustomerId = token.CustomerId; 
+        assignTableVM.WaitingToken.CustomerId = token.CustomerId;
         assignTableVM.Tables = _tableService.List(assignTableVM.WaitingToken.SectionId).Result.Where(t => t.StatusName == "Available").ToList();
 
         return assignTableVM;
@@ -99,7 +92,7 @@ public class AppTableService : IAppTableService
     {
         //Add Waiting Token
         ResponseViewModel response = await _waitingService.Save(assignTableVM.WaitingToken);
-        if(!response.Success)
+        if (!response.Success)
         {
             return response;
         }
@@ -116,7 +109,7 @@ public class AppTableService : IAppTableService
         ResponseViewModel response = new();
 
         //Assign Table
-        foreach(TableViewModel? table in assignTableVM.Tables)
+        foreach (TableViewModel? table in assignTableVM.Tables)
         {
             OrderTableMapping mapping = new()
             {
@@ -127,7 +120,7 @@ public class AppTableService : IAppTableService
 
             //Change table Status from available to assigned
             response.Success = await _tableService.SetTableAssign(table.Id);
-            if(!response.Success)
+            if (!response.Success)
             {
                 response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
                 return response;
@@ -135,7 +128,7 @@ public class AppTableService : IAppTableService
 
             //Order Table Mappping
             response.Success = await _orderTableRepository.AddAsync(mapping);
-            if(!response.Success)
+            if (!response.Success)
             {
                 response.Message = NotificationMessages.Failed.Replace("{0}", "Table assignment");
                 return response;
@@ -150,6 +143,6 @@ public class AppTableService : IAppTableService
 
     #endregion Add
 
-    
+
 
 }

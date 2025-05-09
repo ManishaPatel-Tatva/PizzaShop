@@ -155,8 +155,7 @@ public class AppMenuService : IAppMenuService
         {
             await _transaction.BeginTransactionAsync();
 
-            Order? order = new();
-            ResponseViewModel response = new();
+            Order order = order = await _orderRepository.GetByIdAsync(orderVM.OrderId) ?? new Order();
 
             if (orderVM.OrderId == 0)
             {
@@ -165,40 +164,30 @@ public class AppMenuService : IAppMenuService
                 order.CreatedBy = await _userService.LoggedInUser();
                 order.Members = _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId).Result!.Members;
             }
-            else
-            {
-                order = await _orderRepository.GetByIdAsync(orderVM.OrderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
-            }
-
-            order.Instructions = orderVM.Comment;
 
             //Create new Order if doesn't exist
             if (orderVM.OrderId == 0)
             {
                 order.Id = await _orderRepository.AddAsyncReturnId(order);
-                
+
+                //Create Invoice and Update order in mapping
                 await _invoiceService.Add(order.Id);
                 await _orderTableService.Update(order.Id);
             }
-            else
-            {
-                await _orderRepository.UpdateAsync(order);
-            }
+
+            order.Instructions = orderVM.Comment;
 
             // Order Item
-            decimal subTotal = 0;
             await _orderItemService.Save(orderVM.ItemsList, order.Id);
 
-            subTotal = _orderItemService.OrderItemTotal(order.Id);
-
+            decimal subTotal = _orderItemService.OrderItemTotal(order.Id);
             order.SubTotal = subTotal;
             await _orderRepository.UpdateAsync(order);
             
 
             //Tax on order item
-            decimal taxAmount = 0;
             await _orderTaxService.Save(orderVM.Taxes, order.Id);
-            taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
+            decimal taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
             
             order.FinalAmount = subTotal + taxAmount;
             await _orderRepository.UpdateAsync(order);
@@ -207,12 +196,13 @@ public class AppMenuService : IAppMenuService
             //Save Payment
             await _paymentService.Save(orderVM.PaymentMethodId, order.Id);
 
-            response.Success = true;
-            response.Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}","Order") : NotificationMessages.Updated.Replace("{0}","Order");
-
             await _transaction.CommitAsync();
 
-            return response;
+            return new ResponseViewModel
+            {
+                Success = true,
+                Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}","Order") : NotificationMessages.Updated.Replace("{0}","Order")
+            };
         }
         catch
         {

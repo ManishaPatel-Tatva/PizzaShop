@@ -89,7 +89,7 @@
                     $("#kot-cards").html(data);
                 },
                 error: function (data) {
-                    alert("No cards Found");
+                    console.log("No cards Found");
                     $("#kot-cards").html('No card found!');
                 }
             });
@@ -143,7 +143,7 @@
                 },
                 error: function () {
                     console.log("There is error.Not successful");
-                    alert("Not Found");
+                    console.log("Not Found");
                 }
             })
         }

@@ -37,6 +37,8 @@ public class CustomerReviewService : ICustomerReviewService
         review.AmbienceRating = reviewVM.AmbienceRating;
         review.Review = reviewVM.Comment;
 
+        review.Rating = (int)((reviewVM.FoodRating + reviewVM.AmbienceRating + reviewVM.ServiceRating) / 3);
+
         response.Success = review.Id == 0 ? await _customersReviewRepository.AddAsync(review) : await _customersReviewRepository.UpdateAsync(review);
 
         return response; 

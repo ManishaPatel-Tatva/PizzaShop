@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -23,7 +25,7 @@ public class OrderService : IOrderService
     #region Get
     /*----------------------------------------------------Get Order Status----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<OrderIndexViewModel> Get()
+    public OrderIndexViewModel Get()
     {
         OrderIndexViewModel model = new()
         {
@@ -31,6 +33,29 @@ public class OrderService : IOrderService
         };
         return model;
     }
+
+    /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<OrderPaginationViewModel> Get(FilterViewModel filter)
+    {
+        IEnumerable<Order>? orders = await List(filter);
+
+        (orders, int totalRecord) = await _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
+
+        //Setting the filtered and sorted values in View Model
+        OrderPaginationViewModel model = new()
+        {
+            Page = new(),
+            Orders = List(orders),
+        };
+
+        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
+        return model;
+    }
+
+    #endregion
+
+    #region List
 
     /*----------------------------------------------------Order List----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -68,11 +93,11 @@ public class OrderService : IOrderService
             orderBy: orderBy,
             includes: new List<Expression<Func<Order, object>>>
             {
-            o => o.Customer,
-            o => o.Payments,
-            o => o.Status,
-            o => o.CustomersReviews,
-            o => o.Invoices
+                o => o.Customer,
+                o => o.Payments,
+                o => o.Status,
+                o => o.CustomersReviews,
+                o => o.Invoices
             },
             thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
             {
@@ -120,32 +145,22 @@ public class OrderService : IOrderService
         return orders;
     }
 
-    /*----------------------------------------------------Order Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<OrderPaginationViewModel> Get(FilterViewModel filter)
+    /*----------------------------------------------------Order View Model List----------------------------------------------------------------------------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public static IEnumerable<OrderViewModel> List(IEnumerable<Order> orders)
     {
-        IEnumerable<Order>? orders = await List(filter);
-
-        (orders, int totalRecord) = await _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
-
-        //Setting the filtered and sorted values in View Model
-        OrderPaginationViewModel model = new()
+        IEnumerable<OrderViewModel>? orderList = orders.Select(o => new OrderViewModel()
         {
-            Page = new(),
-            Orders = orders.Select(o => new OrderViewModel()
-            {
-                OrderId = o.Id,
-                Date = DateOnly.FromDateTime(o.CreatedAt),
-                CustomerName = o.Customer.Name,
-                Status = o.Status.Name,
-                PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
-                Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
-                TotalAmount = o.FinalAmount
-            })
-        };
+            OrderId = o.Id,
+            Date = DateOnly.FromDateTime(o.CreatedAt),
+            CustomerName = o.Customer.Name,
+            Status = o.Status.Name,
+            PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
+            Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) ?? 0 : 0),
+            TotalAmount = o.FinalAmount
+        });
 
-        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
-        return model;
+        return orderList;
     }
 
     #endregion
@@ -158,39 +173,32 @@ public class OrderService : IOrderService
 
         IEnumerable<Order>? orders = await List(filter);
 
-        IEnumerable<OrderViewModel>? orderList = orders.Select(o => new OrderViewModel()
-        {
-            OrderId = o.Id,
-            Date = DateOnly.FromDateTime(o.CreatedAt),
-            CustomerName = o.Customer.Name,
-            Status = o.Status.Name,
-            PaymentMode = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
-            Rating = (int)(o.CustomersReviews.Any() ? o.CustomersReviews.Average(r => r.Rating) : 0),
-            TotalAmount = o.FinalAmount
-        });
+        IEnumerable<OrderViewModel>? orderList = List(orders);
 
         return ExcelTemplateHelper.Orders(orderList, filter.Status, filter.DateRange, filter.Search);
     }
 
+
+
     #endregion
+
 
     #region Order Details
     /*----------------------------------------------------Order Details----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderDetailViewModel> Get(long orderId)
     {
-        try
+
+        if (orderId == 0)
         {
-            if (orderId == 0)
-            {
-                return new OrderDetailViewModel();
-            }
-            else
-            {
-                IEnumerable<Order>? orderDetail = await _orderRepository.GetByCondition(
-                    predicate: o => o.Id == orderId && !o.IsDeleted,
-                    includes: new List<Expression<Func<Order, object>>>
-                    {
+            return new OrderDetailViewModel();
+        }
+        else
+        {
+            IEnumerable<Order>? orderDetail = await _orderRepository.GetByCondition(
+                predicate: o => o.Id == orderId && !o.IsDeleted,
+                includes: new List<Expression<Func<Order, object>>>
+                {
                         o => o.Status,
                         o => o.Invoices,
                         o => o.Customer,
@@ -198,9 +206,9 @@ public class OrderService : IOrderService
                         o => o.OrderTaxMappings,
                         o => o.OrderItems,
                         o => o.Payments
-                    },
-                    thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
-                    {
+                },
+                thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
+                {
                         q => q.Include(o => o.OrderTableMappings)
                             .ThenInclude(otm => otm.Table)
                             .ThenInclude(t => t.Section),
@@ -213,108 +221,104 @@ public class OrderService : IOrderService
                             .ThenInclude(p => p.PaymentMethod),
                         q => q.Include(o => o.OrderTaxMappings)
                             .ThenInclude(otm => otm.Tax)
-                    }
-                );
+                }
+            );
 
-                OrderDetailViewModel? orderDetailVM = orderDetail
-                .Select(o => new OrderDetailViewModel
-                {
-                    OrderId = o.Id,
+            OrderDetailViewModel? orderDetailVM = orderDetail
+            .Select(o => new OrderDetailViewModel
+            {
+                OrderId = o.Id,
 
-                    OrderStatus = o.Status.Name,
+                OrderStatus = o.Status.Name,
 
-                    InvoiceNo = o.Invoices
-                                .Where(i => i.OrderId == o.Id)
-                                .Select(i => i.InvoiceNo)
-                                .First(),
-
-                    PaidOn = o.Payments
-                            .Where(p => p.OrderId == o.Id)
-                            .Select(p => p.Date)
-                            .First()
-                            .ToString() ?? "",
-
-                    PlacedOn = o.CreatedAt.ToString(),
-
-                    ModifiedOn = o.UpdatedAt.ToString() ?? "",
-
-                    OrderDuration = (o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First()
-                                    - o.CreatedAt)
-                                    .ToString() ?? "",
-
-                    Comment = o.Instructions,
-
-                    CustomerId = o.CustomerId,
-
-                    CustomerName = o.Customer.Name,
-
-                    CustomerPhone = o.Customer.Phone,
-
-                    NoOfPerson = o.Members,
-
-                    CustomerEmail = o.Customer.Email,
-
-                    TableList = o.OrderTableMappings
-                                .Where(ot => ot.OrderId == o.Id)
-                                .Select(ot => ot.Table.Name)
-                                .ToList(),
-
-                    Section = o.OrderTableMappings
-                            .Where(ot => ot.OrderId == o.Id)
-                            .Select(ot => ot.Table.Section.Name)
+                InvoiceNo = o.Invoices
+                            .Where(i => i.OrderId == o.Id)
+                            .Select(i => i.InvoiceNo)
                             .First(),
 
-                    ItemsList = o.OrderItems
-                                .Where(oi => oi.OrderId == o.Id && !oi.IsDeleted)
-                                .Select(oi => new OrderItemViewModel
-                                {
-                                    Id = oi.Id,
-                                    ItemId = oi.ItemId,
-                                    Name = oi.Item.Name,
-                                    Quantity = oi.Quantity,
-                                    Price = oi.Price,
-                                    TotalAmount = oi.Quantity * oi.Price,
-                                    ReadyQuantity = oi.ReadyQuantity,
-                                    ModifiersList = oi.OrderItemsModifiers
-                                                    .Where(oim => oim.OrderItemId == oi.Id && !oim.IsDeleted)
-                                                    .Select(oim => new ModifierViewModel
-                                                    {
-                                                        Id = oim.ModifierId,
-                                                        Name = oim.Modifier.Name,
-                                                        Quantity = oim.Quantity,
-                                                        Rate = oim.Price,
-                                                        TotalAmount = oi.Quantity * oim.Price
-                                                    }).ToList(),
-                                    Instruction = oi.Instructions
-                                }).ToList(),
+                PaidOn = o.Payments
+                        .Where(p => p.OrderId == o.Id)
+                        .Select(p => p.Date)
+                        .First()
+                        .ToString() ?? "",
 
-                    Subtotal = o.SubTotal,
+                PlacedOn = o.CreatedAt.ToString(),
 
-                    TaxList = o.OrderTaxMappings.Where(otm => otm.OrderId == o.Id)
-                                .Select(otm => new TaxViewModel
-                                {
-                                    TaxId = otm.TaxId,
-                                    Name = otm.Tax.Name,
-                                    TaxValue = otm.TaxValue
-                                }).ToList(),
+                ModifiedOn = o.UpdatedAt.ToString() ?? "",
 
-                    FinalAmount = o.FinalAmount,
+                OrderDuration = (o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.Date).First()
+                                - o.CreatedAt)
+                                .ToString() ?? "",
 
-                    PaymentMethodId = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethodId).First(),
+                Comment = o.Instructions,
 
-                    PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
+                CustomerId = o.CustomerId,
 
-                }).FirstOrDefault();
+                CustomerName = o.Customer.Name,
+
+                CustomerPhone = o.Customer.Phone,
+
+                NoOfPerson = o.Members,
+
+                CustomerEmail = o.Customer.Email,
+
+                TableList = o.OrderTableMappings
+                            .Where(ot => ot.OrderId == o.Id)
+                            .Select(ot => ot.Table.Name)
+                            .ToList(),
+
+                Section = o.OrderTableMappings
+                        .Where(ot => ot.OrderId == o.Id)
+                        .Select(ot => ot.Table.Section.Name)
+                        .First(),
+
+                ItemsList = o.OrderItems
+                            .Where(oi => oi.OrderId == o.Id && !oi.IsDeleted)
+                            .Select(oi => new OrderItemViewModel
+                            {
+                                Id = oi.Id,
+                                ItemId = oi.ItemId,
+                                Name = oi.Item.Name,
+                                Quantity = oi.Quantity,
+                                Price = oi.Price,
+                                TotalAmount = oi.Quantity * oi.Price,
+                                ReadyQuantity = oi.ReadyQuantity,
+                                ModifiersList = oi.OrderItemsModifiers
+                                                .Where(oim => oim.OrderItemId == oi.Id && !oim.IsDeleted)
+                                                .Select(oim => new ModifierViewModel
+                                                {
+                                                    Id = oim.ModifierId,
+                                                    Name = oim.Modifier.Name,
+                                                    Quantity = oim.Quantity,
+                                                    Rate = oim.Price,
+                                                    TotalAmount = oi.Quantity * oim.Price
+                                                }).ToList(),
+                                Instruction = oi.Instructions
+                            }).ToList(),
+
+                Subtotal = o.SubTotal,
+
+                TaxList = o.OrderTaxMappings.Where(otm => otm.OrderId == o.Id)
+                            .Select(otm => new TaxViewModel
+                            {
+                                TaxId = otm.TaxId,
+                                Name = otm.Tax.Name,
+                                TaxValue = otm.TaxValue
+                            }).ToList(),
+
+                FinalAmount = o.FinalAmount,
+
+                PaymentMethodId = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethodId).First(),
+
+                PaymentMethod = o.Payments.Where(p => p.OrderId == o.Id).Select(p => p.PaymentMethod.Name).First(),
+
+            }).FirstOrDefault() ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
 
 
-                return orderDetailVM;
-            }
-
+            return orderDetailVM;
         }
-        catch (Exception ex)
-        {
-            return new OrderDetailViewModel();
-        }
+
+
     }
 
     #endregion

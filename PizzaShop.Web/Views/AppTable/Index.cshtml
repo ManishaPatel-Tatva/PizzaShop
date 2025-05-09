@@ -69,7 +69,7 @@
                     $("#accordion-section").html(data);
                 },
                 error: function (data) {
-                    alert("No cards Found");
+                    console.log("No cards Found");
                     $("#accordion-section").html('Not found!');
                 }
             });
@@ -172,7 +172,7 @@
                 },
                 error: function () {
                     console.log("There is error.Not successful");
-                    alert("Not Found");
+                    console.log("Not Found");
                 }
             });
         };
@@ -204,7 +204,7 @@
                 },
                 error: function () {
                     console.log("There is error.Not successful");
-                    alert("Not Found");
+                    console.log("Not Found");
                 }
             });
         }

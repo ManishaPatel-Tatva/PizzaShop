@@ -20,9 +20,9 @@ public class OrdersController : Controller
 
     [HttpGet]
     [CustomAuthorize("View_Orders")]
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        OrderIndexViewModel model = await _orderService.Get();
+        OrderIndexViewModel model =  _orderService.Get();
         ViewData["sidebar-active"] = "Orders";
         return View(model);
     }

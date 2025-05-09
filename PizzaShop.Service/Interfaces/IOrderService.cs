@@ -5,7 +5,7 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IOrderService
 {
-    Task<OrderIndexViewModel> Get();
+    OrderIndexViewModel Get();
     Task<OrderPaginationViewModel> Get(FilterViewModel filter);
     Task<OrderDetailViewModel> Get(long orderId);
     Task<IEnumerable<Order>> List(FilterViewModel filter);
