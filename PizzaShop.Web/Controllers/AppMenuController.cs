@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
 
+[Authorize]
 public class AppMenuController : Controller
 {
     private readonly IAppMenuService _appMenuService;

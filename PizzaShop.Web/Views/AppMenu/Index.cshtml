@@ -122,9 +122,9 @@
                 <!-- Title ends-->
 
                 <!-- Order Item starts -->
-                <div class="table-responsive ">
+                <div class="table-responsive order-items-table scroll-thin">
                     <table class="table mb-1">
-                        <thead>
+                        <thead class="position-sticky z-1 top-0">
                             <tr>
                                 <th scope="col" class="col-6 fs-5">Item</th>
                                 <th scope="col" class="col fs-5">Quantity</th>
@@ -148,7 +148,7 @@
                 </div>
                 <!-- Order Item ends -->
 
-                <div class="table-responsive">
+                <div class="table-responsive ">
                     <table class="table table-borderless menu-tax-table ">
                         <tr>
                             <td class="text-start fs-5">Subtotal</td>
@@ -195,10 +195,9 @@
                                 {
                                     <div class="form-check">
                                         <input type="radio" class="form-check-input payment-radio" id="radio-@method.Id"
-                                            name="optradio" value="@method.Id" @(Model.Order.PaymentMethodId == method.Id ?
-                                                                                                                       "checked" : "")>@method.Name
+                                            name="optradio" value="@method.Id" @(Model.Order.PaymentMethodId == method.Id ? "checked" : "")>@method.Name
                                 </div>
-                                                                }
+                                }
                             </td>
                         </tr>
                     </table>
@@ -212,13 +211,15 @@
                         @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity) ? "disabled": "" )>
                         Complete
                     </button>
-                    <a asp-action="Invoice" asp-controller="Orders" asp-route-orderId="@Model.Order.OrderId" type="button" class="btn btn-white text-nowrap">
+                    <a asp-action="Invoice" asp-controller="Orders" asp-route-orderId="@Model.Order.OrderId"
+                        type="button" class="btn btn-white text-nowrap">
                         Generate Invoice
                     </a>
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end">
-                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ? "disabled":"") data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ?
+                                                                           "disabled" : "") data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel
                     </button>
                 </div>
@@ -451,6 +452,7 @@
         });
 
         let order = @Html.Raw(JsonSerializer.Serialize(Model.Order));
+        console.log("Order is", order);
         @* let customerReview = @Html.Raw(JsonSerializer.Serialize(Model.CustomerReview));
         console.log(order);
         console.log(customerReview); *@
@@ -582,6 +584,7 @@
             modifierList = [];
 
             item = {
+                Id: getUniqueId(),
                 ItemId: currentItemId,
                 Name: currentItemName,
                 Price: currentItemPrice,
@@ -631,10 +634,7 @@
                     modifierList = modifierList.filter(m => m.Id != modifierId);
                     $(tag).toggleClass("modifier-card-selected");
                 }
-
-                @* item.ModifiersList = modifierList; *@
-                    @* console.log(item); *@
-                                                                                                                }
+            }
 
     </script>
 
@@ -704,27 +704,70 @@
                 return false;
             }
 
+            let existingOrderItemId = existingOrderItem(item);
+            console.log(existingOrderItemId)
+            if(existingOrderItemId > 0)
+            {
+                ChangeQuantity($(".change-quantity[data-id='"+ existingOrderItemId +"']"), 1);
+                $("#itemDetail").modal("hide");
+            }
+            else
+            {
+                $.ajax({
+                    url: '@Url.Action("AddItem", "AppMenu")',
+                    type: "POST",
+                    data: {
+                        item: item
+                    },
+                    dataType: "html",
+                    success: function (data) {
+                        $("#itemDetail").modal("hide");
+                        $("#item-list").append(data);
+                        CalculateBill();
 
-            $.ajax({
-                url: '@Url.Action("AddItem", "AppMenu")',
-                type: "POST",
-                data: {
-                    item: item
-                },
-                dataType: "html",
-                success: function (data) {
-                    $("#itemDetail").modal("hide");
-                    $("#item-list").append(data);
-                    CalculateBill();
+                        order.ItemsList.push(item);
+                        console.log("after adding item", order.ItemsList);
+                        console.log("order is ", order);
+                    },
+                    error: function (data) {
+                        console.log("an error occurred");
+                    }
+                });
+            }
+        }
 
-                    order.ItemsList.push(item);
-                    console.log("after adding item", order.ItemsList);
-                    console.log("order is ", order);
-                },
-                error: function (data) {
-                    console.log("an error occurred");
+        function existingOrderItem(orderItem){
+            let id = 0;
+
+            $.each(order.ItemsList,function(index, existingItem){
+                if(existingItem.ItemId === orderItem.ItemId && existingItem.ModifiersList.length === orderItem.ModifiersList.length)
+                {
+                    let check = orderItem.ModifiersList.every(m => existingItem.ModifiersList.some(em => em.Id === m.Id));
+                    if(check)
+                    {
+                        id = existingItem.Id;
+                        return false;
+                    }
                 }
             });
+
+            return id;
+        }
+
+        function getUniqueId() {
+            let maxOrderItemId = 0;
+            if(order != null && order.ItemsList.length > 0)
+            {
+                for (let i = 0;i < order.ItemsList.length; i++ )
+                {
+                    let currentItemId = order.ItemsList[i].Id;
+                    if(currentItemId != null && currentItemId > maxOrderItemId)
+                    {
+                        maxOrderItemId = currentItemId;
+                    }
+                }
+            }
+            return maxOrderItemId + 1;
         }
 
         function RemoveItem(itemId) {
@@ -739,7 +782,7 @@
     @* Change Quantity of Selected Item in Order *@
     <script>
         function ChangeQuantity(tag, num) {
-            let itemId = $(tag).data("id");
+            let orderItemId = $(tag).data("id");
             let quantity = parseFloat($(tag).parent().children("input").val());
             let minQuantity = parseFloat($(tag).parent().children("input").attr("min"));
             if (quantity + num >= minQuantity) {
@@ -755,7 +798,7 @@
             let modifierRate = itemRow.find(".modifierSum").data("rate");
             $(itemRow).find(".modifierSum").text((modifierRate * quantity).toFixed(2));
 
-            let existingItem = order.ItemsList.find(i => i.ItemId == itemId);
+            let existingItem = order.ItemsList.find(i => i.Id == orderItemId);
             existingItem.Quantity = quantity;
 
             CalculateBill();
@@ -805,13 +848,9 @@
                     taxOnItem = 0;
                     $(this).text(taxOnItem);
                 }
-
             });
 
             $("#orderTotal").text(subtotal + totalTax);
-
-
-
         }
 
     </script>

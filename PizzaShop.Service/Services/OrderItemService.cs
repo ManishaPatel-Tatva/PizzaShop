@@ -25,13 +25,15 @@ public class OrderItemService : IOrderItemService
     #region Save
     public async Task Save(OrderItemViewModel orderItemVM, long orderId)
     {
-        OrderItem? orderItem = await _orderItemRepository.GetByIdAsync(orderItemVM.Id)
-                            ?? new OrderItem
-                            {
-                                OrderId = orderId,
-                                ItemId = orderItemVM.ItemId,
-                                CreatedBy = await _userService.LoggedInUser()
-                            };
+        OrderItem orderItem = _orderItemRepository.GetByCondition(
+                            predicate: oi => oi.Id == orderItemVM.Id && oi.OrderId == orderId && !oi.IsDeleted
+                        ).Result.FirstOrDefault()
+                        ?? new OrderItem
+                        {
+                            OrderId = orderId,
+                            ItemId = orderItemVM.ItemId,
+                            CreatedBy = await _userService.LoggedInUser()
+                        };
 
         orderItem.Quantity = orderItemVM.Quantity;
         orderItem.Price = orderItemVM.Price;

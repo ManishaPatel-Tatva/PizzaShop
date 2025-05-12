@@ -764,3 +764,12 @@ table td,th{
         font-size: 150px;
     }
 }
+
+.order-items-table{
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.scroll-thin{
+    scrollbar-width: thin;
+}

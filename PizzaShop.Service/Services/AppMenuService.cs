@@ -48,7 +48,7 @@ public class AppMenuService : IAppMenuService
         else
         {
             IEnumerable<OrderTableMapping> mapping = await _orderTableRepository.GetByCondition(
-                predicate: otm => !otm.IsDeleted,
+                predicate: otm => !otm.IsDeleted && otm.CustomerId == customerId,
                 includes: new List<Expression<Func<OrderTableMapping, object>>>
                 {
                     otm => otm.Order

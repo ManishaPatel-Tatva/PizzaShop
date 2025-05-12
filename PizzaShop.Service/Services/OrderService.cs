@@ -17,7 +17,7 @@ public class OrderService : IOrderService
     private readonly IOrderStatusService _orderStatusService;
     private readonly ITransactionRepository _transaction;
     private readonly IUserService _userService;
-    private readonly IGenericRepository<WaitingToken>_waitingTokenRepository;
+    private readonly IGenericRepository<WaitingToken> _waitingTokenRepository;
     private readonly IWaitingListService _waitingService;
     private readonly IInvoiceService _invoiceService;
     private readonly IPaymentService _paymentService;
@@ -184,24 +184,6 @@ public class OrderService : IOrderService
 
     #endregion
 
-    #region Export Excel
-    /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<byte[]> ExportExcel(FilterViewModel filter)
-    {
-
-        IEnumerable<Order>? orders = await List(filter);
-
-        IEnumerable<OrderViewModel>? orderList = List(orders);
-
-        return ExcelTemplateHelper.Orders(orderList, filter.Status, filter.DateRange, filter.Search);
-    }
-
-
-
-    #endregion
-
-
     #region Order Details
     /*----------------------------------------------------Order Details----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -340,17 +322,6 @@ public class OrderService : IOrderService
 
     #endregion
 
-    #region Common
-
-    public async Task ChangeStatus(long orderId, string status)
-    {
-        Order order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Waiting Token"));
-        order.StatusId = await _orderStatusService.Get(status);
-        await _orderRepository.UpdateAsync(order);
-    }
-
-    #endregion
-
     #region  Save
     public async Task<ResponseViewModel> Save(OrderDetailViewModel orderVM)
     {
@@ -358,7 +329,7 @@ public class OrderService : IOrderService
         {
             await _transaction.BeginTransactionAsync();
 
-            Order order = order = await _orderRepository.GetByIdAsync(orderVM.OrderId) ?? new Order();
+            Order order = await _orderRepository.GetByIdAsync(orderVM.OrderId) ?? new Order();
 
             if (orderVM.OrderId == 0)
             {
@@ -368,11 +339,7 @@ public class OrderService : IOrderService
                 WaitingToken? token = await _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Waiting Token"));
                 order.Members = token.Members;
                 await _waitingService.Delete(token.Id);
-            }
 
-            //Create new Order if doesn't exist
-            if (orderVM.OrderId == 0)
-            {
                 order.Id = await _orderRepository.AddAsyncReturnId(order);
 
                 //Create Invoice and Update order in mapping
@@ -489,6 +456,31 @@ public class OrderService : IOrderService
     }
 
     #endregion Complete/Cancel
+
+    #region Common
+
+    /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<byte[]> ExportExcel(FilterViewModel filter)
+    {
+
+        IEnumerable<Order>? orders = await List(filter);
+
+        IEnumerable<OrderViewModel>? orderList = List(orders);
+
+        return ExcelTemplateHelper.Orders(orderList, filter.Status, filter.DateRange, filter.Search);
+    }
+
+    /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task ChangeStatus(long orderId, string status)
+    {
+        Order order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Waiting Token"));
+        order.StatusId = await _orderStatusService.Get(status);
+        await _orderRepository.UpdateAsync(order);
+    }
+
+    #endregion
 
 
 }
