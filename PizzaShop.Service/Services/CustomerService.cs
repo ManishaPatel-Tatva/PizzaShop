@@ -58,7 +58,6 @@ public class CustomerService : ICustomerService
         };
 
         return customerVM;
-
     }
 
     public async Task<CustomerPaginationViewModel> Get(FilterViewModel filter)

@@ -14,11 +14,31 @@ public class OrderService : IOrderService
 {
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
+    private readonly IOrderStatusService _orderStatusService;
+    private readonly ITransactionRepository _transaction;
+    private readonly IUserService _userService;
+    private readonly IGenericRepository<WaitingToken>_waitingTokenRepository;
+    private readonly IWaitingListService _waitingService;
+    private readonly IInvoiceService _invoiceService;
+    private readonly IPaymentService _paymentService;
+    private readonly IOrderTableService _orderTableService;
+    private readonly IOrderTaxService _orderTaxService;
+    private readonly IOrderItemService _orderItemService;
 
-    public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository)
+    public OrderService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderStatus> orderStatusRepository, IOrderStatusService orderStatusService, ITransactionRepository transaction, IUserService userService, IGenericRepository<WaitingToken> waitingTokenRepository, IWaitingListService waitingService, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderTaxService orderTaxService, IOrderItemService orderItemService)
     {
         _orderRepository = orderRepository;
         _orderStatusRepository = orderStatusRepository;
+        _orderStatusService = orderStatusService;
+        _transaction = transaction;
+        _userService = userService;
+        _waitingTokenRepository = waitingTokenRepository;
+        _waitingService = waitingService;
+        _invoiceService = invoiceService;
+        _paymentService = paymentService;
+        _orderTableService = orderTableService;
+        _orderTaxService = orderTaxService;
+        _orderItemService = orderItemService;
     }
 
 
@@ -316,11 +336,159 @@ public class OrderService : IOrderService
 
             return orderDetailVM;
         }
-
-
     }
 
     #endregion
+
+    #region Common
+
+    public async Task ChangeStatus(long orderId, string status)
+    {
+        Order order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Waiting Token"));
+        order.StatusId = await _orderStatusService.Get(status);
+        await _orderRepository.UpdateAsync(order);
+    }
+
+    #endregion
+
+    #region  Save
+    public async Task<ResponseViewModel> Save(OrderDetailViewModel orderVM)
+    {
+        try
+        {
+            await _transaction.BeginTransactionAsync();
+
+            Order order = order = await _orderRepository.GetByIdAsync(orderVM.OrderId) ?? new Order();
+
+            if (orderVM.OrderId == 0)
+            {
+                order.CustomerId = orderVM.CustomerId;
+                order.StatusId = 1;
+                order.CreatedBy = await _userService.LoggedInUser();
+                WaitingToken? token = await _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Waiting Token"));
+                order.Members = token.Members;
+                await _waitingService.Delete(token.Id);
+            }
+
+            //Create new Order if doesn't exist
+            if (orderVM.OrderId == 0)
+            {
+                order.Id = await _orderRepository.AddAsyncReturnId(order);
+
+                //Create Invoice and Update order in mapping
+                await _invoiceService.Add(order.Id);
+                await _orderTableService.Update(order.Id);
+            }
+
+            order.Instructions = orderVM.Comment;
+
+            // Order Item
+            await _orderItemService.Save(orderVM.ItemsList, order.Id);
+            order.SubTotal = await _orderItemService.OrderItemTotal(order.Id);
+            await _orderRepository.UpdateAsync(order);
+
+            //Tax on order item
+            await _orderTaxService.Save(orderVM.Taxes, order.Id);
+            decimal taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
+
+            // Final Amount Calculation
+            order.FinalAmount = order.SubTotal + taxAmount;
+            await _orderRepository.UpdateAsync(order);
+
+            //Save Payment
+            await _paymentService.Save(orderVM.PaymentMethodId, order.Id);
+
+            await _transaction.CommitAsync();
+
+            return new ResponseViewModel
+            {
+                Success = true,
+                Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}", "Order") : NotificationMessages.Updated.Replace("{0}", "Order")
+            };
+        }
+        catch
+        {
+            await _transaction.RollbackAsync();
+            throw;
+        }
+    }
+    #endregion Save
+
+    #region Complete/Cancel
+    public async Task<ResponseViewModel> CompleteOrder(long orderId)
+    {
+        try
+        {
+            await _transaction.BeginTransactionAsync();
+            ResponseViewModel response = new();
+
+            // Order status - Completion
+            OrderDetailViewModel orderDetail = await Get(orderId)
+                                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
+
+            if (orderDetail.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity))
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.CompleteOrderFailed;
+                return response;
+            }
+
+            await ChangeStatus(orderId, SetOrderStatus.COMPLETED);
+
+            // Delete Table assignment
+            await _orderTableService.Delete(orderId);
+
+            await _transaction.CommitAsync();
+
+            response.Success = true;
+            response.Message = NotificationMessages.Successfully.Replace("{0}", "Order Completed");
+            return response;
+        }
+        catch
+        {
+            await _transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<ResponseViewModel> CancelOrder(long orderId)
+    {
+        try
+        {
+            await _transaction.BeginTransactionAsync();
+
+            ResponseViewModel response = new();
+
+            // Order status - Cancelled
+            OrderDetailViewModel orderDetail = await Get(orderId)
+                                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
+
+            if (orderDetail.ItemsList.Any(oi => oi.ReadyQuantity > 0))
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.CannotCancelOrder;
+                return response;
+            }
+
+            await ChangeStatus(orderId, SetOrderStatus.CANCELLED);
+
+            // Delete Table assignment
+            await _orderTableService.Delete(orderId);
+
+            await _transaction.CommitAsync();
+
+            response.Success = true;
+            response.Message = NotificationMessages.Successfully.Replace("{0}", "Order Cancelled");
+            return response;
+        }
+        catch
+        {
+            await _transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    #endregion Complete/Cancel
 
 
 }

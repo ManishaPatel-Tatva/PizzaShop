@@ -13,17 +13,15 @@ public class RolePermissionService : IRolePermissionService
 {
     private readonly IGenericRepository<Role> _roleRepository;
     private readonly IGenericRepository<RolePermission> _rolePermissionRepository;
-    private readonly IGenericRepository<User> _userRepository;
     private readonly IUserService _userService;
 
     // private readonly IRolePermissionRepository _rolePermissionRepository;
 
 
-    public RolePermissionService(IGenericRepository<Role> roleRepository, IGenericRepository<RolePermission> rolePermissionRepository, IGenericRepository<User> userRepository, IUserService userService)
+    public RolePermissionService(IGenericRepository<Role> roleRepository, IGenericRepository<RolePermission> rolePermissionRepository, IUserService userService)
     {
         _roleRepository = roleRepository;
         _rolePermissionRepository = rolePermissionRepository;
-        _userRepository = userRepository;
         _userService = userService;
 
     }

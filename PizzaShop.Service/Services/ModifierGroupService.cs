@@ -14,13 +14,16 @@ public class ModifierGroupService : IModifierGroupService
     private readonly IUserService _userService;
     private readonly IGenericRepository<ModifierMapping> _modifierMappingRepository;
     private readonly IModifierMappingService _modifierMappingService;
+    private readonly ITransactionRepository _transaction;
 
-    public ModifierGroupService(IGenericRepository<ModifierGroup> mgRepository, IUserService userService, IGenericRepository<ModifierMapping> modifierMappingRepository, IModifierMappingService modifierMappingService)
+    public ModifierGroupService(IGenericRepository<ModifierGroup> mgRepository, IUserService userService, IGenericRepository<ModifierMapping> modifierMappingRepository, IModifierMappingService modifierMappingService, ITransactionRepository transaction)
     {
         _mgRepository = mgRepository;
         _userService = userService;
         _modifierMappingRepository = modifierMappingRepository;
         _modifierMappingService = modifierMappingService;
+        _transaction = transaction;
+
     }
 
     public List<ModifierGroupViewModel> Get()
@@ -74,53 +77,79 @@ public class ModifierGroupService : IModifierGroupService
 
     public async Task<ResponseViewModel> Save(ModifierGroupViewModel modifierGroupVM)
     {
-        ModifierGroup modifierGroup = await _mgRepository.GetByIdAsync(modifierGroupVM.Id)
-                                        ?? new ModifierGroup
-                                        {
-                                            CreatedBy = await _userService.LoggedInUser()
-                                        };
-
-        ResponseViewModel response = new();
-
-        modifierGroup.Name = modifierGroupVM.Name;
-        modifierGroup.Description = modifierGroupVM.Description;
-        modifierGroup.UpdatedAt = DateTime.Now;
-        modifierGroup.UpdatedBy = await _userService.LoggedInUser();
-
-        if (modifierGroup.Id == 0)
+        try
         {
-            long mgId = await _mgRepository.AddAsyncReturnId(modifierGroup);
+            await _transaction.BeginTransactionAsync();
 
-            response.Success = mgId > 1;
-            response.Message = mgId > 1 ? NotificationMessages.Added.Replace("{0}", "Modifier Group") : NotificationMessages.AddedFailed.Replace("{0}", "Modifier Group");
-            if (!response.Success)
+            ModifierGroup modifierGroup = await _mgRepository.GetByIdAsync(modifierGroupVM.Id)
+                                            ?? new ModifierGroup
+                                            {
+                                                CreatedBy = await _userService.LoggedInUser()
+                                            };
+
+            ResponseViewModel response = new();
+
+            modifierGroup.Name = modifierGroupVM.Name;
+            modifierGroup.Description = modifierGroupVM.Description;
+            modifierGroup.UpdatedAt = DateTime.Now;
+            modifierGroup.UpdatedBy = await _userService.LoggedInUser();
+
+            if (modifierGroup.Id == 0)
             {
-                return response;
-            }
-        }
-        else
-        {
-            await _mgRepository.UpdateAsync(modifierGroup);
-            response.Success = true;
-            response.Message = NotificationMessages.Updated.Replace("{0}", "Modifier Group");
-        }
+                long mgId = await _mgRepository.AddAsyncReturnId(modifierGroup);
 
-        await _modifierMappingService.UpdateModifierGroupMapping(modifierGroup.Id, modifierGroupVM.ModifierIdList);
-        return response;
+                response.Success = mgId > 1;
+                response.Message = mgId > 1 ? NotificationMessages.Added.Replace("{0}", "Modifier Group") : NotificationMessages.AddedFailed.Replace("{0}", "Modifier Group");
+                if (!response.Success)
+                {
+                    return response;
+                }
+            }
+            else
+            {
+                await _mgRepository.UpdateAsync(modifierGroup);
+                response.Success = true;
+                response.Message = NotificationMessages.Updated.Replace("{0}", "Modifier Group");
+            }
+
+            await _modifierMappingService.UpdateModifierGroupMapping(modifierGroup.Id, modifierGroupVM.ModifierIdList);
+
+            await _transaction.CommitAsync();
+
+            return response;
+        }
+        catch
+        {
+            await _transaction.RollbackAsync();
+            throw;
+        }
     }
+
 
     public async Task Delete(long mgId)
     {
-        ModifierGroup? modifierGroup = await _mgRepository.GetByIdAsync(mgId)
-                                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Modifier Group"));
-        
-        modifierGroup.IsDeleted = true;
-        modifierGroup.UpdatedAt = DateTime.Now;
-        modifierGroup.UpdatedBy = await _userService.LoggedInUser();
+        try
+        {
+            await _transaction.BeginTransactionAsync();
 
-        await _mgRepository.UpdateAsync(modifierGroup);
-        
-        await _modifierMappingService.Delete(mgId);
+            ModifierGroup? modifierGroup = await _mgRepository.GetByIdAsync(mgId)
+                                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Modifier Group"));
+
+            modifierGroup.IsDeleted = true;
+            modifierGroup.UpdatedAt = DateTime.Now;
+            modifierGroup.UpdatedBy = await _userService.LoggedInUser();
+
+            await _mgRepository.UpdateAsync(modifierGroup);
+
+            await _modifierMappingService.Delete(mgId);
+            
+            await _transaction.CommitAsync();
+        }
+        catch
+        {
+            await _transaction.RollbackAsync();
+            throw;
+        }
     }
 
 }

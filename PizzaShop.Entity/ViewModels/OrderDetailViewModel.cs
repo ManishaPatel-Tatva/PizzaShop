@@ -23,5 +23,5 @@ public class OrderDetailViewModel
     public decimal FinalAmount { get; set; }
     public long PaymentMethodId { get; set; } =  1;
     public string PaymentMethod { get; set; } = "";
-    public string? Comment { get; set; } 
+    public string? Comment { get; set; }
 }

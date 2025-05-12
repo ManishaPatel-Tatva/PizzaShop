@@ -191,6 +191,12 @@ public class TableService : ITableService
         }
     }
 
+    // public async Task CascadeDelete(long sectionId)
+    // {
+    //     TableViewModel list = await Get(sectionId, new FilterViewModel());
+    //     foreach(var table in list)
+    // }
+
     #endregion Delete 
 
 }

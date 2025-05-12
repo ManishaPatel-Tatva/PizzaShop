@@ -11,12 +11,15 @@ public class SectionService : ISectionService
 {
     private readonly IGenericRepository<Section> _sectionRepository;
     private readonly IUserService _userService;
+    private readonly ITransactionRepository _transaction;
 
 
-    public SectionService(IGenericRepository<Section> sectionRepository, IUserService userService)
+    public SectionService(IGenericRepository<Section> sectionRepository, IUserService userService, ITransactionRepository transaction)
     {
         _sectionRepository = sectionRepository;
         _userService = userService;
+        _transaction = transaction;
+
     }
 
     #region Get
@@ -91,14 +94,27 @@ public class SectionService : ISectionService
     #region  Delete
     public async Task Delete(long sectionId)
     {
-        Section section = await _sectionRepository.GetByIdAsync(sectionId)
-                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Section"));
+        try
+        {
+            await _transaction.BeginTransactionAsync();
+            Section section = await _sectionRepository.GetByIdAsync(sectionId)
+                            ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Section"));
 
-        section.IsDeleted = true;
-        section.UpdatedBy = await _userService.LoggedInUser();
-        section.UpdatedAt = DateTime.Now;
+            section.IsDeleted = true;
+            section.UpdatedBy = await _userService.LoggedInUser();
+            section.UpdatedAt = DateTime.Now;
 
-        await _sectionRepository.UpdateAsync(section);
+            
+
+
+
+            await _sectionRepository.UpdateAsync(section);
+        }
+        catch
+        {
+            await _transaction.RollbackAsync();
+            throw;
+        }
     }
     #endregion Delete
 

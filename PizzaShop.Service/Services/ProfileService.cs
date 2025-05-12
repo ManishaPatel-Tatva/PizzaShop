@@ -13,16 +13,14 @@ namespace PizzaShop.Service.Services;
 public class ProfileService : IProfileService
 {
     private readonly IGenericRepository<User> _userRepository;
-    private readonly IGenericRepository<Role> _roleRepository;
     private readonly IAddressService _addressService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserService _userService;
 
-    public ProfileService(IGenericRepository<User> userRepository, IAddressService addressService, IGenericRepository<Role> roleRepository, IHttpContextAccessor httpContextAccessor, IUserService userService)
+    public ProfileService(IGenericRepository<User> userRepository, IAddressService addressService, IHttpContextAccessor httpContextAccessor, IUserService userService)
     {
         _userRepository = userRepository;
         _addressService = addressService;
-        _roleRepository = roleRepository;
         _httpContextAccessor = httpContextAccessor;
         _userService = userService;
     }

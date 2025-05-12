@@ -218,8 +218,7 @@
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end">
-                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ? "disabled":
-                                                                           "") data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ? "disabled":"") data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel
                     </button>
                 </div>

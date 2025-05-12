@@ -16,8 +16,9 @@ public class AppTableService : IAppTableService
     private readonly IUserService _userService;
     private readonly ITableService _tableService;
     private readonly ISectionService _sectionService;
+    private readonly ITransactionRepository _transaction;
 
-    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService, ITableService tableService, ISectionService sectionService)
+    public AppTableService(IGenericRepository<Section> sectionRepository, IGenericRepository<OrderTableMapping> orderTableRepository, IWaitingListService waitingService, IUserService userService, ITableService tableService, ISectionService sectionService, ITransactionRepository transaction)
     {
         _sectionRepository = sectionRepository;
         _orderTableRepository = orderTableRepository;
@@ -25,6 +26,8 @@ public class AppTableService : IAppTableService
         _userService = userService;
         _tableService = tableService;
         _sectionService = sectionService;
+        _transaction = transaction;
+
     }
 
     #region  Get
@@ -103,39 +106,49 @@ public class AppTableService : IAppTableService
 
     public async Task<ResponseViewModel> AssignTable(AssignTableViewModel assignTableVM)
     {
-        ResponseViewModel response = new();
-
-        if (assignTableVM.Tables.Sum(t => t.Capacity) < assignTableVM.WaitingToken.Members)
+        try
         {
-            response.Success = false;
-            response.Message = NotificationMessages.CapacityExceeded;
+            await _transaction.BeginTransactionAsync();
+
+            ResponseViewModel response = new();
+
+            if (assignTableVM.Tables.Sum(t => t.Capacity) < assignTableVM.WaitingToken.Members)
+            {
+                response.Success = false;
+                response.Message = NotificationMessages.CapacityExceeded;
+                return response;
+            }
+
+            //Assign Table
+            foreach (TableViewModel? table in assignTableVM.Tables)
+            {
+                OrderTableMapping mapping = new()
+                {
+                    TableId = table.Id,
+                    CustomerId = assignTableVM.WaitingToken.CustomerId,
+                    CreatedBy = await _userService.LoggedInUser()
+                };
+
+                //Change table Status from available to assigned and add mapping
+                await _tableService.ChangeStatus(table.Id, SetTableStatus.ASSIGNED);
+                await _orderTableRepository.AddAsync(mapping);
+            }
+
+            // Change assign status in Waiting Token
+            await _waitingService.AssignTable(assignTableVM.WaitingToken.Id);
+
+            await _transaction.CommitAsync();
+
+            response.Success = true;
+            response.Message = NotificationMessages.Successfully.Replace("{0}", "Table Assigned");
             return response;
         }
-
-        //Assign Table
-        foreach (TableViewModel? table in assignTableVM.Tables)
+        catch
         {
-            OrderTableMapping mapping = new()
-            {
-                TableId = table.Id,
-                CustomerId = assignTableVM.WaitingToken.CustomerId,
-                CreatedBy = await _userService.LoggedInUser()
-            };
-
-            //Change table Status from available to assigned and add mapping
-            await _tableService.ChangeStatus(table.Id, SetTableStatus.ASSIGNED);
-            await _orderTableRepository.AddAsync(mapping);
+            await _transaction.RollbackAsync();
+            throw;
         }
 
-        // Change assign status in Waiting Token
-        await _waitingService.AssignTable(assignTableVM.WaitingToken.Id);
-        response.Success = true;
-        response.Message = NotificationMessages.Successfully.Replace("{0}", "Table Assigned");
-        return response;
+        #endregion Add
     }
-
-    #endregion Add
-
-
-
 }

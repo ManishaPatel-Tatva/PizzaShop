@@ -10,13 +10,14 @@ public class AppMenuController : Controller
     private readonly IAppMenuService _appMenuService;
     private readonly IItemService _itemService;
     private readonly ICustomerReviewService _customerReviewService;
+    private readonly IOrderService _orderService;
 
-    public AppMenuController(IAppMenuService appMenuService, IItemService itemService, ICustomerReviewService customerReviewService)
+    public AppMenuController(IAppMenuService appMenuService, IItemService itemService, ICustomerReviewService customerReviewService, IOrderService orderService)
     {
         _appMenuService = appMenuService;
         _itemService = itemService;
         _customerReviewService = customerReviewService;
-
+        _orderService = orderService;
     }
 
     public async Task<ActionResult> Index(long id)
@@ -35,7 +36,7 @@ public class AppMenuController : Controller
     [HttpPost]
     public async Task<IActionResult> FavouriteItem(long itemId)
     {
-        ResponseViewModel response = await _appMenuService.FavouriteItem(itemId);
+        ResponseViewModel response = await _itemService.Favourite(itemId);
         return Json(response);
     }
 
@@ -55,21 +56,21 @@ public class AppMenuController : Controller
     [HttpPost]
     public async Task<IActionResult> SaveOrder([FromBody] OrderDetailViewModel orderVM)
     {
-        ResponseViewModel response = await _appMenuService.Save(orderVM);
+        ResponseViewModel response = await _orderService.Save(orderVM);
         return Json(response);
     }
 
     [HttpPost]
     public async Task<IActionResult> CompleteOrder(long orderId)
     {
-        ResponseViewModel response = await _appMenuService.CompleteOrder(orderId);
+        ResponseViewModel response = await _orderService.CompleteOrder(orderId);
         return Json(response);
     }
 
     [HttpPost]
     public async Task<IActionResult> CancelOrder(long orderId)
     {
-        ResponseViewModel response = await _appMenuService.CancelOrder(orderId);
+        ResponseViewModel response = await _orderService.CancelOrder(orderId);
         return Json(response);
     }
 

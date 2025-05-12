@@ -12,4 +12,5 @@ public interface IItemService
     Task<ResponseViewModel> Save(ItemViewModel itemVM);
     Task Delete(long id);
     Task Delete(List<long> itemsList);
+    Task<ResponseViewModel> Favourite(long itemId);
 }

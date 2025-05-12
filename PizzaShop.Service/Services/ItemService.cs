@@ -17,20 +17,21 @@ public class ItemService : IItemService
     private readonly IGenericRepository<FoodType> _foodTypeRepository;
     private readonly IGenericRepository<Unit> _unitRepository;
     private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
-    private readonly IGenericRepository<ItemModifierGroup> _itemModifierGroupRepository;
     private readonly IUserService _userService;
     private readonly IItemModifierService _itemModifierService;
+    private readonly ITransactionRepository _transaction;
 
-    public ItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository, IUserService userService, IItemModifierService itemModifierService)
+    public ItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IUserService userService, IItemModifierService itemModifierService, ITransactionRepository transaction)
     {
         _categoryRepository = categoryRepository;
         _itemRepository = itemRepository;
         _foodTypeRepository = foodTypeRepository;
         _unitRepository = unitRepository;
         _modifierGroupRepository = modifierGroupRepository;
-        _itemModifierGroupRepository = itemModifierGroupRepository;
         _userService = userService;
         _itemModifierService = itemModifierService;
+        _transaction = transaction;
+
     }
 
     #region Get
@@ -112,64 +113,75 @@ public class ItemService : IItemService
 
     public async Task<ResponseViewModel> Save(ItemViewModel itemVM)
     {
-        Item item = await _itemRepository.GetByIdAsync(itemVM.Id) ?? new Item();
-
-        ResponseViewModel response = new();
-
-        if (item.Id == 0)
+        try
         {
-            item.CreatedBy = await _userService.LoggedInUser();
-        }
+            await _transaction.BeginTransactionAsync();
 
-        item.CategoryId = itemVM.CategoryId;
-        item.Name = itemVM.Name;
-        item.FoodTypeId = itemVM.ItemTypeId;
-        item.Rate = itemVM.Rate;
-        item.Quantity = itemVM.Quantity;
-        item.UnitId = itemVM.UnitId;
-        item.Available = itemVM.Available;
-        item.DefaultTax = itemVM.DefaultTax;
-        item.Tax = itemVM.TaxPercentage;
-        item.ShortCode = itemVM.ShortCode;
-        item.Description = itemVM.Description;
+            Item item = await _itemRepository.GetByIdAsync(itemVM.Id) ?? new Item();
 
-        item.UpdatedAt = DateTime.Now;
-        item.UpdatedBy = await _userService.LoggedInUser();
+            ResponseViewModel response = new();
 
-        // Handle Image Upload
-        if (itemVM.Image != null)
-        {
-            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/itemImages");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string fileName = $"{Guid.NewGuid()}_{itemVM.Image.FileName}";
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            if (item.Id == 0)
             {
-                await itemVM.Image.CopyToAsync(stream);
+                item.CreatedBy = await _userService.LoggedInUser();
             }
 
-            item.ImageUrl = $"/itemImages/{fileName}";
-        }
+            item.CategoryId = itemVM.CategoryId;
+            item.Name = itemVM.Name;
+            item.FoodTypeId = itemVM.ItemTypeId;
+            item.Rate = itemVM.Rate;
+            item.Quantity = itemVM.Quantity;
+            item.UnitId = itemVM.UnitId;
+            item.Available = itemVM.Available;
+            item.DefaultTax = itemVM.DefaultTax;
+            item.Tax = itemVM.TaxPercentage;
+            item.ShortCode = itemVM.ShortCode;
+            item.Description = itemVM.Description;
 
-        if (itemVM.Id == 0)
+            item.UpdatedAt = DateTime.Now;
+            item.UpdatedBy = await _userService.LoggedInUser();
+
+            // Handle Image Upload
+            if (itemVM.Image != null)
+            {
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/itemImages");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                string fileName = $"{Guid.NewGuid()}_{itemVM.Image.FileName}";
+                string filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await itemVM.Image.CopyToAsync(stream);
+                }
+
+                item.ImageUrl = $"/itemImages/{fileName}";
+            }
+
+            if (itemVM.Id == 0)
+            {
+                item.Id = await _itemRepository.AddAsyncReturnId(item);
+            }
+            else
+            {
+                await _itemRepository.UpdateAsync(item);
+            }
+
+            await _itemModifierService.Save(itemVM.Id, itemVM.ItemModifierGroups);
+
+            await _transaction.CommitAsync();
+
+            response.Success = true;
+            response.Message = itemVM.Id == 0 ? NotificationMessages.Added.Replace("{0}", "Item") : NotificationMessages.Updated.Replace("{0}", "Item");
+            return response;
+        }
+        catch
         {
-            item.Id = await _itemRepository.AddAsyncReturnId(item);
+            await _transaction.RollbackAsync();
+            throw;
         }
-        else
-        {
-            await _itemRepository.UpdateAsync(item);
-        }
-
-        await _itemModifierService.Save(itemVM.Id, itemVM.ItemModifierGroups);
-
-        response.Success = true;
-        response.Message = itemVM.Id == 0 ? NotificationMessages.Added.Replace("{0}", "Item") : NotificationMessages.Updated.Replace("{0}", "Item");
-
-        return response;
     }
 
     #endregion Save
@@ -195,6 +207,22 @@ public class ItemService : IItemService
         }
     }
     #endregion Delete
+
+    #region  Common
+    public async Task<ResponseViewModel> Favourite(long itemId)
+    {
+        Item item = await _itemRepository.GetByIdAsync(itemId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Item"));
+
+        item.IsFavourite = !item.IsFavourite;
+        await _itemRepository.UpdateAsync(item);
+
+        return new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Updated.Replace("{0}", "Item")
+        };
+    }
+    #endregion Common
 
 }
 

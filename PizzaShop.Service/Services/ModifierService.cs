@@ -27,7 +27,7 @@ public class ModifierService : IModifierService
         _userService = userService;
     }
 
-
+    #region  Get
     public async Task<ModifiersPaginationViewModel> Get(long modifierGroupId, int pageSize, int pageNumber, string search)
     {
         IEnumerable<ModifierMapping> modifierMapping = await _modifierMappingRepository.GetByCondition(
@@ -121,7 +121,9 @@ public class ModifierService : IModifierService
 
         return modifierVM;
     }
+    #endregion
 
+    #region Save
     public async Task<ResponseViewModel> Save(ModifierViewModel modifierVM)
     {
         Modifier modifier = await _modifierRepository.GetByIdAsync(modifierVM.Id)
@@ -155,7 +157,9 @@ public class ModifierService : IModifierService
 
         return response;
     }
+    #endregion
 
+    #region Delete
     public async Task Delete(long mgId, List<long> modifierIdList)
     {
         foreach (long modifierId in modifierIdList)
@@ -163,6 +167,7 @@ public class ModifierService : IModifierService
             await _modifierMappingService.Delete(mgId, modifierId);
         }
     }
+    #endregion
 
 
 }

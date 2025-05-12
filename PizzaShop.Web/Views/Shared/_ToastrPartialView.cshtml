@@ -53,7 +53,7 @@
         // 1. Show toaster if TempData contains error (normal request)
         var errorMessage = '@TempData["ToastError"]';
         if (errorMessage && errorMessage.trim() !== "") {
-            toastr.error("Server Error, Try again later");
+            toastr.error(errorMessage);
         }
 
         // 2. Global AJAX error catcher
@@ -61,7 +61,7 @@
             if (xhr.getResponseHeader("X-Error") === "true") {
                 const response = xhr.responseJSON;
                 if (response && response.error) {
-                    toastr.error("Server Error, Try again later");
+                    toastr.error(response.error);
                 } else {
                     toastr.error('An unexpected error occurred.');
                 }

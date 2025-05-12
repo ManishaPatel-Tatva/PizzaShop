@@ -15,12 +15,15 @@ public class KotService : IKotService
     private readonly IGenericRepository<Order> _orderRepository;
     private readonly IGenericRepository<OrderItem> _orderItemRepository;
     private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
+    private readonly ICategoryService _categoryService;
 
-    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderStatus> orderStatusRepository)
+    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderStatus> orderStatusRepository, ICategoryService categoryService)
     {
         _orderRepository = orderRepository;
         _orderItemRepository = orderItemRepository;
         _orderStatusRepository = orderStatusRepository;
+        _categoryService = categoryService;
+
     }
 
     #region Get
@@ -56,10 +59,7 @@ public class KotService : IKotService
         KotViewModel kot = new()
         {
             CategoryId = categoryId,
-            CategoryName = categoryId == 0 ? "All" : orders.SelectMany(o => o.OrderItems)
-                                                            .Where(oi => oi.Item.CategoryId == categoryId)
-                                                            .Select(oi => oi.Item.Category.Name)
-                                                            .FirstOrDefault()!,
+            CategoryName = categoryId == 0 ? "All" :  _categoryService.Get(categoryId).Result.Name,
             IsReady = isReady,
             KotCards = orders.Select(o => new KotCardViewModel
             {
@@ -133,6 +133,9 @@ public class KotService : IKotService
                 await _orderItemRepository.UpdateAsync(orderItem);
             }
         }
+
+        
+
 
         response.Success = true;
         response.Message = NotificationMessages.Updated.Replace("{0}", "Item Status");
