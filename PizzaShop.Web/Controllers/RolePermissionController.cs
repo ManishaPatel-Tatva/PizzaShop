@@ -32,11 +32,11 @@ public class RolePermissionController : Controller
         ViewData["sidebar-active"] = "RolePermission";
         return View(roles);
     }
-#endregion Roles
+    #endregion Roles
 
-#region Permissions
-/*---------------------------------------------------------Permission-----------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------*/
+    #region Permissions
+    /*---------------------------------------------------------Permission-----------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------*/
     [HttpGet]
     [CustomAuthorize(nameof(PermissionType.View_Roles_and_Permissions))]
     public async Task<IActionResult> Permission(long id)
@@ -50,15 +50,14 @@ public class RolePermissionController : Controller
     [CustomAuthorize(nameof(PermissionType.Edit_Roles_and_Permissions))]
     public async Task<IActionResult> Update(long roleId, List<PermissionViewModel> permissions)
     {
-        string? token = Request.Cookies["authToken"];
-        string? createrEmail = _jwtService.GetClaimValue(token, "email");
+        await _rolePermissionService.Update(roleId, permissions);
 
-        if (!await _rolePermissionService.Update(roleId, permissions, createrEmail))
+        return Json(new ResponseViewModel
         {
-            return Json(new {success = false, message = NotificationMessages.UpdatedFailed.Replace("{0}", "Permission")});
-        }
-        return Json(new {success = true, message = NotificationMessages.Updated.Replace("{0}", "Permission")});
+            Success = true,
+            Message = NotificationMessages.Updated.Replace("{0}", "Permission")
+        });
     }
-#endregion Permissions
+    #endregion Permissions
 
 }

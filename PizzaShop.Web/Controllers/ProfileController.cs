@@ -44,14 +44,14 @@ public class ProfileController : Controller
 
     // POST DashBoardPartial
     [HttpPost]
-    public async Task<IActionResult> DashBoardPartial(FilterViewModel filter)
+    public IActionResult DashBoardPartial(FilterViewModel filter)
     {
         if (filter.FromDate.HasValue && filter.ToDate.HasValue && filter.FromDate > filter.ToDate)
         {
             return Json(new { success = false, message = "FromDate must be less then ToDate" });
         }
-       
-        return PartialView("_DashboardPartialView", await _dashboardService.Get(filter));
+
+        return PartialView("_DashboardPartialView", _dashboardService.Get(filter));
     }
     #endregion Dashboard
 
@@ -62,37 +62,24 @@ public class ProfileController : Controller
     [HttpGet]
     public async Task<IActionResult> MyProfile()
     {
-        throw new NotFoundException("Hello");
-        string token = Request.Cookies["authToken"];
-        string email = _jwtService.GetClaimValue(token, "email");
-
-        ProfileViewModel profile = await _profileService.Get(email);
+        ProfileViewModel profile = await _profileService.Get();
         return View(profile);
     }
 
     [HttpPost]
     public async Task<IActionResult> MyProfile(ProfileViewModel model)
     {
-        string profileToken = Request.Cookies["authToken"];
-        string profileEmail = _jwtService.GetClaimValue(profileToken, "email");
-        ProfileViewModel profileModel = await _profileService.Get(profileEmail);
+        ProfileViewModel profileModel = await _profileService.Get();
 
         if (!ModelState.IsValid)
         {
             return View(profileModel);
         }
 
-        if (await _profileService.Update(model))
-        {
-            TempData["NotificationMessage"] = NotificationMessages.Updated.Replace("{0}", "Profile");
-            TempData["NotificationType"] = NotificationType.Success.ToString();
-        }
-        else
-        {
-            TempData["NotificationMessage"] = NotificationMessages.UpdatedFailed.Replace("{0}", "Profile");
-            TempData["NotificationType"] = NotificationType.Error.ToString();
-            return View(profileModel);
-        }
+        await _profileService.Update(model);
+
+        TempData["NotificationMessage"] = NotificationMessages.Updated.Replace("{0}", "Profile");
+        TempData["NotificationType"] = NotificationType.Success.ToString();
 
         return RedirectToAction("Dashboard");
     }
@@ -142,9 +129,6 @@ public class ProfileController : Controller
         {
             return View(model);
         }
-
-        string token = Request.Cookies["authToken"];
-        model.Email = _jwtService.GetClaimValue(token, "email");
 
         ResponseViewModel response = await _profileService.ChangePassword(model);
 

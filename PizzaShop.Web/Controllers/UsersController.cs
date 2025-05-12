@@ -15,12 +15,10 @@ namespace PizzaShop.Web.Controllers
     {
         private readonly IUserService _userService;
         private readonly IAddressService _addressService;
-        private readonly IJwtService _jwtService;
 
-        public UsersController(IUserService userService, IJwtService jwtService, IAddressService addressService)
+        public UsersController(IUserService userService, IAddressService addressService)
         {
             _userService = userService;
-            _jwtService = jwtService;
             _addressService = addressService;
         }
 
@@ -50,9 +48,9 @@ namespace PizzaShop.Web.Controllers
         ------------------------------------------------------------------------------------------------------------------------------------*/
         [HttpGet]
         [CustomAuthorize(nameof(PermissionType.Edit_Users))]
-        public async Task<IActionResult> Add()
+        public IActionResult Add()
         {
-            AddUserViewModel model = await _userService.Get();
+            AddUserViewModel model = _userService.Get();
             ViewData["sidebar-active"] = "Users";
             return View(model);
         }
@@ -65,7 +63,7 @@ namespace PizzaShop.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                AddUserViewModel addUserModel = await _userService.Get();
+                AddUserViewModel addUserModel = _userService.Get();
                 return View(addUserModel);
             }
 
@@ -78,7 +76,7 @@ namespace PizzaShop.Web.Controllers
             }
             else
             {
-                AddUserViewModel addUserModel = await _userService.Get();
+                AddUserViewModel addUserModel = _userService.Get();
                 TempData["NotificationType"] = NotificationType.Error.ToString();
                 return View(addUserModel);
             }
@@ -134,8 +132,12 @@ namespace PizzaShop.Web.Controllers
         [CustomAuthorize(nameof(PermissionType.Delete_Users))]
         public async Task<IActionResult> Delete(long id)
         {
-            ResponseViewModel response = await _userService.Delete(id);
-            return Json(response);
+            await _userService.Delete(id);
+            return Json(new ResponseViewModel
+            {
+                Success = true,
+                Message = NotificationMessages.Deleted.Replace("{0}", "User")
+            });
         }
 
         #endregion

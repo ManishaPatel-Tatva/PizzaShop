@@ -18,8 +18,9 @@ public class MenuController : Controller
     private readonly IModifierService _modifierService;
     private readonly IModifierGroupService _modifierGroupService;
     private readonly IModifierMappingService _modifierMappingService;
+    private readonly IItemModifierService _itemModifierService;
 
-    public MenuController(IItemService ItemService, IJwtService jwtService, IModifierService modifierService, ICategoryService categoryService, IModifierGroupService modifierGroupService, IModifierMappingService modifierMappingService)
+    public MenuController(IItemService ItemService, IJwtService jwtService, IModifierService modifierService, ICategoryService categoryService, IModifierGroupService modifierGroupService, IModifierMappingService modifierMappingService, IItemModifierService itemModifierService)
     {
         _ItemService = ItemService;
         _jwtService = jwtService;
@@ -27,7 +28,7 @@ public class MenuController : Controller
         _categoryService = categoryService;
         _modifierGroupService = modifierGroupService;
         _modifierMappingService = modifierMappingService;
-
+        _itemModifierService = itemModifierService;
     }
 
     /*--------------------------------------------------------Menu Index---------------------------------------------------------------------------------------------------
@@ -83,8 +84,13 @@ public class MenuController : Controller
     [HttpGet]
     public async Task<IActionResult> DeleteCategory(long categoryId)
     {
-        ResponseViewModel response = await _categoryService.Delete(categoryId);
-        return Json(response);
+        await _categoryService.Delete(categoryId);
+
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}", "Category")
+        });
     }
 
     #endregion Category
@@ -96,7 +102,15 @@ public class MenuController : Controller
     [HttpGet]
     public async Task<IActionResult> GetItems(long categoryId, int pageSize, int pageNumber = 1, string search = "")
     {
-        ItemsPaginationViewModel? model = await _ItemService.GetPagedItems(categoryId, pageSize, pageNumber, search);
+        FilterViewModel filter = new()
+        {
+            PageSize = pageSize,
+            PageNumber = pageNumber,
+            Search = search
+        };
+
+        ItemsPaginationViewModel model = await _ItemService.Get(categoryId, filter);
+
         return PartialView("_ItemsPartialView", model);
     }
 
@@ -106,14 +120,14 @@ public class MenuController : Controller
     [HttpGet]
     public async Task<IActionResult> GetItemModal(long itemId)
     {
-        AddItemViewModel model = await _ItemService.GetEditItem(itemId);
+        ItemViewModel model = await _ItemService.Get(itemId);
         return PartialView("_UpdateItemPartialView", model);
     }
 
     [CustomAuthorize("Edit_Menu")]
     public async Task<IActionResult> SelectModifierGroup(long modifierGroupId)
     {
-        ItemModifierViewModel model = await _ItemService.GetModifierOnSelection(modifierGroupId);
+        ItemModifierViewModel model = await _itemModifierService.Get(modifierGroupId);
         return PartialView("_ItemModifierPartialView", model);
     }
 
@@ -121,11 +135,11 @@ public class MenuController : Controller
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
     [HttpPost]
-    public async Task<IActionResult> AddUpdateItem(AddItemViewModel model, string modifierGroupList)
+    public async Task<IActionResult> AddUpdateItem(ItemViewModel model, string modifierGroupList)
     {
         if (!ModelState.IsValid)
         {
-            AddItemViewModel updatedModel = await _ItemService.GetEditItem(model.ItemId);
+            ItemViewModel updatedModel = await _ItemService.Get(model.Id);
             return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
@@ -134,25 +148,15 @@ public class MenuController : Controller
             model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList);
         }
 
-        string? token = Request.Cookies["authToken"];
-        string? createrEmail = _jwtService.GetClaimValue(token, "email");
+        ResponseViewModel response = await _ItemService.Save(model);
 
-        bool success = await _ItemService.AddUpdateItem(model, createrEmail);
-
-        if (!success)
+        if (!response.Success)
         {
-            AddItemViewModel updatedModel = await _ItemService.GetEditItem(model.ItemId);
+            ItemViewModel updatedModel = await _ItemService.Get(model.Id);
             return PartialView("_UpdateItemPartialView", updatedModel);
         }
 
-        if (model.ItemId == 0)
-        {
-            return Json(new { success = true, message = "Item Added Successfully!" });
-        }
-        else
-        {
-            return Json(new { success = true, message = "Item Updated Successfully!" });
-        }
+        return Json(response);
     }
 
     /*--------------------------------------------------------Delete One Item--------------------------------------------------------------------------------------------------------
@@ -160,13 +164,12 @@ public class MenuController : Controller
     [CustomAuthorize("Delete_Menu")]
     public async Task<IActionResult> SoftDeleteItem(long id)
     {
-        bool success = await _ItemService.SoftDeleteItem(id);
-
-        if (!success)
+        await _ItemService.Delete(id);
+        return Json(new ResponseViewModel
         {
-            return Json(new { success = false, message = "Item Not deleted" });
-        }
-        return Json(new { success = true, message = "Item deleted Successfully!" });
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Item")
+        });
     }
 
     /*--------------------------------------------------------Delete Multiple Items--------------------------------------------------------------------------------------------------------
@@ -174,13 +177,13 @@ public class MenuController : Controller
     [CustomAuthorize("Delete_Menu")]
     public async Task<IActionResult> MassDeleteItems(List<long> itemsList)
     {
-        bool success = await _ItemService.MassDeleteItems(itemsList);
+        await _ItemService.Delete(itemsList);
 
-        if (!success)
+        return Json(new ResponseViewModel
         {
-            return Json(new { success = false, message = "Items Not deleted" });
-        }
-        return Json(new { success = true, message = "All selected Items deleted Successfully!" });
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Items")
+        });
     }
 
     #endregion Items
@@ -239,8 +242,12 @@ public class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteModifierGroup(long modifierGroupId)
     {
-        ResponseViewModel response = await _modifierMappingService.Delete(modifierGroupId);
-        return Json(response);
+        await _modifierMappingService.Delete(modifierGroupId);
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Items")
+        });
     }
     #endregion
 
@@ -296,13 +303,12 @@ public class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteModifier(long modifierId, long modifierGroupId)
     {
-        bool success = await _modifierMappingService.Delete(modifierId, modifierGroupId);
+        await _modifierMappingService.Delete(modifierId, modifierGroupId);
 
-        if (success)
-        {
-            return Json(new { success = true, message = NotificationMessages.Deleted.Replace("{0}", "Modifier") });
-        }
-        return Json(new { success = false, message = NotificationMessages.DeletedFailed.Replace("{0}", "Modifier") });
+        return Json(new ResponseViewModel{
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}", "Modifier")
+        });
     }
 
     /*--------------------------------------------------------Delete Multiple Modifiers--------------------------------------------------------------------------------------------------------
@@ -311,12 +317,13 @@ public class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> MassDeleteModifiers(List<long> modifierIdList, long modifierGroupId)
     {
-        string token = Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
+        await _modifierService.Delete(modifierGroupId, modifierIdList);
 
-        ResponseViewModel response = await _modifierService.Delete(modifierGroupId, modifierIdList);
-
-        return Json(response);
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Modifiers")
+        });
     }
 
     #endregion Modifier

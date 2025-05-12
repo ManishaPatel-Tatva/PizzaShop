@@ -20,12 +20,16 @@
                         Select Modifier Groups(s)
                     </a>
                     <ul class="dropdown-menu w-100">
-                        @foreach (ModifierGroup modifierGroup in Model.ModifierGroups)
+                        @if (Model.ModifierGroups != null)
                         {
-                            <li class="d-flex px-2 pb-1">
-                                <input type="checkbox" value="" class="me-2 mgCheckbox" data-id="@modifierGroup.Id" @(Model.SelectedMgList.Contains(modifierGroup.Id)? "checked" : "")>
-                                <span class="">@modifierGroup.Name</span>
-                            </li>
+                            @foreach (ModifierGroup modifierGroup in Model.ModifierGroups)
+                            {
+                                <li class="d-flex px-2 pb-1">
+                                    <input type="checkbox" value="" class="me-2 mgCheckbox" data-id="@modifierGroup.Id"
+                                        @(Model.SelectedMgList.Contains(modifierGroup.Id) ? "checked" : "")>
+                                    <span class="">@modifierGroup.Name</span>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>
@@ -53,9 +57,12 @@
             <div class="col-12 col-sm-6 col-md-4 form-floating mb-3">
                 <select asp-for="@Model.UnitId" class="form-select" aria-label="" id="mUnit">
                     <option selected value="-1">Select a type</option>
-                    @foreach (var unit in Model.Units)
+                    @if (Model.Units != null)
                     {
-                        <option value="@unit.Id"> @unit.Name</option>
+                        @foreach (var unit in Model.Units)
+                        {
+                            <option value="@unit.Id"> @unit.Name</option>
+                        }
                     }
                 </select>
                 <label for="mUnit">Unit*</label>

@@ -32,9 +32,9 @@ public class CustomersController : Controller
 
     [HttpGet]
     [CustomAuthorize("View_Customers")]
-    public async Task<IActionResult> GetCustomerHistory(long customerId)
+    public IActionResult GetCustomerHistory(long customerId)
     {
-        CustomerHistoryViewModel customer = await _customerService.GetHistory(customerId);
+        CustomerHistoryViewModel customer = _customerService.GetHistory(customerId);
         return PartialView("_CustomerHistoryPartialView", customer);
     }
 
@@ -54,9 +54,9 @@ public class CustomersController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetById(long id)
+    public IActionResult GetById(long id)
     {
-        CustomerViewModel customer = await _customerService.Get(id);
+        CustomerViewModel customer = _customerService.Get(id);
         return PartialView("_CustomerDetailPartialView", customer);
     }
 

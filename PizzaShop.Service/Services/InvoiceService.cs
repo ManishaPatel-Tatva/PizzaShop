@@ -1,5 +1,4 @@
 using PizzaShop.Entity.Models;
-using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Interfaces;
 
@@ -16,7 +15,7 @@ public class InvoiceService : IInvoiceService
         _userService = userService;
     }
 
-    public async Task<bool> Add(long orderId)
+    public async Task Add(long orderId)
     {
         Invoice invoice = new()
         {
@@ -25,7 +24,7 @@ public class InvoiceService : IInvoiceService
             CreatedBy = await _userService.LoggedInUser()
         };
 
-        return await _invoiceRepository.AddAsync(invoice);
+        await _invoiceRepository.AddAsync(invoice);
     }
 
 }

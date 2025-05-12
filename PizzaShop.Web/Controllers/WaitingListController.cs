@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
@@ -9,7 +10,7 @@ public class WaitingListController : Controller
     private readonly IWaitingListService _waitingListService;
     private readonly IAppTableService _appTableService;
 
-    public WaitingListController(IWaitingListService waitingListService, IAppTableService appTableService = null)
+    public WaitingListController(IWaitingListService waitingListService, IAppTableService appTableService)
     {
         _waitingListService = waitingListService;
         _appTableService = appTableService;
@@ -67,8 +68,12 @@ public class WaitingListController : Controller
     [HttpGet]
     public async Task<IActionResult> DeleteWaitingToken(long tokenId)
     {
-        ResponseViewModel response = await _waitingListService.Delete(tokenId);
-        return Json(response);
+        await _waitingListService.Delete(tokenId);
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Waiting Token")
+        });
     }
 
 }

@@ -3,6 +3,8 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Security.Claims;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Exceptions;
+using PizzaShop.Service.Common;
 
 namespace PizzaShop.Web.Middleware;
 
@@ -28,10 +30,11 @@ public class RolePermissionMiddleware
 
             string? roleIdStr = jwtToken.Claims.FirstOrDefault(c => c.Type == "roleId")?.Value;
             string? roleName = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
-            
+
             if (!string.IsNullOrEmpty(roleIdStr) && long.TryParse(roleIdStr, out long roleId))
             {
-                RolePermissionViewModel permissions = await rolePermissionService.Get(roleId);
+                RolePermissionViewModel permissions = await rolePermissionService.Get(roleId)
+                ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Permissions"));
                 // Build all claims
                 List<Claim>? claims = jwtToken.Claims.ToList();
 
@@ -40,14 +43,20 @@ public class RolePermissionMiddleware
                     claims.Add(new Claim(ClaimTypes.Role, roleName));
                 }
 
-                foreach (var permission in permissions.Permissions)
+                foreach (PermissionViewModel? permission in permissions.Permissions)
                 {
                     if (permission.CanView)
+                    {
                         claims.Add(new Claim("permission", $"View_{permission.PermissionName.Replace(" ", "_")}"));
+                    }
                     if (permission.CanEdit)
+                    {
                         claims.Add(new Claim("permission", $"Edit_{permission.PermissionName.Replace(" ", "_")}"));
+                    }
                     if (permission.CanDelete)
+                    {
                         claims.Add(new Claim("permission", $"Delete_{permission.PermissionName.Replace(" ", "_")}"));
+                    }
                 }
 
                 // Create identity with correct role claim type
@@ -55,7 +64,6 @@ public class RolePermissionMiddleware
                 context.User = new ClaimsPrincipal(identity);
             }
         }
-
         await _next(context);
     }
 }

@@ -33,6 +33,7 @@ public static class NotificationMessages
 
     //Save order
     public const string CompleteOrderFailed = "All items must be served before completing the order";
+    public const string CannotCancelOrder = "The order item is ready, cannot cancel the order";
 
     // Assign Table
     public const string CapacityExceeded = "Members should be less than table capacity";

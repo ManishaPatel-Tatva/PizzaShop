@@ -1,9 +1,7 @@
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PizzaShop.Entity.ViewModels;
-using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
@@ -52,7 +50,4 @@ public class KotController : Controller
         ResponseViewModel response = await _kotService.Update(kot);
         return Json(response);
     }
-
-
-
 }

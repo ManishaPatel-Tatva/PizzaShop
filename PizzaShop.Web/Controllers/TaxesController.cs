@@ -56,10 +56,7 @@ public class TaxesController : Controller
             return PartialView("_TaxPartialView", updatedModel);
         }
 
-        string token = Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
-
-        ResponseViewModel response = await _taxService.Save(model, createrEmail);
+        ResponseViewModel response = await _taxService.Save(model);
         if (!response.Success)
         {
             TempData["NotificationMessage"] = response.Message;
@@ -76,16 +73,12 @@ public class TaxesController : Controller
     [CustomAuthorize(nameof(PermissionType.Delete_Taxes_and_Fees))]
     public async Task<IActionResult> Delete(long taxId)
     {
-        string token = Request.Cookies["authToken"];
-        string createrEmail = _jwtService.GetClaimValue(token, "email");
-
-        bool success = await _taxService.Delete(taxId, createrEmail);
-
-        if (!success)
+        await _taxService.Delete(taxId);
+        return Json(new ResponseViewModel
         {
-            return Json(new { success = false, message = "Tax Not deleted!" });
-        }
-        return Json(new { success = true, message = "Tax deleted Successfully!" });
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Section")
+        });
     }
 
 }

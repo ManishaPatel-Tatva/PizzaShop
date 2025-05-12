@@ -1,4 +1,5 @@
-@model PizzaShop.Entity.ViewModels.ItemsPaginationViewModel;
+@using PizzaShop.Entity.ViewModels
+@model ItemsPaginationViewModel
 
 <!-- Table -->
 <div class="table-responsive bg-white">
@@ -16,86 +17,88 @@
             </tr>
         </thead>
         <tbody class="" id="">
-
-            @foreach (var item in Model.Items)
+            @if (Model.Items != null)
             {
-                <tr>
-                    <td>
-                        <input type="checkbox" value="" id="" class="me-2 itemChildCheckbox" data-id="@item.Id">
-                        <img src="@item.ImageUrl" alt="" class="me-2 rounded-circle" width="30px" height="30px">
-                        @item.Name
-                    </td>
-                    <td>
-                        <img src="@item.Type" alt="" width="23px">
-                    </td>
-                    <td>@item.Rate</td>
-                    <td>@item.Quantity</td>
-                    <td>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="availableCheckbox"
-                                @(item.Available ? "checked" : "") disabled>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-row">
-                            <button href="edit-user.html" class="editItemBtn btn ps-0 me-2" data-bs-toggle="modal"
-                                data-bs-target="#addEditItem" data-id="@item.Id">
-                                <img src="~/images/icons/edit.svg" alt="" />
-                            </button>
+                @foreach (ItemInfoViewModel? item in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" value="" id="" class="me-2 itemChildCheckbox" data-id="@item.Id">
+                            <img src="@item.ImageUrl" alt="" class="me-2 rounded-circle" width="30px" height="30px">
+                            @item.Name
+                        </td>
+                        <td>
+                            <img src="@item.Type" alt="" width="23px">
+                        </td>
+                        <td>@item.Rate</td>
+                        <td>@item.Quantity</td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="availableCheckbox"
+                                    @(item.Available ? "checked" : "") disabled>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-row">
+                                <button href="edit-user.html" class="editItemBtn btn ps-0 me-2" data-bs-toggle="modal"
+                                    data-bs-target="#addEditItem" data-id="@item.Id">
+                                    <img src="~/images/icons/edit.svg" alt="" />
+                                </button>
 
-                            <button type="button" class="deleteItemIcon btn" data-bs-toggle="modal"
-                                data-bs-target="#deleteItemModal" data-id="@item.Id">
-                                <img src="~/images/icons/delete.svg" alt="">
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                                <button type="button" class="deleteItemIcon btn" data-bs-toggle="modal"
+                                    data-bs-target="#deleteItemModal" data-id="@item.Id">
+                                    <img src="~/images/icons/delete.svg" alt="">
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
             }
-
 
         </tbody>
     </table>
 </div>
 <!-- Table ends -->
 
-
-@if (Model.Items.Count() == 0)
+@if (Model.Items != null)
 {
-    <div class="d-flex justify-content-center fs-5">No Record Found!</div>
-}
-else
-{
-    <!-- Pagination Starts -->
-    <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
-        <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
-            <span>Items per page:</span>
-            <select class="form-select w-auto" id="itemsPerPage" aria-label="Select items per page">
-                <option value="5" selected>5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-            </select>
+    @if (Model.Items.Count() == 0)
+    {
+        <div class="d-flex justify-content-center fs-5">No Record Found!</div>
+    }
+    else
+    {
+        <!-- Pagination Starts -->
+        <div class="d-flex justify-content-end gap-1 flex-column flex-md-row pb-2">
+            <div class="d-flex flex-row justify-content-end align-items-center mb-1 me-1 gap-1">
+                <span>Items per page:</span>
+                <select class="form-select w-auto" id="itemsPerPage" aria-label="Select items per page">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+
+            <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
+                <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
+
+                <!-- Previous Page Button -->
+                <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
+                    onclick="ItemsPaginationAjax(@Model.Page.CurrentPage - 1)">
+                    <img src="~/images/icons/chevron-left.svg" alt="">
+                </button>
+
+                <!-- Next Page Button -->
+                <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
+                    onclick="ItemsPaginationAjax(@Model.Page.CurrentPage + 1)">
+                    <img src="~/images/icons/chevron-right.svg" alt="">
+                </button>
+            </div>
         </div>
-
-        <div class="d-flex flex-row justify-content-end align-items-center mb-1 gap-1">
-            <span>Showing @Model.Page.FromRec - @Model.Page.ToRec of @Model.Page.TotalRecord</span>
-
-            <!-- Previous Page Button -->
-            <button class="btn border btn-prev @(Model.Page.CurrentPage > 1 ? "" : "disabled")"
-                onclick="ItemsPaginationAjax(@Model.Page.CurrentPage - 1)">
-                <img src="~/images/icons/chevron-left.svg" alt="">
-            </button>
-
-            <!-- Next Page Button -->
-            <button class="btn border btn-next @(Model.Page.CurrentPage < Model.Page.TotalPages ? "" : "disabled")"
-                onclick="ItemsPaginationAjax(@Model.Page.CurrentPage + 1)">
-                <img src="~/images/icons/chevron-right.svg" alt="">
-            </button>
-        </div>
-    </div>
-    <!-- Pagination Ends -->
+        <!-- Pagination Ends -->
+    }
 }
-
 
 <!-- Modal Add/Update Item starts -->
 <div class="modal fade" id="addEditItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"

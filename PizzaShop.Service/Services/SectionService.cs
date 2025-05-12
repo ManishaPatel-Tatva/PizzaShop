@@ -2,6 +2,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -38,13 +39,13 @@ public class SectionService : ISectionService
     public async Task<SectionViewModel> Get(long sectionId)
     {
         SectionViewModel sectionVM = new();
-        
-        if (sectionId == 0)
+
+        Section? section = await _sectionRepository.GetByIdAsync(sectionId);
+        if (section == null)
         {
             return sectionVM;
         }
 
-        Section? section = await _sectionRepository.GetByIdAsync(sectionId);
         sectionVM.Id = section.Id;
         sectionVM.Name = section.Name;
         sectionVM.Description = section.Description;
@@ -56,56 +57,31 @@ public class SectionService : ISectionService
     #region  Save
     public async Task<ResponseViewModel> Save(SectionViewModel sectionVM)
     {
-        long createrId = await _userService.LoggedInUser();
+        Section section = await _sectionRepository.GetByIdAsync(sectionVM.Id)
+                        ?? new()
+                        {
+                            CreatedBy = await _userService.LoggedInUser()
+                        };
 
-        Section? section = new();
         ResponseViewModel response = new();
 
-        if (sectionVM.Id == 0)
-        {
-            section.CreatedBy = createrId;
-        }
-        else if (sectionVM.Id > 0)
-        {
-            section = await _sectionRepository.GetByIdAsync(sectionVM.Id);
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.NotFound.Replace("{0}", "Section");
-            return response;
-        }
 
         section.Name = sectionVM.Name;
         section.Description = sectionVM.Description;
-        section.UpdatedBy = createrId;
         section.UpdatedAt = DateTime.Now;
+        section.UpdatedBy = await _userService.LoggedInUser();
 
         if (sectionVM.Id == 0)
         {
-            if (await _sectionRepository.AddAsync(section))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Added.Replace("{0}", "Section");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Section");
-            }
+            await _sectionRepository.AddAsync(section);
+            response.Success = true;
+            response.Message = NotificationMessages.Added.Replace("{0}", "Section");
         }
         else
         {
-            if (await _sectionRepository.UpdateAsync(section))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Updated.Replace("{0}", "Section");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Section");
-            }
+            await _sectionRepository.UpdateAsync(section);
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Section");
         }
 
         return response;
@@ -113,30 +89,16 @@ public class SectionService : ISectionService
     #endregion Save
 
     #region  Delete
-    public async Task<ResponseViewModel> Delete(long sectionId)
+    public async Task Delete(long sectionId)
     {
-        Section? section = await _sectionRepository.GetByIdAsync(sectionId);
+        Section section = await _sectionRepository.GetByIdAsync(sectionId)
+                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Section"));
 
         section.IsDeleted = true;
         section.UpdatedBy = await _userService.LoggedInUser();
         section.UpdatedAt = DateTime.Now;
 
-        if (await _sectionRepository.UpdateAsync(section))
-        {
-            return new ResponseViewModel
-            {
-                Success = true,
-                Message = NotificationMessages.Deleted.Replace("{0}", "Section")
-            };
-        }
-        else
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.DeletedFailed.Replace("{0}", "Section")
-            };
-        }
+        await _sectionRepository.UpdateAsync(section);
     }
     #endregion Delete
 

@@ -42,7 +42,7 @@ public class AppMenuController : Controller
     [HttpGet]
     public async Task<IActionResult> ItemDetail(long itemId)
     {
-        AddItemViewModel item = await _itemService.GetEditItem(itemId);
+        ItemViewModel item = await _itemService.Get(itemId);
         return PartialView("_ItemModifierPartialView",item);
     }
 

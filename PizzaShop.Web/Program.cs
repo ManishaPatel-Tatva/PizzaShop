@@ -28,7 +28,7 @@ Log.Logger = new LoggerConfiguration()
         fileSizeLimitBytes: 10_000_000,
         rollOnFileSizeLimit: true,
         shared: true,
-        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}{NewLine}"
+        outputTemplate: "[{NewLine}{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}{NewLine}"
     )
     .CreateLogger();
  
@@ -56,7 +56,8 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Smtp
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 //Jwt Service
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+// Load JwtConfig from appsettings.json
+JwtConfig.LoadFromConfiguration(builder.Configuration);
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 //Profile Service
@@ -78,6 +79,7 @@ builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 //Menu service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IItemModifierService, ItemModifierService>();
 builder.Services.AddScoped<IModifierService, ModifierService>();
 builder.Services.AddScoped<IModifierGroupService, ModifierGroupService>();
 builder.Services.AddScoped<IModifierMappingService, ModifierMappingService>();
@@ -109,6 +111,7 @@ builder.Services.AddScoped<IOrderTableService, OrderTableService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderItemModifierService, OrderItemModifierService>();
 builder.Services.AddScoped<IOrderTaxService, OrderTaxService>();
+builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 
 //Session 
 builder.Services.AddSession(options =>
@@ -119,9 +122,7 @@ builder.Services.AddSession(options =>
 });
 
 //Authentication
-var jwtConfig = builder.Configuration.GetSection("JwtConfig").Get<JwtConfig>();
-
-if (string.IsNullOrEmpty(jwtConfig?.Key))   // Ensure Key is Not Null or Empty
+if (string.IsNullOrEmpty(JwtConfig.Key))   // Ensure Key is Not Null or Empty
 {
     throw new InvalidOperationException("JWT Secret Key is missing in appsettings.json");
 }
@@ -149,9 +150,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
-            ValidAudience = builder.Configuration["JwtConfig:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]))
+            ValidIssuer = JwtConfig.Issuer,
+            ValidAudience = JwtConfig.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtConfig.Key))
         };
     });
 

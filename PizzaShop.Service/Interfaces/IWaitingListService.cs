@@ -8,6 +8,6 @@ public interface IWaitingListService
     Task<WaitingTokenViewModel> Get(long tokenId);
     Task<List<WaitingTokenViewModel>> List(long sectionId);
     Task<ResponseViewModel> Save(WaitingTokenViewModel wtokenVM);
-    Task<bool> AssignTable(long tokenId);
-    Task<ResponseViewModel> Delete(long tokenId);
+    Task AssignTable(long tokenId);
+    Task Delete(long tokenId);
 }

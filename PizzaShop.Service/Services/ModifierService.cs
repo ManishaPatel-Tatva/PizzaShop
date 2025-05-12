@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
@@ -49,7 +48,7 @@ public class ModifierService : IModifierService
             }
         );
 
-        (modifierMapping, int totalRecord) = await _modifierMappingRepository.GetPagedRecords(pageSize, pageNumber, modifierMapping);
+        (modifierMapping, int totalRecord) = _modifierMappingRepository.GetPagedRecords(pageSize, pageNumber, modifierMapping);
 
         ModifiersPaginationViewModel model = new()
         {
@@ -81,18 +80,20 @@ public class ModifierService : IModifierService
             }
         );
 
-        (modifiers, int totalRecord) = await _modifierRepository.GetPagedRecords(pageSize, pageNumber, modifiers);
+        (modifiers, int totalRecord) = _modifierRepository.GetPagedRecords(pageSize, pageNumber, modifiers);
 
-        ModifiersPaginationViewModel model = new() { Page = new() };
-
-        model.Modifiers = modifiers.Select(m => new ModifierViewModel()
+        ModifiersPaginationViewModel model = new()
         {
-            Id = m.Id,
-            Name = m.Name,
-            UnitName = m.Unit.Name,
-            Rate = m.Rate,
-            Quantity = m.Quantity,
-        }).ToList();
+            Page = new(),
+            Modifiers = modifiers.Select(m => new ModifierViewModel()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                UnitName = m.Unit.Name,
+                Rate = m.Rate,
+                Quantity = m.Quantity,
+            }).ToList()
+        };
 
         model.Page.SetPagination(totalRecord, pageSize, pageNumber);
         return model;
@@ -125,13 +126,13 @@ public class ModifierService : IModifierService
 
     public async Task<ResponseViewModel> Save(ModifierViewModel modifierVM)
     {
-        Modifier? modifier = await _modifierRepository.GetByIdAsync(modifierVM.Id);
+        Modifier modifier = await _modifierRepository.GetByIdAsync(modifierVM.Id)
+                            ?? new Modifier
+                            {
+                                CreatedBy = await _userService.LoggedInUser()
+                            };
+                            
         ResponseViewModel response = new();
-
-        modifier ??= new Modifier
-        {
-            CreatedBy = await _userService.LoggedInUser()
-        };
 
         modifier.Name = modifierVM.Name;
         modifier.Rate = modifierVM.Rate;
@@ -149,38 +150,20 @@ public class ModifierService : IModifierService
         }
         else
         {
-            response.Success = await _modifierRepository.UpdateAsync(modifier);
-            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Modifier") : NotificationMessages.UpdatedFailed.Replace("{0}", "Modifier");
+            await _modifierRepository.UpdateAsync(modifier);
         }
 
-        if (!response.Success)
-        {
-            return response;
-        }
-
-        response.Success = await _modifierMappingService.UpdateModifierMapping(modifier.Id, modifierVM.SelectedMgList);
-        if(!response.Success)
-        {
-            response.Message = NotificationMessages.Failed.Replace("{0}", "Operation");
-        }
+        await _modifierMappingService.UpdateModifierMapping(modifier.Id, modifierVM.SelectedMgList);
 
         return response;
     }
 
-    public async Task<ResponseViewModel> Delete(long mgId, List<long> modifierIdList)
+    public async Task Delete(long mgId, List<long> modifierIdList)
     {
-        ResponseViewModel response = new();
-
         foreach (long modifierId in modifierIdList)
         {
-            response.Success = await _modifierMappingService.Delete(mgId, modifierId);
-            response.Message = response.Success ? NotificationMessages.Deleted.Replace("{0}", "Modifier") : NotificationMessages.DeletedFailed.Replace("{0}", "Modifier");
-            if (!response.Success)
-            {
-                return response;
-            }
+            await _modifierMappingService.Delete(mgId, modifierId);
         }
-        return response;
     }
 
 

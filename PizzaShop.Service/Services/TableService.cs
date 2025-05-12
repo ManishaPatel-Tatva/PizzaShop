@@ -4,6 +4,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 using Table = PizzaShop.Entity.Models.Table;
@@ -39,7 +40,7 @@ public class TableService : ITableService
             includes: new List<Expression<Func<Table, object>>> { u => u.Section, u => u.Status }
         );
 
-        (tables, int totalRecord) = await _tableRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, tables);
+        (tables, int totalRecord) = _tableRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, tables);
 
         TablesPaginationViewModel tablesVM = new()
         {
@@ -91,22 +92,21 @@ public class TableService : ITableService
             StatusList = _tableStatusRepository.GetAll().ToList()
         };
 
-        if (tableId == 0)
+        Table? table = await _tableRepository.GetByIdAsync(tableId);
+
+        if (table == null)
         {
             return tableVM;
         }
-        else
-        {
-            Table? table = await _tableRepository.GetByIdAsync(tableId);
 
-            tableVM.Id = tableId;
-            tableVM.Name = table.Name;
-            tableVM.SectionId = table.SectionId;
-            tableVM.Capacity = table.Capacity;
-            tableVM.StatusId = table.StatusId;
+        tableVM.Id = tableId;
+        tableVM.Name = table.Name;
+        tableVM.SectionId = table.SectionId;
+        tableVM.Capacity = table.Capacity;
+        tableVM.StatusId = table.StatusId;
 
-            return tableVM;
-        }
+        return tableVM;
+
     }
 
     #endregion Get
@@ -117,25 +117,16 @@ public class TableService : ITableService
     {
         long createrId = await _userService.LoggedInUser();
 
-        Table? table = new();
+        Table table = await _tableRepository.GetByIdAsync(tableVM.Id)
+                    ?? new()
+                    {
+                        CreatedBy = createrId,
+                        SectionId = tableVM.SectionId,
+                        StatusId = tableVM.StatusId
+                    };
+
         ResponseViewModel response = new();
 
-        if (tableVM.Id == 0)
-        {
-            table.CreatedBy = createrId;
-            table.SectionId = tableVM.SectionId;
-            table.StatusId = tableVM.StatusId;
-        }
-        else if (tableVM.Id > 0)
-        {
-            table = await _tableRepository.GetByIdAsync(tableVM.Id);
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.NotFound.Replace("{0}", "Table");
-            return response;
-        }
 
         table.Name = tableVM.Name;
         table.Capacity = tableVM.Capacity;
@@ -144,110 +135,61 @@ public class TableService : ITableService
 
         if (tableVM.Id == 0)
         {
-            response.Success = await _tableRepository.AddAsync(table);
-            response.Message = response.Success ? NotificationMessages.Added.Replace("{0}", "Section") : NotificationMessages.AddedFailed.Replace("{0}", "Section");
+            await _tableRepository.AddAsync(table);
+            response.Success = true;
+            response.Message = NotificationMessages.Added.Replace("{0}", "Section");
         }
         else
         {
-            response.Success = await _tableRepository.UpdateAsync(table);
-            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Section") : NotificationMessages.UpdatedFailed.Replace("{0}", "Section");
+            await _tableRepository.UpdateAsync(table);
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Section");
         }
 
         return response;
-
     }
 
     #endregion Save
 
     #region Table Status
-    public async Task<bool> SetTableAssign(long tableId)
+
+    public async Task ChangeStatus(long tableId, string status)
     {
-        Table? table = await _tableRepository.GetByIdAsync(tableId);
+        Table table = await _tableRepository.GetByIdAsync(tableId)
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Table"));
 
-        if (table == null)
-        {
-            return false;
-        }
-
-        table.StatusId = _tableStatusRepository.GetByStringAsync(s => s.Name == "Assigned").Result!.Id;
+        TableStatus tableStatus = await _tableStatusRepository.GetByStringAsync(s => s.Name == status)
+                                ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Table"));
+        
+        table.StatusId = tableStatus.Id;
         table.UpdatedBy = await _userService.LoggedInUser();
         table.UpdatedAt = DateTime.Now;
 
-        return await _tableRepository.UpdateAsync(table);
+        await _tableRepository.UpdateAsync(table);
     }
-
-    public async Task<bool> SetTableAvailable(long tableId)
-    {
-        Table? table = await _tableRepository.GetByIdAsync(tableId);
-
-        if (table == null)
-        {
-            return false;
-        }
-
-        table.StatusId = _tableStatusRepository.GetByStringAsync(ts => ts.Name == "Available").Result!.Id;
-        table.UpdatedBy = await _userService.LoggedInUser();
-        table.UpdatedAt = DateTime.Now;
-
-        return await _tableRepository.UpdateAsync(table);
-    }
-
-    public async Task<bool> SetTableOccupied(long tableId)
-    {
-        Table? table = await _tableRepository.GetByIdAsync(tableId);
-
-        if (table == null)
-        {
-            return false;
-        }
-
-        table.StatusId = _tableStatusRepository.GetByStringAsync(ts => ts.Name == "Occupied").Result!.Id;
-        table.UpdatedBy = await _userService.LoggedInUser();
-        table.UpdatedAt = DateTime.Now;
-
-        return await _tableRepository.UpdateAsync(table);
-    }
-
 
     #endregion
 
     #region Delete
     /*----------------------------------------------------------------Delete Table Group---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<ResponseViewModel> Delete(long tableId)
+    public async Task Delete(long tableId)
     {
-        Table? table = await _tableRepository.GetByIdAsync(tableId);
-        ResponseViewModel response = new();
-        if (table == null)
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.NotFound.Replace("{0}", "Table");
-            return response;
-        }
+        Table table = await _tableRepository.GetByIdAsync(tableId)
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Table"));
 
         table.IsDeleted = true;
         table.UpdatedBy = await _userService.LoggedInUser();
         table.UpdatedAt = DateTime.Now;
 
-        response.Success = await _tableRepository.UpdateAsync(table);
-        response.Message = response.Success ? NotificationMessages.Deleted.Replace("{0}", "Table") : NotificationMessages.DeletedFailed.Replace("{0}", "Table");
-        return response;
+        await _tableRepository.UpdateAsync(table);
     }
 
-    public async Task<ResponseViewModel> Delete(List<long> tableIdList)
+    public async Task Delete(List<long> tableIdList)
     {
-        ResponseViewModel response = new();
         foreach (long id in tableIdList)
         {
-            response = await Delete(id);
-            if (!response.Success)
-            {
-                return response;
-            }
+            await Delete(id);
         }
-        response.Success = true;
-        response.Message = NotificationMessages.Deleted.Replace("{0}", "Tables");
-        return response;
     }
 
     #endregion Delete 

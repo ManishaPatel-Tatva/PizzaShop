@@ -28,8 +28,9 @@ public class AppMenuService : IAppMenuService
     private readonly IOrderTaxService _orderTaxService;
     private readonly IOrderItemService _orderItemService;
     private readonly ITransactionRepository _transaction;
+    private readonly IOrderStatusService _orderStatusService;
 
-    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<OrderStatus> orderStatusRepository, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderItemService orderItemService, IOrderTaxService orderTaxService, ITransactionRepository transaction)
+    public AppMenuService(IGenericRepository<Item> itemRepository, IGenericRepository<OrderTableMapping> orderTableRepository, ICategoryService categoryService, IOrderService orderService, IGenericRepository<Taxis> taxRepository, IGenericRepository<PaymentMethod> paymentMethodRepository, IUserService userService, IGenericRepository<Order> orderRepository, IGenericRepository<WaitingToken> waitingTokenRepository, IGenericRepository<OrderStatus> orderStatusRepository, IInvoiceService invoiceService, IPaymentService paymentService, IOrderTableService orderTableService, IOrderItemService orderItemService, IOrderTaxService orderTaxService, ITransactionRepository transaction, IOrderStatusService orderStatusService)
     {
         _itemRepository = itemRepository;
         _orderTableRepository = orderTableRepository;
@@ -47,6 +48,8 @@ public class AppMenuService : IAppMenuService
         _orderItemService = orderItemService;
         _orderTaxService = orderTaxService;
         _transaction = transaction;
+        _orderStatusService = orderStatusService;
+
     }
 
     #region Get
@@ -86,15 +89,14 @@ public class AppMenuService : IAppMenuService
             appMenu.Tables = mapping.Select(m => m.Table.Name).ToList();
 
             long? orderId = mapping.Select(m => m.OrderId).FirstOrDefault();
+
             if (orderId == null)
             {
                 return appMenu;
             }
-            else
-            {
-                appMenu.Order = await _orderService.Get((long)orderId);
-                return appMenu;
-            }
+
+            appMenu.Order = await _orderService.Get((long)orderId);
+            return appMenu;
         }
     }
 
@@ -129,21 +131,16 @@ public class AppMenuService : IAppMenuService
 
     public async Task<ResponseViewModel> FavouriteItem(long itemId)
     {
-        Item? item = await _itemRepository.GetByIdAsync(itemId);
-
-        ResponseViewModel response = new();
-
-        if (item == null)
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.NotFound.Replace("{0}", "Item");
-            return response;
-        }
+        Item item = await _itemRepository.GetByIdAsync(itemId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Item"));
 
         item.IsFavourite = !item.IsFavourite;
-        response.Success = await _itemRepository.UpdateAsync(item);
-        response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Item") : NotificationMessages.UpdatedFailed.Replace("{0}", "Item");
-        return response;
+        await _itemRepository.UpdateAsync(item);
+
+        return new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Updated.Replace("{0}", "Item")
+        };
     }
 
     #endregion Get
@@ -180,18 +177,18 @@ public class AppMenuService : IAppMenuService
             // Order Item
             await _orderItemService.Save(orderVM.ItemsList, order.Id);
 
-            decimal subTotal = _orderItemService.OrderItemTotal(order.Id);
+            decimal subTotal = await _orderItemService.OrderItemTotal(order.Id);
             order.SubTotal = subTotal;
             await _orderRepository.UpdateAsync(order);
-            
+
 
             //Tax on order item
             await _orderTaxService.Save(orderVM.Taxes, order.Id);
             decimal taxAmount = _orderTaxService.TotalTaxOnOrder(order.Id);
-            
+
             order.FinalAmount = subTotal + taxAmount;
             await _orderRepository.UpdateAsync(order);
-            
+
 
             //Save Payment
             await _paymentService.Save(orderVM.PaymentMethodId, order.Id);
@@ -201,7 +198,7 @@ public class AppMenuService : IAppMenuService
             return new ResponseViewModel
             {
                 Success = true,
-                Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}","Order") : NotificationMessages.Updated.Replace("{0}","Order")
+                Message = orderVM.OrderId == 0 ? NotificationMessages.Added.Replace("{0}", "Order") : NotificationMessages.Updated.Replace("{0}", "Order")
             };
         }
         catch
@@ -218,7 +215,7 @@ public class AppMenuService : IAppMenuService
         ResponseViewModel response = new();
 
         // Order status - Completion
-        Order? order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Order"));
+        Order? order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
 
         if (order.OrderItems.Any(oi => oi.ReadyQuantity != oi.Quantity))
         {
@@ -227,15 +224,14 @@ public class AppMenuService : IAppMenuService
             return response;
         }
 
-        order.StatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Completed").Result!.Id;
+        order.StatusId = await _orderStatusService.Get(SetOrderStatus.COMPLETED);
         await _orderRepository.UpdateAsync(order);
-        
+
         // Delete Table assignment
         await _orderTableService.Delete(orderId);
 
         response.Success = true;
         return response;
-
     }
 
     public async Task<ResponseViewModel> CancelOrder(long orderId)
@@ -243,23 +239,22 @@ public class AppMenuService : IAppMenuService
         ResponseViewModel response = new();
 
         // Order status - Cancelled
-        Order? order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Order"));
+        Order? order = await _orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Order"));
 
         if (order.OrderItems.Any(oi => oi.ReadyQuantity > 0))
         {
             response.Success = false;
+            response.Message = NotificationMessages.CannotCancelOrder;
             return response;
         }
 
-        order.StatusId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
-        response.Success = await _orderRepository.UpdateAsync(order);
-        if (!response.Success)
-        {
-            return response;
-        }
+        order.StatusId = await _orderStatusService.Get(SetOrderStatus.CANCELLED);
+        await _orderRepository.UpdateAsync(order);
 
         // Delete Table assignment
-        response.Success = await _orderTableService.Delete(orderId);
+        await _orderTableService.Delete(orderId);
+        response.Success = true;
+        response.Message = NotificationMessages.Successfully.Replace("{0}", "Order Cancelled");
         return response;
     }
 

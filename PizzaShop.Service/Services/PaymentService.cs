@@ -13,19 +13,25 @@ public class PaymentService : IPaymentService
         _paymentRepository = paymentRepository;
     }
 
-    public async Task<bool> Save(long paymentMethodId, long orderId)
+    public async Task Save(long paymentMethodId, long orderId)
     {
-        Payment? payment = await _paymentRepository.GetByStringAsync(p => p.OrderId == orderId);
-
-        payment ??= new Payment{
-            OrderId = orderId
-        };
+        Payment payment = await _paymentRepository.GetByStringAsync(p => p.OrderId == orderId)
+                        ?? new Payment
+                        {
+                            OrderId = orderId
+                        };
 
         payment.PaymentMethodId = paymentMethodId;
 
-        bool success = payment.Id == 0 ? await _paymentRepository.AddAsync(payment) : await _paymentRepository.UpdateAsync(payment);
-        
-        return success;
+        if (payment.Id == 0)
+        {
+            await _paymentRepository.AddAsync(payment);
+        }
+        else
+        {
+            await _paymentRepository.UpdateAsync(payment);
+        }
+
     }
 
 }

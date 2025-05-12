@@ -24,9 +24,12 @@
             <div class="col-12 col-sm-6 form-floating mb-3">
                 <select asp-for="@Model.SectionId" class="form-select" aria-label="" id="selectSection" disabled>
                     <option selected value="">Select Section </option>
-                    @foreach (var sec in Model.SectionList)
+                    @if (Model.SectionList != null)
                     {
-                        <option value="@sec.Id"> @sec.Name</option>
+                        @foreach (var sec in Model.SectionList)
+                        {
+                            <option value="@sec.Id"> @sec.Name</option>
+                        }
                     }
                 </select>
                 <label for="selectSection">Sections</label>
@@ -41,9 +44,12 @@
             <div class="col-12 col-sm-6 form-floating mb-3">
                 <select asp-for="@Model.StatusId" class="form-select" aria-label="" id="selectStatus" disabled>
                     <option value="">Select Status</option>
-                    @foreach (var status in Model.StatusList)
+                    @if (Model.StatusList != null)
                     {
-                        <option value="@status.Id"> @status.Name</option>
+                        foreach (var status in Model.StatusList)
+                        {
+                            <option value="@status.Id"> @status.Name</option>
+                        }
                     }
                 </select>
                 <label for="selectStatus">Status</label>

@@ -7,5 +7,5 @@ public interface ICategoryService
     Task<List<CategoryViewModel>> Get();
     Task<CategoryViewModel> Get(long categoryId);
     Task<ResponseViewModel> Save(CategoryViewModel category);
-    Task<ResponseViewModel> Delete(long categoryId);
+    Task Delete(long categoryId);
 }

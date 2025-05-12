@@ -7,5 +7,5 @@ public interface IRolePermissionService
 {
     IEnumerable<Role> Get();
     Task<RolePermissionViewModel> Get(long roleId);
-    Task<bool> Update(long roleId, List<PermissionViewModel> permissions, string createrEmail);
+    Task Update(long roleId, List<PermissionViewModel> permissions);
 }

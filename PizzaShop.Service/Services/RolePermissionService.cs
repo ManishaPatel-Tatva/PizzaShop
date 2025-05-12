@@ -4,6 +4,8 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using PizzaShop.Service.Exceptions;
+using PizzaShop.Service.Common;
 
 namespace PizzaShop.Service.Services;
 
@@ -12,15 +14,18 @@ public class RolePermissionService : IRolePermissionService
     private readonly IGenericRepository<Role> _roleRepository;
     private readonly IGenericRepository<RolePermission> _rolePermissionRepository;
     private readonly IGenericRepository<User> _userRepository;
+    private readonly IUserService _userService;
 
     // private readonly IRolePermissionRepository _rolePermissionRepository;
 
 
-    public RolePermissionService(IGenericRepository<Role> roleRepository, IGenericRepository<RolePermission> rolePermissionRepository, IGenericRepository<User> userRepository)
+    public RolePermissionService(IGenericRepository<Role> roleRepository, IGenericRepository<RolePermission> rolePermissionRepository, IGenericRepository<User> userRepository, IUserService userService)
     {
         _roleRepository = roleRepository;
         _rolePermissionRepository = rolePermissionRepository;
         _userRepository = userRepository;
+        _userService = userService;
+
     }
 
     /*------------------- Role ---------------------------------------------------------------------------
@@ -34,7 +39,9 @@ public class RolePermissionService : IRolePermissionService
     --------------------------------------------------------------------------------------------------*/
     public async Task<RolePermissionViewModel> Get(long roleId)
     {
-        Role? selectedRole = await _roleRepository.GetByIdAsync(roleId);
+        Role selectedRole = await _roleRepository.GetByIdAsync(roleId)
+                            ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Role"));
+
         IEnumerable<RolePermission>? permissions = await _rolePermissionRepository.GetByCondition(
             rp => rp.RoleId == selectedRole.Id,
             orderBy: q => q.OrderBy(rp => rp.Permission.Id),
@@ -61,28 +68,21 @@ public class RolePermissionService : IRolePermissionService
         return rolePermissions;
     }
 
-    public async Task<bool> Update(long roleId, List<PermissionViewModel> permissions, string createrEmail)
+    public async Task Update(long roleId, List<PermissionViewModel> permissions)
     {
-        User user= await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-
-        foreach (PermissionViewModel? permission in permissions)
+        foreach (PermissionViewModel permission in permissions)
         {
-            RolePermission? Permission =  _rolePermissionRepository.GetByCondition(p => p.PermissionId == permission.PermissionId && p.RoleId == roleId).Result.SingleOrDefault();
-            if (Permission != null)
-            {
-                Permission.View = permission.CanView;
-                Permission.AddOrEdit = permission.CanEdit;
-                Permission.Delete = permission.CanDelete;
-                Permission.UpdatedBy = user.Id;
-                Permission.UpdatedAt = DateTime.Now;
+            RolePermission Permission = _rolePermissionRepository.GetByCondition(p => p.PermissionId == permission.PermissionId && p.RoleId == roleId).Result.FirstOrDefault()
+            ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Role Permission"));
 
-                if (!await _rolePermissionRepository.UpdateAsync(Permission))
-                {
-                    return false;
-                }
-            }
+            Permission.View = permission.CanView;
+            Permission.AddOrEdit = permission.CanEdit;
+            Permission.Delete = permission.CanDelete;
+            Permission.UpdatedBy = await _userService.LoggedInUser();
+            Permission.UpdatedAt = DateTime.Now;
+
+            await _rolePermissionRepository.UpdateAsync(Permission);
         }
-        return true;
     }
 
 }

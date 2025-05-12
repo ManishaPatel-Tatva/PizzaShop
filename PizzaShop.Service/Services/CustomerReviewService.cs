@@ -1,6 +1,7 @@
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Common;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -21,16 +22,13 @@ public class CustomerReviewService : ICustomerReviewService
     {
         ResponseViewModel response = new();
 
-        CustomersReview? review = await _customersReviewRepository.GetByStringAsync(
-            r => r.OrderId == reviewVM.OrderId && r.CustomerId == reviewVM.CustomerId && !r.IsDeleted
-        );
-
-        review ??= new CustomersReview
-        {
-            OrderId = reviewVM.OrderId,
-            CustomerId = reviewVM.CustomerId,
-            CreatedBy = await _userService.LoggedInUser()
-        };
+        CustomersReview review = await _customersReviewRepository.GetByIdAsync(reviewVM.Id)
+                                ?? new CustomersReview
+                                {
+                                    OrderId = reviewVM.OrderId,
+                                    CustomerId = reviewVM.CustomerId,
+                                    CreatedBy = await _userService.LoggedInUser()
+                                };
 
         review.FoodRating = reviewVM.FoodRating;
         review.EnvRating = reviewVM.ServiceRating;
@@ -39,8 +37,18 @@ public class CustomerReviewService : ICustomerReviewService
 
         review.Rating = (int)((reviewVM.FoodRating + reviewVM.AmbienceRating + reviewVM.ServiceRating) / 3);
 
-        response.Success = review.Id == 0 ? await _customersReviewRepository.AddAsync(review) : await _customersReviewRepository.UpdateAsync(review);
-
-        return response; 
+        if (reviewVM.Id == 0)
+        {
+            await _customersReviewRepository.AddAsync(review);
+            response.Success = true;
+            response.Message = NotificationMessages.Added.Replace("{0}","Review");
+        }
+        else
+        {
+            await _customersReviewRepository.UpdateAsync(review);
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}","Review");
+        }
+        return response;
     }
 }

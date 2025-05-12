@@ -4,6 +4,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -63,15 +64,19 @@ public class KotService : IKotService
             KotCards = orders.Select(o => new KotCardViewModel
             {
                 OrderId = o.Id,
+
                 SectionName = o.OrderTableMappings
                             .Where(otm => otm.OrderId == o.Id)
                             .Select(otm => otm.Table.Section.Name)
                             .FirstOrDefault()!,
+
                 Tables = o.OrderTableMappings
                             .Where(otm => otm.OrderId == o.Id)
                             .Select(otm => otm.Table.Name)
                             .ToList(),
+
                 Time = o.CreatedAt,
+
                 Items = o.OrderItems
                         .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && (!oi.IsDeleted) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
                         .Select(oi => new OrderItemViewModel
@@ -87,8 +92,11 @@ public class KotService : IKotService
                                             }).ToList(),
                             Instruction = oi.Instructions,
                         }).ToList(),
+
                 Instruction = o.Instructions
+
             }).Where(c => c.Items.Count > 0).ToList(),
+            
             Page = new()
         };
 
@@ -101,7 +109,6 @@ public class KotService : IKotService
 
     public async Task<ResponseViewModel> Update(KotCardViewModel kot)
     {
-
         ResponseViewModel response = new();
 
         if (kot.Items.All(i => i.IsSelected == false))
@@ -115,29 +122,17 @@ public class KotService : IKotService
         {
             if (item.IsSelected)
             {
-                OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(oi => oi.OrderId == kot.OrderId && oi.ItemId == item.ItemId && !oi.IsDeleted);
-                if (orderItem == null)
-                {
-                    response.Success = false;
-                    response.Message = NotificationMessages.NotFound.Replace("{0}", "Item");
-                    return response;
-                }
+                OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(
+                                        oi => oi.OrderId == kot.OrderId 
+                                        && oi.ItemId == item.ItemId 
+                                        && !oi.IsDeleted)
+                                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Item"));
 
-                if (kot.IsReady)
-                {
-                    orderItem.ReadyQuantity -= item.Quantity;
-                }
-                else
-                {
-                    orderItem.ReadyQuantity += item.Quantity;
-                }
+                orderItem.ReadyQuantity = kot.IsReady ?
+                                          orderItem.ReadyQuantity - item.Quantity
+                                        : orderItem.ReadyQuantity + item.Quantity;
 
-                if (!await _orderItemRepository.UpdateAsync(orderItem))
-                {
-                    response.Success = false;
-                    response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Item Status");
-                    return response;
-                }
+                await _orderItemRepository.UpdateAsync(orderItem);
             }
         }
 

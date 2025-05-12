@@ -4,9 +4,9 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IModifierMappingService
 {
-    Task<bool> Add(long modifierGroupId, long modifierId);
-    Task<bool> UpdateModifierGroupMapping(long modifierGroupId, List<long> modifierList);
-    Task<bool> UpdateModifierMapping(long modifierId, List<long> modifierGroupList);
-    Task<ResponseViewModel> Delete(long mgId);
-    Task<bool> Delete(long mgId, long modifierId);
+    Task Add(long modifierGroupId, long modifierId);
+    Task UpdateModifierGroupMapping(long modifierGroupId, List<long> modifierList);
+    Task UpdateModifierMapping(long modifierId, List<long> modifierGroupList);
+    Task Delete(long mgId);
+    Task Delete(long mgId, long modifierId);
 }

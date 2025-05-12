@@ -6,6 +6,7 @@ using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Common;
 using Microsoft.AspNetCore.Http;
+using PizzaShop.Service.Exceptions;
 
 namespace PizzaShop.Service.Services;
 
@@ -33,7 +34,9 @@ public class UserService : IUserService
     -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<User> Get(string email)
     {
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
+
         return user;
     }
 
@@ -70,7 +73,7 @@ public class UserService : IUserService
             includes: new List<Expression<Func<User, object>>> { u => u.Role }
         );
 
-        (users, int totalRecord) = await _userRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, users);
+        (users, int totalRecord) = _userRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, users);
 
         UserPaginationViewModel model = new()
         {
@@ -96,11 +99,8 @@ public class UserService : IUserService
     -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<EditUserViewModel> Get(long userId)
     {
-        User? user = await _userRepository.GetByIdAsync(userId);
-        if (user == null)
-        {
-            return null;
-        }
+        User user = await _userRepository.GetByIdAsync(userId)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
         EditUserViewModel userVM = new()
         {
@@ -129,7 +129,7 @@ public class UserService : IUserService
 
     /*---------------------------------------------------------------For getting the countries/roles in Add User  --------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<AddUserViewModel> Get()
+    public AddUserViewModel Get()
     {
         return new AddUserViewModel
         {
@@ -147,7 +147,7 @@ public class UserService : IUserService
         model.Email = model.Email.ToLower();
 
         //Checking if email already existed
-        User existingEmail = await _userRepository.GetByStringAsync(u => u.Email.ToLower() == model.Email && u.IsDeleted == false);
+        User? existingEmail = await _userRepository.GetByStringAsync(u => u.Email.ToLower() == model.Email && u.IsDeleted == false);
         if (existingEmail != null)
         {
             return new ResponseViewModel
@@ -158,7 +158,7 @@ public class UserService : IUserService
         }
 
         //Checking if User Name already existed
-        User existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.IsDeleted == false);
+        User? existingUserName = await _userRepository.GetByStringAsync(u => u.Username == model.UserName && u.IsDeleted == false);
         if (existingUserName != null)
         {
             return new ResponseViewModel
@@ -215,17 +215,11 @@ public class UserService : IUserService
         }
 
         //Send Email if user added succesfully
-        if (!await _userRepository.AddAsync(user))
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.AddedFailed.Replace("{0}", "User")
-            };
-        }
+        await _userRepository.AddAsync(user);
 
         string? body = EmailTemplateHelper.NewPassword(simplePassword);
         await _emailService.SendEmail(model.Email, "New User", body);
+
         return new ResponseViewModel
         {
             Success = true,
@@ -250,15 +244,8 @@ public class UserService : IUserService
             };
         }
 
-        User? user = await _userRepository.GetByIdAsync(model.UserId);
-        if (user == null)
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.NotFound.Replace("{0}", "User")
-            };
-        }
+        User user = await _userRepository.GetByIdAsync(model.UserId)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
         //Updating Values    
         user.FirstName = model.FirstName;
@@ -295,19 +282,12 @@ public class UserService : IUserService
             user.ProfileImg = $"/uploads/{fileName}";
         }
 
-        if (await _userRepository.UpdateAsync(user))
-        {
-            return new ResponseViewModel
-            {
-                Success = true,
-                Message = NotificationMessages.Updated.Replace("{0}", "User")
-            };
-        }
+        await _userRepository.UpdateAsync(user);
 
         return new ResponseViewModel
         {
-            Success = false,
-            Message = NotificationMessages.UpdatedFailed.Replace("{0}", "User")
+            Success = true,
+            Message = NotificationMessages.Updated.Replace("{0}", "User")
         };
     }
     #endregion
@@ -315,37 +295,16 @@ public class UserService : IUserService
     #region Delete
     /*----------------------------------------------------------------Delete User--------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<ResponseViewModel> Delete(long id)
+    public async Task Delete(long id)
     {
-        User user = await _userRepository.GetByIdAsync(id);
-        if (user == null)
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.NotFound.Replace("{0}", "User")
-            };
-        }
+        User user = await _userRepository.GetByIdAsync(id)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
         user.IsDeleted = true;
         user.UpdatedBy = await LoggedInUser();
         user.UpdatedAt = DateTime.Now;
-        if (await _userRepository.UpdateAsync(user))
-        {
-            return new ResponseViewModel
-            {
-                Success = true,
-                Message = NotificationMessages.Deleted.Replace("{0}", "User")
-            };
-        }
-        else
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.DeletedFailed.Replace("{0}", "User")
-            };
-        }
+
+        await _userRepository.UpdateAsync(user);
     }
     #endregion
 
@@ -355,17 +314,12 @@ public class UserService : IUserService
     {
         // string email = _httpContextAccessor.HttpContext.Session.GetString("email");
         string token = _httpContextAccessor.HttpContext.Request.Cookies["authToken"];
-        string? createrEmail = _jwtService.GetClaimValue(token, "email");
+        string? userEmail = _jwtService.GetClaimValue(token, "email");
+
+        User user = await _userRepository.GetByStringAsync(u => u.Email == userEmail && !u.IsDeleted)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
         
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail && !u.IsDeleted);
-        if (user == null)
-        {
-            return 1;
-        }
-        else
-        {
-            return user.Id;
-        }
+        return user.Id;
     }
 
     #endregion

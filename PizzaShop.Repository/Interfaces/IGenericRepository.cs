@@ -6,7 +6,7 @@ namespace PizzaShop.Repository.Interfaces;
 public interface IGenericRepository<T>
     where T : class
 {
-    Task<bool> AddAsync(T entity);
+    Task AddAsync(T entity);
     Task<long> AddAsyncReturnId(T entity);
 
     IEnumerable<T> GetAll();
@@ -19,19 +19,16 @@ public interface IGenericRepository<T>
         List<Func<IQueryable<T>, IQueryable<T>>>? thenIncludes = null
     );
 
-    Task<(IEnumerable<T> items, int totalCount)> GetPagedRecords
+    (IEnumerable<T> items, int totalCount) GetPagedRecords
     (
         int pageSize,
         int pageNumber,
-        IEnumerable<T>? items = null
+        IEnumerable<T> items
     );
 
     Task<T?> GetByIdAsync(long id);
 
     Task<T?> GetByStringAsync(Expression<Func<T, bool>> predicate);
 
-    Task<bool> UpdateAsync(T entity);
-
-    Task<int> GetCount(Expression<Func<T, bool>>? predicate = null);
-    
+    Task UpdateAsync(T entity);
 }

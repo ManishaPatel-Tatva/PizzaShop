@@ -1,7 +1,9 @@
-@model PizzaShop.Entity.ViewModels.AddItemViewModel;
+@using PizzaShop.Entity.Models
+@using PizzaShop.Entity.ViewModels
+@model ItemViewModel;
 
 <div class="modal-header">
-    <h3 class="modal-title fw-bold text-grey" id="staticBackdropLabel"> @(Model.ItemId == 0 ? "Add New " : "Update")
+    <h3 class="modal-title fw-bold text-grey" id="staticBackdropLabel"> @(Model.Id == 0 ? "Add New " : "Update")
         Menu
         Item</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -11,7 +13,7 @@
     enctype="multipart/form-data">
     <div class="modal-body row">
 
-        <input asp-for="@Model.ItemId" type="text" class="form-control" id="itemId" hidden>
+        <input asp-for="@Model.Id" type="text" class="form-control" id="itemId" hidden>
         <input type="text" class="form-control" id="modifierGroupList" name="modifierGroupList" hidden>
 
         <div class="modal-item col-12 col-md-8 row">
@@ -35,7 +37,7 @@
             <div class="col-12 col-sm-6 col-lg-3 form-floating mb-3">
                 <select asp-for="@Model.ItemTypeId" class="form-select" aria-label="" id="itemType">
                     <option selected value="-1">Select a type</option>
-                    @foreach (var type in Model.ItemTypes)
+                    @foreach (var type in Model.FoodType)
                     {
                         <option value="@type.Id"> @type.Name</option>
                     }
@@ -116,19 +118,24 @@
             <div class="my-2">
                 <select asp-for="@Model.ModifierGroupId" class="form-select" aria-label="" id="selectModifierGroup">
                     <option selected value="-1">Select Modifier Groups(s)</option>
-                    @foreach (var modifierGroup in Model.ModifierGroups)
+                    @if (Model.ModifierGroups != null)
                     {
-                        <option value="@modifierGroup.Id"> @modifierGroup.Name</option>
+                        @foreach (ModifierGroup? modifierGroup in Model.ModifierGroups)
+                        {
+                            <option value="@modifierGroup.Id"> @modifierGroup.Name</option>
+                        }
                     }
                 </select>
             </div>
 
             <div class="mt-3" id="showModifierGroup">
                 <!-- Selected Modifier Group Partial View -->
-
-                @foreach (var modifierGroup in Model.ItemModifierGroups)
+                @if (Model.ItemModifierGroups != null)
                 {
-                    <partial name="_ItemModifierPartialView" model="modifierGroup" />
+                    foreach (ItemModifierViewModel? modifierGroup in Model.ItemModifierGroups)
+                    {
+                        <partial name="_ItemModifierPartialView" model="modifierGroup" />
+                    }
                 }
             </div>
 

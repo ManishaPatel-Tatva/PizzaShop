@@ -4,6 +4,7 @@ using PizzaShop.Repository.Interfaces;
 using PizzaShop.Entity.Models;
 using PizzaShop.Service.Common;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Exceptions;
 
 namespace PizzaShop.Service.Services;
 
@@ -29,28 +30,22 @@ public class AuthService : IAuthService
     -----------------------------------------------------------------------------------------------*/
     public async Task<(LoginResultViewModel loginResult, ResponseViewModel response)> LoginAsync(string email, string password)
     {
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == email);       //Get User from email
+        User user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted) 
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));       //Get User from email
 
-        if (user == null)
-        {
-            return (new LoginResultViewModel { }, new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.NotFound.Replace("{0}", "User")
-            });
-        }
+        LoginResultViewModel loginVM = new();
+        ResponseViewModel response = new();
 
         if (!PasswordHelper.VerifyPassword(password, user.Password))
         {
-            return (new LoginResultViewModel{}, new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.Invalid.Replace("{0}", "Credentials")
-            });
+            response.Success = false;
+            response.Message = NotificationMessages.Invalid.Replace("{0}", "Credentials");
+            return (loginVM, response);
         }
 
-        Role? role = await _roleRepository.GetByStringAsync(u => u.Id == user.RoleId);
-        string? token = await _jwtService.GenerateToken(email, role.Name);
+        Role role = await _roleRepository.GetByStringAsync(u => u.Id == user.RoleId) 
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Role"));
+        string token = await _jwtService.GenerateToken(email, role.Name);
 
         LoginResultViewModel loginResult = new()
         {
@@ -59,11 +54,7 @@ public class AuthService : IAuthService
             ImageUrl = user.ProfileImg
         };
 
-        ResponseViewModel response = new()
-        {
-            Success = true,
-        };
-
+        response.Success = true;
         return (loginResult, response);
     }
     #endregion
@@ -73,16 +64,10 @@ public class AuthService : IAuthService
     -----------------------------------------------------------------------------------------------*/
     public async Task<ResponseViewModel> ForgotPassword(string email, string resetToken, string resetLink)
     {
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted) 
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
-        if (user == null)
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.NotFound.Replace("{0}", "User")
-            };
-        }
+        ResponseViewModel response = new();
 
         //Stores the reset password token in table  
         ResetPasswordToken token = new()
@@ -91,31 +76,22 @@ public class AuthService : IAuthService
             Token = resetToken
         };
 
-        if (!await _resetPasswordRepository.AddAsync(token))
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.TryAgain
-            };
-        }
+        await _resetPasswordRepository.AddAsync(token);
 
         //Sending email to user for resetting password
         string body = EmailTemplateHelper.ResetPassword(resetLink);
-        if (!await _emailService.SendEmail(email, "Reset Password", body))
+        if (await _emailService.SendEmail(email, "Reset Password", body))
         {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.EmailSendingFailed
-            };
+            response.Success = true;
+            response.Message = NotificationMessages.EmailSent;
+        }
+        else
+        {
+            response.Success = false;
+            response.Message = NotificationMessages.EmailSendingFailed;
         }
 
-        return new ResponseViewModel
-        {
-            Success = false,
-            Message = NotificationMessages.EmailSent
-        };
+        return response;
     }
 
     #endregion
@@ -125,57 +101,40 @@ public class AuthService : IAuthService
     -----------------------------------------------------------------------------------------------*/
     public async Task<ResponseViewModel> ResetPassword(string token, string newPassword)
     {
-        ResetPasswordToken? resetToken = await _resetPasswordRepository.GetByStringAsync(t => t.Token == token);
-        if (resetToken == null)
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.Invalid.Replace("{0}", "Token")
-            };
-        }
+        ResetPasswordToken? resetToken = await _resetPasswordRepository.GetByStringAsync(t => t.Token == token) 
+                                        ?? throw new NotFoundException(NotificationMessages.Invalid.Replace("{0}", "Token"));
+
+        ResponseViewModel response = new();
 
         //Check token expiry
         if (resetToken.Expirytime.Subtract(DateTime.Now).Ticks <= 0)
         {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.LinkExpired
-            };
+            response.Success = false;
+            response.Message = NotificationMessages.LinkExpired;
+            return response;
         }
 
         //Check if token is already used
         if (resetToken.IsUsed)
         {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.AlreadyUsed
-            };
+            response.Success = false;
+            response.Message = NotificationMessages.AlreadyUsed;
         }
 
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == resetToken.Email);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == resetToken.Email) 
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
+        // Updates Password
         user.Password = PasswordHelper.HashPassword(newPassword);
+        await _userRepository.UpdateAsync(user);
 
-        if (!await _userRepository.UpdateAsync(user))
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Password")
-            };
-        }
-
+        // CHange token status to used
         resetToken.IsUsed = true;
         await _resetPasswordRepository.UpdateAsync(resetToken);
-        
-        return new ResponseViewModel
-        {
-            Success = true,
-            Message = NotificationMessages.Updated.Replace("{0}", "Password")
-        };
+
+        response.Success = true;
+        response.Message = NotificationMessages.Updated.Replace("{0}", "Password");
+        return response;
     }
 
     #endregion

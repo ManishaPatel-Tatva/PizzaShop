@@ -17,7 +17,7 @@ public class DashboardViewModel
 public class SellingItem
 {
     public string Name { get; set; } = null!;
-    public string ImgUrl { get; set; } = null!;
+    public string? ImgUrl { get; set; } 
     public int TotalQuantity { get; set; } = 0;
 }
  

@@ -2,6 +2,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -10,12 +11,12 @@ namespace PizzaShop.Service.Services;
 public class TaxesFeesService : ITaxesFeesService
 {
     private readonly IGenericRepository<Taxis> _taxesRepository;
-    private readonly IGenericRepository<User> _userRepository;
+    private readonly IUserService _userService;
 
-    public TaxesFeesService(IGenericRepository<Taxis> taxesRepository, IGenericRepository<User> userRepository)
+    public TaxesFeesService(IGenericRepository<Taxis> taxesRepository, IUserService userService)
     {
         _taxesRepository = taxesRepository;
-        _userRepository = userRepository;
+        _userService = userService;
     }
 
 
@@ -30,128 +31,87 @@ public class TaxesFeesService : ITaxesFeesService
             orderBy: q => q.OrderBy(u => u.Id)
         );
 
-        (IEnumerable<Taxis> taxes, int totalRecord) = await _taxesRepository.GetPagedRecords(filter.PageSize,filter.PageNumber,list);
+        (IEnumerable<Taxis> taxes, int totalRecord) = _taxesRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, list);
 
-        TaxPaginationViewModel model = new()
+        TaxPaginationViewModel taxVM = new()
         {
             Page = new(),
             Taxes = taxes.Select(t => new TaxViewModel()
             {
                 TaxId = t.Id,
                 Name = t.Name,
-                IsPercentage = (bool)t.IsPercentage,
+                IsPercentage = t.IsPercentage,
                 IsEnabled = t.IsEnabled,
                 Default = t.DefaultTax,
                 TaxValue = t.TaxValue
             }).ToList()
         };
 
-        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
-        return model;
+        taxVM.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
+        return taxVM;
     }
 
     public async Task<TaxViewModel> Get(long TaxId)
     {
-        TaxViewModel model = new();
+        Taxis tax = await _taxesRepository.GetByIdAsync(TaxId)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Tax"));
 
-        if (TaxId == 0)
-            return model;
+        TaxViewModel taxVM = new()
+        {
+            TaxId = TaxId,
+            Name = tax.Name,
+            IsPercentage = tax.IsPercentage,
+            IsEnabled = tax.IsEnabled,
+            Default = tax.DefaultTax,
+            TaxValue = tax.TaxValue
+        };
 
-        Taxis tax = await _taxesRepository.GetByIdAsync(TaxId);
-
-        model.TaxId = TaxId;
-        model.Name = tax.Name;
-        model.IsPercentage = (bool)tax.IsPercentage;
-        model.IsEnabled = tax.IsEnabled;
-        model.Default = tax.DefaultTax;
-        model.TaxValue = tax.TaxValue;
-
-        return model;
+        return taxVM;
     }
 
-    public async Task<ResponseViewModel> Save(TaxViewModel model, string createrEmail)
+    public async Task<ResponseViewModel> Save(TaxViewModel taxVM)
     {
-        User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        long createrId = creater.Id;
-
-        Taxis tax = new();
-
-        if (model.TaxId == 0)
+        Taxis tax = await _taxesRepository.GetByIdAsync(taxVM.TaxId)
+        ?? new()
         {
-            tax.CreatedBy = createrId;
-        }
-        else if (model.TaxId > 0)
-        {
-            tax = await _taxesRepository.GetByIdAsync(model.TaxId);
-        }
-        else
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.Invalid.Replace("{0}", "Tax")
-            };
-        }
+            CreatedBy = await _userService.LoggedInUser()
+        };
 
-        tax.Name = model.Name;
-        tax.IsPercentage = model.IsPercentage;
-        tax.IsEnabled = model.IsEnabled;
-        tax.DefaultTax = model.Default;
-        tax.TaxValue = model.TaxValue;
-        tax.UpdatedBy = createrId;
+        ResponseViewModel response = new();
+
+        tax.Name = taxVM.Name;
+        tax.IsPercentage = taxVM.IsPercentage;
+        tax.IsEnabled = taxVM.IsEnabled;
+        tax.DefaultTax = taxVM.Default;
+        tax.TaxValue = taxVM.TaxValue;
+        tax.UpdatedBy = await _userService.LoggedInUser();
         tax.UpdatedAt = DateTime.Now;
 
-        if (model.TaxId == 0)
+        if (taxVM.TaxId == 0)
         {
-            if (await _taxesRepository.AddAsync(tax))
-            {
-                return new ResponseViewModel
-                {
-                    Success = true,
-                    Message = NotificationMessages.Added.Replace("{0}", "Tax")
-                };
-            }
-            else{
-                return new ResponseViewModel
-                {
-                    Success = false,
-                    Message = NotificationMessages.AddedFailed.Replace("{0}", "Tax")
-                };
-            }
+            await _taxesRepository.AddAsync(tax);
+            response.Success = true;
+            response.Message = NotificationMessages.Added.Replace("{0}", "Tax");
         }
         else
         {
-            if (await _taxesRepository.UpdateAsync(tax))
-            {
-                return new ResponseViewModel
-                {
-                    Success = true,
-                    Message = NotificationMessages.Updated.Replace("{0}", "Tax")
-                };
-            }
-            else{
-                return new ResponseViewModel
-                {
-                    Success = false,
-                    Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Tax")
-                };
-            }
+            await _taxesRepository.UpdateAsync(tax);
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Tax");
         }
+        return response;
     }
 
-    public async Task<bool> Delete(long taxId, string createrEmail)
+    public async Task Delete(long taxId)
     {
-        User user = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        if (user == null)
-            return false;
-
-        Taxis tax = await _taxesRepository.GetByIdAsync(taxId);
+        Taxis tax = await _taxesRepository.GetByIdAsync(taxId)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Tax"));
 
         tax.IsDeleted = true;
-        tax.UpdatedBy = user.Id;
+        tax.UpdatedBy = await _userService.LoggedInUser();
         tax.UpdatedAt = DateTime.Now;
 
-        return await _taxesRepository.UpdateAsync(tax);
+        await _taxesRepository.UpdateAsync(tax);
     }
 
 

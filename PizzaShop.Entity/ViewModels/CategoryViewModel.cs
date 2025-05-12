@@ -8,8 +8,7 @@ public class CategoryViewModel
 
     [Required(ErrorMessage = "Category Name is required")]
     [StringLength(50, ErrorMessage = "Category Name cannot exceed 50 characters")]
-    public string? Name { get; set; }
-
-    [Required(ErrorMessage = "Description is required")]
+    public string Name { get; set; } = "";
+    
     public string? Desc { get; set; }
 }

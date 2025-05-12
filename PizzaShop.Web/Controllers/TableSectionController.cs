@@ -66,8 +66,12 @@ public class TableSectionController : Controller
     [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> DeleteSection(long sectionId)
     {
-        ResponseViewModel response = await _sectionService.Delete(sectionId);
-        return Json(response);
+        await _sectionService.Delete(sectionId);
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Section")
+        });
     }
 
     #endregion Section
@@ -112,8 +116,12 @@ public class TableSectionController : Controller
     [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> DeleteTable(long tableId)
     {
-        ResponseViewModel response = await _tableService.Delete(tableId);
-        return Json(response);
+        await _tableService.Delete(tableId);
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Table")
+        });
     }
 
     /*--------------------------------------------------------Delete Multiple Tables--------------------------------------------------------------------------------------------------------
@@ -121,8 +129,12 @@ public class TableSectionController : Controller
     [CustomAuthorize(nameof(PermissionType.Delete_Tables_and_Sections))]
     public async Task<IActionResult> MassDeleteTable(List<long> tableIdList)
     {
-        ResponseViewModel response = await _tableService.Delete(tableIdList);
-        return Json(response);
+        await _tableService.Delete(tableIdList);
+        return Json(new ResponseViewModel
+        {
+            Success = true,
+            Message = NotificationMessages.Deleted.Replace("{0}","Tables")
+        });
     }
 
     #endregion Table

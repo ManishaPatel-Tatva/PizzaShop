@@ -7,5 +7,5 @@ public interface ISectionService
     Task<List<SectionViewModel>> Get();
     Task<SectionViewModel> Get(long sectionId);
     Task<ResponseViewModel> Save(SectionViewModel model);
-    Task<ResponseViewModel> Delete(long sectionId);
+    Task Delete(long sectionId);
 }

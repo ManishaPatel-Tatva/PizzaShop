@@ -6,6 +6,7 @@ using PizzaShop.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Linq.Expressions;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 
 
 namespace PizzaShop.Service.Services;
@@ -15,14 +16,15 @@ public class ProfileService : IProfileService
     private readonly IGenericRepository<Role> _roleRepository;
     private readonly IAddressService _addressService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUserService _userService;
 
-    public ProfileService(IGenericRepository<User> userRepository, IAddressService addressService, IGenericRepository<Role> roleRepository, IHttpContextAccessor httpContextAccessor)
+    public ProfileService(IGenericRepository<User> userRepository, IAddressService addressService, IGenericRepository<Role> roleRepository, IHttpContextAccessor httpContextAccessor, IUserService userService)
     {
         _userRepository = userRepository;
         _addressService = addressService;
         _roleRepository = roleRepository;
         _httpContextAccessor = httpContextAccessor;
-
+        _userService = userService;
     }
 
     /*-----------------------------------------------------------------My Profile---------------------------------------------------------------------------------
@@ -30,20 +32,18 @@ public class ProfileService : IProfileService
     #region My Profile
 
 
-    public async Task<ProfileViewModel> Get(string email)
+    public async Task<ProfileViewModel> Get()
     {
-        User? user = _userRepository.GetByCondition(
-            predicate: u => u.Email == email && !u.IsDeleted,
+        long userId = await _userService.LoggedInUser();
+
+        User user = _userRepository.GetByCondition(
+            predicate: u => u.Id == userId && !u.IsDeleted,
             includes: new List<Expression<Func<User, object>>>
             {
                 u => u.Role
             }
-            ).Result.FirstOrDefault();
-
-        if (user == null)
-        {
-            return null;
-        }
+            ).Result.FirstOrDefault()
+            ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
         ProfileViewModel userProfile = new()
         {
@@ -73,14 +73,10 @@ public class ProfileService : IProfileService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     #region Update Profile
 
-    public async Task<bool> Update(ProfileViewModel model)
+    public async Task Update(ProfileViewModel model)
     {
-        User? user = await _userRepository.GetByStringAsync(u => u.Email == model.Email);
-
-        if (user == null)
-        {
-            return false;
-        }
+        User user = await _userRepository.GetByStringAsync(u => u.Email == model.Email)
+                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
         user.FirstName = model.FirstName;
         user.LastName = model.LastName;
@@ -124,7 +120,7 @@ public class ProfileService : IProfileService
         _httpContextAccessor.HttpContext.Response.Cookies.Append("userName", user.Username, options);
         _httpContextAccessor.HttpContext.Response.Cookies.Append("profileImg", user.ProfileImg, options);
 
-        return await _userRepository.UpdateAsync(user);
+        await _userRepository.UpdateAsync(user);
     }
 
     #endregion
@@ -135,42 +131,26 @@ public class ProfileService : IProfileService
 
     public async Task<ResponseViewModel> ChangePassword(ChangePasswordViewModel model)
     {
-        User user = await _userRepository.GetByStringAsync(u => u.Email == model.Email);
+        User user = await _userRepository.GetByStringAsync(u => u.Email == model.Email)
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
 
-        if (user == null)
-        {
-            return new ResponseViewModel
-            {
-                Success = false,
-                Message = NotificationMessages.NotFound.Replace("{0}", "User")
-            };
-        }
+        ResponseViewModel response = new();
 
         //Verify Password
         if (!PasswordHelper.VerifyPassword(model.OldPassword, user.Password))
         {
-            return new ResponseViewModel{
-                Success = false,
-                Message = NotificationMessages.Invalid.Replace("{0}", "Old Password")
-            };
+            response.Success = false;
+            response.Message = NotificationMessages.Invalid.Replace("{0}", "Old Password");
+            return response;
         }
 
         //Hash and Update Password
         user.Password = PasswordHelper.HashPassword(model.NewPassword);
-        if(await _userRepository.UpdateAsync(user))
-        {
-            return new ResponseViewModel{
-                Success = true,
-                Message = NotificationMessages.Updated.Replace("{0}", "Password")
-            };
-        }
-        else{
-            return new ResponseViewModel{
-                Success = false,
-                Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Password")
-            };
-        }
+        await _userRepository.UpdateAsync(user);
 
+        response.Success = true;
+        response.Message = NotificationMessages.Updated.Replace("{0}", "Password");
+        return response;
     }
 
     #endregion

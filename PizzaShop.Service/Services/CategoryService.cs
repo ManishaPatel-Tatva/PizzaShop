@@ -2,6 +2,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -41,12 +42,12 @@ public class CategoryService : ICategoryService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<CategoryViewModel> Get(long categoryId)
     {
-        if (categoryId == 0)
+        Category? category = await _categoryRepository.GetByIdAsync(categoryId);
+
+        if (category == null)
         {
             return new CategoryViewModel();
         }
-
-        Category? category = await _categoryRepository.GetByIdAsync(categoryId);
 
         CategoryViewModel categoryVM = new()
         {
@@ -64,63 +65,38 @@ public class CategoryService : ICategoryService
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<ResponseViewModel> Save(CategoryViewModel categoryVM)
     {
-        long createrId = await _userService.LoggedInUser();
         ResponseViewModel response = new();
 
         Category? existingCategory = await _categoryRepository.GetByStringAsync(c => c.Name.ToLower() == categoryVM.Name.ToLower() && !c.IsDeleted);
         if (existingCategory != null)
         {
             response.Success = false;
-            response.Message = NotificationMessages.AlreadyExisted.Replace("{0}","Category");
+            response.Message = NotificationMessages.AlreadyExisted.Replace("{0}", "Category");
             return response;
         }
 
-        Category? category = new();
-
-        if (categoryVM.Id == 0)
-        {
-            category.CreatedBy = createrId;
-        }
-        else if (categoryVM.Id > 0)
-        {
-            category = await _categoryRepository.GetByIdAsync(categoryVM.Id);
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.NotFound.Replace("{0}", "Category");
-        }
+        Category category = await _categoryRepository.GetByIdAsync(categoryVM.Id)
+                            ?? new Category()
+                            {
+                                CreatedBy = await _userService.LoggedInUser()
+                            };
 
         category.Name = categoryVM.Name;
         category.Description = categoryVM.Desc;
-        category.UpdatedBy = createrId;
+        category.UpdatedBy = await _userService.LoggedInUser();
         category.UpdatedAt = DateTime.Now;
 
         if (categoryVM.Id == 0)
         {
-            if (await _categoryRepository.AddAsync(category))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Added.Replace("{0}", "Category");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.AddedFailed.Replace("{0}", "Category");
-            }
+            await _categoryRepository.AddAsync(category);
+            response.Success = true;
+            response.Message = NotificationMessages.Added.Replace("{0}", "Category");
         }
         else
         {
-            if (await _categoryRepository.UpdateAsync(category))
-            {
-                response.Success = true;
-                response.Message = NotificationMessages.Updated.Replace("{0}", "Category");
-            }
-            else
-            {
-                response.Success = false;
-                response.Message = NotificationMessages.UpdatedFailed.Replace("{0}", "Category");
-            }
+            await _categoryRepository.UpdateAsync(category);
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Category");
         }
 
         return response;
@@ -130,28 +106,16 @@ public class CategoryService : ICategoryService
     #region Delete
     /*----------------------------------------------------------------Delete Category---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<ResponseViewModel> Delete(long categoryId)
+    public async Task Delete(long categoryId)
     {
-        Category? category = await _categoryRepository.GetByIdAsync(categoryId);
+        Category category = await _categoryRepository.GetByIdAsync(categoryId) 
+                            ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Category"));
 
         category.IsDeleted = true;
         category.UpdatedBy = await _userService.LoggedInUser();
         category.UpdatedAt = DateTime.Now;
 
-        ResponseViewModel response = new();
-
-        if (await _categoryRepository.UpdateAsync(category))
-        {
-            response.Success = true;
-            response.Message = NotificationMessages.Deleted.Replace("{0}", "Category");
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.DeletedFailed.Replace("{0}", "Category");
-        }
-
-        return response;
+        await _categoryRepository.UpdateAsync(category);
     }
 
     #endregion

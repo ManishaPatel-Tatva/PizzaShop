@@ -10,11 +10,11 @@ public class WaitingTokenViewModel
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email format")]
     [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid Email Format")]
-    public string? Email { get; set; }
+    public string Email { get; set; } = "";
 
     [Required(ErrorMessage = "Name is required")]
     [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
-    public string? Name { get; set; }
+    public string Name { get; set; } = "";
 
     [Required(ErrorMessage = "Phone number is required")]
     [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits.")]

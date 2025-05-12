@@ -38,9 +38,9 @@ public class OrderService : IOrderService
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<OrderPaginationViewModel> Get(FilterViewModel filter)
     {
-        IEnumerable<Order>? orders = await List(filter);
+        IEnumerable<Order> orders = await List(filter);
 
-        (orders, int totalRecord) = await _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
+        (orders, int totalRecord) = _orderRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, orders);
 
         //Setting the filtered and sorted values in View Model
         OrderPaginationViewModel model = new()

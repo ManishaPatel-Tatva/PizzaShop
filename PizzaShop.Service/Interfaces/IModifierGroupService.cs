@@ -7,5 +7,5 @@ public interface IModifierGroupService
     List<ModifierGroupViewModel> Get();
     Task<ModifierGroupViewModel> Get(long modifierGroupId);
     Task<ResponseViewModel> Save(ModifierGroupViewModel modifierGroupVM);
-    Task<ResponseViewModel> Delete(long modifierGroupId);
+    Task Delete(long mgId);
 }

@@ -58,11 +58,6 @@ public class WaitingListService : IWaitingListService
             Sections = await _sectionService.Get()
         };
 
-        if (tokenId == 0)
-        {
-            return tokenVM;
-        }
-
         WaitingToken? token = _waitingTokenRepository.GetByCondition(
             predicate: t => t.Id == tokenId && !t.IsDeleted,
             includes: new List<Expression<Func<WaitingToken, object>>>
@@ -139,11 +134,9 @@ public class WaitingListService : IWaitingListService
         }
 
         // Waiting Token
-        long createrId = await _userService.LoggedInUser();
+        WaitingToken token = await _waitingTokenRepository.GetByIdAsync(wtokenVM.Id) ?? new();
 
-        WaitingToken? token = new();
-
-        if (wtokenVM.Id == 0)
+        if (token.Id == 0)
         {
             //Check if waiting token already existing for that customer
             WaitingToken? existingToken = await _waitingTokenRepository.GetByStringAsync(wt => wt.CustomerId == wtokenVM.CustomerId && !wt.IsDeleted);
@@ -153,25 +146,15 @@ public class WaitingListService : IWaitingListService
                 response.Message = NotificationMessages.AlreadyExisted.Replace("{0}", "Waiting Token");
                 return response;
             }
-            token.CreatedBy = createrId;
-        }
-        else if (wtokenVM.Id > 0)
-        {
-            token = await _waitingTokenRepository.GetByIdAsync(wtokenVM.Id);
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.Invalid.Replace("{0}", "Waiting Token");
-            return response;
+
+            token.CreatedBy = await _userService.LoggedInUser();
         }
 
         token.CustomerId = response.EntityId;
         token.SectionId = wtokenVM.SectionId;
         token.Members = wtokenVM.Members;
-        token.UpdatedBy = createrId;
+        token.UpdatedBy = await _userService.LoggedInUser();
         token.UpdatedAt = DateTime.Now;
-
 
         if (wtokenVM.Id == 0)
         {
@@ -181,8 +164,9 @@ public class WaitingListService : IWaitingListService
         }
         else
         {
-            response.Success = await _waitingTokenRepository.UpdateAsync(token);
-            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Waiting Token") : NotificationMessages.UpdatedFailed.Replace("{0}", "Waiting Token");
+            await _waitingTokenRepository.UpdateAsync(token);
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Waiting Token");
         }
 
         response.EntityId = token.Id;
@@ -191,33 +175,28 @@ public class WaitingListService : IWaitingListService
 
     }
 
-    public async Task<bool> AssignTable(long tokenId)
+    public async Task AssignTable(long tokenId)
     {
-        WaitingToken? token = await _waitingTokenRepository.GetByIdAsync(tokenId);
-
-        if (token == null)
-        {
-            return false;
-        }
+        WaitingToken token = await _waitingTokenRepository.GetByIdAsync(tokenId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Waiting Token"));
 
         token.IsAssigned = true;
         token.AssignedAt = DateTime.Now;
-        return await _waitingTokenRepository.UpdateAsync(token);
+        await _waitingTokenRepository.UpdateAsync(token);
     }
 
     #endregion Save
 
     #region  Delete
 
-    public async Task<ResponseViewModel> Delete(long tokenId)
+    public async Task Delete(long tokenId)
     {
-        WaitingToken? token = await _waitingTokenRepository.GetByIdAsync(tokenId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Token"));
-        ResponseViewModel response = new();
+        WaitingToken token = await _waitingTokenRepository.GetByIdAsync(tokenId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Token"));
 
         token.IsDeleted = true;
-        response.Success = await _waitingTokenRepository.UpdateAsync(token);
-        response.Message = response.Success ? NotificationMessages.Deleted.Replace("{0}", "Waiting Token") : NotificationMessages.DeletedFailed.Replace("{0}", "Waiting Token");
-        return response;
+        token.UpdatedAt = DateTime.Now;
+        token.UpdatedBy = await _userService.LoggedInUser();
+
+        await _waitingTokenRepository.UpdateAsync(token);
     }
 
     #endregion Delete

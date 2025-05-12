@@ -9,5 +9,5 @@ public interface IModifierService
     Task<ModifiersPaginationViewModel> Get(int pageSize, int pageNumber, string search);
     Task<ModifiersPaginationViewModel> Get(long modifierGroupId, int pageSize, int pageNumber, string search);
     Task<ResponseViewModel> Save(ModifierViewModel model);
-    Task<ResponseViewModel> Delete(long modifierGroupId, List<long> modifierIdList);
+    Task Delete(long modifierGroupId, List<long> modifierIdList);
 }

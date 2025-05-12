@@ -1,7 +1,10 @@
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -17,10 +20,37 @@ public class OrderItemService : IOrderItemService
         _orderItemRepository = orderItemRepository;
         _userService = userService;
         _oimService = oimService;
-
     }
 
-    public async Task<bool> Save(List<OrderItemViewModel> items, long orderId)
+    #region Save
+    public async Task Save(OrderItemViewModel orderItemVM, long orderId)
+    {
+        OrderItem? orderItem = await _orderItemRepository.GetByIdAsync(orderItemVM.Id)
+                            ?? new OrderItem
+                            {
+                                OrderId = orderId,
+                                ItemId = orderItemVM.ItemId,
+                                CreatedBy = await _userService.LoggedInUser()
+                            };
+
+        orderItem.Quantity = orderItemVM.Quantity;
+        orderItem.Price = orderItemVM.Price;
+        orderItem.Instructions = orderItemVM.Instruction;
+        orderItem.UpdatedAt = DateTime.Now;
+        orderItem.UpdatedBy = await _userService.LoggedInUser();
+
+        if (orderItem.Id == 0)
+        {
+            orderItem.Id = await _orderItemRepository.AddAsyncReturnId(orderItem);
+            await _oimService.Add(orderItemVM.ModifiersList, orderItem.Id);
+        }
+        else
+        {
+            await _orderItemRepository.UpdateAsync(orderItem);
+        }
+    }
+
+    public async Task Save(List<OrderItemViewModel> items, long orderId)
     {
         List<long>? existingItems = _orderItemRepository.GetByCondition(
                 predicate: oi => oi.OrderId == orderId && !oi.IsDeleted
@@ -32,77 +62,44 @@ public class OrderItemService : IOrderItemService
 
         foreach (long orderItemId in removeItems)
         {
-            OrderItem? removeItem = await _orderItemRepository.GetByIdAsync(orderItemId);
-            if (removeItem == null)
-            {
-                return false;
-            }
-
-            removeItem.IsDeleted = true;
-            removeItem.UpdatedBy = await _userService.LoggedInUser();
-            removeItem.UpdatedAt = DateTime.Now;
-
-            if (!await _orderItemRepository.UpdateAsync(removeItem))
-            {
-                return false;
-            }
+            await Delete(orderItemId);
         }
 
         foreach (OrderItemViewModel? item in items)
         {
-            OrderItem? orderItem = await _orderItemRepository.GetByIdAsync(item.Id);
-
-            orderItem ??= new OrderItem
-            {
-                OrderId = orderId,
-                ItemId = item.ItemId,
-                CreatedBy = await _userService.LoggedInUser()
-            };
-
-            orderItem.Quantity = item.Quantity;
-            orderItem.Price = item.Price;
-            orderItem.Instructions = item.Instruction;
-            orderItem.UpdatedAt = DateTime.Now;
-            orderItem.UpdatedBy = await _userService.LoggedInUser();
-
-            if (orderItem.Id == 0)
-            {
-                orderItem.Id = await _orderItemRepository.AddAsyncReturnId(orderItem);
-
-                if (orderItem.Id < 1)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (!await _oimService.Add(item.ModifiersList, orderItem.Id))
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                if (!await _orderItemRepository.UpdateAsync(orderItem))
-                {
-                    return false;
-                }
-            }
+            await Save(item, orderId);
         }
-
-        return true;
     }
+    #endregion
 
-    public decimal OrderItemTotal(long orderId)
+    #region Delete
+    public async Task Delete(long orderItemId)
     {
-        return _orderItemRepository.GetByCondition(
+        OrderItem removeItem = await _orderItemRepository.GetByIdAsync(orderItemId)
+                                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Item")); ;
+
+        removeItem.IsDeleted = true;
+        removeItem.UpdatedBy = await _userService.LoggedInUser();
+        removeItem.UpdatedAt = DateTime.Now;
+
+        await _orderItemRepository.UpdateAsync(removeItem);
+    }
+    #endregion Delete
+
+    #region Common
+    public async Task<decimal> OrderItemTotal(long orderId)
+    {
+        IEnumerable<OrderItem>? list = await _orderItemRepository.GetByCondition(
             oi => oi.OrderId == orderId && !oi.IsDeleted,
             includes: new List<Expression<Func<OrderItem, object>>>
             {
                 oi => oi.OrderItemsModifiers
             }
-        ).Result!.Sum(oi => (oi.Price * oi.Quantity) + oi.OrderItemsModifiers.Sum(oim => oim.Price * oi.Quantity));
-    }
+        );
 
+        decimal total = list.Sum(oi => (oi.Price * oi.Quantity) + oi.OrderItemsModifiers.Sum(oim => oim.Price * oi.Quantity));
+        return total;
+    }
+    #endregion
 
 }

@@ -22,11 +22,10 @@ public class GenericRepository<T> : IGenericRepository<T>
     #region C : Create
     /*------------------------------adds a new entity (record) to the database----------------------------------------
     -------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> AddAsync(T entity)
+    public async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
-        return true;
     }
 
     public async Task<long> AddAsyncReturnId(T entity)
@@ -39,8 +38,10 @@ public class GenericRepository<T> : IGenericRepository<T>
         {
             return (long)idProperty.GetValue(entity);
         }
-
-        return 0;
+        else
+        {
+            return 0;
+        }
     }
     #endregion C : Create
 
@@ -73,7 +74,7 @@ public class GenericRepository<T> : IGenericRepository<T>
         // Apply Includes (First-level navigation properties)
         if (includes != null)
         {
-            foreach (var include in includes)
+            foreach (Expression<Func<T, object>>? include in includes)
             {
                 query = query.Include(include);
             }
@@ -88,14 +89,14 @@ public class GenericRepository<T> : IGenericRepository<T>
             }
         }
 
-        return await query.ToListAsync();
+        return await query.ToListAsync() ?? Enumerable.Empty<T>();
     }
 
-    public async Task<(IEnumerable<T> items, int totalCount)> GetPagedRecords
+    public (IEnumerable<T> items, int totalCount) GetPagedRecords
     (
         int pageSize,
         int pageNumber,
-        IEnumerable<T>? items = null
+        IEnumerable<T> items
     )
     {
         int totalCount = items.Count();
@@ -128,11 +129,10 @@ public class GenericRepository<T> : IGenericRepository<T>
     #region U : Update
     /*------------------------------updates an existing entity in the database----------------------------------------
     -------------------------------------------------------------------------------------------------------*/
-    public async Task<bool> UpdateAsync(T entity)
+    public async Task UpdateAsync(T entity)
     {
         _dbSet.Update(entity);
         await _context.SaveChangesAsync();
-        return true;
     }
 
     #endregion U : Update
@@ -141,19 +141,5 @@ public class GenericRepository<T> : IGenericRepository<T>
     /*------------------Only Soft Delete is allowed so no remove method------------------------------------
     -------------------------------------------------------------------------------------------------------*/
     #endregion D : Delete
-
-    #region Common
-    /*---------------Counts the number of records in a table, with an optional filter (predicate)-------------
-    -------------------------------------------------------------------------------------------------------*/
-    public async Task<int> GetCount(Expression<Func<T, bool>>? predicate)
-    {
-        if (predicate is not null)
-        {
-            return await _dbSet.CountAsync(predicate);
-        }
-        return await _dbSet.CountAsync();
-    }
-
-    #endregion Common
 }
 

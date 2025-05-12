@@ -2,6 +2,6 @@ namespace PizzaShop.Service.Interfaces;
 
 public interface IOrderTableService
 {
-    Task<bool> Update(long orderId);
-    Task<bool> Delete(long orderId);
+    Task Update(long orderId);
+    Task Delete(long orderId);
 }

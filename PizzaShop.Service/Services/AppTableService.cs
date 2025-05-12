@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
@@ -72,7 +71,8 @@ public class AppTableService : IAppTableService
 
     public async Task<AssignTableViewModel> Get(long tokenId)
     {
-        WaitingTokenViewModel token = await _waitingService.Get(tokenId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Token"));
+        WaitingTokenViewModel token = await _waitingService.Get(tokenId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Token"));
+
 
         AssignTableViewModel assignTableVM = new();
         assignTableVM.WaitingToken.Id = tokenId;
@@ -104,7 +104,8 @@ public class AppTableService : IAppTableService
     public async Task<ResponseViewModel> AssignTable(AssignTableViewModel assignTableVM)
     {
         ResponseViewModel response = new();
-        if(assignTableVM.Tables.Sum(t => t.Capacity) < assignTableVM.WaitingToken.Members)
+
+        if (assignTableVM.Tables.Sum(t => t.Capacity) < assignTableVM.WaitingToken.Members)
         {
             response.Success = false;
             response.Message = NotificationMessages.CapacityExceeded;
@@ -122,13 +123,14 @@ public class AppTableService : IAppTableService
             };
 
             //Change table Status from available to assigned and add mapping
-            await _tableService.SetTableAssign(table.Id);
+            await _tableService.ChangeStatus(table.Id, SetTableStatus.ASSIGNED);
             await _orderTableRepository.AddAsync(mapping);
         }
 
         // Change assign status in Waiting Token
-        response.Success = await _waitingService.AssignTable(assignTableVM.WaitingToken.Id);
-        response.Message = response.Success ? NotificationMessages.Successfully.Replace("{0}", "Table Assigned") : NotificationMessages.Failed.Replace("{0}", "Table assignment");
+        await _waitingService.AssignTable(assignTableVM.WaitingToken.Id);
+        response.Success = true;
+        response.Message = NotificationMessages.Successfully.Replace("{0}", "Table Assigned");
         return response;
     }
 

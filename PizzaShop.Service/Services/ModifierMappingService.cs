@@ -2,6 +2,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -15,10 +16,9 @@ public class ModifierMappingService : IModifierMappingService
     {
         _modifierMappingRepository = modifierMappingRepository;
         _userService = userService;
-
     }
 
-    public async Task<bool> Add(long modifierGroupId, long modifierId)
+    public async Task Add(long modifierGroupId, long modifierId)
     {
         ModifierMapping mapping = new()
         {
@@ -27,10 +27,10 @@ public class ModifierMappingService : IModifierMappingService
             CreatedBy = await _userService.LoggedInUser()
         };
 
-        return await _modifierMappingRepository.AddAsync(mapping);
+        await _modifierMappingRepository.AddAsync(mapping);
     }
 
-    public async Task<bool> UpdateModifierGroupMapping(long modifierGroupId, List<long> modifierList)
+    public async Task UpdateModifierGroupMapping(long modifierGroupId, List<long> modifierList)
     {
         List<long> existingModifiersList = _modifierMappingRepository
         .GetByCondition(mm => mm.Modifiergroupid == modifierGroupId && !mm.IsDeleted)
@@ -43,11 +43,7 @@ public class ModifierMappingService : IModifierMappingService
 
         foreach (long modifierId in removeModifiers)
         {
-            bool success = await Delete(modifierGroupId, modifierId);
-            if (!success)
-            {
-                return false;
-            }
+            await Delete(modifierGroupId, modifierId);
         }
 
         foreach (long modifierId in modifierList)
@@ -55,18 +51,12 @@ public class ModifierMappingService : IModifierMappingService
             ModifierMapping? existingModifier = await _modifierMappingRepository.GetByStringAsync(mg => mg.Modifiergroupid == modifierGroupId && mg.Modifierid == modifierId && mg.IsDeleted == false);
             if (existingModifier == null)
             {
-                bool success = await Add(modifierGroupId, modifierId);
-                if (!success)
-                {
-                    return false;
-                }
+                await Add(modifierGroupId, modifierId);
             }
         }
-
-        return true;
     }
 
-    public async Task<bool> UpdateModifierMapping(long modifierId, List<long> modifierGroupList)
+    public async Task UpdateModifierMapping(long modifierId, List<long> modifierGroupList)
     {
         List<long> existingMgList = _modifierMappingRepository
         .GetByCondition(mm => mm.Modifierid == modifierId && !mm.IsDeleted)
@@ -79,11 +69,7 @@ public class ModifierMappingService : IModifierMappingService
 
         foreach (long mgId in removeMg)
         {
-            bool success = await Delete(mgId, modifierId);
-            if (!success)
-            {
-                return false;
-            }
+            await Delete(mgId, modifierId);
         }
 
         foreach (long mgId in modifierGroupList)
@@ -91,48 +77,31 @@ public class ModifierMappingService : IModifierMappingService
             ModifierMapping? mapping = await _modifierMappingRepository.GetByStringAsync(mg => mg.Modifiergroupid == mgId && mg.Modifierid == modifierId && mg.IsDeleted == false);
             if (mapping == null)
             {
-                bool success = await Add(mgId, modifierId);
-                if (!success)
-                {
-                    return false;
-                }
+                await Add(mgId, modifierId);
             }
         }
-
-        return true;
     }
 
     // Delete all mapping of modifier group 
-    public async Task<ResponseViewModel> Delete(long mgId)
+    public async Task Delete(long mgId)
     {
         List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == mgId).Result.ToList();
-        ResponseViewModel response = new();
 
         foreach (ModifierMapping mapping in modifierMappings)
         {
-            response.Success = await Delete(mgId, mapping.Modifierid);
-            response.Message = response.Success? NotificationMessages.DeletedFailed.Replace("{0}", "Modifier Group"): NotificationMessages.DeletedFailed.Replace("{0}", "Modifier Group");
-            if (!response.Success)
-            {
-                return response;
-            }
+            await Delete(mgId, mapping.Modifierid);
         }
-
-        return response;
     }
 
-    public async Task<bool> Delete(long mgId, long modifierId)
+    public async Task Delete(long mgId, long modifierId)
     {
-        ModifierMapping? mapping = await _modifierMappingRepository.GetByStringAsync(mm => mm.Modifiergroupid == mgId && mm.Modifierid == modifierId && !mm.IsDeleted);
-        if (mapping == null)
-        {
-            return false;
-        }
+        ModifierMapping mapping = await _modifierMappingRepository.GetByStringAsync(mm => mm.Modifiergroupid == mgId && mm.Modifierid == modifierId && !mm.IsDeleted) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Modifier Mapping"));
 
         mapping.IsDeleted = true;
         mapping.UpdatedBy = await _userService.LoggedInUser();
         mapping.UpdatedAt = DateTime.Now;
-        return await _modifierMappingRepository.UpdateAsync(mapping);
+        
+        await _modifierMappingRepository.UpdateAsync(mapping);
     }
 
 }

@@ -3,7 +3,7 @@ public class UserInfoViewModel
 {
     public long UserId {get; set;}
     
-    public string ProfileImageUrl { get; set; }
+    public string? ProfileImageUrl { get; set; } = "";
 
     public string FirstName { get; set; } = null!;
 

@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -24,52 +26,69 @@ public class CustomerService : ICustomerService
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<CustomerViewModel> Get(string email)
     {
-        Customer? customer = await _customerRepository.GetByStringAsync(c => c.Email == email && !c.IsDeleted);
-        if (customer == null)
-        {
-            return new CustomerViewModel();
-        }
-        else
-        {
-            return await Get(customer.Id);
-        }
+        Customer customer = await _customerRepository.GetByStringAsync(c => c.Email == email && !c.IsDeleted)
+                            ?? new Customer();
+
+        return Get(customer.Id);
     }
 
     /*----------------------------------------------------Get Customer by Id----------------------------------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<CustomerViewModel> Get(long id)
+    public CustomerViewModel Get(long id)
     {
-        IEnumerable<Customer>? list = await _customerRepository.GetByCondition(
-            predicate: c => c.Id == id ,
-            includes: new  List<Expression<Func<Customer, object>>>
+        Customer customer = _customerRepository.GetByCondition(
+            predicate: c => c.Id == id,
+            includes: new List<Expression<Func<Customer, object>>>
             {
                 c => c.WaitingTokens
             }
-        );
+        ).Result.FirstOrDefault()
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Customer"));
 
-        if (list == null)
+        CustomerViewModel customerVM = new()
         {
-            return new CustomerViewModel();
-        }
-        else
-        {
-            CustomerViewModel? customer = list.Select(c => new CustomerViewModel{
-                Id = c.Id,
-                Name = c.Name,
-                Phone = c.Phone,
-                Email = c.Email,
-                Members = c.WaitingTokens.Where(t => t.CustomerId == id).Select(t => t.Members).LastOrDefault()
-            }).LastOrDefault();
+            Id = customer.Id,
+            Name = customer.Name,
+            Phone = customer.Phone,
+            Email = customer.Email,
+            Members = customer.WaitingTokens
+               .Where(t => t.CustomerId == id)
+               .Select(t => t.Members)
+               .LastOrDefault()
+        };
 
-            return customer;
-        }
+        return customerVM;
+
     }
 
-    /*----------------------------------------------------Customer Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<CustomerPaginationViewModel> Get(FilterViewModel filter)
     {
-        IEnumerable<Customer>? list = await _customerRepository.GetByCondition(
+        List<CustomerViewModel>? customers = await List(filter);
+
+        //Pagination
+        int totalRecord = customers.Count;
+        customers = customers
+            .Skip((filter.PageNumber - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .ToList();
+
+        CustomerPaginationViewModel customersVM = new()
+        {
+            Customers = customers,
+            Page = new()
+        };
+
+        customersVM.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
+        return customersVM;
+    }
+    #endregion
+
+    #region List
+    /*----------------------------------------------------Customer Pagination----------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    public async Task<List<CustomerViewModel>> List(FilterViewModel filter)
+    {
+        IEnumerable<Customer> list = await _customerRepository.GetByCondition(
             predicate: c => !c.IsDeleted &&
                     (string.IsNullOrEmpty(filter.Search) ||
                     c.Name.ToLower().Contains(filter.Search.ToLower())),
@@ -141,29 +160,15 @@ public class CustomerService : ICustomerService
             }
         }
 
-        //Pagination
-        int totalRecord = customers.Count();
-        customers = customers
-            .Skip((filter.PageNumber - 1) * filter.PageSize)
-            .Take(filter.PageSize)
-            .ToList();
-
-        CustomerPaginationViewModel model = new()
-        {
-            Customers = customers,
-            Page = new()
-        };
-
-        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
-        return model;
+        return customers.ToList();
     }
     #endregion
 
     #region Customer History
 
-    public async Task<CustomerHistoryViewModel> GetHistory(long customerId)
+    public CustomerHistoryViewModel GetHistory(long customerId)
     {
-        IEnumerable<Customer>? customer = await _customerRepository.GetByCondition(
+        Customer customer = _customerRepository.GetByCondition(
             c => c.Id == customerId && !c.IsDeleted,
             includes: new List<Expression<Func<Customer, object>>>
             {
@@ -177,23 +182,19 @@ public class CustomerService : ICustomerService
                 q => q.Include(c => c.Orders)
                     .ThenInclude(o => o.OrderItems)
             }
-        );
+        ).Result.FirstOrDefault()
+        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Customer"));
 
-        if (customer == null)
-        {
-            return null;
-        }
-
-        CustomerHistoryViewModel? model = customer.Select(c => new CustomerHistoryViewModel
+        CustomerHistoryViewModel customerVM = new()
         {
             CustomerId = customerId,
-            CustomerName = c.Name,
-            Phone = c.Phone,
-            MaxOrder = c.Orders.Where(o => o.CustomerId == customerId).Max(o => o.FinalAmount),
-            AvgBill = c.Orders.Where(o => o.CustomerId == customerId).Average(o => o.FinalAmount),
-            ComingSince = c.CreatedAt,
-            Visits = c.Orders.Where(o => o.CustomerId == customerId).Count(),
-            Orders = c.Orders.Where(o => o.CustomerId == customerId)
+            CustomerName = customer.Name,
+            Phone = customer.Phone,
+            MaxOrder = customer.Orders.Where(o => o.CustomerId == customerId).Max(o => o.FinalAmount),
+            AvgBill = customer.Orders.Where(o => o.CustomerId == customerId).Average(o => o.FinalAmount),
+            ComingSince = customer.CreatedAt,
+            Visits = customer.Orders.Where(o => o.CustomerId == customerId).Count(),
+            Orders = customer.Orders.Where(o => o.CustomerId == customerId)
                     .Select(o => new OrderViewModel
                     {
                         Date = DateOnly.FromDateTime(o.CreatedAt),
@@ -202,93 +203,17 @@ public class CustomerService : ICustomerService
                         NoOfItems = o.OrderItems.Where(oi => oi.OrderId == o.Id).Count(),
                         TotalAmount = o.FinalAmount
                     }).ToList()
-        }).FirstOrDefault();
+        };
 
-        return model;
+        return customerVM;
     }
 
     #endregion
 
     #region Export Excel
-    /*----------------------------------------------------Export Order List----------------------------------------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<byte[]> ExportExcel(FilterViewModel filter)
     {
-        IEnumerable<Customer>? list = await _customerRepository.GetByCondition(
-            predicate: c => !c.IsDeleted &&
-                    (string.IsNullOrEmpty(filter.Search) ||
-                    c.Name.ToLower().Contains(filter.Search.ToLower())),
-            orderBy: q => q.OrderBy(u => u.Id),
-            includes: new List<Expression<Func<Customer, object>>>
-            {
-                c => c.Orders
-            }
-        );
-
-        IEnumerable<CustomerViewModel>? customers = list.Select(c => new CustomerViewModel()
-        {
-            Id = c.Id,
-            Name = c.Name,
-            Phone = c.Phone,
-            Email = c.Email,
-            Date = DateOnly.FromDateTime(c.Orders.Where(o => o.CustomerId == c.Id).Select(o => o.CreatedAt).LastOrDefault()),
-            TotalOrder = c.Orders.Where(o => o.CustomerId == c.Id).Count()
-        });
-
-
-
-        //For applying date range filter
-        if (!string.IsNullOrEmpty(filter.DateRange) && filter.DateRange.ToLower() != "all time")
-        {
-            switch (filter.DateRange.ToLower())
-            {
-                case "today":
-                    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                    customers = customers.Where(c => c.Date.Day == today.Day && c.Date.Month == today.Month && c.Date.Year == today.Year);
-                    break;
-                case "last 7 days":
-                    customers = customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-7)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
-                    break;
-                case "last 30 days":
-                    customers = customers.Where(c => c.Date >= DateOnly.FromDateTime(DateTime.Now.AddDays(-30)) && c.Date <= DateOnly.FromDateTime(DateTime.Now));
-                    break;
-                case "current month":
-                    DateOnly startDate = DateOnly.FromDateTime(DateTime.Now);
-                    customers = customers.Where(x => x.Date.Month == startDate.Month && x.Date.Year == startDate.Year);
-                    break;
-                case "custom date":
-                    //Filtering Custom Dates
-                    if (filter.FromDate.HasValue)
-                        customers = customers.Where(c => c.Date >= filter.FromDate.Value);
-                    if (filter.ToDate.HasValue)
-                        customers = customers.Where(c => c.Date <= filter.ToDate.Value);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        //For sorting the column according to order
-        if (!string.IsNullOrEmpty(filter.Column))
-        {
-            switch (filter.Column)
-            {
-                case "name":
-                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.Name) : customers.OrderByDescending(c => c.Name);
-                    break;
-                case "date":
-                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.Date) : customers.OrderByDescending(c => c.Date);
-                    break;
-                case "total order":
-                    customers = filter.Sort == "asc" ? customers.OrderBy(c => c.TotalOrder) : customers.OrderByDescending(c => c.TotalOrder);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return ExcelTemplateHelper.Customers(customers, filter.DateRange, filter.Search);
-
+        return ExcelTemplateHelper.Customers(await List(filter), filter.DateRange, filter.Search);
     }
     #endregion
 
@@ -296,29 +221,17 @@ public class CustomerService : ICustomerService
 
     public async Task<ResponseViewModel> Save(CustomerViewModel customerVM)
     {
-        long createrId = await _userService.LoggedInUser();
-        Customer? customer = new();
+        Customer customer = await _customerRepository.GetByIdAsync(customerVM.Id)
+                            ?? new Customer()
+                            {
+                                CreatedBy = await _userService.LoggedInUser()
+                            };
         ResponseViewModel response = new();
-
-        if(customerVM.Id == 0)
-        {
-            customer.CreatedBy = createrId;
-        }
-        else if(customerVM.Id > 0)
-        {
-            customer = await _customerRepository.GetByIdAsync(customerVM.Id);
-        }
-        else
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.Invalid.Replace("{0}","Customer");
-            return response;
-        }
 
         customer.Name = customerVM.Name;
         customer.Email = customerVM.Email.ToLower();
         customer.Phone = customerVM.Phone;
-        customer.UpdatedBy = createrId;
+        customer.UpdatedBy = await _userService.LoggedInUser();
         customer.UpdatedAt = DateTime.Now;
 
         response.EntityId = customerVM.Id;
@@ -331,8 +244,8 @@ public class CustomerService : ICustomerService
         }
         else
         {
-            response.Success = await _customerRepository.UpdateAsync(customer);
-            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Customer") : NotificationMessages.UpdatedFailed.Replace("{0}", "Customer");
+            await _customerRepository.UpdateAsync(customer);
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Customer");
         }
 
         return response;

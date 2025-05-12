@@ -3,6 +3,7 @@ using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
@@ -73,13 +74,13 @@ public class ModifierGroupService : IModifierGroupService
 
     public async Task<ResponseViewModel> Save(ModifierGroupViewModel modifierGroupVM)
     {
-        ModifierGroup? modifierGroup = await _mgRepository.GetByIdAsync(modifierGroupVM.Id);
-        ResponseViewModel response = new();
+        ModifierGroup modifierGroup = await _mgRepository.GetByIdAsync(modifierGroupVM.Id)
+                                        ?? new ModifierGroup
+                                        {
+                                            CreatedBy = await _userService.LoggedInUser()
+                                        };
 
-        modifierGroup ??= new ModifierGroup
-        {
-            CreatedBy = await _userService.LoggedInUser()
-        };
+        ResponseViewModel response = new();
 
         modifierGroup.Name = modifierGroupVM.Name;
         modifierGroup.Description = modifierGroupVM.Description;
@@ -92,51 +93,34 @@ public class ModifierGroupService : IModifierGroupService
 
             response.Success = mgId > 1;
             response.Message = mgId > 1 ? NotificationMessages.Added.Replace("{0}", "Modifier Group") : NotificationMessages.AddedFailed.Replace("{0}", "Modifier Group");
+            if (!response.Success)
+            {
+                return response;
+            }
         }
         else
         {
-            response.Success = await _mgRepository.UpdateAsync(modifierGroup);
-            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Modifier Group") : NotificationMessages.UpdatedFailed.Replace("{0}", "Modifier Group");
+            await _mgRepository.UpdateAsync(modifierGroup);
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Modifier Group");
         }
 
-        if (!response.Success)
-        {
-            return response;
-        }
-
-        response.Success = await _modifierMappingService.UpdateModifierGroupMapping(modifierGroup.Id, modifierGroupVM.ModifierIdList);
+        await _modifierMappingService.UpdateModifierGroupMapping(modifierGroup.Id, modifierGroupVM.ModifierIdList);
         return response;
     }
 
-    public async Task<ResponseViewModel> Delete(long mgId)
+    public async Task Delete(long mgId)
     {
-        ModifierGroup? modifierGroup = await _mgRepository.GetByIdAsync(mgId);
-        ResponseViewModel response = new();
-        if (modifierGroup == null)
-        {
-            response.Success = false;
-            response.Message = NotificationMessages.NotFound.Replace("{0}", "Modifier Group");
-            return response;
-        }
-
+        ModifierGroup? modifierGroup = await _mgRepository.GetByIdAsync(mgId)
+                                    ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Modifier Group"));
+        
         modifierGroup.IsDeleted = true;
         modifierGroup.UpdatedAt = DateTime.Now;
         modifierGroup.UpdatedBy = await _userService.LoggedInUser();
 
-        response.Success = await _mgRepository.UpdateAsync(modifierGroup);
-        response.Message = response.Success ? NotificationMessages.Deleted.Replace("{0}", "Modifier Group") : NotificationMessages.DeletedFailed.Replace("{0}", "Modifier Group");
-        if (!response.Success)
-        {
-            return response;
-        }
-
-        ResponseViewModel mappingResponse = await _modifierMappingService.Delete(mgId);
-        if(!mappingResponse.Success)
-        {
-            return mappingResponse;
-        }
+        await _mgRepository.UpdateAsync(modifierGroup);
         
-        return response;
+        await _modifierMappingService.Delete(mgId);
     }
 
 }

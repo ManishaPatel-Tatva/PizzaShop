@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
+using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
@@ -10,41 +13,41 @@ namespace PizzaShop.Service.Services;
 public class ItemService : IItemService
 {
     private readonly IGenericRepository<Category> _categoryRepository;
-    private readonly IGenericRepository<User> _userRepository;
     private readonly IGenericRepository<Item> _itemRepository;
     private readonly IGenericRepository<FoodType> _foodTypeRepository;
     private readonly IGenericRepository<Unit> _unitRepository;
     private readonly IGenericRepository<ModifierGroup> _modifierGroupRepository;
     private readonly IGenericRepository<ItemModifierGroup> _itemModifierGroupRepository;
+    private readonly IUserService _userService;
+    private readonly IItemModifierService _itemModifierService;
 
-    public ItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<User> userRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository)
+    public ItemService(IGenericRepository<Category> categoryRepository, IGenericRepository<Item> itemRepository, IGenericRepository<FoodType> foodTypeRepository, IGenericRepository<Unit> unitRepository, IGenericRepository<ModifierGroup> modifierGroupRepository, IGenericRepository<ItemModifierGroup> itemModifierGroupRepository, IUserService userService, IItemModifierService itemModifierService)
     {
         _categoryRepository = categoryRepository;
-        _userRepository = userRepository;
         _itemRepository = itemRepository;
         _foodTypeRepository = foodTypeRepository;
         _unitRepository = unitRepository;
         _modifierGroupRepository = modifierGroupRepository;
         _itemModifierGroupRepository = itemModifierGroupRepository;
+        _userService = userService;
+        _itemModifierService = itemModifierService;
     }
 
-    #region Items
-
-    #region Display Items
-    /*-----------------------------------------------------------------Display Items---------------------------------------------------------------------------------
+    #region Get
+    /*----------------------------------------------------------------- Items Pagination---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<ItemsPaginationViewModel> GetPagedItems(long categoryId, int pageSize, int pageNumber, string search)
+    public async Task<ItemsPaginationViewModel> Get(long categoryId, FilterViewModel filter)
     {
         IEnumerable<Item> items = await _itemRepository.GetByCondition(
             predicate: i => !i.IsDeleted &&
                     i.CategoryId == categoryId &&
-                    (string.IsNullOrEmpty(search.ToLower()) ||
-                    i.Name.ToLower().Contains(search.ToLower())),
+                    (string.IsNullOrEmpty(filter.Search.ToLower()) ||
+                    i.Name.ToLower().Contains(filter.Search.ToLower())),
             orderBy: q => q.OrderBy(u => u.Id),
             includes: new List<Expression<Func<Item, object>>> { u => u.FoodType }
         );
 
-        (items, int totalRecord) = await _itemRepository.GetPagedRecords(pageSize, pageNumber, items);
+        (items, int totalRecord) = _itemRepository.GetPagedRecords(filter.PageSize, filter.PageNumber, items);
 
         ItemsPaginationViewModel model = new()
         {
@@ -61,340 +64,138 @@ public class ItemService : IItemService
             }).ToList()
         };
 
-        model.Page.SetPagination(totalRecord, pageSize, pageNumber);
+        model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);
         return model;
     }
 
-    #endregion Display Items
-
-    #region Get Add/Edit Item
-    /*-----------------------------------------------------------Get Add/Update Item---------------------------------------------------------------------------------
+    /*-----------------------------------------------------------Get Item---------------------------------------------------------------------------------
     ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<AddItemViewModel> GetEditItem(long itemId)
+    public async Task<ItemViewModel> Get(long itemId)
     {
-        AddItemViewModel model = new()
+        ItemViewModel itemVM = new()
         {
             Name = "",
             Categories = _categoryRepository.GetAll().ToList(),
-            ItemTypes = _foodTypeRepository.GetAll().ToList(),
+            FoodType = _foodTypeRepository.GetAll().ToList(),
             Units = _unitRepository.GetAll().ToList(),
             ModifierGroups = _modifierGroupRepository.GetAll().ToList()
         };
 
-        if (itemId == 0)
-        {
-            return model;
-        }
-
-        Item item = await _itemRepository.GetByIdAsync(itemId);
+        Item? item = await _itemRepository.GetByIdAsync(itemId);
         if (item == null)
-            return model;
-
-        model.ItemId = item.Id;
-        model.CategoryId = item.CategoryId;
-        model.Name = item.Name;
-        model.ItemTypeId = item.FoodTypeId;
-        model.Rate = item.Rate;
-        model.Quantity = item.Quantity;
-        model.UnitId = item.UnitId;
-        model.Available = item.Available;
-        model.DefaultTax = item.DefaultTax;
-        model.TaxPercentage = item.Tax;
-        model.ShortCode = item.ShortCode;
-        model.Description = item.Description;
-        model.ItemImageUrl = item.ImageUrl;
-
-        model.ItemModifierGroups = _itemModifierGroupRepository.GetByCondition(
-            i => i.ItemId == itemId && !i.IsDeleted,
-            includes: new List<Expression<Func<ItemModifierGroup, object>>>
-            {
-                img => img.ModifierGroup
-            },
-            thenIncludes: new List<Func<IQueryable<ItemModifierGroup>, IQueryable<ItemModifierGroup>>>
-            {
-                q => q.Include(img => img.ModifierGroup)
-                    .ThenInclude(mg => mg.ModifierMappings)
-                    .ThenInclude(m => m.Modifier) // Deepest level include
-            }
-            )
-            .Result
-            .Select(i => new ItemModifierViewModel
-            {
-                ModifierGroupId = i.ModifierGroupId,
-                ModifierGroupName = i.ModifierGroup.Name,
-                MinAllowed = i.MinAllowed,
-                MaxAllowed = i.MaxAllowed,
-                ModifierList = i.ModifierGroup.ModifierMappings
-                .Where(i => !i.IsDeleted)
-                .Select(m => new ModifierViewModel
-                {
-                    Id = m.Modifier.Id,
-                    Name = m.Modifier.Name,
-                    Rate = m.Modifier.Rate
-                }).ToList()
-            }).ToList();
-
-        return model;
-    }
-
-    /*-----------------------------------------------------------Get Modifier on Selection---------------------------------------------------------------------------------
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    public async Task<ItemModifierViewModel> GetModifierOnSelection(long modifierGroupId)
-    {
-        ItemModifierViewModel itemModifierGroups =  _modifierGroupRepository.GetByCondition(
-            m => m.Id == modifierGroupId && !m.IsDeleted,
-            includes: new List<Expression<Func<ModifierGroup, object>>>
-            {
-                mg => mg.ModifierMappings
-            },
-            thenIncludes: new List<Func<IQueryable<ModifierGroup>, IQueryable<ModifierGroup>>>
-            {
-                q => q.Include(mg => mg.ModifierMappings)
-                    .ThenInclude(m => m.Modifier) // Deepest level include
-            }
-            )
-            .Result
-            .Select(mg => new ItemModifierViewModel
-            {
-                ModifierGroupId = mg.Id,
-                ModifierGroupName = mg.Name,
-                ModifierList = mg.ModifierMappings
-                .Where(i => !i.IsDeleted)
-                .Select(mm => new ModifierViewModel
-                {
-                    Id = mm.Modifier.Id,
-                    Name = mm.Modifier.Name,
-                    Rate = mm.Modifier.Rate
-                }).ToList()
-            }).First();
-
-        return itemModifierGroups;
-    }
-
-    #endregion Get Add/Edit Item 
-
-    #region  Add Item
-
-    public async Task<bool> AddUpdateItem(AddItemViewModel model, string createrEmail)
-    {
-        User creater = await _userRepository.GetByStringAsync(u => u.Email == createrEmail);
-        long createrId = creater.Id;
-
-        if (model.ItemId == 0)
         {
-            return await AddItem(model, createrId);
+            return itemVM;
         }
-        else if (model.ItemId > 0)
+
+        itemVM.Id = item.Id;
+        itemVM.CategoryId = item.CategoryId;
+        itemVM.Name = item.Name;
+        itemVM.ItemTypeId = item.FoodTypeId;
+        itemVM.Rate = item.Rate;
+        itemVM.Quantity = item.Quantity;
+        itemVM.UnitId = item.UnitId;
+        itemVM.Available = item.Available;
+        itemVM.DefaultTax = item.DefaultTax;
+        itemVM.TaxPercentage = item.Tax;
+        itemVM.ShortCode = item.ShortCode;
+        itemVM.Description = item.Description;
+        itemVM.ImageUrl = item.ImageUrl;
+
+        itemVM.ItemModifierGroups = await _itemModifierService.List(itemId);
+
+        return itemVM;
+    }
+
+
+    #endregion Get 
+
+    #region  Save
+
+    public async Task<ResponseViewModel> Save(ItemViewModel itemVM)
+    {
+        Item item = await _itemRepository.GetByIdAsync(itemVM.Id) ?? new Item();
+
+        ResponseViewModel response = new();
+
+        if (item.Id == 0)
         {
-            return await UpdateItem(model, createrId);
+            item.CreatedBy = await _userService.LoggedInUser();
+        }
+
+        item.CategoryId = itemVM.CategoryId;
+        item.Name = itemVM.Name;
+        item.FoodTypeId = itemVM.ItemTypeId;
+        item.Rate = itemVM.Rate;
+        item.Quantity = itemVM.Quantity;
+        item.UnitId = itemVM.UnitId;
+        item.Available = itemVM.Available;
+        item.DefaultTax = itemVM.DefaultTax;
+        item.Tax = itemVM.TaxPercentage;
+        item.ShortCode = itemVM.ShortCode;
+        item.Description = itemVM.Description;
+
+        item.UpdatedAt = DateTime.Now;
+        item.UpdatedBy = await _userService.LoggedInUser();
+
+        // Handle Image Upload
+        if (itemVM.Image != null)
+        {
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/itemImages");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            string fileName = $"{Guid.NewGuid()}_{itemVM.Image.FileName}";
+            string filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await itemVM.Image.CopyToAsync(stream);
+            }
+
+            item.ImageUrl = $"/itemImages/{fileName}";
+        }
+
+        if (itemVM.Id == 0)
+        {
+            item.Id = await _itemRepository.AddAsyncReturnId(item);
         }
         else
         {
-            return false;
+            await _itemRepository.UpdateAsync(item);
         }
 
+        await _itemModifierService.Save(itemVM.Id, itemVM.ItemModifierGroups);
+
+        response.Success = true;
+        response.Message = itemVM.Id == 0 ? NotificationMessages.Added.Replace("{0}", "Item") : NotificationMessages.Updated.Replace("{0}", "Item");
+
+        return response;
     }
 
+    #endregion Save
 
-    public async Task<bool> AddItem(AddItemViewModel model, long createrId)
+    #region Delete
+
+    public async Task Delete(long id)
     {
-
-        Item item = new()
-        {
-            CategoryId = model.CategoryId,
-            Name = model.Name,
-            FoodTypeId = model.ItemTypeId,
-            Rate = model.Rate,
-            Quantity = model.Quantity,
-            UnitId = model.UnitId,
-            Available = model.Available,
-            DefaultTax = model.DefaultTax,
-            Tax = model.TaxPercentage,
-            ShortCode = model.ShortCode,
-            Description = model.Description,
-            CreatedBy = createrId,
-            ImageUrl = model.ItemImageUrl,
-        };
-
-        // Handle Image Upload
-        if (model.Image != null)
-        {
-            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/itemImages");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.Image.CopyToAsync(stream);
-            }
-
-            item.ImageUrl = $"/itemImages/{fileName}";
-        }
-
-        long itemId = await _itemRepository.AddAsyncReturnId(item);
-
-        if (itemId < 1)
-        {
-            return false;
-        }
-
-        if (itemId > 0)
-        {
-            foreach (ItemModifierViewModel modifierGroup in model.ItemModifierGroups)
-            {
-                bool success = await AddItemModifierGroup(itemId, modifierGroup, createrId);
-                if (!success)
-                    return false;
-            }
-        }
-        return true;
-
-    }
-
-    public async Task<bool> AddItemModifierGroup(long itemId, ItemModifierViewModel model, long createrId)
-    {
-        ItemModifierGroup itemModifierGroup = new()
-        {
-            ItemId = itemId,
-            ModifierGroupId = model.ModifierGroupId,
-            MinAllowed = model.MinAllowed,
-            MaxAllowed = model.MaxAllowed,
-            CreatedBy = createrId
-        };
-        return await _itemModifierGroupRepository.AddAsync(itemModifierGroup);
-    }
-
-
-    #endregion Add Item
-
-    #region Update Item
-    public async Task<bool> UpdateItem(AddItemViewModel model, long createrId)
-    {
-
-        Item item = await _itemRepository.GetByIdAsync(model.ItemId);
-
-        item.CategoryId = model.CategoryId;
-        item.Name = model.Name;
-        item.FoodTypeId = model.ItemTypeId;
-        item.Rate = model.Rate;
-        item.Quantity = model.Quantity;
-        item.UnitId = model.UnitId;
-        item.Available = model.Available;
-        item.DefaultTax = model.DefaultTax;
-        item.Tax = model.TaxPercentage;
-        item.ShortCode = model.ShortCode;
-        item.Description = model.Description;
-
-        // Handle Image Upload
-        if (model.Image != null)
-        {
-            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/itemImages");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            string fileName = $"{Guid.NewGuid()}_{model.Image.FileName}";
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.Image.CopyToAsync(stream);
-            }
-
-            item.ImageUrl = $"/itemImages/{fileName}";
-        }
-
-        bool itemUpdated = await _itemRepository.UpdateAsync(item);
-
-        if (!itemUpdated)
-            return false;
-
-        return await UpdateItemModifierGroup(model.ItemId, model.ItemModifierGroups, createrId);
-       
-    }
-
-    public async Task<bool> UpdateItemModifierGroup(long itemId, List<ItemModifierViewModel> itemModifierList, long createrId)
-    {
-        List<long> existingGroupList = _itemModifierGroupRepository
-        .GetByCondition(m => m.ItemId == itemId && !m.IsDeleted)
-        .Result
-        .Select(mg => mg.ModifierGroupId)
-        .ToList();
-
-        List<long> currentGroupList = itemModifierList.Select(mg => mg.ModifierGroupId).ToList();
-
-        List<long> removeGroupList = existingGroupList.Except(currentGroupList).ToList();
-
-        foreach (long groupId in removeGroupList)
-        {
-            ItemModifierGroup? itemModifierGroup = await _itemModifierGroupRepository.GetByStringAsync(mg => mg.ModifierGroupId == groupId && mg.ItemId == itemId && !mg.IsDeleted);
-            itemModifierGroup.IsDeleted = true;
-            bool success = await _itemModifierGroupRepository.UpdateAsync(itemModifierGroup);
-            if (!success)
-                return false;
-        }
-
-        foreach (ItemModifierViewModel itemModifier in itemModifierList)
-        {
-            ItemModifierGroup existingGroup = await _itemModifierGroupRepository.GetByStringAsync(mg => mg.ItemId == itemId && mg.ModifierGroupId == itemModifier.ModifierGroupId && mg.IsDeleted == false);
-            if (existingGroup == null)
-            {
-                bool success = await AddItemModifierGroup(itemId, itemModifier, createrId);
-                if (!success)
-                    return false;
-            }
-            else
-            {
-                existingGroup.MinAllowed = itemModifier.MinAllowed;
-                existingGroup.MaxAllowed = itemModifier.MaxAllowed;
-                bool success = await _itemModifierGroupRepository.UpdateAsync(existingGroup);
-                if (!success)
-                    return false;
-
-            }
-        }
-
-        return true;
-    }
-
-    #endregion Update Item
-
-    #region Soft Delete
-
-    public async Task<bool> SoftDeleteItem(long id)
-    {
-        Item item = await _itemRepository.GetByIdAsync(id);
-
-        if (item == null)
-            return false;
+        Item item = await _itemRepository.GetByIdAsync(id) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Item"));
 
         item.IsDeleted = true;
-        return await _itemRepository.UpdateAsync(item);
+        item.UpdatedAt = DateTime.Now;
+        item.UpdatedBy = await _userService.LoggedInUser();
+
+        await _itemRepository.UpdateAsync(item);
     }
 
-    public async Task<bool> MassDeleteItems(List<long> itemsList)
+    public async Task Delete(List<long> items)
     {
-        bool isDeleted;
-        foreach (long id in itemsList)
+        foreach (long id in items)
         {
-            Item item = await _itemRepository.GetByIdAsync(id);
-
-            if (item == null)
-                return false;
-
-            item.IsDeleted = true;
-            isDeleted = await _itemRepository.UpdateAsync(item);
-            if (!isDeleted)
-                return false;
+            await Delete(id);
         }
-        return true;
     }
-    #endregion Soft Delete
+    #endregion Delete
 
-    #endregion Items
 }
 

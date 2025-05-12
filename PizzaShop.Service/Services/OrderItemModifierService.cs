@@ -31,10 +31,7 @@ public class OrderItemModifierService : IOrderItemModifierService
                 UpdatedBy = await _userService.LoggedInUser()
             };
 
-            if(!await _oimRepository.AddAsync(oim))
-            {
-                return false;
-            }
+            await _oimRepository.AddAsync(oim);
         }
         return true;
     }

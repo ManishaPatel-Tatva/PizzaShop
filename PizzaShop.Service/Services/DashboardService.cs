@@ -19,7 +19,7 @@ public class DashboardService : IDashboardService
         _customerRepository = customerRepository;
     }
 
-    public async Task<DashboardViewModel> Get(FilterViewModel filter)
+    public DashboardViewModel Get(FilterViewModel filter)
     {
         Func<DateTime, bool> dateFilter = t => true;
 
@@ -77,7 +77,7 @@ public class DashboardService : IDashboardService
         .Where(o => dateFilter(o.CreatedAt)).ToList();
 
         List<WaitingToken> waitingList = _waitingTokenRepository.GetAll().Where(w => dateFilter(w.CreatedAt)).ToList();
-        
+
         List<Customer> customerList = _customerRepository.GetAll().Where(c => dateFilter(c.CreatedAt)).ToList();
 
         List<SellingItem> orderItemList = orderList.SelectMany(o => o.OrderItems)
@@ -90,7 +90,7 @@ public class DashboardService : IDashboardService
                             TotalQuantity = g.Sum(oi => oi.Quantity)
                         }).ToList();
 
-        List<RevenuData> revenuDataList = orderList.GroupBy(o => o.CreatedAt.Day)
+        List<RevenuData> revenueDataList = orderList.GroupBy(o => o.CreatedAt.Day)
                                         .Select(g => new RevenuData
                                         {
                                             Date = g.Key,
@@ -106,19 +106,39 @@ public class DashboardService : IDashboardService
 
         DashboardViewModel dashboard = new()
         {
-            TotalOrders = orderList.Any() ? orderList.Count() : 0,
-            TotalSales = orderList.Any() ? orderList.Sum(o => o.FinalAmount) : 0,
-            AvgOrderValue = orderList.Any() ? orderList.Average(o => o.SubTotal) : 0,
-            WaitingListCount = waitingList.Any() ? waitingList.Where(w => !w.IsAssigned).Count() : 0,
-            AvgWaitingTime = waitingList.Any(w => w.IsAssigned) ? waitingList.Where(w => w.IsAssigned).Average(w => (w.AssignedAt - w.CreatedAt).Value.TotalMinutes) : 0,
-            NewCustomerCount = customerList.Any() ? customerList.Count(c => dateFilter(c.CreatedAt)) : 0,
-            TopSellingItems = orderList.Any() ? orderItemList.OrderByDescending(oi => oi.TotalQuantity).Take(2).ToList() : new(),
-            LeastSellingItems = orderList.Any() ? orderItemList.OrderBy(oi => oi.TotalQuantity).Take(2).ToList() : new()
+            TotalOrders = orderList.Any() ? 
+                        orderList.Count : 0,
+
+            TotalSales = orderList.Any() ? 
+                        orderList.Sum(o => o.FinalAmount) : 0,
+
+            AvgOrderValue = orderList.Any() ? 
+                        orderList.Average(o => o.SubTotal) : 0,
+
+            WaitingListCount = waitingList.Any() ? 
+                        waitingList.Where(w => !w.IsAssigned).Count() : 0,
+            
+            AvgWaitingTime = waitingList.Any(w => w.IsAssigned && w.AssignedAt != null)
+                        ? waitingList
+                        .Where(w => w.IsAssigned && w.AssignedAt != null)
+                        .Average(w => (w.AssignedAt.Value - w.CreatedAt).TotalMinutes)
+                        : 0,
+            
+            NewCustomerCount = customerList.Any() ? 
+                        customerList.Count(c => dateFilter(c.CreatedAt)) : 0,
+            
+            TopSellingItems = orderList.Any() ? 
+                        orderItemList.OrderByDescending(oi => oi.TotalQuantity).Take(2).ToList() 
+                        : new(),
+            
+            LeastSellingItems = orderList.Any() ? 
+                        orderItemList.OrderBy(oi => oi.TotalQuantity).Take(2).ToList() 
+                        : new()
         };
 
         for (int i = 1; i <= 31; i++)
         {
-            dashboard.Revenue.Add(revenuDataList.FirstOrDefault(r => r.Date == i)?.Revenue ?? 0);
+            dashboard.Revenue.Add(revenueDataList.FirstOrDefault(r => r.Date == i)?.Revenue ?? 0);
         }
 
         for (int i = 1; i <= 12; i++)
