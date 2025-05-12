@@ -77,7 +77,6 @@ public class UserService : IUserService
 
         UserPaginationViewModel model = new()
         {
-            Page = new(),
             Users = users.Select(u => new UserInfoViewModel()
             {
                 FirstName = u.FirstName,

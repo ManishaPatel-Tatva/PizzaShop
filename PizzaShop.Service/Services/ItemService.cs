@@ -51,7 +51,6 @@ public class ItemService : IItemService
 
         ItemsPaginationViewModel model = new()
         {
-            Page = new(),
             Items = items.Select(i => new ItemInfoViewModel()
             {
                 Id = i.Id,

@@ -44,7 +44,6 @@ public class TableService : ITableService
 
         TablesPaginationViewModel tablesVM = new()
         {
-            Page = new(),
             Tables = tables.Select(t => new TableViewModel()
             {
                 Id = t.Id,

@@ -96,8 +96,6 @@ public class KotService : IKotService
                 Instruction = o.Instructions
 
             }).Where(c => c.Items.Count > 0).ToList(),
-            
-            Page = new()
         };
 
         return kot;

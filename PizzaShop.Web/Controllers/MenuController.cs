@@ -42,11 +42,6 @@ public class MenuController : Controller
         MenuViewModel model = new()
         {
             Categories = categoriesList,
-            ItemsPageVM = new ItemsPaginationViewModel
-            {
-                Items = Enumerable.Empty<ItemInfoViewModel>(),
-                Page = new Pagination()
-            }
         };
         ViewData["sidebar-active"] = "Menu";
         return View(model);

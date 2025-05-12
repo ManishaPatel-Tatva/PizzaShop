@@ -6,5 +6,5 @@ public class KotViewModel
     public string CategoryName { get; set; } = "";
     public bool IsReady { get; set; }
     public List<KotCardViewModel> KotCards { get; set; } = new List<KotCardViewModel>();
-    public Pagination? Page { get; set; }
+    public Pagination Page { get; set; }= new();
 }

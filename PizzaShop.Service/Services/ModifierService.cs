@@ -52,7 +52,6 @@ public class ModifierService : IModifierService
 
         ModifiersPaginationViewModel model = new()
         {
-            Page = new(),
             Modifiers = modifierMapping.Select(m => new ModifierViewModel()
             {
                 Id = m.Modifierid,
@@ -84,7 +83,6 @@ public class ModifierService : IModifierService
 
         ModifiersPaginationViewModel model = new()
         {
-            Page = new(),
             Modifiers = modifiers.Select(m => new ModifierViewModel()
             {
                 Id = m.Id,

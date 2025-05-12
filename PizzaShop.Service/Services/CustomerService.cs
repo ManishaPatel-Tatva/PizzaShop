@@ -63,7 +63,7 @@ public class CustomerService : ICustomerService
 
     public async Task<CustomerPaginationViewModel> Get(FilterViewModel filter)
     {
-        List<CustomerViewModel>? customers = await List(filter);
+        List<CustomerViewModel> customers = await List(filter);
 
         //Pagination
         int totalRecord = customers.Count;
@@ -75,7 +75,6 @@ public class CustomerService : ICustomerService
         CustomerPaginationViewModel customersVM = new()
         {
             Customers = customers,
-            Page = new()
         };
 
         customersVM.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);

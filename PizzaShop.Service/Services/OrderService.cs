@@ -45,8 +45,7 @@ public class OrderService : IOrderService
         //Setting the filtered and sorted values in View Model
         OrderPaginationViewModel model = new()
         {
-            Page = new(),
-            Orders = List(orders),
+            Orders = List(orders)
         };
 
         model.Page.SetPagination(totalRecord, filter.PageSize, filter.PageNumber);

@@ -35,7 +35,6 @@ public class TaxesFeesService : ITaxesFeesService
 
         TaxPaginationViewModel taxVM = new()
         {
-            Page = new(),
             Taxes = taxes.Select(t => new TaxViewModel()
             {
                 TaxId = t.Id,
