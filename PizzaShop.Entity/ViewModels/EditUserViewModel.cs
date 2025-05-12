@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using PizzaShop.Entity.Models;
 
@@ -8,31 +9,31 @@ public class EditUserViewModel
 
     public long UserId { get; set; }
     
-     // [Required(ErrorMessage = "First Name is required")]
-    // [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]
+     [Required(ErrorMessage = "First Name is required")]
+    [StringLength(50, ErrorMessage = "First Name cannot exceed 50 characters")]
     public string FirstName { get; set; } = null!;
 
-    // [Required(ErrorMessage = "Last Name is required")]
-    // [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters")]
+    [Required(ErrorMessage = "Last Name is required")]
+    [StringLength(50, ErrorMessage = "Last Name cannot exceed 50 characters")]
     public string LastName { get; set; } = null!;
 
-    // [Required(ErrorMessage = "User Name is required")]
-    // [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
+    [Required(ErrorMessage = "User Name is required")]
+    [StringLength(50, ErrorMessage = "User Name cannot exceed 50 characters")]
     public string UserName { get; set; } = null!;
 
-    // [Required(ErrorMessage = "Email is required")]
-    // [EmailAddress(ErrorMessage = "Invalid email format")]
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Invalid email format")]
     public string Email { get; set; } = null!;
 
     public bool? Status { get; set; }
 
 
-    // [Required(ErrorMessage = "Address is required")]
-    // [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
+    [Required(ErrorMessage = "Address is required")]
+    [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
     public string Address { get; set; } = null!;
 
-    // [Required(ErrorMessage = "Zip Code is required")]
-    // [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
+    [Required(ErrorMessage = "Zip Code is required")]
+    [RegularExpression(@"^\d{5,6}$", ErrorMessage = "Invalid Zip Code")]
     public int ZipCode { get; set; }
 
     public long Phone { get; set; } 

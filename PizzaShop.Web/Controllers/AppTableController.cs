@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
+using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Web.Controllers;
@@ -33,7 +35,7 @@ public class AppTableController : Controller
         List<SectionViewModel> sections = await _appTableService.Get();
         return PartialView("_SectionListPartialView", sections);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> OffCanvas(long sectionId)
     {
@@ -50,11 +52,7 @@ public class AppTableController : Controller
     [HttpPost]
     public async Task<IActionResult> AssignTable(AssignTableViewModel token, string tableList)
     {
-        if(!string.IsNullOrEmpty(tableList))
-        {
-            token.Tables = JsonSerializer.Deserialize<List<TableViewModel>>(tableList);
-        }
-
+        token.Tables = JsonSerializer.Deserialize<List<TableViewModel>>(tableList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Tables List"));
         ResponseViewModel response = await _appTableService.Add(token);
         return Json(response);
     }

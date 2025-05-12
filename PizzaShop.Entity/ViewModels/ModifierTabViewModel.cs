@@ -4,6 +4,6 @@ namespace PizzaShop.Entity.ViewModels;
 
 public class ModifierTabViewModel
 {
-    public List<ModifierGroupViewModel> ModifierGroups { get; set; }
+    public List<ModifierGroupViewModel> ModifierGroups { get; set; } = new();
     public List<Modifier> Modifiers { get; set; } = new List<Modifier>();
 }

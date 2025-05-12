@@ -21,7 +21,7 @@
             </button>
         </div>
 
-        <select asp-for="@Model.status" class="form-select me-2 my-2" id="orderStatus" onchange="PaginationAjax(1)">
+        <select asp-for="@Model.Status" class="form-select me-2 my-2" id="orderStatus" onchange="PaginationAjax(1)">
             <option selected value="All Status">All Status</option>
             @foreach (OrderStatus status in Model.Statuses)
             {

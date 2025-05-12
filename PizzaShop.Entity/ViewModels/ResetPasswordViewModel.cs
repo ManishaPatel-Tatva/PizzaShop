@@ -4,7 +4,7 @@ namespace PizzaShop.Entity.ViewModels
 {
     public class ResetPasswordViewModel
     {
-        public string? Token { get; set; }
+        public string Token { get; set; } = "";
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Password is required")]    
         [DataType(DataType.Password)]    

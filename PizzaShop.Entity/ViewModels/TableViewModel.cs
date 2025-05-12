@@ -17,8 +17,8 @@ public class TableViewModel
     [Range(1, int.MaxValue, ErrorMessage = "Capacity should be greater than 0")]
     public int Capacity { get; set; }
     public long StatusId { get; set; } = 1;
-    public string? StatusName { get; set; } = "";
-    public List<TableStatus>? StatusList { get; set; } = new List<TableStatus>();
-    public List<Section>? SectionList { get; set; } = new List<Section>();
+    public string StatusName { get; set; } = "";
+    public List<TableStatus> StatusList { get; set; } = new List<TableStatus>();
+    public List<Section> SectionList { get; set; } = new List<Section>();
     public bool IsSelected { get; set; } = false;
 }

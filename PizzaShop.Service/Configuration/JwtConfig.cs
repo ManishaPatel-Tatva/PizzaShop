@@ -9,7 +9,7 @@ public static class JwtConfig
     public static string Audience { get; set; } = "localhost";
     public static int TokenDuration { get; set; } = 24;
 
-    public static void LoadFromConfiguration(IConfiguration configuration)
+    public static void LoadJwtConfiguration(IConfiguration configuration)
     {
         Key = configuration["JwtConfig:Key"] ?? Key;
         Issuer = configuration["JwtConfig:Issuer"] ?? Issuer;

@@ -52,12 +52,11 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 //Email Service and Setting
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("SmtpSettings"));
+EmailConfig.LoadEmailConfiguration(builder.Configuration);
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 //Jwt Service
-// Load JwtConfig from appsettings.json
-JwtConfig.LoadFromConfiguration(builder.Configuration);
+JwtConfig.LoadJwtConfiguration(builder.Configuration);
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 //Profile Service

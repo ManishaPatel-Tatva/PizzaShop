@@ -7,5 +7,5 @@ public class ItemModifierViewModel
     public string? ModifierGroupName { get; set; } = "";
     public int MinAllowed { get; set; }
     public int MaxAllowed { get; set; }
-    public List<ModifierViewModel>? ModifierList { get; set; } = new();
+    public List<ModifierViewModel> ModifierList { get; set; } = new();
 }

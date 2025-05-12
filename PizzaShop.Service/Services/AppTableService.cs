@@ -53,7 +53,7 @@ public class AppTableService : IAppTableService
                 TableName = t.Name,
                 TableStatus = t.Status.Name,
                 OrderAmount = t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Any(otm => otm.OrderId == null) ? 0 :
-                            t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Select(otm => otm.Order.FinalAmount).FirstOrDefault(),
+                            t.OrderTableMappings.Where(otm => otm.TableId == t.Id && !otm.IsDeleted).Select(otm => otm.Order!.FinalAmount).FirstOrDefault(),
                 OrderTime = t.OrderTableMappings
                             .Where(otm => otm.TableId == t.Id && !otm.IsDeleted)
                             .Select(otm => otm.CreatedAt)

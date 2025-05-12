@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 
 namespace PizzaShop.Web.Controllers;
 
@@ -89,11 +90,13 @@ public class AuthController : Controller
     public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
     {
         if (!ModelState.IsValid)
+        {
             return View(model);
+        }
 
         // Generate a secure token for reset password (GUID-based)
-        var resetToken = Guid.NewGuid().ToString();
-        var resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme);
+        string resetToken = Guid.NewGuid().ToString();
+        string resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Selected Modifier Group"));;
 
         ResponseViewModel response = await _authService.ForgotPassword(model.Email, resetToken, resetLink);
         if (!response.Success)

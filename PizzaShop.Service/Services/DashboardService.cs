@@ -121,7 +121,7 @@ public class DashboardService : IDashboardService
             AvgWaitingTime = waitingList.Any(w => w.IsAssigned && w.AssignedAt != null)
                         ? waitingList
                         .Where(w => w.IsAssigned && w.AssignedAt != null)
-                        .Average(w => (w.AssignedAt.Value - w.CreatedAt).TotalMinutes)
+                        .Average(w => (w.AssignedAt!.Value - w.CreatedAt).TotalMinutes)
                         : 0,
             
             NewCustomerCount = customerList.Any() ? 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Service.Common;
+using PizzaShop.Service.Exceptions;
 using PizzaShop.Service.Interfaces;
 using PizzaShop.Web.Filters;
 
@@ -140,7 +141,7 @@ public class MenuController : Controller
 
         if (!string.IsNullOrEmpty(modifierGroupList))
         {
-            model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList);
+            model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Modifier Group"));
         }
 
         ResponseViewModel response = await _ItemService.Save(model);
@@ -220,7 +221,7 @@ public class MenuController : Controller
 
         if (!string.IsNullOrEmpty(modifierList))
         {
-            model.ModifierIdList = JsonSerializer.Deserialize<List<long>>(modifierList);
+            model.ModifierIdList = JsonSerializer.Deserialize<List<long>>(modifierList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Selected Modifier Group"));
         }
 
         ResponseViewModel response = await _modifierGroupService.Save(model);
@@ -285,7 +286,7 @@ public class MenuController : Controller
 
         if (!string.IsNullOrEmpty(selectedMG))
         {
-            model.SelectedMgList = JsonSerializer.Deserialize<List<long>>(selectedMG);
+            model.SelectedMgList = JsonSerializer.Deserialize<List<long>>(selectedMG) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Selected Modifier Group"));
         }
 
         ResponseViewModel response = await _modifierService.Save(model);

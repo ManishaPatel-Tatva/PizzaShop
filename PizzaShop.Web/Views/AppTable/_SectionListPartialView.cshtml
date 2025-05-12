@@ -1,7 +1,7 @@
 @using PizzaShop.Entity.ViewModels
 @model List<SectionViewModel>
 
-@foreach (SectionViewModel? sec in Model)
+@foreach (SectionViewModel sec in Model)
 {
     <div class="accordion-item mb-3">
         <div class="accordion-header d-flex flex-wrap flex-sm-nowrap">
@@ -38,7 +38,7 @@
             <div class="accordion-body">
 
                 <div class="d-flex flex-wrap gap-2 gap-md-3 mb-2">
-                    @foreach (var table in sec.Tables)
+                    @foreach (TableCardViewModel table in sec.Tables)
                     {
                         <div class="flex-grow-1 flex-md-grow-0 p-3 rounded-2 table-@table.TableStatus.ToLower() table-card" data-id="@table.Id" data-sectionid="@sec.Id" data-capacity="@table.Capacity" data-customerid="@table.CustomerId"
                         @(table.TableStatus == "Available" ? "onclick=selectTable(this)" : "onclick=ViewOrderDetail(this)" )>
