@@ -144,9 +144,18 @@ public class WaitingListService : IWaitingListService
                 WaitingToken? existingToken = await _waitingTokenRepository.GetByStringAsync(wt => wt.CustomerId == wtokenVM.CustomerId && !wt.IsDeleted);
                 if (existingToken != null)
                 {
-                    response.Success = false;
-                    response.Message = NotificationMessages.AlreadyExisted.Replace("{0}", "Waiting Token");
-                    return response;
+                    if (!existingToken.IsAssigned)
+                    {
+                        response.Success = false;
+                        response.Message = NotificationMessages.AlreadyExisted.Replace("{0}", "Waiting Token");
+                        return response;
+                    }
+                    else
+                    {
+                        response.Success = false;
+                        response.Message = NotificationMessages.TableAlreadyAssigned;
+                        return response;
+                    }
                 }
 
                 token.CreatedBy = await _userService.LoggedInUser();

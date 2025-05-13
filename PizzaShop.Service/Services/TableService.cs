@@ -136,12 +136,13 @@ public class TableService : ITableService
         {
             await _tableRepository.AddAsync(table);
             response.Success = true;
-            response.Message = NotificationMessages.Added.Replace("{0}", "Section");
+            response.Message = NotificationMessages.Added.Replace("{0}", "Table");
         }
         else
         {
             await _tableRepository.UpdateAsync(table);
-            response.Message = NotificationMessages.Updated.Replace("{0}", "Section");
+            response.Success = true;
+            response.Message = NotificationMessages.Updated.Replace("{0}", "Table");
         }
 
         return response;

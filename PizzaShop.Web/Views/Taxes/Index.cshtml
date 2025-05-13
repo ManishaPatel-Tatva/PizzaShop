@@ -123,6 +123,7 @@
                     if (response.success) {
                         $("#addTaxModal").modal("hide");
                         toastr.success(response.message);
+                        PaginationAjax(1);
                     }
                     else {
                         toastr.error(response.message);
@@ -151,7 +152,8 @@
                 data: { taxId: deleteTaxId },
                 success: function (response) {
                     if (response.success) {
-                        toastr.success(response.message);
+                        toastr.success(response.message)
+                        PaginationAjax(1);
                     }
                     else {
                         toastr.error(response.message)

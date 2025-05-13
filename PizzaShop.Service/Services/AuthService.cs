@@ -30,7 +30,7 @@ public class AuthService : IAuthService
     -----------------------------------------------------------------------------------------------*/
     public async Task<(LoginResultViewModel loginResult, ResponseViewModel response)> LoginAsync(string email, string password)
     {
-        User user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted) 
+        User user = await _userRepository.GetByStringAsync(u => u.Email == email && !u.IsDeleted && u.IsActive == true) 
                     ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));       //Get User from email
 
         LoginResultViewModel loginVM = new();

@@ -129,8 +129,7 @@ public class ProfileService : IProfileService
 
     public async Task<ResponseViewModel> ChangePassword(ChangePasswordViewModel model)
     {
-        User user = await _userRepository.GetByStringAsync(u => u.Email == model.Email)
-        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "User"));
+        User user = await _userRepository.GetByIdAsync(await _userService.LoggedInUser()) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","User"));
 
         ResponseViewModel response = new();
 

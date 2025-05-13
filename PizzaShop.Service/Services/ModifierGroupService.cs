@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
@@ -26,10 +27,14 @@ public class ModifierGroupService : IModifierGroupService
 
     }
 
-    public List<ModifierGroupViewModel> Get()
+    public async Task<List<ModifierGroupViewModel>> Get()
     {
-        List<ModifierGroupViewModel> modifierGroups = _mgRepository.GetByCondition(mg => mg.IsDeleted == false).Result
-        .Select(mg => new ModifierGroupViewModel
+        IEnumerable<ModifierGroup>? list = await _mgRepository.GetByCondition(
+                predicate: mg => mg.IsDeleted == false,
+                orderBy: q => q.OrderBy(mg => mg.Id)
+        );
+
+        List<ModifierGroupViewModel> modifierGroups = list.Select(mg => new ModifierGroupViewModel
         {
             Id = mg.Id,
             Name = mg.Name,
@@ -104,6 +109,8 @@ public class ModifierGroupService : IModifierGroupService
                 {
                     return response;
                 }
+
+                modifierGroup.Id = mgId;
             }
             else
             {
@@ -142,7 +149,7 @@ public class ModifierGroupService : IModifierGroupService
             await _mgRepository.UpdateAsync(modifierGroup);
 
             await _modifierMappingService.Delete(mgId);
-            
+
             await _transaction.CommitAsync();
         }
         catch

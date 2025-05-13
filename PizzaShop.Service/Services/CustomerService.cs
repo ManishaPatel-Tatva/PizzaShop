@@ -26,10 +26,17 @@ public class CustomerService : ICustomerService
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     public async Task<CustomerViewModel> Get(string email)
     {
-        Customer customer = await _customerRepository.GetByStringAsync(c => c.Email == email && !c.IsDeleted)
-                            ?? new Customer();
+        Customer? customer = await _customerRepository.GetByStringAsync(c => c.Email == email && !c.IsDeleted);
 
-        return Get(customer.Id);
+        if (customer == null)
+        {
+            return new CustomerViewModel();
+        }
+        else
+        {
+            return Get(customer.Id);
+        }
+
     }
 
     /*----------------------------------------------------Get Customer by Id----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -243,6 +250,7 @@ public class CustomerService : ICustomerService
         else
         {
             await _customerRepository.UpdateAsync(customer);
+            response.Success = true;
             response.Message = NotificationMessages.Updated.Replace("{0}", "Customer");
         }
 

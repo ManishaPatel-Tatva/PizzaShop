@@ -337,8 +337,8 @@ public class OrderService : IOrderService
                 order.StatusId = 1;
                 order.CreatedBy = await _userService.LoggedInUser();
                 WaitingToken? token = await _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderVM.CustomerId) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Waiting Token"));
+                // await _waitingService.Delete(token.Id);
                 order.Members = token.Members;
-                await _waitingService.Delete(token.Id);
 
                 order.Id = await _orderRepository.AddAsyncReturnId(order);
 
@@ -402,7 +402,13 @@ public class OrderService : IOrderService
 
             await ChangeStatus(orderId, SetOrderStatus.COMPLETED);
 
-            // Delete Table assignment
+            // Delete Waiting Token and Table assignment
+            WaitingToken? token = await _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderDetail.CustomerId);
+            if (token != null)
+            {
+                await _waitingService.Delete(token.Id);
+            }
+
             await _orderTableService.Delete(orderId);
 
             await _transaction.CommitAsync();
@@ -439,7 +445,13 @@ public class OrderService : IOrderService
 
             await ChangeStatus(orderId, SetOrderStatus.CANCELLED);
 
-            // Delete Table assignment
+            // Delete Waiting Token and Table assignment
+            WaitingToken? token = await _waitingTokenRepository.GetByStringAsync(t => !t.IsDeleted && t.CustomerId == orderDetail.CustomerId);
+            if (token != null)
+            {
+                await _waitingService.Delete(token.Id);
+            }
+
             await _orderTableService.Delete(orderId);
 
             await _transaction.CommitAsync();

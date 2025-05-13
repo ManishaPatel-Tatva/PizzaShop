@@ -77,7 +77,7 @@ public class TaxesController : Controller
         return Json(new ResponseViewModel
         {
             Success = true,
-            Message = NotificationMessages.Deleted.Replace("{0}","Section")
+            Message = NotificationMessages.Deleted.Replace("{0}","Tax")
         });
     }
 

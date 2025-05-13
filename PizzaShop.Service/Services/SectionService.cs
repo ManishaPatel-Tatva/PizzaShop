@@ -104,11 +104,8 @@ public class SectionService : ISectionService
             section.UpdatedBy = await _userService.LoggedInUser();
             section.UpdatedAt = DateTime.Now;
 
-            
-
-
-
             await _sectionRepository.UpdateAsync(section);
+            await _transaction.CommitAsync();
         }
         catch
         {

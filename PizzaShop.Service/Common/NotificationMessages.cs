@@ -7,10 +7,12 @@ public static class NotificationMessages
     public const string Updated = "{0} has been updated successfully!";
     public const string Deleted = "{0} has been deleted successfully!";
 
+
     //Generic CRUD Failed
     public const string AddedFailed = "Failed Adding {0}!" + TryAgain;
     public const string UpdatedFailed = "Failed Updating {0}!"+ TryAgain;
     public const string DeletedFailed = "Failed Deleting {0}!"+ TryAgain;
+
 
     //Generic Messages
     public const string TryAgain = "Please try again!";
@@ -22,7 +24,6 @@ public static class NotificationMessages
     public const string Failed = "{0} Failed!";
 
 
-
     //Login
     public const string LinkExpired = "Link expired!" + TryAgain;
     public const string AlreadyUsed = "Link already used to reset password!";
@@ -31,12 +32,16 @@ public static class NotificationMessages
     public const string EmailSent = "Email has been sent successfully!";
     public const string EmailSendingFailed = "Failed to send the email." + TryAgain;
 
+
     //Save order
     public const string CompleteOrderFailed = "All items must be served before completing the order";
     public const string CannotCancelOrder = "The order item is ready, cannot cancel the order";
 
+
     // Assign Table
     public const string CapacityExceeded = "Members should be less than table capacity";
+    public const string TableAlreadyAssigned = "Table is already assigned to the same customer!";
+
 
 
 }

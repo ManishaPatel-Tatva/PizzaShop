@@ -75,10 +75,10 @@ public class ItemService : IItemService
         ItemViewModel itemVM = new()
         {
             Name = "",
-            Categories = _categoryRepository.GetAll().ToList(),
+            Categories = _categoryRepository.GetByCondition(c => !c.IsDeleted).Result.ToList(),
             FoodType = _foodTypeRepository.GetAll().ToList(),
             Units = _unitRepository.GetAll().ToList(),
-            ModifierGroups = _modifierGroupRepository.GetAll().ToList()
+            ModifierGroups = _modifierGroupRepository.GetByCondition(mg => !mg.IsDeleted).Result.ToList()
         };
 
         Item? item = await _itemRepository.GetByIdAsync(itemId);

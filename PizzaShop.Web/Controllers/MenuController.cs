@@ -141,7 +141,7 @@ public class MenuController : Controller
 
         if (!string.IsNullOrEmpty(modifierGroupList))
         {
-            model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Modifier Group"));
+            model.ItemModifierGroups = JsonSerializer.Deserialize<List<ItemModifierViewModel>>(modifierGroupList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Modifier Group"));
         }
 
         ResponseViewModel response = await _ItemService.Save(model);
@@ -164,7 +164,7 @@ public class MenuController : Controller
         return Json(new ResponseViewModel
         {
             Success = true,
-            Message = NotificationMessages.Deleted.Replace("{0}","Item")
+            Message = NotificationMessages.Deleted.Replace("{0}", "Item")
         });
     }
 
@@ -178,7 +178,7 @@ public class MenuController : Controller
         return Json(new ResponseViewModel
         {
             Success = true,
-            Message = NotificationMessages.Deleted.Replace("{0}","Items")
+            Message = NotificationMessages.Deleted.Replace("{0}", "Items")
         });
     }
 
@@ -189,11 +189,11 @@ public class MenuController : Controller
    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("View_Menu")]
     [HttpGet]
-    public IActionResult GetModifierTab()
+    public async Task<IActionResult> GetModifierTab()
     {
         ModifierTabViewModel model = new()
         {
-            ModifierGroups = _modifierGroupService.Get()
+            ModifierGroups = await _modifierGroupService.Get()
         };
 
         return PartialView("_ModifierTabPartialView", model);
@@ -221,7 +221,7 @@ public class MenuController : Controller
 
         if (!string.IsNullOrEmpty(modifierList))
         {
-            model.ModifierIdList = JsonSerializer.Deserialize<List<long>>(modifierList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Selected Modifier Group"));
+            model.ModifierIdList = JsonSerializer.Deserialize<List<long>>(modifierList) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Selected Modifier Group"));
         }
 
         ResponseViewModel response = await _modifierGroupService.Save(model);
@@ -242,7 +242,7 @@ public class MenuController : Controller
         return Json(new ResponseViewModel
         {
             Success = true,
-            Message = NotificationMessages.Deleted.Replace("{0}","Items")
+            Message = NotificationMessages.Deleted.Replace("{0}", "Modifier Group")
         });
     }
     #endregion
@@ -286,7 +286,7 @@ public class MenuController : Controller
 
         if (!string.IsNullOrEmpty(selectedMG))
         {
-            model.SelectedMgList = JsonSerializer.Deserialize<List<long>>(selectedMG) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Selected Modifier Group"));
+            model.SelectedMgList = JsonSerializer.Deserialize<List<long>>(selectedMG) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Selected Modifier Group"));
         }
 
         ResponseViewModel response = await _modifierService.Save(model);
@@ -299,9 +299,10 @@ public class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteModifier(long modifierId, long modifierGroupId)
     {
-        await _modifierMappingService.Delete(modifierId, modifierGroupId);
+        await _modifierMappingService.Delete(modifierGroupId, modifierId);
 
-        return Json(new ResponseViewModel{
+        return Json(new ResponseViewModel
+        {
             Success = true,
             Message = NotificationMessages.Deleted.Replace("{0}", "Modifier")
         });
@@ -318,7 +319,7 @@ public class MenuController : Controller
         return Json(new ResponseViewModel
         {
             Success = true,
-            Message = NotificationMessages.Deleted.Replace("{0}","Modifiers")
+            Message = NotificationMessages.Deleted.Replace("{0}", "Modifiers")
         });
     }
 

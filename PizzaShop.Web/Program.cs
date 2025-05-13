@@ -33,7 +33,8 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
  
 // Replace built-in logger with Serilog
-builder.Host.UseSerilog();
+// builder.Host.UseSerilog();
+builder.Logging.AddSerilog(Log.Logger);
 
 #region Services
 /*---------------Add services to the container.-----------------------------------------------

@@ -96,7 +96,7 @@ public class AuthController : Controller
 
         // Generate a secure token for reset password (GUID-based)
         string resetToken = Guid.NewGuid().ToString();
-        string resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Selected Modifier Group"));;
+        string resetLink = Url.Action("ResetPassword", "Auth", new { token = resetToken }, Request.Scheme) ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Selected Modifier Group")); ;
 
         ResponseViewModel response = await _authService.ForgotPassword(model.Email, resetToken, resetLink);
         if (!response.Success)
@@ -157,20 +157,23 @@ public class AuthController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error(int code)
     {
-        if (code == 404)
-        {
-            return View("404");
-        }
         if (code == 401)
         {
             return View("401");
         }
-        if (code == 403)
+        else if (code == 403)
         {
             return View("403");
         }
-       
-        return View("500");
+        else if (code == 404)
+        {
+            return View("404");
+        }
+        else
+        {
+            return View("500");
+        }
+
     }
 
     public IActionResult HandleErrorWithToast(string message)

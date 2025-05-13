@@ -96,6 +96,10 @@ public class AppTableService : IAppTableService
     {
         //Add Waiting Token
         ResponseViewModel response = await _waitingService.Save(assignTableVM.WaitingToken);
+        if(!response.Success)
+        {
+            return response;
+        }
 
         assignTableVM.WaitingToken.Id = response.EntityId;
         assignTableVM.WaitingToken.CustomerId = _waitingService.Get(assignTableVM.WaitingToken.Id).Result.CustomerId;

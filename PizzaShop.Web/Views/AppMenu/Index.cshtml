@@ -96,8 +96,8 @@
                     <div class="d-flex align-items-center gap-2">
                         <img src="/images/icons/dining-table.svg" alt="" class="bg-blue" height="40px" width="40px">
                         <div>
-                            <div>@Model.SectionName</div>
                             <div>Order Id : @Model.Order.OrderId</div>
+                            <div>@Model.SectionName</div>
                             <div>
                                 <span class="fw-semibold">Table:</span>
                                 <span>
@@ -208,17 +208,17 @@
                         Save
                     </button>
                     <button class="btn btn-white" data-bs-toggle="modal" data-bs-target="#completeOrderModal"
-                        @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity) ? "disabled": "" )>
+                        @((Model.Order.ItemsList.Any(oi => oi.ReadyQuantity != oi.Quantity) || Model.Order.OrderId == 0) ? "disabled": "" )>
                         Complete
                     </button>
                     <a asp-action="Invoice" asp-controller="Orders" asp-route-orderId="@Model.Order.OrderId"
-                        type="button" class="btn btn-white text-nowrap">
+                        type="button" class="btn btn-white text-nowrap" aria-disabled="true">
                         Generate Invoice
                     </a>
                 </div>
 
                 <div class="menu-order-bottom d-flex justify-content-end">
-                    <button class="btn btn-white " @(Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) ?
+                    <button class="btn btn-white " @((Model.Order.ItemsList.Any(oi => oi.ReadyQuantity > 0) || Model.Order.OrderId == 0) ?
                                                                            "disabled" : "") data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                         Cancel
                     </button>
@@ -344,9 +344,9 @@
                 <span>Are you sure you want to complete Order?</span>
             </div>
             <div class="modal-footer d-flex justify-content-center">
-                <button type="button" id="confirmCompletion" class="btn btn-blue btn-modal" data-bs-dismiss="modal"
+                <button type="button" id="confirmCompletion" class="btn btn-blue btn-modal"
                     onclick="completeOrder()">YES</button>
-                <button type="button" class="btn btn-white btn-modal">NO</button>
+                <button type="button" class="btn btn-white btn-modal" data-bs-dismiss="modal">NO</button>
             </div>
         </div>
     </div>
@@ -375,17 +375,6 @@
     </div>
 </div>
 <!-- Modal Order Cancelletion Confirmation ends-->
-
-@* <!-- Modal Customer Review starts-->
-<div class="modal fade" id="customerReviewModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <partial name="_CustomerReview" model="Model.CustomerReview" />
-        </div>
-    </div>
-</div>
-<!-- Modal Customer Review ends--> *@
 
 <!-- Customer Review Modal -->
 <div class="modal" tabindex="-1" id="customerReviewModal" data-bs-keyboard="false">
@@ -873,7 +862,7 @@
                 success: function (response) {
                     console.log(response);
                     if (response.success) {
-                        toastr.success(response.message);
+                        location.reload();
                     }
                     else {
                         toastr.error(response.Message);
@@ -908,7 +897,6 @@
         }
 
         function cancelOrder() {
-            console.log("cancelOrder hello");
             $.ajax({
                 url: '@Url.Action("CancelOrder", "AppMenu")',
                 type: "POST",

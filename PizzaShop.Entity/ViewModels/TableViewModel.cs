@@ -8,8 +8,8 @@ public class TableViewModel
 {
     public long Id { get; set; }
 
-    [Required(ErrorMessage = "Category Name is required")]
-    [StringLength(50, ErrorMessage = "Category Name cannot exceed 50 characters")]
+    [Required(ErrorMessage = "Name is required")]
+    [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
     public string Name { get; set; } = "";
     public long SectionId { get; set; } = 0;
 

@@ -52,8 +52,12 @@ public class TaxesFeesService : ITaxesFeesService
 
     public async Task<TaxViewModel> Get(long TaxId)
     {
-        Taxis tax = await _taxesRepository.GetByIdAsync(TaxId)
-        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Tax"));
+        Taxis? tax = await _taxesRepository.GetByIdAsync(TaxId);
+
+        if (tax == null)
+        {
+            return new TaxViewModel();
+        }
 
         TaxViewModel taxVM = new()
         {

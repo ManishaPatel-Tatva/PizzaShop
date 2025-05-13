@@ -31,12 +31,11 @@ public class ModifierService : IModifierService
     public async Task<ModifiersPaginationViewModel> Get(long modifierGroupId, int pageSize, int pageNumber, string search)
     {
         IEnumerable<ModifierMapping> modifierMapping = await _modifierMappingRepository.GetByCondition(
-
             predicate: mm => !mm.IsDeleted &&
                     mm.Modifiergroupid == modifierGroupId &&
                     (string.IsNullOrEmpty(search.ToLower()) ||
                     mm.Modifier.Name.ToLower().Contains(search.ToLower())),
-            orderBy: q => q.OrderBy(u => u.Id),
+            orderBy: q => q.OrderBy(m => m.Id),
             includes: new List<Expression<Func<ModifierMapping, object>>>
             {
                 m => m.Modifier

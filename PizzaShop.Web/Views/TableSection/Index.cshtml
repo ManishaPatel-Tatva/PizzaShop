@@ -184,9 +184,10 @@
 
     @* Delete Section *@
     <script>
-        let deleteSectionId;
-        $(".deleteSectionBtn").click(function () {
+        let deleteSectionId = 0;
+        $(document).on("click",".deleteSectionBtn", function(){
             deleteSectionId = $(this).data("id");
+            console.log("section id is",deleteSectionId);
         });
 
         $("#confirmDeleteSection").click(function () {
@@ -344,9 +345,9 @@
 
         $(document).on("click", "#confirmMassDeleteTable", function () {
             $.ajax({
-                url: '@Url.Action("MassDeleteTables", "Menu")',
+                url: '@Url.Action("MassDeleteTable", "TableSection")',
                 type: "POST",
-                data: { tablesList: tableList },
+                data: { tableIdList: tableList },
                 success: function (response) {
                     if (response.success) {
                         toastr.success(response.message)
