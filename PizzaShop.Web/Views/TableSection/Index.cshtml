@@ -350,13 +350,11 @@
                 data: { tableIdList: tableList },
                 success: function (response) {
                     if (response.success) {
-                        toastr.success(response.message)
-                        setTimeout(function () {
-                            location.reload();
-                        }, 3000);
+                        toastr.success(response.message);
+                        PaginationAjax(1);
                     }
                     else {
-                        toastr.error(response.message)
+                        toastr.error(response.message);
                     }
                 },
                 error: function () {

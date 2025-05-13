@@ -15,7 +15,8 @@
     <ul class="nav nav-pills" id="pills-tab" role="tablist">
         <li class="nav-item me-2" role="presentation">
             <button class="nav-link active d-flex align-items-center p-1" id="items-tab" data-bs-toggle="pill"
-                data-bs-target="#pills-items" type="button" role="tab" aria-controls="pills-home" aria-selected="true">
+                data-bs-target="#pills-items" type="button" role="tab" aria-controls="pills-home" aria-selected="true"
+                onclick="getItemTab()">
                 <img src="~/images/icons/items.svg" alt="" width="25px" class="me-2">
                 <span class="fs-5 tab-text">Items</span>
             </button>
@@ -23,7 +24,7 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link d-flex align-items-center p-1" id="modifier-tab" data-bs-toggle="pill"
                 data-bs-target="#pills-modifiers" type="button" role="tab" aria-controls="pills-profile"
-                aria-selected="false">
+                aria-selected="false" onclick="getModifierTab()">
                 <img src="~/images/icons/modifiers.svg" alt="" width="20px" class="me-2">
                 <span class="fs-5 tab-text">Modifiers</span>
             </button>
@@ -34,101 +35,20 @@
 
 <!-- Items tab start -->
 <div class="row bg-white mx-0 mb-3 d-flex flex-row">
-
     <div class="tab-content" id="pills-tabContent">
-
-        <!-----------------------------------------------------Category and Items -----------------------------------------------------------------------------------
-        ----------------------------------------------------------------------------------------------------------------------------------------------------->
         <div class="tab-pane fade show active" id="pills-items" role="tabpanel" aria-labelledby="pills-home-tab"
             tabindex="0">
             <div class="row" id="itemTab">
                 <!-- Item Tab Partial View -->
-
-                <!----------------------------------------------------- Category starts ------------------------------------------------------->
-                <div class="category col-12 col-md-3 pt-2 bg-light-grey">
-
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="fs-5 fw-bold blue-text">Category</span>
-                        <!-- Button trigger modal -->
-                        <button type="button" id="addCategoryBtn" class="btn p-0" data-bs-toggle="modal"
-                            data-bs-target="#addCategoryModal">
-                            <img src="~/images/icons/plus-square.svg" alt="" width="25px">
-                        </button>
-                    </div>
-
-                    <div class="category-list pe-1">
-                        <ul class="pe-1" id="ul-category">
-
-                            @foreach (var category in Model.Categories)
-                            {
-                                <li class="d-flex justify-content-between li-category" data-id="@category.Id">
-                                    <a class="d-flex align-items-center">
-                                        <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
-                                        <span class="categoryName">@category.Name</span>
-                                    </a>
-                                    <div class="EditDeleteCategory">
-                                        <button class="btn p-0 pe-1 editCategoryBtn" data-bs-toggle="modal"
-                                            data-bs-target="#addCategoryModal" data-id="@category.Id">
-                                            <img src="~/images/icons/edit.svg" alt="" />
-                                        </button>
-                                        <button class="btn p-0 pe-1 iconDeleteCategory" data-bs-toggle="modal"
-                                            data-bs-target="#deleteCategory" data-id="@category.Id">
-                                            <img src="~/images/icons/delete.svg" alt="">
-                                        </button>
-                                    </div>
-                                </li>
-                            }
-
-                        </ul>
-                    </div>
-                </div>
-                <!----------------------------------------------------- Category ends  ------------------------------------------------------->
-
-                <!----------------------------------------------------- Items starts ------------------------------------------------------>
-                <div class="col pt-2">
-                    <div class="fs-5 fw-bold blue-text">
-                        Items
-                    </div>
-
-                    <div class="d-flex flex-wrap justify-content-end gap-2">
-                        <div class="input-group w-25 search-group">
-                            <input type="search" class="form-control" placeholder="Search" name="search"
-                                id="searchItem">
-                            <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
-                            </button>
-                        </div>
-                        <button class="btn border" id="itemMassDeleteIcon" data-bs-toggle="modal"
-                            data-bs-target="#massDeleteItem">
-                            <img src="~/images/icons/delete.svg" alt="">
-                        </button>
-                        <button class="btn btn-blue newItemBtn" id="newItemBtn" data-bs-toggle="modal"
-                            data-bs-target="#addEditItem">
-                            + New Item
-                        </button>
-                    </div>
-
-                    <div id="itemTableOuter">
-                        <!-- Items Partial View -->
-                    </div>
-
-                </div>
-                <!----------------------------------------------------- Items ends ------------------------------------------------------->
-
             </div>
         </div>
-
-        <!----------------------------------------------------- Modifiers and Modifier Group-----------------------------------------------------------------------------------
-        ----------------------------------------------------------------------------------------------------------------------------------------------------->
-        <div class="tab-pane fade" id="pills-modifiers" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+        <div class="tab-pane fade" id="pills-modifiers" role="tabpanel" aria-labelledby="pills-profile-tab"
+            tabindex="0">
             <div class="row" id="modifierTab">
                 <!-- Modifier Tab Partial View -->
             </div>
         </div>
-
-
     </div>
-
-
 </div>
 <!-- Items tab ends -->
 
@@ -137,7 +57,7 @@
 ------------------------------------------------------------------------------------------------------------------------->
 <!-- Modal Add Category starts -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" id="addCategoryContent">
             <!-- Add Category Partial View -->
         </div>
@@ -171,17 +91,6 @@
 
 @section Scripts {
 
-    @*For showing edit and delete icons on hovering Category *@
-    <script>
-
-        $(".li-category").mouseover(function () {
-            $(this).children("div.EditDeleteCategory").css("visibility", "visible");
-        });
-        $(".li-category").mouseout(function () {
-            $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
-        });
-    </script>
-
     @* Pagination of Items *@
     <script>
 
@@ -191,22 +100,9 @@
         });
 
 
-        $(".li-category>a").on("click", function () {
-            categoryId = $(this).parent().data("id");
-            $(".li-category").each(function () {
-                $(this).children().removeClass("blue");
-            });
-            
-            $(this).addClass("blue");
 
-            ItemsPaginationAjax(1);
-        });
 
-        $(document).ready(function () {
-            categoryId = $("#ul-category>li:first").data("id");
-            $("#ul-category>li:first>a").addClass("blue");
-            ItemsPaginationAjax(1); // Load users on page load
-        });
+
 
         $(document).on("change", "#itemsPerPage", function () {
             ItemsPaginationAjax(1); // Reload data with new page size
@@ -238,9 +134,36 @@
                     $("#itemsPerPage").val(pageSize); // Reapply selected value after reload
                 },
                 error: function () {
-                    console.log("There is error.Not successful");
                     console.log("No Items Found");
                     $("#itemsListContent").html('An error has occurred');
+                }
+            });
+        }
+    </script>
+
+    @* Get Item Tab *@
+    <script>
+        $(document).ready(function () {
+            getItemTab();
+        });
+
+        function IntializeItems() {
+            categoryId = $("#ul-category>li:first").data("id");
+            $("#ul-category>li:first>a").addClass("blue");
+            ItemsPaginationAjax(1); // Load users on page load
+        }
+
+        function getItemTab() {
+            $.ajax({
+                url: '@Url.Action("GetItemTab", "Menu")',
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#itemTab").html(data);
+                    IntializeItems();
+                },
+                error: function () {
+                    console.log("There is error in fetching modifier tab.Not successful");
                 }
             });
         }
@@ -285,10 +208,8 @@
                 success: function (response) {
                     if (response.success) {
                         $("#addCategoryModal").modal("hide");
-                        setTimeout(function () {
-                            location.reload();
-                        }, 2000);
-                        toastr.success(response.message)
+                        toastr.success(response.message);
+                        getItemTab();
                     }
                     else {
                         toastr.error(response.message)
@@ -304,7 +225,7 @@
     @* Delete Category *@
     <script>
         let deleteCategoryId;
-        $(".iconDeleteCategory").click(function () {
+        $(document).on("click", ".iconDeleteCategory", function () {
             deleteCategoryId = $(this).data("id");
         });
 
@@ -314,11 +235,16 @@
                 type: "GET",
                 data: { categoryId: deleteCategoryId },
                 success: function (response) {
-                    console.log("Category with id ", deleteCategoryId, " is deleted.");
-                    location.reload()
+                    if (response.success) {
+                        toastr.success(response.message)
+                        getItemTab();
+                    }
+                    else {
+                        toastr.error(response.message)
+                    }
                 },
                 error: function () {
-                    console.log("error input deleting user");
+                    console.log("error delete category");
                 }
             });
         });
@@ -427,9 +353,7 @@
                     if (response.success) {
                         $("#addEditItem").modal("hide");
                         toastr.success(response.message);
-                        setTimeout(function () {
-                            location.reload();
-                        }, 3000);
+                        ItemsPaginationAjax(1);
                     }
                     else {
                         $("#addEditItemModal").html(response);
@@ -462,9 +386,7 @@
                 success: function (response) {
                     if (response.success) {
                         toastr.success(response.message)
-                        setTimeout(function () {
-                            location.reload();
-                        },000);
+                        ItemsPaginationAjax(1);
                     }
                     else {
                         toastr.error(response.message)
@@ -532,9 +454,7 @@
                 success: function (response) {
                     if (response.success) {
                         toastr.success(response.message)
-                        setTimeout(function () {
-                            location.reload();
-                        }, 3000);
+                        ItemsPaginationAjax(1);
                     }
                     else {
                         toastr.error(response.message)
@@ -550,11 +470,6 @@
 
     @* Get Modifier Tab *@
     <script>
-        $(document).on("click", "#modifier-tab", function () {
-            console.log("Modifier Tab");
-            getModifierTab();
-        });
-
         function IntializeModifier() {
             currentMgId = $("#ul-modifierGroup>li:first").data("id");
             $("#ul-modifierGroup>li:first>a").addClass("blue");
@@ -733,11 +648,11 @@
             $("#selectMod").empty();
             $.each(selectedModifierList, function (index, modifier) {
                 $("#selectMod").append(` 
-                        <span class="spanModifier d-flex align-items-center border rounded-5 px-2" data-id="${modifier.id}" data-name="${modifier.name}">
-                            <span class="p-1 fw-semibold text-grey" data-id="${modifier.id}">${modifier.name}</span>
-                            <button type="button" class="btn-close fs-6" aria-label="Close" data-id="${modifier.id}"></button>
-                        </span>
-                    `)
+                                    <span class="spanModifier d-flex align-items-center border rounded-5 px-2" data-id="${modifier.id}" data-name="${modifier.name}">
+                                        <span class="p-1 fw-semibold text-grey" data-id="${modifier.id}">${modifier.name}</span>
+                                        <button type="button" class="btn-close fs-6" aria-label="Close" data-id="${modifier.id}"></button>
+                                    </span>
+                                `)
             })
         })
 
@@ -842,15 +757,7 @@
 
     @* Add Modifier Modal *@
     <script>
-        $(document).on("click", "#addModifierBtn", function () {
-            GetModifier(0);
-        });
-
-        $(document).on("click", ".editModifierBtn", function () {
-            console.log("Modifier id on clicking icons ", $(this).data("id"));
-            GetModifier($(this).data("id"));
-        });
-
+        
         function GetModifier(id) {
             $.ajax({
                 url: '@Url.Action("GetModifierModal", "Menu")',
@@ -858,7 +765,7 @@
                 data: { modifierId: id },
                 dataType: "html",
                 success: function (data) {
-                    $("#addModifierModal").html(data);
+                    $("#addModifierContent").html(data);
                 },
                 error: function () {
                     console.log("There is error.Not successful");
@@ -875,7 +782,7 @@
 
             //For adding checked modifier group in selected modifier group
             let selectedMgList = [];
-            $(".mgCheckbox:checked").each(function(){
+            $(".mgCheckbox:checked").each(function () {
                 selectedMgList.push($(this).data("id"));
             })
 
@@ -886,12 +793,16 @@
                 url: $(this).attr("action"),
                 type: $(this).attr("method"),
                 data: $(this).serialize(),
-                success: function (data) {
-                    $("#addModifierModal").hide;
-                    toastr.success("Modifier Added successfully!");
-                    setTimeout(function () {
-                        location.reload();
-                    }, 3000);
+                success: function (response) {
+                    if (response.success) {
+                        $("#addModifier").modal("hide");
+                        toastr.success(response.message);
+                        ModifiersPaginationAjax(1);
+                    }
+                    else
+                    {
+                        toastr.error(response.message);
+                    }
                 },
                 error: function () {
                     console.log("There is error.Not successful");

@@ -150,6 +150,8 @@ public class ModifierService : IModifierService
         else
         {
             await _modifierRepository.UpdateAsync(modifier);
+            response.Success = true;
+            response.Message = response.Success ? NotificationMessages.Updated.Replace("{0}", "Modifier") : NotificationMessages.UpdatedFailed.Replace("{0}", "Modifier");
         }
 
         await _modifierMappingService.UpdateModifierMapping(modifier.Id, modifierVM.SelectedMgList);

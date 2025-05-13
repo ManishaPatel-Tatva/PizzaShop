@@ -48,6 +48,15 @@ public class MenuController : Controller
         return View(model);
     }
     #region Category
+
+    [CustomAuthorize("View_Menu")]
+    [HttpGet]
+    public async Task<IActionResult> GetItemTab()
+    {
+        List<CategoryViewModel>? categories = await _categoryService.Get();
+        return PartialView("_ItemTabPartialView", categories);
+    }
+
     /*-------------------------------------------------------- Get Category---------------------------------------------------------------------------------------------------
   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
     [CustomAuthorize("Edit_Menu")]
@@ -238,7 +247,7 @@ public class MenuController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteModifierGroup(long modifierGroupId)
     {
-        await _modifierMappingService.Delete(modifierGroupId);
+        await _modifierGroupService.Delete(modifierGroupId);
         return Json(new ResponseViewModel
         {
             Success = true,

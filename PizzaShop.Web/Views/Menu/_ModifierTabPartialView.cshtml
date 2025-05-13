@@ -59,7 +59,7 @@
             <img src="~/images/icons/delete.svg" alt="">
         </button>
         <button class="btn btn-blue" id="addModifierBtn" data-bs-toggle="modal"
-            data-bs-target="#addModifier">
+            data-bs-target="#addModifier" onclick="GetModifier(0)">
             + New Modifier
         </button>
     </div>
@@ -127,7 +127,7 @@
 <!-- Modal Add Modifier  starts -->
 <div class="modal fade" id="addModifier" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" id="addModifierModal">
+        <div class="modal-content" id="addModifierContent">
             <!-- Add Modifier Partial View -->
         </div>
     </div>

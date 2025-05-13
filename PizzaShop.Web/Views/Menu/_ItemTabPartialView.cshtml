@@ -1,0 +1,91 @@
+@using PizzaShop.Entity.ViewModels
+@model List<CategoryViewModel>
+
+<!----------------------------------------------------- Category starts ------------------------------------------------------->
+<div class="category col-12 col-md-3 pt-2 bg-light-grey">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fs-5 fw-bold blue-text">Category</span>
+        <!-- Button trigger modal -->
+        <button type="button" id="addCategoryBtn" class="btn p-0" data-bs-toggle="modal"
+            data-bs-target="#addCategoryModal">
+            <img src="~/images/icons/plus-square.svg" alt="" width="25px">
+        </button>
+    </div>
+
+    <div class="category-list pe-1">
+        <ul class="pe-1" id="ul-category">
+
+            @foreach (var category in Model)
+            {
+                <li class="d-flex justify-content-between li-category" data-id="@category.Id">
+                    <a class="d-flex align-items-center">
+                        <img src="~/images/icons/grid-3x2.svg" class="grid-img" id="">
+                        <span class="categoryName">@category.Name</span>
+                    </a>
+                    <div class="EditDeleteCategory">
+                        <button class="btn p-0 pe-1 editCategoryBtn" data-bs-toggle="modal"
+                            data-bs-target="#addCategoryModal" data-id="@category.Id">
+                            <img src="~/images/icons/edit.svg" alt="" />
+                        </button>
+                        <button class="btn p-0 pe-1 iconDeleteCategory" data-bs-toggle="modal"
+                            data-bs-target="#deleteCategory" data-id="@category.Id">
+                            <img src="~/images/icons/delete.svg" alt="">
+                        </button>
+                    </div>
+                </li>
+            }
+
+        </ul>
+    </div>
+</div>
+<!----------------------------------------------------- Category ends  ------------------------------------------------------->
+
+<!----------------------------------------------------- Items starts ------------------------------------------------------>
+<div class="col pt-2">
+    <div class="fs-5 fw-bold blue-text">
+        Items
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+        <div class="input-group w-25 search-group">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchItem">
+            <button type="submit" class="input-group-text"> <img src="~/images/icons/search.svg" alt="">
+            </button>
+        </div>
+        <button class="btn border" id="itemMassDeleteIcon" data-bs-toggle="modal" data-bs-target="#massDeleteItem">
+            <img src="~/images/icons/delete.svg" alt="">
+        </button>
+        <button class="btn btn-blue newItemBtn" id="newItemBtn" data-bs-toggle="modal" data-bs-target="#addEditItem">
+            + New Item
+        </button>
+    </div>
+
+    <div id="itemTableOuter">
+        <!-- Items Partial View -->
+    </div>
+
+</div>
+<!----------------------------------------------------- Items ends ------------------------------------------------------->
+
+@*For showing edit and delete icons on hovering Category *@
+<script>
+
+    $(".li-category").mouseover(function () {
+        $(this).children("div.EditDeleteCategory").css("visibility", "visible");
+    });
+    $(".li-category").mouseout(function () {
+        $(this).children("div.EditDeleteCategory").css("visibility", "hidden");
+    });
+
+    $(".li-category>a").on("click", function () {
+        categoryId = $(this).parent().data("id");
+        $(".li-category").each(function () {
+            $(this).children().removeClass("blue");
+        });
+
+        $(this).addClass("blue");
+
+        ItemsPaginationAjax(1);
+    });
+</script>

@@ -116,7 +116,15 @@ public class ItemModifierService : IItemModifierService
         mapping.UpdatedAt = DateTime.Now;
         mapping.UpdatedBy = await _userService.LoggedInUser();
 
-        await _itemModifierGroupRepository.AddAsync(mapping);
+        if (mapping.Id == 0)
+        {
+            await _itemModifierGroupRepository.AddAsync(mapping);
+        }
+        else
+        {
+            await _itemModifierGroupRepository.UpdateAsync(mapping);
+        }
+
     }
 
     public async Task Save(long itemId, List<ItemModifierViewModel> itemModifierList)

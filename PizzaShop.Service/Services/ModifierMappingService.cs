@@ -85,7 +85,7 @@ public class ModifierMappingService : IModifierMappingService
     // Delete all mapping of modifier group 
     public async Task Delete(long mgId)
     {
-        List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == mgId).Result.ToList();
+        List<ModifierMapping> modifierMappings = _modifierMappingRepository.GetByCondition(mm => mm.Modifiergroupid == mgId && !mm.IsDeleted).Result.ToList();
 
         foreach (ModifierMapping mapping in modifierMappings)
         {
