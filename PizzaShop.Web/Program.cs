@@ -114,6 +114,9 @@ builder.Services.AddScoped<IOrderItemModifierService, OrderItemModifierService>(
 builder.Services.AddScoped<IOrderTaxService, OrderTaxService>();
 builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 
+//Event
+builder.Services.AddScoped<IEventService, EventService>();
+
 //Session 
 builder.Services.AddSession(options =>
 {
