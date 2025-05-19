@@ -16,14 +16,15 @@ public class KotService : IKotService
     private readonly IGenericRepository<OrderItem> _orderItemRepository;
     private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
     private readonly ICategoryService _categoryService;
+    private readonly IKotRepository _kotRepository;
 
-    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderStatus> orderStatusRepository, ICategoryService categoryService)
+    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderStatus> orderStatusRepository, ICategoryService categoryService, IKotRepository kotRepository)
     {
         _orderRepository = orderRepository;
         _orderItemRepository = orderItemRepository;
         _orderStatusRepository = orderStatusRepository;
         _categoryService = categoryService;
-
+        _kotRepository = kotRepository;
     }
 
     #region Get
@@ -81,6 +82,7 @@ public class KotService : IKotService
                         .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && (!oi.IsDeleted) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
                         .Select(oi => new OrderItemViewModel
                         {
+                            Id = oi.Id,
                             ItemId = oi.ItemId,
                             Name = oi.Item.Name,
                             Quantity = isReady ? oi.ReadyQuantity : oi.Quantity - oi.ReadyQuantity,
@@ -120,23 +122,9 @@ public class KotService : IKotService
         {
             if (item.IsSelected)
             {
-                OrderItem? orderItem = await _orderItemRepository.GetByStringAsync(
-                                        oi => oi.OrderId == kot.OrderId 
-                                        && oi.ItemId == item.ItemId 
-                                        && !oi.IsDeleted)
-                                        ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}", "Item"));
-
-                orderItem.ReadyQuantity = kot.IsReady ?
-                                          orderItem.ReadyQuantity - item.Quantity
-                                        : orderItem.ReadyQuantity + item.Quantity;
-
-                await _orderItemRepository.UpdateAsync(orderItem);
+                await _kotRepository.Update(kot.IsReady, item.Quantity, item.Id);
             }
         }
-
-        
-
-
         response.Success = true;
         response.Message = NotificationMessages.Updated.Replace("{0}", "Item Status");
         return response;

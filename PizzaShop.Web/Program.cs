@@ -51,6 +51,7 @@ builder.Services.AddDbContext<PizzaShopContext>(q => q.UseNpgsql(conn));
 //Repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IKotRepository, KotRepository>();
 
 //Email Service and Setting
 EmailConfig.LoadEmailConfiguration(builder.Configuration);

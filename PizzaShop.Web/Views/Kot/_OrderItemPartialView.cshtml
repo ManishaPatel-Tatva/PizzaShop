@@ -26,6 +26,7 @@
                 {
                     <tr>
                         <td class="text-start">
+                            <input asp-for="Items[i].Id" hidden>
                             <input asp-for="Items[i].ItemId" hidden>
                             <input asp-for="Items[i].IsSelected" type="checkbox" class="form-check-input me-2 childCheckbox">
                             @Model.Items[i].Name
