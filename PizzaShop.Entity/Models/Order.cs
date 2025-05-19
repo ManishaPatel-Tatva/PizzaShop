@@ -37,6 +37,8 @@ public partial class Order
 
     public virtual ICollection<CustomersReview> CustomersReviews { get; set; } = new List<CustomersReview>();
 
+    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<Kot> Kots { get; set; } = new List<Kot>();

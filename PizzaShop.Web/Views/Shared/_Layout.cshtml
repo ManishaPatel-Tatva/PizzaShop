@@ -173,6 +173,16 @@
                             </a>
                         }
 
+                        @if (User.IsInRole("Account Manager"))
+                        {
+                            <a asp-action="Index" asp-controller="Events"
+                                class="@((ViewData["sidebar-active"] as string) == "Events" ? "side-dash" : "")">
+                                <img src="~/images/navigation/events.svg" alt=""
+                                    class="@((ViewData["sidebar-active"] as string) == "Events" ? "blue" : "")">
+                                Events
+                            </a>
+                        }
+
                     </div>
                 </div>
                 <!-- Sidebar ends-->

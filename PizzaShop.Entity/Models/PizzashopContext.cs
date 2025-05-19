@@ -25,6 +25,20 @@ public partial class PizzaShopContext : DbContext
 
     public virtual DbSet<CustomersReview> CustomersReviews { get; set; }
 
+    public virtual DbSet<Event> Events { get; set; }
+
+    public virtual DbSet<EventCancellation> EventCancellations { get; set; }
+
+    public virtual DbSet<EventSetup> EventSetups { get; set; }
+
+    public virtual DbSet<EventSetupDetail> EventSetupDetails { get; set; }
+
+    public virtual DbSet<EventSetupMapping> EventSetupMappings { get; set; }
+
+    public virtual DbSet<EventStatus> EventStatuses { get; set; }
+
+    public virtual DbSet<EventType> EventTypes { get; set; }
+
     public virtual DbSet<FavouriteItem> FavouriteItems { get; set; }
 
     public virtual DbSet<FoodType> FoodTypes { get; set; }
@@ -231,6 +245,170 @@ public partial class PizzaShopContext : DbContext
             entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.CustomersReviewUpdatedByNavigations)
                 .HasForeignKey(d => d.UpdatedBy)
                 .HasConstraintName("customers_review_updated_by_fkey");
+        });
+
+        modelBuilder.Entity<Event>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Events_pkey");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Address)
+                .HasColumnType("character varying")
+                .HasColumnName("address");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.EndTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("end_time");
+            entity.Property(e => e.EventTypeId).HasColumnName("event_type_id");
+            entity.Property(e => e.IsAcHall).HasColumnName("is_ac_hall");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.IsDineIn).HasColumnName("is_dine_in");
+            entity.Property(e => e.Members).HasColumnName("members");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.SetupId).HasColumnName("setup_id");
+            entity.Property(e => e.SpecialInstruction)
+                .HasColumnType("character varying")
+                .HasColumnName("special_instruction");
+            entity.Property(e => e.StartTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("start_time");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.EventCreatedByNavigations)
+                .HasForeignKey(d => d.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Events_created_by_fkey");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Events)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Events_customer_id_fkey");
+
+            entity.HasOne(d => d.EventType).WithMany(p => p.Events)
+                .HasForeignKey(d => d.EventTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Events_event_type_id_fkey");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Events)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("Events_order_id_fkey");
+
+            entity.HasOne(d => d.Setup).WithMany(p => p.Events)
+                .HasForeignKey(d => d.SetupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Events_setup_id_fkey");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.Events)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Events_status_id_fkey");
+
+            entity.HasOne(d => d.UpdatedByNavigation).WithMany(p => p.EventUpdatedByNavigations)
+                .HasForeignKey(d => d.UpdatedBy)
+                .HasConstraintName("Events_updated_by_fkey");
+        });
+
+        modelBuilder.Entity<EventCancellation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("EventCancellation_pkey");
+
+            entity.ToTable("EventCancellation");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.EventId).HasColumnName("event_id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+
+            entity.HasOne(d => d.Event).WithMany(p => p.EventCancellations)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("EventCancellation_event_id_fkey");
+        });
+
+        modelBuilder.Entity<EventSetup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("EventSetup_pkey");
+
+            entity.ToTable("EventSetup");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+            entity.Property(e => e.Rate).HasColumnName("rate");
+        });
+
+        modelBuilder.Entity<EventSetupDetail>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("EventSetupDetail_pkey");
+
+            entity.ToTable("EventSetupDetail");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+            entity.Property(e => e.SetupId).HasColumnName("setup_id");
+
+            entity.HasOne(d => d.Setup).WithMany(p => p.EventSetupDetails)
+                .HasForeignKey(d => d.SetupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("EventSetupDetail_setup_id_fkey");
+        });
+
+        modelBuilder.Entity<EventSetupMapping>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("EventSetupMapping_pkey");
+
+            entity.ToTable("EventSetupMapping");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.EventId).HasColumnName("event_id");
+            entity.Property(e => e.SetupDetailId).HasColumnName("setup_detail_id");
+
+            entity.HasOne(d => d.Event).WithMany(p => p.EventSetupMappings)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("EventSetupMapping_event_id_fkey");
+
+            entity.HasOne(d => d.SetupDetail).WithMany(p => p.EventSetupMappings)
+                .HasForeignKey(d => d.SetupDetailId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("EventSetupMapping_setup_detail_id_fkey");
+        });
+
+        modelBuilder.Entity<EventStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("EventStatus_pkey");
+
+            entity.ToTable("EventStatus");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<EventType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("EventType_pkey");
+
+            entity.ToTable("EventType");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<FavouriteItem>(entity =>

@@ -1,0 +1,208 @@
+@using PizzaShop.Entity.Models
+@using PizzaShop.Entity.ViewModels
+@model OrderIndexViewModel
+@{
+    ViewData["Title"] = "Orders";
+    Layout = "_Layout";
+}
+
+<!-- Order heading, search and export button -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-1 gap-md-5">
+    <div>
+        <h1 class="blue-text">Orders</h1>
+    </div>
+
+    <div class="justify-content-end d-flex flex-column flex-md-row order-export-div ">
+
+        <div class="input-group me-2 my-2">
+            <input type="search" class="form-control" placeholder="Search" name="search" id="searchQuery" oninput="PaginationAjax(1)">
+            <button type="submit" class="input-group-text">
+                <img src="~/images/icons/search.svg" alt="">
+            </button>
+        </div>
+
+        <select asp-for="@Model.Status" class="form-select me-2 my-2" id="orderStatus" onchange="PaginationAjax(1)">
+            <option selected value="All Status">All Status</option>
+            @foreach (OrderStatus status in Model.Statuses)
+            {
+                <option value="@status.Name"> @status.Name</option>
+            }
+        </select>
+
+        <select class="form-select me-2 my-2" id="dateRange" onchange="PaginationAjax(1)">
+            <option selected value="All Time">All Time</option>
+            <option value="Last 7 Days">Last 7 Days</option>
+            <option value="Last 30 Days">Last 30 Days</option>
+            <option value="Current Month">Current Month</option>
+        </select>
+
+        <a class="btn btn-blue text-nowrap d-flex justify-content-center align-items-center my-2" id="exportOrderBtn" onclick="exportOrderDetails()">
+            <img src="~/images/icons/export-icon.svg" alt="" width="25px" />
+            Export
+        </a >
+
+    </div>
+</div>
+
+<div class="d-flex flex-column flex-md-row justify-content-end align-items-center mb-3 gap-2 dateRange-div">
+
+    <div class="d-flex justify-content-center gap-2">
+        <div class="form-floating ">
+            <input type="date" class="form-control" id="fromDate" placeholder="">
+            <label for="fromDate">From Date</label>
+        </div>
+
+        <div class="form-floating ">
+            <input type="date" class="form-control" id="toDate" placeholder="">
+            <label for="toDate">To Date</label>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-blue text-nowrap" id="searchByDate" onclick="PaginationAjax(1)">
+            Search
+        </button>
+
+        <button class="btn btn-white text-nowrap" id="clearFilterBtn">
+            Clear
+        </button>
+    </div>
+
+
+</div>
+
+<!-- Table -->
+<div class="bg-white px-3" id="orderContent">
+    <!-- Partial View -->
+</div>
+
+
+@section Scripts {
+    @* Order Pagination *@
+    <script>
+        $(document).ready(function () {
+            PaginationAjax(1);
+            let today = new Date().toISOString().split("T")[0];
+            $("#fromDate, #toDate").attr("max", today);
+        });
+
+        //Sorting Column
+        let sortingColumn;
+        let sortingOrder;
+        $(document).on("click", ".sortBtn", function () {
+            sortingColumn = $(this).data("column");
+            sortingOrder = $(this).data("order");
+            PaginationAjax(1);
+        });
+
+        //Clear Filter
+        $(document).on("click", "#clearFilterBtn", function () {
+            $("#searchQuery").val("");
+            $("#orderStatus").val("All Status");
+            $("#dateRange").val("All Time");
+            $("#fromDate").val("");
+            $("#toDate").val("");
+            PaginationAjax(1);
+        });
+
+        function PaginationAjax(pageNumber) {     
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                PageNumber: pageNumber,
+                Status:  $("#orderStatus").val(),
+                DateRange: $("#dateRange").val(),
+                FromDate: $("#fromDate").val(),
+                ToDate: $("#toDate").val(),
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchQuery").val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("Get", "Orders")',
+                data: { filter },
+                type: "POST",
+                success: function (data) {
+                    $("#orderContent").html(data);
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    console.log("No Items Found");
+                    $("#itemsListContent").html('An error has occurred');
+                }
+            });
+        }
+
+        // Validate Date
+        $(document).on("change", "#fromDate", function () {
+            let fromDate = $(this).val();
+            $("#toDate").attr("min", fromDate); // Restrict "To Date" to not be before "From Date"
+        });
+
+        $(document).on("change", "#toDate", function () {
+            let toDate = $(this).val();
+            $("#fromDate").attr("max", toDate); // Restrict "From Date" to not be after "To Date"
+        });
+    </script>
+
+    @* Export Order Details *@
+    <script>
+
+        @* $(document).on("click", "#exportOrderBtn", function () {
+            exportOrderDetails();
+        }) *@
+
+        function exportOrderDetails() {
+            console.log("export function called");
+            let filter = {
+                PageSize: $("#itemsPerPage").val(),
+                Status:  $("#orderStatus").val(),
+                DateRange: $("#dateRange").val(),
+                FromDate: $("#fromDate").val(),
+                ToDate: $("#toDate").val(),
+                Column: sortingColumn,
+                Sort: sortingOrder,
+                Search: $("#searchQuery").val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("ExportExcel", "Orders")',
+                type: "POST",
+                data: { filter },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data, status, xhr) {
+                    let filename = "Orders.xlsx";
+
+                    let disposition = xhr.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        let matches = /filename="([^"]+)"/.exec(disposition);
+                        if (matches !== null && matches[1]) filename = matches[1];
+                    }
+
+                    let blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+                    let link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    console.log("Export Successful");
+
+                },
+                error: function () {
+                    console.log("There is error.Not successful");
+                    console.log("Not exported!");
+                }
+            });
+        }
+
+    </script>
+
+    @* Order Detail Ajax *@
+    <script>
+
+    </script>
+}

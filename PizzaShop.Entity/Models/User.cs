@@ -61,6 +61,10 @@ public partial class User
 
     public virtual ICollection<CustomersReview> CustomersReviewUpdatedByNavigations { get; set; } = new List<CustomersReview>();
 
+    public virtual ICollection<Event> EventCreatedByNavigations { get; set; } = new List<Event>();
+
+    public virtual ICollection<Event> EventUpdatedByNavigations { get; set; } = new List<Event>();
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<Item> ItemCreatedByNavigations { get; set; } = new List<Item>();

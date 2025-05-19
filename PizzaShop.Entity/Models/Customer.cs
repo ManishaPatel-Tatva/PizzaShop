@@ -27,6 +27,8 @@ public partial class Customer
 
     public virtual ICollection<CustomersReview> CustomersReviews { get; set; } = new List<CustomersReview>();
 
+    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
+
     public virtual ICollection<FavouriteItem> FavouriteItemCustomers { get; set; } = new List<FavouriteItem>();
 
     public virtual ICollection<FavouriteItem> FavouriteItemItems { get; set; } = new List<FavouriteItem>();
