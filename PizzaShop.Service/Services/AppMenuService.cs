@@ -35,7 +35,7 @@ public class AppMenuService : IAppMenuService
         {
             Categories = await _categoryService.Get(),
             CustomerId = customerId,
-            Taxes = _taxRepository.GetAll().ToList(),
+            Taxes = _taxRepository.GetByCondition(t => !t.IsDeleted).Result.ToList(),
             PaymentMethods = _paymentMethodRepository.GetAll().ToList(),
         };
 

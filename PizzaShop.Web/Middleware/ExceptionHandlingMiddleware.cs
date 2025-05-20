@@ -29,19 +29,11 @@ public class ExceptionHandlingMiddleware
     {
         HttpStatusCode code;
         string message;
- 
+
         switch (exception)
         {
             case NotFoundException:
                 code = HttpStatusCode.NotFound;
-                message = exception.Message;
-                break;
-            case BadRequestException:
-                code = HttpStatusCode.BadRequest;
-                message = exception.Message;
-                break;
-            case UnauthorizedException:
-                code = HttpStatusCode.Unauthorized;
                 message = exception.Message;
                 break;
             default:

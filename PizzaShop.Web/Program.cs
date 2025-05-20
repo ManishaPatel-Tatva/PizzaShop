@@ -197,10 +197,10 @@ app.UseSession();
 
 app.UseStatusCodePagesWithReExecute("/Auth/Error/{0}");
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseMiddleware<RolePermissionMiddleware>();
 app.UseAuthorization();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Rotativa
 app.UseRotativa();

@@ -212,7 +212,7 @@
                         Complete
                     </button>
                     <a asp-action="Invoice" asp-controller="Orders" asp-route-orderId="@Model.Order.OrderId"
-                        type="button" class="btn btn-white text-nowrap" aria-disabled="true">
+                        type="button" class="btn btn-white text-nowrap @(Model.Order.OrderId == 0 ? "a-disabled" : "" )">
                         Generate Invoice
                     </a>
                 </div>

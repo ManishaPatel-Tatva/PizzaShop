@@ -1,8 +1,5 @@
-using PizzaShop.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Linq;
 using System.Security.Claims;
 
 namespace PizzaShop.Web.Filters;

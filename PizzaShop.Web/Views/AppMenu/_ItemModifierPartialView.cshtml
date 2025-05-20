@@ -11,28 +11,34 @@
     {
         @foreach (ItemModifierViewModel? mg in Model.ItemModifierGroups)
         {
-            <div class="mb-4">
-                <div class="text-grey mb-2">
-                    <span class="fs-5 fw-semibold">@mg.ModifierGroupName</span>
-                    <span>(You can choose Minimum - @mg.MinAllowed & Maximum - @mg.MaxAllowed options)</span>
-                </div>
+            if (mg.MaxAllowed > 0)
+            {
+                <div class="mb-4">
+                    <div class="text-grey mb-2">
+                        <span class="fs-5 fw-semibold">@mg.ModifierGroupName</span>
+                        <span>(You can choose Minimum - @mg.MinAllowed & Maximum - @mg.MaxAllowed options)</span>
+                    </div>
 
-                <div class="d-flex flex-wrap gap-3">
-                    @foreach (ModifierViewModel? modifier in mg.ModifierList)
-                    {
-                        <!-- Card starts -->
-                        <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative" data-id="@modifier.Id" data-name="@modifier.Name" data-price="@modifier.Rate" data-mg-id="@mg.ModifierGroupId" data-min="@mg.MinAllowed" data-max="@mg.MaxAllowed" onclick="SelectModifier(this)">
-                            <div class="badge-corner vegan-badge "></div>
+                    <div class="d-flex flex-wrap gap-3">
+                        @foreach (ModifierViewModel? modifier in mg.ModifierList)
+                        {
+                            <!-- Card starts -->
+                            <div class="d-flex flex-grow-1 flex-md-grow-0 border shadow-sm rounded-3 modifier-card position-relative"
+                                data-id="@modifier.Id" data-name="@modifier.Name" data-price="@modifier.Rate"
+                                data-mg-id="@mg.ModifierGroupId" data-min="@mg.MinAllowed" data-max="@mg.MaxAllowed"
+                                onclick="SelectModifier(this)">
+                                <div class="badge-corner vegan-badge "></div>
 
-                            <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
-                                <div>@modifier.Name</div>
-                                <div>₹@modifier.Rate</div>
+                                <div class="h-100 w-100 p-2 d-flex flex-column justify-content-between">
+                                    <div>@modifier.Name</div>
+                                    <div>₹@modifier.Rate</div>
+                                </div>
                             </div>
-                        </div>
-                        <!-- Card ends -->
-                    }
+                            <!-- Card ends -->
+                        }
+                    </div>
                 </div>
-            </div>
+            }
         }
     }
     else

@@ -169,7 +169,7 @@ public class ItemService : IItemService
                 await _itemRepository.UpdateAsync(item);
             }
 
-            await _itemModifierService.Save(itemVM.Id, itemVM.ItemModifierGroups);
+            await _itemModifierService.Save(item.Id, itemVM.ItemModifierGroups);
 
             await _transaction.CommitAsync();
 
