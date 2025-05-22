@@ -64,9 +64,12 @@
                                     <div class="text-black">@item.Quantity</div>
                                 </div>
                                 <ul class="mb-0">
-                                    @foreach (var modifier in item.ModifiersList)
+                                    @if (item.ModifiersList != null)
                                     {
-                                        <li>@modifier.Name</li>
+                                        @foreach (var modifier in item.ModifiersList)
+                                        {
+                                            <li>@modifier.Name</li>
+                                        }
                                     }
                                 </ul>
                                 <div>

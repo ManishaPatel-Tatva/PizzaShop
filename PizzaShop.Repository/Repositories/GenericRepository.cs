@@ -2,8 +2,6 @@ using System.Linq.Expressions;
 using PizzaShop.Entity.Models;
 using PizzaShop.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Reflection;
 
 namespace PizzaShop.Repository.Repositories;
 
@@ -33,15 +31,7 @@ public class GenericRepository<T> : IGenericRepository<T>
         await _dbSet.AddAsync(entity);
         await _context.SaveChangesAsync();
 
-        PropertyInfo? idProperty = typeof(T).GetProperty("Id");
-        if (idProperty != null)
-        {
-            return (long)idProperty.GetValue(entity);
-        }
-        else
-        {
-            return 0;
-        }
+        return typeof(T).GetProperty("Id")?.GetValue(entity) is long id ? id : 0;
     }
     #endregion C : Create
 

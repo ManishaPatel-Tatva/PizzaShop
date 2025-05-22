@@ -1,111 +1,124 @@
-using System.Linq.Expressions;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.EntityFrameworkCore;
 using PizzaShop.Entity.Models;
 using PizzaShop.Entity.ViewModels;
 using PizzaShop.Repository.Interfaces;
 using PizzaShop.Service.Common;
-using PizzaShop.Service.Exceptions;
-using PizzaShop.Service.Helpers;
 using PizzaShop.Service.Interfaces;
 
 namespace PizzaShop.Service.Services;
 
 public class KotService : IKotService
 {
-    private readonly IGenericRepository<Order> _orderRepository;
-    private readonly IGenericRepository<OrderItem> _orderItemRepository;
-    private readonly IGenericRepository<OrderStatus> _orderStatusRepository;
     private readonly ICategoryService _categoryService;
     private readonly IKotRepository _kotRepository;
 
-    public KotService(IGenericRepository<Order> orderRepository, IGenericRepository<OrderItem> orderItemRepository, IGenericRepository<OrderStatus> orderStatusRepository, ICategoryService categoryService, IKotRepository kotRepository)
+    public KotService(ICategoryService categoryService, IKotRepository kotRepository)
     {
-        _orderRepository = orderRepository;
-        _orderItemRepository = orderItemRepository;
-        _orderStatusRepository = orderStatusRepository;
         _categoryService = categoryService;
         _kotRepository = kotRepository;
     }
 
     #region Get
-    /*----------------------------------------------------Get Category List----------------------------------------------------------------------------------------------------------------------------------------------------
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     public async Task<KotViewModel> Get(long categoryId, int pageSize, int pageNumber, bool isReady)
     {
+        KotViewModel kotVM = new() {};
+        IEnumerable<KotDbViewModel>? KotDB = await _kotRepository.Get(categoryId, isReady);
 
-        long completeId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Completed").Result!.Id;
-        long cancelId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
-
-        IEnumerable<Order> orders = await _orderRepository.GetByCondition(
-        predicate: o => !o.IsDeleted
-                        && o.StatusId != completeId
-                        && o.StatusId != cancelId
-                        && o.OrderItems.Any(oi => !oi.IsDeleted
-                        && (categoryId == 0 || oi.Item.CategoryId == categoryId)),
-        orderBy: q => q.OrderBy(o => o.Id),
-        thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
+        kotVM.CategoryId = categoryId;
+        kotVM.CategoryName = categoryId == 0 ? "All" : _categoryService.Get(categoryId).Result.Name;
+        kotVM.IsReady = isReady;
+        kotVM.KotCards = KotDB.Select(kot => new KotCardViewModel
         {
-                q => q.Include(o => o.OrderTableMappings)
-                    .ThenInclude(otm => otm.Table)
-                    .ThenInclude(t => t.Section),
-                q => q.Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Item)
-                    .ThenInclude(i => i.Category),
-                q => q.Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.OrderItemsModifiers)
-                    .ThenInclude(m => m.Modifier),
-        });
+            OrderId = kot.OrderId,
+            SectionName = kot.SectionName,
+            Tables = kot.Tables.ToList(),
+            Time = kot.Time,
+            Items = JsonSerializer.Deserialize<List<OrderItemViewModel>>(kot.Items) ?? new(),
+            Instruction = kot.Instruction,
+        }).Where(c => c.Items.Count > 0).ToList();
 
-        KotViewModel kot = new()
-        {
-            CategoryId = categoryId,
-            CategoryName = categoryId == 0 ? "All" :  _categoryService.Get(categoryId).Result.Name,
-            IsReady = isReady,
-            KotCards = orders.Select(o => new KotCardViewModel
-            {
-                OrderId = o.Id,
+        return kotVM;
 
-                SectionName = o.OrderTableMappings
-                            .Where(otm => otm.OrderId == o.Id)
-                            .Select(otm => otm.Table.Section.Name)
-                            .FirstOrDefault()!,
+        }
 
-                Tables = o.OrderTableMappings
-                            .Where(otm => otm.OrderId == o.Id)
-                            .Select(otm => otm.Table.Name)
-                            .ToList(),
+    // public async Task<KotViewModel> Get(long categoryId, int pageSize, int pageNumber, bool isReady)
+    // {
 
-                Time = o.CreatedAt,
+        //     long completeId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Completed").Result!.Id;
+        //     long cancelId = _orderStatusRepository.GetByStringAsync(os => os.Name == "Cancelled").Result!.Id;
 
-                Items = o.OrderItems
-                        .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && (!oi.IsDeleted) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
-                        .Select(oi => new OrderItemViewModel
-                        {
-                            Id = oi.Id,
-                            ItemId = oi.ItemId,
-                            Name = oi.Item.Name,
-                            Quantity = isReady ? oi.ReadyQuantity : oi.Quantity - oi.ReadyQuantity,
-                            ModifiersList = oi.OrderItemsModifiers
-                                            .Select(oim => new ModifierViewModel
-                                            {
-                                                Name = oim.Modifier.Name,
-                                                Quantity = oim.Quantity
-                                            }).ToList(),
-                            Instruction = oi.Instructions,
-                        }).ToList(),
+        //     IEnumerable<Order> orders = await _orderRepository.GetByCondition(
+        //     predicate: o => !o.IsDeleted
+        //                     && o.StatusId != completeId
+        //                     && o.StatusId != cancelId
+        //                     && o.OrderItems.Any(oi => !oi.IsDeleted
+        //                     && (categoryId == 0 || oi.Item.CategoryId == categoryId)),
+        //     orderBy: q => q.OrderBy(o => o.Id),
+        //     thenIncludes: new List<Func<IQueryable<Order>, IQueryable<Order>>>
+        //     {
+        //             q => q.Include(o => o.OrderTableMappings)
+        //                 .ThenInclude(otm => otm.Table)
+        //                 .ThenInclude(t => t.Section),
+        //             q => q.Include(o => o.OrderItems)
+        //                 .ThenInclude(oi => oi.Item)
+        //                 .ThenInclude(i => i.Category),
+        //             q => q.Include(o => o.OrderItems)
+        //                 .ThenInclude(oi => oi.OrderItemsModifiers)
+        //                 .ThenInclude(m => m.Modifier),
+        //     });
 
-                Instruction = o.Instructions
+        //     KotViewModel kot = new()
+        //     {
+        //         CategoryId = categoryId,
+        //         CategoryName = categoryId == 0 ? "All" : _categoryService.Get(categoryId).Result.Name,
+        //         IsReady = isReady,
+        //         KotCards = orders.Select(o => new KotCardViewModel
+        //         {
+        //             OrderId = o.Id,
 
-            }).Where(c => c.Items.Count > 0).ToList(),
-        };
+        //             SectionName = o.OrderTableMappings
+        //                         .Where(otm => otm.OrderId == o.Id)
+        //                         .Select(otm => otm.Table.Section.Name)
+        //                         .FirstOrDefault()!,
 
-        return kot;
-    }
+        //             Tables = o.OrderTableMappings
+        //                         .Where(otm => otm.OrderId == o.Id)
+        //                         .Select(otm => otm.Table.Name)
+        //                         .ToList(),
 
-    #endregion
+        //             Time = o.CreatedAt,
 
-    #region Update
+        //             Items = o.OrderItems
+        //                     .Where(oi => (categoryId == 0 || oi.Item.CategoryId == categoryId) && (!oi.IsDeleted) && ((isReady && oi.ReadyQuantity > 0) || (!isReady && oi.Quantity - oi.ReadyQuantity > 0)))
+        //                     .Select(oi => new OrderItemViewModel
+        //                     {
+        //                         Id = oi.Id,
+        //                         ItemId = oi.ItemId,
+        //                         Name = oi.Item.Name,
+        //                         Quantity = isReady ? oi.ReadyQuantity : oi.Quantity - oi.ReadyQuantity,
+        //                         ModifiersList = oi.OrderItemsModifiers
+        //                                         .Select(oim => new ModifierViewModel
+        //                                         {
+        //                                             Name = oim.Modifier.Name,
+        //                                             Quantity = oim.Quantity
+        //                                         }).ToList(),
+        //                         Instruction = oi.Instructions,
+        //                     }).ToList(),
+
+        //             Instruction = o.Instructions
+
+        //         }).Where(c => c.Items.Count > 0).ToList(),
+        //     };
+
+        //     return kot;
+        // }
+
+        #endregion
+
+        #region Update
 
     public async Task<ResponseViewModel> Update(KotCardViewModel kot)
     {

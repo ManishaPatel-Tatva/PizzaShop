@@ -12,7 +12,9 @@ public static class PaginationHelper
     )
     {
         if (totalRecords <= 0)
+        {
             return;
+        }
 
         page.TotalRecord = totalRecords;
         page.FromRec = (pageNumber - 1) * pageSize;

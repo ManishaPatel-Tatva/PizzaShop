@@ -11,12 +11,10 @@ namespace PizzaShop.Web.Middleware;
 public class RolePermissionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IMemoryCache _cache;
 
-    public RolePermissionMiddleware(RequestDelegate next, IMemoryCache cache)
+    public RolePermissionMiddleware(RequestDelegate next)
     {
         _next = next;
-        _cache = cache;
     }
 
     public async Task InvokeAsync(HttpContext context, IRolePermissionService rolePermissionService)
@@ -33,8 +31,8 @@ public class RolePermissionMiddleware
 
             if (!string.IsNullOrEmpty(roleIdStr) && long.TryParse(roleIdStr, out long roleId))
             {
-                RolePermissionViewModel permissions = await rolePermissionService.Get(roleId)
-                ?? throw new NotFoundException(NotificationMessages.NotFound.Replace("{0}","Permissions"));
+                RolePermissionViewModel permissions = await rolePermissionService.Get(roleId);
+                
                 // Build all claims
                 List<Claim>? claims = jwtToken.Claims.ToList();
 
