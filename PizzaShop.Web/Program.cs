@@ -15,7 +15,7 @@ using Serilog;
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 // Serilog
-var logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "myapp-log.txt");
+var logFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", "pizzashop-log.txt");
  
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()

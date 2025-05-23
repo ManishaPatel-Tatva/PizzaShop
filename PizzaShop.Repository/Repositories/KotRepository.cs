@@ -55,7 +55,4 @@ public class KotRepository : IKotRepository
             new NpgsqlParameter("id", id)
         );
     }
-    
-
-
 }
